@@ -1,0 +1,4 @@
+pyyaml>=5.1
+tensorboard
+tensorboardX
+typeguard
