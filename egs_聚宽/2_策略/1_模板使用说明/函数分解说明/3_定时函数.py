@@ -20,3 +20,4 @@ def initialize(context):
     # 参照股指期货的时间每分钟运行一次，必须选择分钟回测，否则每天执行
     run_daily(daily，'every_bar'，reference_security='IF2003.CCFX')
 
+# 定时函数必须时全局的，不能时类的函数
