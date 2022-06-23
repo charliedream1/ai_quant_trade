@@ -1,3 +1,22 @@
+# -*- coding: utf-8 -*-
+# @Author   : ly
+# @Time     : 2022/6/23 22:41
+# @File     : 龙虎榜+均线.py
+# @Project  : ai_quant_trade
+# Copyright (c)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # 策略: 1.只做强势股 2.少即是多 3.看长做短
 # 大周期看涨，小周期买入 (看上涨趋势(突破后持续关注)，30分钟或者小时突破时择时买入)
 # 导入函数库
