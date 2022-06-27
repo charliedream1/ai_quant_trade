@@ -9,6 +9,12 @@
 | [**数据处理**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data)
 | [**聚宽样例**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_%E8%81%9A%E5%AE%BD)
 
+## 愿景
+希望这是一个实用，可以快速部署，辅助股票实盘交易的工具，而不是一个仅限于学习和研究的平台。
+- 第一阶段：丰富完善各个功能模块
+- 第二阶段：可以用于部署和实盘使用
+- 第三阶段：封装成一个带界面的软件，对于不会代码的人，也可以方便的获得智能推荐消息
+
 ## 核心功能
 ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及实盘炒股为一体的
 工具，如下特性将逐步完善并加入：
