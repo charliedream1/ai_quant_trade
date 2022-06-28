@@ -15,8 +15,7 @@
 - 第二阶段：可以用于部署和实盘使用
 - 第三阶段：封装成一个带界面的软件，对于不会代码的人，也可以方便的获得智能推荐消息
 
-<img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/> 
-**如果喜欢本项目，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
+<img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
 
 ## 核心功能
 ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及实盘炒股为一体的
