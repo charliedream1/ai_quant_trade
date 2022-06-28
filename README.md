@@ -15,6 +15,9 @@
 - 第二阶段：可以用于部署和实盘使用
 - 第三阶段：封装成一个带界面的软件，对于不会代码的人，也可以方便的获得智能推荐消息
 
+<img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/> 
+**如果喜欢本项目，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
+
 ## 核心功能
 ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及实盘炒股为一体的
 工具，如下特性将逐步完善并加入：
@@ -53,6 +56,11 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 - 机器学习类策略：基于sklearn等工具
   - [**机器学习-动态因子选择策略**](https://www.joinquant.com/view/community/detail/f2a9d2ec6d4ad18882fa0a364fb9123d)
   2022-01-01 到 2022-06-20, ￥100000, 每天，年化32.35%，最大回撤32.35%，胜率0.625
+
+## 讨论
+欢迎在 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions) 中发起讨论。
+
+
 ## 技术支持
 
 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题。
