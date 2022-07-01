@@ -10,6 +10,8 @@
 ## 2.1 系统要求
 - 支持windows和linux平台
 - 要求python3.7或3.8 (3.9部分功能不支持)
+
+## 2.2 安装
 - 如果windows，安装Microsoft C++ Build Tools (大约需要2.5G空间)    
   https://visualstudio.microsoft.com/visual-cpp-build-tools/      
 
@@ -24,3 +26,48 @@ pip install pyqlib
 git clone https://github.com/microsoft/qlib.git && cd qlib
 pip install .
 ```
+
+# 3. 数据准备
+通过如下脚本，可以自动从雅虎财经获取数据，可以获取中国和美国的股市输入。如下，仅列出获取中国股市。
+由于雅虎财经数据质量不是特别高，如果有条件，可以使用自由数据源。
+### 下载国内数据集
+**!!!注意: 数据会被下载到C:\Users\pc\.qlib\qlib_data\cn_data\，而非qlib所在目录**  
+
+### 3.1 下载国内简单数据集 (123M)
+
+```bash
+python get_data.py qlib_data --name qlib_data_simple --target_dir ~/.qlib/qlib_data/cn_data --region cn
+```
+
+### 3.2 数据获取详细操作
+
+```bash
+# daily data
+python get_data.py qlib_data --target_dir ~/.qlib/qlib_data/cn_data --region cn
+
+# 1min  data (Optional for running non-high-frequency strategies)
+python get_data.py qlib_data --target_dir ~/.qlib/qlib_data/cn_data_1min --region cn --interval 1min
+```
+
+# 4. 跑一个简单的示例
+example下的每个实例里如果存在requirements.txt，需要手动安装。
+### 4.1 lightGBM
+需要安装
+```bash
+pip install xgboost
+pip install catboost==0.24.3 
+```
+
+启动训练和回测
+```bash
+    cd examples  # Avoid running program under the directory contains `qlib`
+    qrun benchmarks/LightGBM/workflow_config_lightgbm_Alpha158.yaml
+  ```
+  If users want to use `qrun` under debug mode, please use the following command:
+  ```bash
+  python -m pdb qlib/workflow/cli.py examples/benchmarks/LightGBM/workflow_config_lightgbm_Alpha158.yaml
+  ```
+  The result of `qrun` is as follows, please refer to [Intraday Trading](https://qlib.readthedocs.io/en/latest/component/backtest.html) for more details about the result. 
+
+  ```bash
+
