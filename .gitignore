@@ -35,4 +35,5 @@ exp
 data
 raw_wav
 tensorboard
+zz_logs
 **/*build*
