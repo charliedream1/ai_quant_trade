@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author   : liyi
-# @Time     : 2022/7/3 22:07
-# @File     : sina_data.py
+# @Time     : 2022/7/6 8:28
+# @File     : __init__.py.py
 # @Project  : ai_quant_trade
 # Copyright (c) Personal 2022 liyi
+# Function Description:
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,4 +17,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
