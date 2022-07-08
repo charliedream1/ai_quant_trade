@@ -9,13 +9,13 @@
 | [**数据处理**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data)
 | [**聚宽样例**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_%E8%81%9A%E5%AE%BD)
 
+<img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，或希望随时关注动态，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
+
 ## 愿景
 希望这是一个实用，可以快速部署，辅助股票实盘交易的工具，而不是一个仅限于学习和研究的平台。
 - 第一阶段：丰富完善各个功能模块
 - 第二阶段：可以用于部署和实盘使用
 - 第三阶段：封装成一个带界面的软件，对于不会代码的人，也可以方便的获得智能推荐消息
-
-<img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
 
 ## 核心功能
 ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及实盘炒股为一体的
@@ -65,3 +65,18 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 ## 技术支持
 
 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题。
+
+
+## 引用
+
+``` bibtex
+@misc{ai_quant_trade,
+  author={Yi Li},
+  title={ai_quant_trade},
+  year={2022},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/charliedream1/ai_quant_trade}},
+}
+
+```

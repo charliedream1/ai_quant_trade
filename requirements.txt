@@ -1,1 +1,6 @@
-
+flake8~=3.9.0
+pandas~=1.2.4
+tushare~=1.2.85
+yfinance~=0.1.70
+numpy~=1.20.1
+scikit-learn~=0.24.1
