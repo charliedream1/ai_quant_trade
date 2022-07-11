@@ -37,6 +37,6 @@ class StockDataApi(ABC):
                     ) -> pd.DataFrame:
         pass
 
-    @abstractmethod
-    def load_via_csv(self, csv_file_path) -> pd.DataFrame:
-        pass
+    # @abstractmethod
+    # def load_via_csv(self, csv_file_path) -> pd.DataFrame:
+    #     pass

@@ -33,37 +33,60 @@
 import os
 from abc import ABC
 import pandas as pd
+import datetime
 
 import tushare as ts
 # replace below with your token and comment my import
 # tushare_token = 'xxxx'
 from data.private.tushare_token import tushare_token
 from tools.quant_trade.get_stock_data.api_stock_data import StockDataApi
+from tools.date_time.date_format_check import validate
 
 
 class TuShareData(StockDataApi, ABC):
 
     def get_df_data(self,
                     stock_id: str,
-                    start_time: str,
-                    end_time: str,
-                    csv_dir: str,
-                    skip_download: bool = True
+                    start_time: datetime.date,
+                    end_time: datetime.date,
+                    time_freq: str = 'daily',
+                    skip_download: bool = True,
+                    csv_dir: str = ''
                     ) -> pd.DataFrame:
+        """
+        :param stock_id: stock id for query data
+        :param start_time: query start time
+        :param end_time: query end time
+        :param time_freq: frequency of data, e.g. daily or minutes
+        :param skip_download: if csv exist, it will skip download
+        :param csv_dir: csv dir to save query data
+        :return: query data with dataframe type
+        """
+        # check time format is YYYYMMDD
+        validate(start_time)
+        validate(end_time)
+
+        # convert time format
+        start_time = start_time.strftime('%Y%m%d')
+        end_time = end_time.strftime('%Y%m%d')
+
         # output path
-        file_name = stock_id + '_' + start_time + '_' + end_time
+        file_name = str(start_time) + '_' + str(end_time) + '_' + stock_id + '.csv'
         out_csv_file = os.path.join(csv_dir, file_name)
 
-        if os.path.exists(out_csv_file):
+        # loading data
+        if os.path.exists(out_csv_file) and skip_download:
             # load file if exist
             df = pd.read_csv(out_csv_file)
         else:
+            assert start_time < end_time
+
             # initialize api
             ts.set_token(tushare_token)
             ts_pro = ts.pro_api()
 
             # get stock data
-            df = ts_pro.query('daily', ts_code=stock_id,
+            df = ts_pro.query(time_freq, ts_code=stock_id,
                               start_date=start_time, end_date=end_time)
             df.to_csv(out_csv_file)
         return df
