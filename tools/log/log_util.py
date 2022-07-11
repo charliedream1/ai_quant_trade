@@ -40,7 +40,7 @@ def init_log(name='root'):
     return logging.getLogger(name)
 
 
-# 装饰器 打印日志
+# decorator print log
 def addlog(name=''):
     begin = time.time()
 
@@ -55,17 +55,17 @@ def addlog(name=''):
                 file_name = file[file.find(__project_name) + len(__project_name) + 1:file.rfind(r'.')]
                 func_descrip = (file_name + '.' + func.__name__) if name == '' else name
 
-                log.info('开始执行：%s ...' % func_descrip)
+                log.info('Start Execute：%s ...' % func_descrip)
                 data = func(*args, **kwargs)
 
                 inner_secs = time.time() - begin1
 
-                log.info('执行完成：%s , 耗时: %s, 总耗时: %s ' % (func_descrip,
+                log.info('Complete：%s , Time Consume: %s, Total Time: %s ' % (func_descrip,
                                                          time_str(inner_secs), time_str(time.time() - begin)))
 
             except Exception as e:
                 # traceback.print_exc()
-                log.exception('本次失败调用耗时:%s, 总耗时:%s, 错误信息:%s', time_str(time.time() - begin1),
+                log.exception('Failure Calling Time Consume:%s, Total Time:%s, Err Message:%s', time_str(time.time() - begin1),
                               time_str(time.time() - begin), e)
                 # traceback.print_exc(file=open(log_file, 'a'))
                 sys.exit(0)
