@@ -1,14 +1,18 @@
+# data engine and time range
+data_source: tushare  # todo: add more options
+data_condition:
+  stock_id: '000001.SZ'
+  start_time: 2018-01-01
+  end_time: 2019-12-30
+  time_freq: daily  # todo: add more options
+  skip_download: True  # if already downloaded to local, skip it
+
 test_condition:
   # basic options
   capital: 100000  # total money available for trading
 #  hold_stock_num: 3  # max hold positions for stock
-  stock_id: '000001.SZ'
-  ma_short: 5
+  ma_short: 10
   ma_long: 20
-  # data engine and time range
-  data_source: tushare  # todo: add more options
-  start_time: 2020-07-05
-  end_time: 2022-07-05
 
 order_cost:
   close_tax: 0.001  # tax charged for selling

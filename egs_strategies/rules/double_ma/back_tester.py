@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author   : liyi (liyi_best@foxmail.com)
-# @Time     : 2022/7/4 23:32
-# @File     : double_ma.py
+# @Time     : 2022/7/8 22:34
+# @File     : back_tester.py
 # @Project  : ai_quant_trade
 # Copyright (c) Personal 2022 liyi
-# Function Description: double moving average stratege
+# Function Description: back test for the strategy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,67 +28,71 @@ import matplotlib.pyplot as plt
 import ffn
 
 from tools.quant_trade.get_stock_data.get_tushare_data import TuShareData
+from tools.quant_trade.back_test.risk_indicator import cal_risk_indicator
+from tools.quant_trade.back_test.cal_fee import calculate_fee
 from tools.file_io.config import override_config
 from tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
 from tools.log.log_util import addlog, log
 
 
-class DoubleMa:
+class BackTester:
+    @addlog(name='Back Test Initialization')
     def __init__(self, args):
+        self.args = args
+
         # 1. load yaml file
-        with open(args.config, 'r') as fin:
+        with open(args.config, 'r', encoding='utf8') as fin:
             self.configs = yaml.load(fin, Loader=yaml.FullLoader)
         if len(args.override_config) > 0:
             self.configs = override_config(self.configs, args.override_config)
 
+        self.data_condition = self.configs['data_condition']
         self.test_conditions = self.configs['test_condition']
+        self.data_condition['csv_dir'] = self.args.data_dir
         self.order_cost = self.configs['order_cost']
 
         # 2. get stock data
         db = TuShareData()
-        df = db.get_df_data(**args)
-        df = df.reindex(index=df.index[::-1])  # reverse df
+        df = db.get_df_data(**self.data_condition)
+        # reverse df, make start from history to current
+        df = df.reindex(index=df.index[::-1])
+        df = df.reset_index(drop=True)  # reset index
 
         # remove unused cols to make it fast to process
-        used_cols = ['trade_date', 'close']
-        df = df[used_cols]
+        # used_cols = ['trade_date', 'close']
+        # df = df[used_cols]
 
         # 3. get moving average value
-        df['ma_short'] = df['close'].rolling(window=self.configs['ma_short']).mean()
-        df['ma_long'] = df['close'].rolling(window=self.configs['ma_long']).mean()
+        df['ma_short'] = df['close'].rolling(window=self.test_conditions['ma_short']).mean()
+        df['ma_long'] = df['close'].rolling(window=self.test_conditions['ma_long']).mean()
+        # the beginning of mean duration will be empty, drop it
         self.df = df.dropna()
+
+        # 4. initialize strategy
+        from egs_strategies.rules.double_ma.double_ma import DoubleMa
+        strategy_config = self.configs['order_cost']
+        strategy_config['capital'] = self.test_conditions['capital']
+        strategy_config['stock_id'] = self.data_condition['stock_id']
+        strategy_config['ma_short'] = self.test_conditions['ma_short']
+        strategy_config['ma_long'] = self.test_conditions['ma_long']
+        self.strategy = DoubleMa(strategy_config)
 
         # ======================================
         # ======== internal vars ===============
         self.pos_lst = []   # stocks holding list
         self.hold = False
 
-    @addlog(name='before_market_open')
-    def before_market_open(self):
-        pass
-
-    @addlog(name='market_open')
-    def market_open(self):
-        pass
-
-    @addlog(name='after_market_close')
-    def after_market_close(self):
-        pass
-
-    def back_test_ctrl(self):
-        capital = self.test_conditions['capital']
-        open_fee = self.order_cost['open_commission']
-
+    @addlog(name='start offline back test')
+    def offline_back_test_ctrl(self):
         # loop history data
         for i in range(len(self.df)):
-            ma_short = self.df.loc[i, 'ma_short']
-            ma_long = self.df.loc[i, 'ma_long']
-            price = self.df.loc[i, 'close']
+            self.strategy.ma_short_val = self.df['ma_short'].iloc[i]
+            self.strategy.ma_long_val = self.df['ma_long'].iloc[i]
+            # price = self.df['close'].iloc[i]
+            self.strategy.market_open(self.df.iloc[i])
 
-            # decision: buy or sell
-            if ma_short >= ma_long and not self.hold:
-                # calculate purchase number
-                pos = int(capital / price / 100) * 100
+        # calculate risk indicator
+        cal_risk_indicator(self.strategy.capital_list, self.args.exp_dir)
 
 
 def get_args():
@@ -98,6 +102,11 @@ def get_args():
     parser.add_argument('--config', help='config file')
     parser.add_argument('--data_dir', help='dir to store data')
     parser.add_argument('--exp_dir', help='export file dir')
+
+    parser.add_argument('--override_config',
+                        action='append',
+                        default=[],
+                        help="override yaml config")
 
     args = parser.parse_args()
     return args
@@ -118,8 +127,8 @@ def main():
         make_dirs(args.data_dir)
         make_dirs(args.exp_dir)
 
-    strategy = DoubleMa(args)
-    strategy.back_test_ctrl()
+    slu = BackTester(args)
+    slu.offline_back_test_ctrl()
 
 
 if __name__ == '__main__':
