@@ -84,11 +84,12 @@ class BackTester:
 
     @addlog(name='start offline back test')
     def offline_back_test_ctrl(self):
-        # loop history data
-        for i in range(len(self.df)):
-            self.strategy.ma_short_val = self.df['ma_short'].iloc[i]
-            self.strategy.ma_long_val = self.df['ma_long'].iloc[i]
+        # loop history data, start from 1 is to avoid see the future
+        for i in range(1, len(self.df)):
+            self.strategy.ma_short_val = self.df['ma_short'].iloc[i - 1]
+            self.strategy.ma_long_val = self.df['ma_long'].iloc[i - 1]
             # price = self.df['close'].iloc[i]
+            # not use i-1 is because to use today's current price to order
             self.strategy.market_open(self.df.iloc[i])
 
         # calculate risk indicator
