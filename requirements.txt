@@ -4,3 +4,4 @@ tushare~=1.2.85
 yfinance~=0.1.70
 numpy>=1.22
 scikit-learn~=0.24.1
+PyQt5
