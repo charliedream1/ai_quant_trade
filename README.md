@@ -1,4 +1,4 @@
-# 股票自动交易员  
+# 股票AI交易员  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
 
