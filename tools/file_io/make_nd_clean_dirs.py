@@ -21,9 +21,10 @@
 import os
 
 
-def make_dirs(path: str):
-    if not os.path.exists(path):
-        os.makedirs(path)
+def make_dirs(*dirs):
+    for i in dirs:
+        if not os.path.exists(i):
+            os.makedirs(i)
 
 
 def clean_dirs(path: str):
