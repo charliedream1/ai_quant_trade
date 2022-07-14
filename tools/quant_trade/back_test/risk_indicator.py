@@ -20,7 +20,9 @@
 
 import ffn
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Qt5Agg')  # Use Qt5Agg for plot show
 
 from tools.log.log_util import addlog, log
 
@@ -38,5 +40,5 @@ def cal_risk_indicator(capital_list: list, save_plt_path: str):
     log.info('Sharp Rate: %.2f' % ffn.calc_sharpe(capital_returns))
     # make plot of capital changing
     plt.plot(range(len(capital_list)), capital_list)
-    plt.show()
+    plt.show(block=True)
 
