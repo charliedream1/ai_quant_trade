@@ -78,7 +78,7 @@ def addlog(name=''):
 
 
 def time_str(second):
-    return ('%.2f 秒' % second) if second < 60 else ('%.2f 分钟' % (second / 60.0))
+    return ('%.2f sec' % second) if second < 60 else ('%.2f min' % (second / 60.0))
 
 
 log = init_log()
@@ -90,7 +90,7 @@ def log_test1():
     time.sleep(1)
 
 
-@addlog(name='测试2')
+@addlog(name='test2')
 def log_test2():
     time.sleep(1)
     log_test1()
