@@ -77,7 +77,7 @@ class TuShareData(StockDataApi, ABC):
         # loading data
         if os.path.exists(out_csv_file) and skip_download:
             # load file if exist
-            df = pd.read_csv(out_csv_file)
+            df = pd.read_csv(out_csv_file, index_col=0)
         else:
             assert start_time < end_time
 
