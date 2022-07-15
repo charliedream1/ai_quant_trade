@@ -26,6 +26,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import ffn
+import copy
 
 from tools.quant_trade.get_stock_data.get_tushare_data import TuShareData
 from tools.quant_trade.back_test.cal_fee import calculate_fee
@@ -52,6 +53,10 @@ class DoubleMa:
         self.pos = 0  # holding position number
         self.rest = 0  # rest capital
 
+        # trading log
+        self.df_trade = pd.DataFrame()
+        self.trade_cnt = 0  # total trading times
+
         # ================
         # internal vars
         self._que = []
@@ -71,33 +76,48 @@ class DoubleMa:
             self.ma_long_val = np.mean(self._que[-self.ma_long_dur:])
 
     @addlog(name='market_open')
-    def market_open(self, df_price):
+    def market_open(self, time_index: int, df_price: pd.Series()):
         price = df_price['close']
+        trade_type = ''
 
         # decision: buy or sell
         if self.ma_short_val >= self.ma_long_val and not self.hold:
             # calculate purchase number, 1 buy = 100 shares
             # minimum subscribe for 100 shares, multiple 100 is to 1 buy
             self.pos = int(self.capital / price / 100) * 100
+
             # extra fee calculation
             fee = calculate_fee(price, self.pos, self.args, 'buy')
+
             # rest capital
             self.rest = self.capital - self.pos * price - fee
             assert self.rest >= 0
+
             # set holding flag to True
             self.hold = True
+            trade_type = 'buy'
+            self.trade_cnt += 1
+
+            # output log
             message = 'Buy with price: ' + str(price) + \
                       ', capital ' + str(self.capital)
             log.info(message)
         elif self.ma_short_val < self.ma_long_val and self.hold:
             # extra fee calculation
             fee = calculate_fee(price, self.pos, self.args, 'sell')
+
             # calculate capital of closing a position
             self.capital = self.pos * price - fee + self.rest
+
             # clear holding position to 0
             self.pos = 0
-            # set holding positon to False
+
+            # set holding position to False
             self.hold = False
+            trade_type = 'sell'
+            self.trade_cnt += 1
+
+            # output log
             message = 'Sell with price: ' + str(price) + \
                       ', capital ' + str(self.capital)
             log.info(message)
@@ -105,10 +125,21 @@ class DoubleMa:
         # calculate capital of each day计算每日的资金数目
         if self.hold:
             # if holding position, record current market capitalization
-            self.capital_list.append(self.rest + self.pos * price)
+            capital = self.rest + self.pos * price
+            self.capital_list.append(capital)
         else:
             # if not holding, record current capital
+            capital = self.capital
             self.capital_list.append(self.capital)
+
+        # make trading record
+        if len(trade_type):
+            df_info = copy.deepcopy(df_price)
+            df_info['time_index'] = time_index
+            df_info['trade_type'] = trade_type
+            df_info['capital'] = capital
+            self.df_trade = self.df_trade.append(df_info, ignore_index=True)
+        pass
 
     @addlog(name='after_market_close')
     def after_market_close(self):

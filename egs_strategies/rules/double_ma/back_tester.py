@@ -29,6 +29,7 @@ import ffn
 
 from tools.quant_trade.get_stock_data.get_tushare_data import TuShareData
 from tools.quant_trade.back_test.risk_indicator import cal_risk_indicator
+from tools.plots.trades_on_k_line import plot_trades
 from tools.quant_trade.back_test.cal_fee import calculate_fee
 from tools.file_io.config import override_config
 from tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
@@ -79,7 +80,7 @@ class BackTester:
 
         # ======================================
         # ======== internal vars ===============
-        self.pos_lst = []   # stocks holding list
+        self.pos_lst = []  # stocks holding list
         self.hold = False
 
     @addlog(name='start offline back test')
@@ -90,10 +91,18 @@ class BackTester:
             self.strategy.ma_long_val = self.df['ma_long'].iloc[i - 1]
             # price = self.df['close'].iloc[i]
             # not use i-1 is because to use today's current price to order
-            self.strategy.market_open(self.df.iloc[i])
+            self.strategy.market_open(i, self.df.iloc[i])
 
         # calculate risk indicator
+        log.info('*** Total Trading Times: %d' % self.strategy.trade_cnt)
         cal_risk_indicator(self.strategy.capital_list, self.args.exp_dir)
+        plot_trades(self.strategy.capital_list,
+                    self.strategy.df_trade,
+                    self.args.exp_dir)
+
+    @addlog(name='offline_trade_simulation_ctrl')
+    def offline_trade_simulation_ctrl(self):
+        pass
 
 
 def get_args():

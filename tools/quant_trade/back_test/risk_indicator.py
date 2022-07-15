@@ -20,15 +20,12 @@
 
 import ffn
 import pandas as pd
-import matplotlib
-import matplotlib.pyplot as plt
-matplotlib.use('Qt5Agg')  # Use Qt5Agg for plot show
 
 from tools.log.log_util import addlog, log
 
 
 @addlog(name='cal_risk_indicator')
-def cal_risk_indicator(capital_list: list, save_plt_path: str):
+def cal_risk_indicator(capital_list: list, metrics_save_path: str):
     capital_series = pd.Series(capital_list)
     # calculate simple rate of return
     capital_returns = ffn.to_returns(capital_series)
@@ -38,7 +35,5 @@ def cal_risk_indicator(capital_list: list, save_plt_path: str):
     log.info('Max Withdraw: %.2f' % ffn.calc_max_drawdown(capital_series))
     # calculate sharp rate
     log.info('Sharp Rate: %.2f' % ffn.calc_sharpe(capital_returns))
-    # make plot of capital changing
-    plt.plot(range(len(capital_list)), capital_list)
-    plt.show(block=True)
 
+    # todo: save to the file
