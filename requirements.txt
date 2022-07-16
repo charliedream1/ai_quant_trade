@@ -5,3 +5,8 @@ yfinance~=0.1.70
 numpy>=1.22
 scikit-learn~=0.24.1
 PyQt5
+matplotlib~=3.3.4
+ffn~=0.3.6
+yaml~=0.2.5
+pyyaml~=5.4.1
+mplfinance~=0.12.9b1
