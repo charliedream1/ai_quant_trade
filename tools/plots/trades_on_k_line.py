@@ -80,6 +80,12 @@ def plot_trades_on_capital(capital_list: list,
 def plot_trades_on_k_line(df_stock: pd.DataFrame(),
                           df_trade: pd.DataFrame(),
                           save_plt_path: str):
+    """
+    :param df_stock: stock info dataframe
+    :param df_trade: trading info dataframe
+    :param save_plt_path: plot saving path
+    :return:
+    """
     # create figure object
     fig = plt.figure()
 

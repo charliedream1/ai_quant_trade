@@ -22,17 +22,12 @@ import argparse
 import os
 
 import yaml
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import ffn
 
-from tools.quant_trade.get_stock_data.get_tushare_data import TuShareData
-from tools.quant_trade.back_test.risk_indicator import cal_risk_indicator
+from quant_brain.get_stock_data.get_tushare_data import TuShareData
+from quant_brain.back_test.risk_indicator import cal_risk_indicator
 from tools.plots.trades_on_k_line import plot_trades_on_capital, plot_trades_on_k_line, show_plt
-from tools.quant_trade.back_test.cal_fee import calculate_fee
 from tools.file_io.config import override_config
-from tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
+from tools.file_io.make_nd_clean_dirs import make_dirs
 from tools.log.log_util import addlog, log
 
 
@@ -70,7 +65,7 @@ class BackTester:
         self.df = df.dropna()
 
         # 4. initialize strategy
-        from egs_local_strategies.rules.double_ma.double_ma import DoubleMa
+        from quant_brain.rules.timing_ctrl.double_ma import DoubleMa
         strategy_config = self.configs['order_cost']
         strategy_config['capital'] = self.test_conditions['capital']
         strategy_config['stock_id'] = self.data_condition['stock_id']

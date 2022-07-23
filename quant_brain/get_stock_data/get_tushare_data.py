@@ -39,7 +39,7 @@ import tushare as ts
 # replace below with your token and comment my import
 # tushare_token = 'xxxx'
 from data.private.tushare_token import tushare_token
-from tools.quant_trade.get_stock_data.api_stock_data import StockDataApi
+from quant_brain.get_stock_data.api_stock_data import StockDataApi
 from tools.date_time.date_format_check import validate
 
 
