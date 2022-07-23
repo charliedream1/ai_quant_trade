@@ -46,6 +46,7 @@ from tools.date_time.date_format_check import validate
 class TuShareData(StockDataApi, ABC):
 
     def get_df_data(self,
+                    benchmark: str,
                     stock_id: str,
                     start_time: datetime.date,
                     end_time: datetime.date,
@@ -54,6 +55,7 @@ class TuShareData(StockDataApi, ABC):
                     csv_dir: str = ''
                     ) -> pd.DataFrame:
         """
+        :param benchmark: benchmark code for market index
         :param stock_id: stock id for query data
         :param start_time: query start time
         :param end_time: query end time
@@ -62,6 +64,7 @@ class TuShareData(StockDataApi, ABC):
         :param csv_dir: csv dir to save query data
         :return: query data with dataframe type
         """
+
         # check time format is YYYYMMDD
         validate(start_time)
         validate(end_time)
@@ -73,11 +76,35 @@ class TuShareData(StockDataApi, ABC):
         # output path
         file_name = str(start_time) + '_' + str(end_time) + '_' + stock_id + '.csv'
         out_csv_file = os.path.join(csv_dir, file_name)
+        df = self.query_data(stock_id,
+                             start_time,
+                             end_time,
+                             time_freq,
+                             skip_download,
+                             out_csv_file)
+        return df
 
+    @staticmethod
+    def query_data(stock_id: str,
+                   start_time: str,
+                   end_time: str,
+                   time_freq: str = 'daily',
+                   skip_download: bool = True,
+                   csv_dir: str = ''
+                   ) -> pd.DataFrame:
+        """
+        :param stock_id: stock id for query data
+        :param start_time: query start time
+        :param end_time: query end time
+        :param time_freq: frequency of data, e.g. daily or minutes
+        :param skip_download: if csv exist, it will skip download
+        :param csv_dir: csv dir to save query data
+        :return: query data with dataframe type
+        """
         # loading data
-        if os.path.exists(out_csv_file) and skip_download:
+        if os.path.exists(csv_dir) and skip_download:
             # load file if exist
-            df = pd.read_csv(out_csv_file, index_col=0)
+            df = pd.read_csv(csv_dir, index_col=0)
         else:
             assert start_time < end_time
 
@@ -88,5 +115,5 @@ class TuShareData(StockDataApi, ABC):
             # get stock data
             df = ts_pro.query(time_freq, ts_code=stock_id,
                               start_date=start_time, end_date=end_time)
-            df.to_csv(out_csv_file)
+            df.to_csv(csv_dir)
         return df

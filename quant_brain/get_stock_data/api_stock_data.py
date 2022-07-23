@@ -29,12 +29,24 @@ class StockDataApi(ABC):
     # get dataframe type data
     @abstractmethod
     def get_df_data(self,
+                    benchmark: str,
                     stock_id: str,
                     start_time: str,
                     end_time: str,
-                    csv_dir: str,
-                    skip_download: bool = True
+                    time_freq: str = 'daily',
+                    skip_download: bool = True,
+                    csv_dir: str = ''
                     ) -> pd.DataFrame:
+        """
+        :param benchmark: benchmark code for market index
+        :param stock_id: stock id for query data
+        :param start_time: query start time
+        :param end_time: query end time
+        :param time_freq: frequency of data, e.g. daily or minutes
+        :param skip_download: if csv exist, it will skip download
+        :param csv_dir: csv dir to save query data
+        :return: query data with dataframe type
+        """
         pass
 
     # @abstractmethod

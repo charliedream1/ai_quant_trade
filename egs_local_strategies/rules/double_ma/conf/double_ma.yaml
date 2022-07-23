@@ -1,11 +1,15 @@
 # data engine and time range
 data_source: tushare  # todo: add more options
 data_condition:
-  stock_id: '000001.SZ'
+  # benchmark to get market index,
+  #  000001.XSHG: Shanghai securities composite index
+  #  000300.XSHG: Shanghai and Shenzhen 300 index
+  benchmark: '000001.XSHG'
+  stock_id: '000001.SZ' # todo: consider to read from csv
+  skip_download: True  # if already downloaded to local, skip it
   start_time: 2018-01-01
   end_time: 2019-12-30
   time_freq: daily  # todo: add more options
-  skip_download: True  # if already downloaded to local, skip it
 
 test_condition:
   # basic options
