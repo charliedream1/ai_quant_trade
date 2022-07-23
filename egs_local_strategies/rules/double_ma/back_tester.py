@@ -101,8 +101,14 @@ class BackTester:
                            self.args.exp_dir)
 
         # make plots
-        plot_trades_on_capital(self.strategy.capital_list, self.strategy.df_trade, self.args.exp_dir)
-        plot_trades_on_k_line(self.df.iloc[1:, :], self.strategy.df_trade, self.args.exp_dir)
+        save_path = os.path.join(self.args.exp_dir, 'plot_trades_on_capital.jpg')
+        plot_trades_on_capital(self.strategy.capital_list,
+                               self.strategy.df_trade,
+                               save_path)
+        save_path = os.path.join(self.args.exp_dir, 'plot_trades_on_k_line.jpg')
+        plot_trades_on_k_line(self.df.iloc[1:, :],
+                              self.strategy.df_trade,
+                              save_path)
         show_plt()
 
     @addlog(name='offline_trade_simulation_ctrl')

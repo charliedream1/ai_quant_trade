@@ -136,7 +136,7 @@ def plot_trades_on_k_line(df_stock: pd.DataFrame(),
     ax1.grid(True, axis='both')  # enable grids
     ax2.grid(True, axis='both')  # enable grids
     ax1.set_title('K Line')
-    ax1.set_title('Volume Changing')
+    ax2.set_title('Volume Changing')
 
     # plt.grid(True, axis='both')  # enable grids
     plt.tight_layout()
