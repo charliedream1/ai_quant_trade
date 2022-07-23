@@ -70,7 +70,7 @@ class BackTester:
         self.df = df.dropna()
 
         # 4. initialize strategy
-        from egs_strategies.rules.double_ma.double_ma import DoubleMa
+        from egs_local_strategies.rules.double_ma.double_ma import DoubleMa
         strategy_config = self.configs['order_cost']
         strategy_config['capital'] = self.test_conditions['capital']
         strategy_config['stock_id'] = self.data_condition['stock_id']
@@ -95,7 +95,12 @@ class BackTester:
 
         # calculate risk indicator
         log.info('*** Total Trading Times: %d' % self.strategy.trade_cnt)
-        cal_risk_indicator(self.strategy.capital_list, self.args.exp_dir)
+        cal_risk_indicator(self.test_conditions['capital'],
+                           self.strategy.capital_list,
+                           self.strategy.df_trade,
+                           self.args.exp_dir)
+
+        # make plots
         plot_trades_on_capital(self.strategy.capital_list, self.strategy.df_trade, self.args.exp_dir)
         plot_trades_on_k_line(self.df.iloc[1:, :], self.strategy.df_trade, self.args.exp_dir)
         show_plt()
