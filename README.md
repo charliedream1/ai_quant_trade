@@ -23,7 +23,7 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 
 * docs: 常见炒股知识及策略
 * egs_data: 数据获取及存储，包括股票信息和消息信息，及数据库使用等
-* egs_mdl: 包含机器学习、深度学习、强化学习和图神经网络等的自动炒股模型，
+* egs_local_strategies: 包含机器学习、深度学习、强化学习和图神经网络等的自动炒股模型，
     利用NLP进行消息面分析等，主要用于本地模拟、分析及实盘
 * egs_online_platform：主要包含 [**聚宽平台**](https://www.joinquant.com/) 的
     使用样例，通过该平台可以方便的进行回测、模拟盘及实盘交易 (后续也将加入
@@ -33,14 +33,21 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
     markdown，python, c++,机器学习数学基础，
     leetcode(c++, python)，机器学习、
     深度学习、强化学习、图神经网络，语音识别、NLP和图像识别等基础知识
-* quant_net: 包含机器学习、深度学习、强化学习和图神经网络等的自动炒股模型
+* quant_brain: 包含机器学习、深度学习、强化学习和图神经网络等的自动炒股模型
     的核心算法库
 * runtime：包含C++代码，用于模型的部署和实际使用，提供流式实时股票趋势预测
     等服务
 * tools: 辅助工具等
 
-## 1. [**聚宽平台**](https://www.joinquant.com/) 样例性能
-对应代码请查看:egs_online_platform/聚宽_JoinQuant  
+## 1. [**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
+可在本地可构建一套独立的量化交易系统，对应示例请查看: egs_local_strategies   
+
+策略列表
+- 双均线策略 
+
+## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
+- 对应代码请查看:egs_online_platform/聚宽_JoinQuant  
+- 该部分代码仅能在 [**聚宽平台**](https://www.joinquant.com/) 运行
 
 聚宽平台是为量化爱好者（宽客）量身打造的云平台，提供免费股票数据获取、精准的回测功能、
 高速实盘交易接口、易用的API文档、由易入难的策略库，便于快速实现和验证策略。(<font color=red>
