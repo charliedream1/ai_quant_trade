@@ -129,6 +129,7 @@ class DoubleMa:
             df_info['time_index'] = time_index
             df_info['trade_type'] = trade_type
             df_info['capital'] = capital
+            df_info['pos'] = self.pos
             self.df_trade = self.df_trade.append(df_info, ignore_index=True)
         pass
 
