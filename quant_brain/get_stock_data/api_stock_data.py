@@ -18,7 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pandas as pd
 from abc import ABC, abstractmethod
 
 
@@ -36,7 +35,7 @@ class StockDataApi(ABC):
                     time_freq: str = 'daily',
                     skip_download: bool = True,
                     csv_dir: str = ''
-                    ) -> pd.DataFrame:
+                    ) -> dict:
         """
         :param benchmark: benchmark code for market index
         :param stock_id: stock id for query data
