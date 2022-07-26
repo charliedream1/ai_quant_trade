@@ -4,6 +4,7 @@ data_condition:
   # benchmark to get market index,
   #  000001.XSHG: Shanghai securities composite index
   #  000300.XSHG: Shanghai and Shenzhen 300 index
+  # for tushare, without payment, benchmark data not available
   benchmark: '000001.XSHG'
   stock_id: '000001.SZ' # todo: consider to read from csv
   skip_download: True  # if already downloaded to local, skip it
@@ -12,9 +13,12 @@ data_condition:
   time_freq: daily  # todo: add more options
 
 test_condition:
+  # Rf is risk-free interest rate, can be easily thought as
+  #   Bank Deposit Rate, usually set as 0.04
+  base_rate: 0.04
   # basic options
   capital: 100000  # total money available for trading
-#  hold_stock_num: 3  # max hold positions for stock
+  # hold_stock_num: 3  # max hold positions for stock
   ma_short: 10
   ma_long: 20
 

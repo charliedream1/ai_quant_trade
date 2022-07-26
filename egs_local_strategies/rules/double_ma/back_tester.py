@@ -23,6 +23,7 @@ import os
 
 import yaml
 
+from quant_brain.rules.timing_ctrl.double_ma import DoubleMa
 from quant_brain.get_stock_data.get_tushare_data import TuShareData
 from quant_brain.back_test.risk_indicator import cal_risk_indicator
 from tools.plots.trades_on_k_line import plot_trades_on_capital, plot_trades_on_k_line, show_plt
@@ -49,7 +50,10 @@ class BackTester:
 
         # 2. get stock data
         db = TuShareData()
-        df = db.get_df_data(**self.data_condition)
+        df_dict = db.get_df_data(**self.data_condition)
+        df = df_dict[self.data_condition['stock_id']]
+        self.df_benchmark = df_dict[self.data_condition['benchmark']]
+
         # reverse df, make start from history to current
         df = df.reindex(index=df.index[::-1])
         df = df.reset_index(drop=True)  # reset index
@@ -65,7 +69,6 @@ class BackTester:
         self.df = df.dropna()
 
         # 4. initialize strategy
-        from quant_brain.rules.timing_ctrl.double_ma import DoubleMa
         strategy_config = self.configs['order_cost']
         strategy_config['capital'] = self.test_conditions['capital']
         strategy_config['stock_id'] = self.data_condition['stock_id']
@@ -91,8 +94,10 @@ class BackTester:
         # calculate risk indicator
         log.info('*** Total Trading Times: %d' % self.strategy.trade_cnt)
         cal_risk_indicator(self.test_conditions['capital'],
+                           self.test_conditions['base_rate'],
                            self.strategy.capital_list,
                            self.strategy.df_trade,
+                           self.df_benchmark,
                            self.args.exp_dir)
 
         # make plots
