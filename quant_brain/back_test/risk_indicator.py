@@ -37,7 +37,7 @@ def cal_risk_indicator(capital: float,
     :param base_rise: e.g. Bank Deposit Rate, risk-free interest rate
     :param capital_list: capital changing list during trading period
     :param df_trade: detailed trading info dataframe
-    :param df_index: benchmark of
+    :param df_index: benchmark of market index
     :param metrics_save_path: path to save risk indicator
     :return:
     """

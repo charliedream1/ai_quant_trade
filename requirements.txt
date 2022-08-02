@@ -10,3 +10,4 @@ ffn~=0.3.6
 yaml~=0.2.5
 pyyaml~=5.4.1
 mplfinance~=0.12.9b1
+typeguard~=2.13.0

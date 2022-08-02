@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Author   : liyi (liyi_best@foxmail.com)
+# @Author   : Yi Li (liyi_best@foxmail.com)
 # @Time     : 2022/7/8 22:19
 # @File     : cal_fee.py
 # @Project  : ai_quant_trade
@@ -19,17 +19,28 @@
 # limitations under the License.
 
 from random import choice
+from typeguard import check_argument_types
+import pandas as pd
+
+from tools.log.log_util import addlog, log
 
 
-def calculate_fee(price: float, pos_num: int,
-                  order_cost: dict, trade_type: str) -> float:
+@addlog(name='calculate_fee')
+def calculate_fee(price_dict: pd.Series,
+                  pos_num: int,
+                  order_cost: dict,
+                  trade_type: str) -> float:
     """
-    :param price: price of stock during the trading time
+    :param price_dict: price of stock during the trading time
     :param pos_num: stock hold number
     :param order_cost: dict of every type of cost
     :param trade_type: buy or sell
     :return: trading fee
     """
+    assert check_argument_types()
+
+    price = price_dict['close']
+
     if trade_type == 'buy':
         com_fee = order_cost['open_commission'] * pos_num
         if com_fee < order_cost['min_commission']:
@@ -42,14 +53,30 @@ def calculate_fee(price: float, pos_num: int,
         if com_fee < order_cost['min_commission']:
             com_fee = order_cost['min_commission']
 
-    # fixme: according to book and internet,
+    # according to book and internet,
     #  buy slippage fee = price * (slippage rate)
     #  sell slippage fee = price * (-slippage rate)
     #  however, I think the sign of pos and neg could be random
-    # options = [-1, 1]
-    # choice_sign = choice(options)
-    # slippage_fee = choice_sign * order_cost['slippage_fee'] * price * pos_num
-    slippage_fee = 0.0
+    if order_cost['slippage_fee'] != 0.0:
+        if order_cost['slippage_type'] == 'random':
+            options = [-1, 1]
+            choice_sign = choice(options)
+            slippage_fee = choice_sign * order_cost['slippage_fee'] * price
+        else:
+            if trade_type == 'buy':
+                slippage_fee = order_cost['slippage_fee'] * price
+            else:
+                slippage_fee = -1 * order_cost['slippage_fee'] * price
+
+        # check range limitation
+        if (slippage_fee + price) < price_dict['low']:
+            slippage_fee = price_dict['low']
+        elif (slippage_fee + price) > price_dict['high']:
+            slippage_fee = price_dict['high']
+
+        slippage_fee *= pos_num
+    else:
+        slippage_fee = 0.0
 
     total_fee = slippage_fee + com_fee + tax_fee
     return total_fee

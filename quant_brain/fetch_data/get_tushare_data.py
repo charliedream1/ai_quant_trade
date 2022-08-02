@@ -40,7 +40,7 @@ import tushare as ts
 # replace below with your token and comment my import
 # tushare_token = 'xxxx'
 from data.private.tushare_token import tushare_token
-from quant_brain.get_stock_data.api_stock_data import StockDataApi
+from quant_brain.fetch_data.api_stock_data import StockDataApi
 from tools.date_time.date_format_check import validate
 from tools.log.log_util import addlog, log
 
@@ -56,7 +56,7 @@ class TuShareData(StockDataApi, ABC):
     @addlog(name='Acquire All data from Tushare')
     def get_df_data(self,
                     benchmark: str,
-                    stock_id: str,
+                    stock_lst: list,
                     start_time: datetime.date,
                     end_time: datetime.date,
                     time_freq: str = 'daily',
@@ -65,7 +65,7 @@ class TuShareData(StockDataApi, ABC):
                     ) -> dict:
         """
         :param benchmark: benchmark code for market index
-        :param stock_id: stock id for query data
+        :param stock_lst: stock id for query data
         :param start_time: query start time
         :param end_time: query end time
         :param time_freq: frequency of data, e.g. daily or minutes
@@ -84,10 +84,10 @@ class TuShareData(StockDataApi, ABC):
         # get data
         data_dict = {}
 
-        # fixme: without pay, index data can't be acquired
+        # fixme: without purchase VIP, index data can't be acquired
         # get benchmark index dataframe
         log.info('get benchmark index data')
-        file_name = str(start_time) + '_' + str(end_time) + '_' + benchmark + '.csv'
+        file_name = benchmark + '_' + str(start_time) + '_' + str(end_time) + '.csv'
         out_csv_file = os.path.join(csv_dir, file_name)
         df = self.query_data('index_daily', benchmark,
                              start_time, end_time, time_freq,
@@ -95,13 +95,14 @@ class TuShareData(StockDataApi, ABC):
         data_dict[benchmark] = df
 
         # get stock data dataframe
-        log.info('get stock data dataframe')
-        file_name = str(start_time) + '_' + str(end_time) + '_' + stock_id + '.csv'
-        out_csv_file = os.path.join(csv_dir, file_name)
-        df = self.query_data('fund_daily', stock_id,
-                             start_time, end_time, time_freq,
-                             skip_download, out_csv_file)
-        data_dict[stock_id] = df
+        for code in stock_lst:
+            log.info('get stock data %s' % code)
+            file_name = code + '_' + str(start_time) + '_' + str(end_time) + '.csv'
+            out_csv_file = os.path.join(csv_dir, file_name)
+            df = self.query_data('fund_daily', code,
+                                 start_time, end_time, time_freq,
+                                 skip_download, out_csv_file)
+            data_dict[code] = df
 
         return data_dict
 
@@ -125,21 +126,33 @@ class TuShareData(StockDataApi, ABC):
         :param csv_dir: csv dir to save query data
         :return: query data with dataframe type
         """
+        assert code_type in ['fund_daily', 'index_daily']
+
         # loading data
         if os.path.exists(csv_dir) and skip_download:
             # load file if exist
             df = pd.read_csv(csv_dir, index_col=0)
         else:
             assert start_time < end_time
+            df = pd.DataFrame()
 
             try:
-                # get stock data
-                df = self.ts_pro.query(code_type, ts_code=code,
-                                       start_date=start_time, end_date=end_time)
-                df.to_csv(csv_dir)
+                if code_type == 'fund_daily':
+                    # get stock data
+                    df = self.ts_pro.query(time_freq, ts_code=code,
+                                           start_date=start_time, end_date=end_time)
+                elif code_type == 'index_daily':
+                    # get index data
+                    df = self.ts_pro.index_daily(ts_code=code,
+                                                 start_date=start_time, end_date=end_time)
             except Exception as e:
-                df = pd.DataFrame()
-                log.error('Caught exception in Tushare Data Acquisition')
+                log.error('Caught exception in Tushare Data Acquisition %s' % e)
                 traceback.print_exc()
+
+        if len(df):
+            # reverse df, make start from history to current
+            df = df.reindex(index=df.index[::-1])
+            df = df.reset_index(drop=True)  # reset index
+            df.to_csv(csv_dir)
 
         return df

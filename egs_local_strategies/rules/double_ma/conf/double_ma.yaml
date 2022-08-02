@@ -1,16 +1,19 @@
 # data engine and time range
 data_source: tushare  # todo: add more options
 data_condition:
+  skip_download: True  # if already downloaded to local, skip it
   # benchmark to get market index,
   #  000001.XSHG: Shanghai securities composite index
   #  000300.XSHG: Shanghai and Shenzhen 300 index
   # for tushare, without payment, benchmark data not available
   benchmark: '000001.XSHG'
-  stock_id: '000001.SZ' # todo: consider to read from csv
-  skip_download: True  # if already downloaded to local, skip it
-  start_time: 2018-01-01
+  # todo: consider to read from csv
+  stock_lst: ['000001.SZ', '600000.SH']
+  start_time: 2018-01-01  # todo: move date backward the length of ma_long
   end_time: 2019-12-30
   time_freq: daily  # todo: add more options
+  # todo: split train, test
+  # todo: trade price, close or mean
 
 test_condition:
   # Rf is risk-free interest rate, can be easily thought as
@@ -28,3 +31,8 @@ order_cost:
   close_commission: 0.0003  # selling service fee
   min_commission: 5  # minimum service fee for each trade
   slippage_fee: 0.00246  # fee difference between value and actual order
+  # random: random pos or neg value, general: buy pos, sell neg
+  slippage_type: random
+  # calculate purchase number, 1 buy = 100 shares
+  # minimum subscribe for 100 shares, multiple 100 is to 1 buy
+  trade_lim: 100
