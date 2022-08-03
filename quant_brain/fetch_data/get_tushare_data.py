@@ -89,9 +89,12 @@ class TuShareData(StockDataApi, ABC):
         log.info('get benchmark index data')
         file_name = benchmark + '_' + str(start_time) + '_' + str(end_time) + '.csv'
         out_csv_file = os.path.join(csv_dir, file_name)
-        df = self.query_data('index_daily', benchmark,
-                             start_time, end_time, time_freq,
-                             skip_download, out_csv_file)
+        if benchmark != 'None':
+            df = self.query_data('index_daily', benchmark,
+                                 start_time, end_time, time_freq,
+                                 skip_download, out_csv_file)
+        else:
+            df = pd.DataFrame()
         data_dict[benchmark] = df
 
         # get stock data dataframe
@@ -149,10 +152,10 @@ class TuShareData(StockDataApi, ABC):
                 log.error('Caught exception in Tushare Data Acquisition %s' % e)
                 traceback.print_exc()
 
-        if len(df):
-            # reverse df, make start from history to current
-            df = df.reindex(index=df.index[::-1])
-            df = df.reset_index(drop=True)  # reset index
-            df.to_csv(csv_dir)
+            if len(df):
+                # reverse df, make start from history to current
+                df = df.reindex(index=df.index[::-1])
+                df = df.reset_index(drop=True)  # reset index
+                df.to_csv(csv_dir)
 
         return df

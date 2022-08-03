@@ -42,6 +42,8 @@ def plot_trades_on_capital(capital_list: list,
     :param save_plt_path: save path for the plots
     :return: None
     """
+    # todo: add draw of base capital, base return
+
     # 1. plot trades on capital line
     # create title
     plt.title('Trading Details with Capital Changing')
@@ -73,7 +75,8 @@ def plot_trades_on_capital(capital_list: list,
     plt.grid(True, axis='both')  # enable grids
 
     if len(save_plt_path):
-        plt.savefig(save_plt_path)
+        # save as a vector graph to prevent of blur effect
+        plt.savefig(save_plt_path, dpi=300)
 
 
 @addlog(name='plot_trades_on_k_line')
@@ -148,7 +151,8 @@ def plot_trades_on_k_line(df_stock: pd.DataFrame(),
     plt.tight_layout()
 
     if len(save_plt_path):
-        fig.savefig(save_plt_path)
+        # save as a vector graph to prevent of blur effect
+        fig.savefig(save_plt_path, dpi=300)
 
 
 def show_plt():

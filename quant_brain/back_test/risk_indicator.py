@@ -50,7 +50,7 @@ def cal_risk_indicator(capital: float,
     # calculate total rate of return
     total_returns = ffn.calc_total_return(capital_series)
     indicator_dict['total_returns'] = total_returns
-    log.info('Total Return Rate: %.2f' % total_returns)
+    log.info('Total Return Rate: %.5f' % total_returns)
 
     # 2. Total Annal Return
     # ((1+P)^(250/n) - 1) * 100%, P is capital returns
@@ -60,7 +60,7 @@ def cal_risk_indicator(capital: float,
     annal_returns = ffn.annualize(total_returns,
                                   len(capital_list), one_year=250)
     indicator_dict['annal_returns'] = annal_returns
-    log.info('Annual Return Rate: %.2f' % annal_returns)
+    log.info('Annual Return Rate: %.5f' % annal_returns)
 
     # 3. Beta
     # Use to evaluate correlation between returns of strategy and benchmark returns
@@ -82,7 +82,7 @@ def cal_risk_indicator(capital: float,
         # Another Solution: np.cov(s1, s2))[0][1]/np.var(s2)
         beta = cov / sigma
         indicator_dict['beta'] = beta
-        log.info('Beta Value: %.2f' % beta)
+        log.info('Beta Value: %.5f' % beta)
 
         df_index.loc[:, 'pct_chg'] /= 100
         df_index.loc[:, 'pct_chg'] += 1
@@ -104,7 +104,7 @@ def cal_risk_indicator(capital: float,
     if len(df_index):
         alpha = rise - (base_rise + beta * (sign_rise - base_rise))
         indicator_dict['alpha'] = alpha
-        log.info('Alpha Value: %.2f' % alpha)
+        log.info('Alpha Value: %.5f' % alpha)
 
     # 5. calculate sharp rate
     # used to evaluate every one risk u take, the non-risk returns
@@ -114,14 +114,14 @@ def cal_risk_indicator(capital: float,
     # Rp: annual return, Rf: no-risk interest rate, Op: changing rate of the strategy
     sharp_ratio = ffn.calc_sharpe(capital_returns)
     indicator_dict['sharp_ratio'] = sharp_ratio
-    log.info('Sharp Rate: %.2f' % sharp_ratio)
+    log.info('Sharp Rate: %.5f' % sharp_ratio)
 
     # 6. calculate max withdraw
     # evaluate max loss of the strategy, the smaller the value the better
     # max_draw_down = (Px-Py)/Px, (Px, PY: max value during a time)
     max_withdraw = ffn.calc_max_drawdown(capital_series)
     indicator_dict['max_withdraw'] = max_withdraw
-    log.info('Max Withdraw: %.2f' % max_withdraw)
+    log.info('Max Withdraw: %.5f' % max_withdraw)
 
     # 7. Sortino Ratio
     # evaluate strategy loss, the larger value the better
@@ -129,7 +129,7 @@ def cal_risk_indicator(capital: float,
     # Rp: annual return, Rf: no-risk interest rate, Od: strategy downward volatility
     sortino_ratio = ffn.calc_sortino_ratio(capital_returns)
     indicator_dict['sortino_ratio'] = sortino_ratio
-    log.info('Sortino Rate: %.2f' % sortino_ratio)
+    log.info('Sortino Rate: %.5f' % sortino_ratio)
 
     # 8. win rate
     # e.g. 8 wins in 10 trades, then win rate is 80%
@@ -148,7 +148,7 @@ def cal_risk_indicator(capital: float,
                 win_cnt += 1
     win_rate = win_cnt / total_trades
     indicator_dict['win_rate'] = win_rate
-    log.info('Win Rate: %.2f' % win_rate)
+    log.info('Win Rate: %.5f' % win_rate)
 
     # 9. profit-loss ratio
     # during a time period of trading, if profit is 12000,
@@ -168,7 +168,7 @@ def cal_risk_indicator(capital: float,
             max_loss = max(max_loss, capital - df_trade['capital'].iloc[i])
     profit_loss_ratio = max_profit / max_loss
     indicator_dict['profit_loss_ratio'] = profit_loss_ratio
-    log.info('Profit-Loss Ratio: %.2f' % profit_loss_ratio)
+    log.info('Profit-Loss Ratio: %.5f' % profit_loss_ratio)
 
     # 10. Max Consecutive Losses (todo)
     max_con_losses, cur_con_losses, pre_loss = 0, 0, 0
@@ -195,7 +195,7 @@ def cal_risk_indicator(capital: float,
         pre_loss = 0
 
     indicator_dict['max_con_losses'] = max_con_losses
-    log.info('Max Consecutive Losses: %.2f' % max_con_losses)
+    log.info('Max Consecutive Losses: %.5f' % max_con_losses)
 
     # === save to the file ===
     # 1. save risk indicator

@@ -79,10 +79,10 @@ def order_value(account: Account,
             order_type = 'buy'
             hold = True
     elif trade_type == 'sell' and hold:
-        pos = account.pos_dict[stock_id]
+        pos = account.pos_dict[stock_id]['pos_num']
 
         # extra fee calculation
-        fee = calculate_fee(price, pos, order_cost, trade_type)
+        fee = calculate_fee(price_dict, pos, order_cost, trade_type)
 
         # calculate capital of closing a position
         funds_chg = pos * price - fee
@@ -92,8 +92,8 @@ def order_value(account: Account,
         order_type = 'sell'
         hold = False
 
-    # update current stock market value even if no trade and hold the stock
-    if hold and not len(order_type):
+    # update current stock market value if hold the stock
+    if hold and not len(trade_type):
         account.pos_dict[stock_id]['price'] = price
 
     # output log
@@ -101,7 +101,7 @@ def order_value(account: Account,
     if len(order_type):
         message = 'stock_id: ' + stock_id + ', ' + trade_type.upper() + \
                   ' with price: ' + str(price) + \
-                  ', account cash ' + str(account.cash)
+                  ', account cash ' + str(round(account.cash, 2))
         log.info(message)
 
     return order_type, pos, message
