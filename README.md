@@ -52,7 +52,7 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 
 <div style="text-align: center;">
 
-![Picture](./img/trades_on_k_line.png)
+![image](./img/trades_on_k_line.png)
 </div>
 
 ## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
