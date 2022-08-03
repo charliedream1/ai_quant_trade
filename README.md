@@ -1,7 +1,3 @@
-<div style="text-align: center;">
-<img alt="Picture" height="50" src="./img/涨.jpeg" width="80"/>
-</div>
-
 # 股票AI操盘手  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
