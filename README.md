@@ -50,10 +50,8 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 策略列表
 - 双均线策略 
 
-<div style="text-align: center;">
-
 ![image](./img/trades_on_k_line.png)
-</div>
+
 
 ## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
 - 对应代码请查看:egs_online_platform/聚宽_JoinQuant  
