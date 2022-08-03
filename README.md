@@ -1,3 +1,7 @@
+<div style="text-align: center;">
+<img alt="Picture" height="50" src="./img/涨.jpeg" width="80"/>
+</div>
+
 # 股票AI操盘手  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
@@ -16,6 +20,11 @@
 - 第一阶段：丰富完善各个功能模块
 - 第二阶段：可以用于部署和实盘使用
 - 第三阶段：封装成一个带界面的软件，对于不会代码的人，也可以方便的获得智能推荐消息
+
+## :fire: 新特性
+本仓库正在从零开始构建，欢迎关注，学习并了解所有的底层和细节，让一切尽在自己的掌握中，才会赢！！！
+
+* 2022.08.03： 本地回测平台初步完善，支持[**双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma)
 
 ## 核心功能
 ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及实盘炒股为一体的
@@ -44,6 +53,11 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 
 策略列表
 - 双均线策略 
+
+<div style="text-align: center;">
+
+![Picture](./img/trades_on_k_line.png)
+</div>
 
 ## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
 - 对应代码请查看:egs_online_platform/聚宽_JoinQuant  
