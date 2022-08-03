@@ -1,10 +1,3 @@
-[comment]: <> (<img height="50" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" title="涨" width="80"/>)
-
-[comment]: <> (<p align="center">)
-
-[comment]: <> (  <img src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" alt="drawing" width="250"/>)
-
-[comment]: <> (</p>)
 # 股票AI操盘手  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
@@ -19,13 +12,13 @@
 <img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，或希望随时关注动态，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
 
 ## 愿景
-希望这是一个实用，可以快速部署，辅助股票实盘交易的工具，而不是一个仅限于学习和研究的平台。
+&emsp;&emsp;希望这是一个实用，可以快速部署，辅助股票实盘交易的工具，而不是一个仅限于学习和研究的平台。
 - 第一阶段：丰富完善各个功能模块
 - 第二阶段：可以用于部署和实盘使用
 - 第三阶段：封装成一个带界面的软件，对于不会代码的人，也可以方便的获得智能推荐消息
 
 ## :fire: 新特性
-本仓库正在从零开始构建，欢迎关注，学习并了解所有的底层和细节，让一切尽在自己的掌握中，才会赢！！！
+&emsp;&emsp;本仓库正在从零开始构建，欢迎关注，学习并了解所有的底层和细节，让一切尽在自己的掌握中，才会赢！！！
 
 * 2022.08.03： 本地回测平台初步完善，支持[**双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma)
 
@@ -52,10 +45,15 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 * tools: 辅助工具等
 
 ## 1. [**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
-可在本地可构建一套独立的量化交易系统，对应示例请查看: egs_local_strategies   
+&emsp;&emsp;可在本地可构建一套独立的量化交易系统，对应示例请查看: egs_local_strategies   
+
+[回测框架](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/back_test)
+* [数据获取(包含TusharePro)](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/fetch_data)
+* [10项风险指标计算](https://github.com/charliedream1/ai_quant_trade/blob/master/quant_brain/back_test/risk_indicator.py)
+* [K线蜡烛图交易点展示](https://github.com/charliedream1/ai_quant_trade/tree/master/tools/plots)
 
 策略列表
-- 双均线策略
+- [双均线策略](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma)
 
 ![trades_on_k_line](./img/trades_on_k_line.png)
 
@@ -63,12 +61,12 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 - 对应代码请查看:egs_online_platform/聚宽_JoinQuant  
 - 该部分代码仅能在 [**聚宽平台**](https://www.joinquant.com/) 运行
 
-聚宽平台是为量化爱好者（宽客）量身打造的云平台，提供免费股票数据获取、精准的回测功能、
+&emsp;&emsp;聚宽平台是为量化爱好者（宽客）量身打造的云平台，提供免费股票数据获取、精准的回测功能、
 高速实盘交易接口、易用的API文档、由易入难的策略库，便于快速实现和验证策略。(<font color=red>
 **注：如下策略仅在所述回测段有效，没有进行详细的调优和全周期验证。另外，没有策略能保证全周期有效的，
 如果实盘使用如下策略，请慎重使用**</font>)
 
-国内其余量化平台，如优矿、米筐、果仁等，如果感兴趣，也可以自行尝试。
+&emsp;&emsp;国内其余量化平台，如优矿、米筐、果仁等，如果感兴趣，也可以自行尝试。
 
 - 传统策略：规则或基础统计方法  
   - [**小市值+多均线量化炒股**](https://www.joinquant.com/view/community/detail/c754d315a391f39f61858dfe3275f45f) 
@@ -87,6 +85,10 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 
 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题。
 
+
+## 常见问题
+
+请查看文档[**常见问题**]()
 
 ## 引用
 
