@@ -61,9 +61,8 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 
 [comment]: <> (<p align="center">)
 
-[comment]: <> (  <img src="https://github.com/charliedream1/ai_quant_trade/tree/master/img/trades_on_k_line.png" alt="drawing" width="250"/>)
+<img src="https://github.com/charliedream1/ai_quant_trade/tree/master/trades_on_k_line.png" alt="drawing" width="250"/>
 
-[comment]: <> (</p>)
 
 
 ## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
