@@ -1,3 +1,5 @@
+<img height="50" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" title="涨" width="80"/>
+
 # 股票AI操盘手  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
@@ -48,9 +50,9 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 可在本地可构建一套独立的量化交易系统，对应示例请查看: egs_local_strategies   
 
 策略列表
-- 双均线策略 
+- 双均线策略
 
-![avatar](./img/trades_on_k_line.png)
+<img alt="avatar" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img" align="middle"/>
 
 
 ## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
