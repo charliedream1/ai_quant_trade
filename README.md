@@ -1,9 +1,10 @@
-<img height="50" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" title="涨" width="80"/>
+[comment]: <> (<img height="50" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" title="涨" width="80"/>)
 
-<p align="center">
-  <img src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" alt="drawing" width="250"/>
-</p>
+[comment]: <> (<p align="center">)
 
+[comment]: <> (  <img src="https://github.com/charliedream1/ai_quant_trade/tree/master/img涨.jpeg" alt="drawing" width="250"/>)
+
+[comment]: <> (</p>)
 # 股票AI操盘手  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
@@ -56,11 +57,13 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 策略列表
 - 双均线策略
 
-<img alt="avatar" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img" align="middle"/>
+[comment]: <> (<img alt="avatar" src="https://github.com/charliedream1/ai_quant_trade/tree/master/img/trades_on_k_line.png" align="middle"/>)
 
-<p align="center">
-  <img src="https://github.com/charliedream1/ai_quant_trade/tree/master/img/trades_on_k_line.png" alt="drawing" width="250"/>
-</p>
+[comment]: <> (<p align="center">)
+
+[comment]: <> (  <img src="https://github.com/charliedream1/ai_quant_trade/tree/master/img/trades_on_k_line.png" alt="drawing" width="250"/>)
+
+[comment]: <> (</p>)
 
 
 ## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
