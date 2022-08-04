@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# @Author   : liyi (liyi_best@foxmail.com)
-# @Time     : 2022/7/9 21:57
+# @Author   : Yi Li (liyi_best@foxmail.com)
+# @Time     : 2022/8/4 23:27
 # @File     : __init__.py.py
 # @Project  : ai_quant_trade
-# Copyright (c) Personal 2022 liyi
+# Copyright (c) Personal 2022 Yi Li
 # Function Description:
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
