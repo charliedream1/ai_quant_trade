@@ -7,7 +7,7 @@
 
 [**文档**](https://github.com/charliedream1/ai_quant_trade/tree/master/docs)
 | [**数据处理**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data)
-| [**聚宽样例**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_%E8%81%9A%E5%AE%BD)
+| [**在线投研平台样例**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform)
 
 <img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，或希望随时关注动态，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
 
@@ -45,37 +45,63 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 * tools: 辅助工具等
 
 ## 1. [**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
-&emsp;&emsp;可在本地可构建一套独立的量化交易系统，对应示例请查看: egs_local_strategies   
+&emsp;&emsp;可在本地可构建一套独立的量化交易系统，对应示例请查看: [egs_local_strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)   
 
 [回测框架](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/back_test)
 * [数据获取(包含TusharePro)](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/fetch_data)
 * [10项风险指标计算](https://github.com/charliedream1/ai_quant_trade/blob/master/quant_brain/back_test/risk_indicator.py)
 * [K线蜡烛图交易点展示](https://github.com/charliedream1/ai_quant_trade/tree/master/tools/plots)
 
-策略列表
+择时策略
 - [双均线策略](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma)
 
 ![trades_on_k_line](./img/trades_on_k_line.png)
 
-## 2. [**聚宽平台**](https://www.joinquant.com/) 样例性能
-- 对应代码请查看:egs_online_platform/聚宽_JoinQuant  
-- 该部分代码仅能在 [**聚宽平台**](https://www.joinquant.com/) 运行
 
-&emsp;&emsp;聚宽平台是为量化爱好者（宽客）量身打造的云平台，提供免费股票数据获取、精准的回测功能、
+## 2. [**知识宝库**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
+
+&emsp;&emsp;这里汇总了各种量化相关的平台、开源资源和知识。这里是一个丰富的知识仓库和导航地图。  
+&emsp;&emsp;这里将汇总包括量化投资，windows, linux, shell, vim, markdown，python, c++,机器学习数学基础， 
+leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经网络，语音识别、NLP和图像识别等基础知识
+
+* [量化交易与投资](https://github.com/charliedream1/ai_quant_trade/tree/master/docs/1_%E9%87%8F%E5%8C%96%E4%BA%A4%E6%98%93%E4%B8%8E%E6%8A%95%E8%B5%84)
+* [python量化工具库](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_tools)
+* [股票数据获取](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data)
+
+
+## 3. [**在线投研平台样例**](https://www.joinquant.com/)
+
+&emsp;&emsp;国内量化平台，如聚宽、优矿、米筐、果仁和BigQuant等，如果感兴趣，也可以自行尝试。
+
+&emsp;&emsp;投研平台是为量化爱好者（宽客）量身打造的云平台，提供免费股票数据获取、精准的回测功能、
 高速实盘交易接口、易用的API文档、由易入难的策略库，便于快速实现和验证策略。(<font color=red>
 **注：如下策略仅在所述回测段有效，没有进行详细的调优和全周期验证。另外，没有策略能保证全周期有效的，
 如果实盘使用如下策略，请慎重使用**</font>)
 
-&emsp;&emsp;国内其余量化平台，如优矿、米筐、果仁等，如果感兴趣，也可以自行尝试。
+### 3.1 [**聚宽平台**](https://www.joinquant.com/)
 
-- 传统策略：规则或基础统计方法  
-  - [**小市值+多均线量化炒股**](https://www.joinquant.com/view/community/detail/c754d315a391f39f61858dfe3275f45f) 
-  2020-03-01 到 2022-03-01, ￥100000, 每天， 年化23.98%，最大回撤46.62%，胜率0.429
-  - [**龙虎榜-看长做短**](https://www.joinquant.com/view/community/detail/0986c3b92578952cc22c52f0a5ea4664) 
-  2022-03-25 到 2022-05-24, ￥100000, 每天， 年化895.86%%，最大回撤26.894%，胜率0.250
-- 机器学习类策略：基于sklearn等工具
-  - [**机器学习-动态因子选择策略**](https://www.joinquant.com/view/community/detail/f2a9d2ec6d4ad18882fa0a364fb9123d)
-  2022-01-01 到 2022-06-20, ￥100000, 每天，年化32.35%，最大回撤32.35%，胜率0.625
+欢迎在聚宽平台关注我：量客攻城狮
+- 对应代码请查看: [egs_online_platform/聚宽_JoinQuant](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform/%E8%81%9A%E5%AE%BD_JoinQuant)  
+- 该部分代码仅能在 [**聚宽平台**](https://www.joinquant.com/) 运行
+
+
+1. 股票量化策略
+
+| 策略    | 收益 | 最大回撤 |   
+|:-------- |:-------:|:-------:|
+| [**机器学习-动态因子选择策略**](https://www.joinquant.com/view/community/detail/f2a9d2ec6d4ad18882fa0a364fb9123d) | 12.3% | 38.93% |
+| [**小市值+多均线量化炒股**](https://www.joinquant.com/view/community/detail/c754d315a391f39f61858dfe3275f45f) | 58.4% | 46.61% |
+| [**龙虎榜-看长做短**](https://www.joinquant.com/view/community/detail/0986c3b92578952cc22c52f0a5ea4664) | 41.82% | 26.89% |
+| [**强势股+趋势线判断+止损止盈**](https://www.joinquant.com/view/community/detail/c0390ceabdc1b3365df343490b7caf28) | 10.09% | 21.449% |
+
+
+2. 股票分析研究
+
+* [手把手教你"机器学习-动态多因子选股"(附保姆级教程) ](https://www.joinquant.com/view/community/detail/4fa769264b0bf6489b36351b43e37012)
+* [龙虎榜数据筛选和过滤](https://www.joinquant.com/view/community/detail/a3a95cc7e53092aaea510d93bab9cb96)
+* [概念板块数据获取和选股](https://www.joinquant.com/view/community/detail/d1bf674ad163654aa263dac859762c90)
+* [详解: 股票数据获取及图形分析(附详细代码)](https://www.joinquant.com/view/community/detail/8fe84d0d25dcf1a6da72e442460cdf36)
+
 
 ## 讨论
 欢迎在 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions) 中发起讨论。
