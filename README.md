@@ -45,7 +45,7 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 * tools: 辅助工具等
 
 ## 1. [**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
-&emsp;&emsp;可在本地可构建一套独立的量化交易系统，对应示例请查看: [egs_local_strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)   
+可在本地可构建一套独立的量化交易系统，对应示例请查看: [egs_local_strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)   
 
 [回测框架](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/back_test)
 * [数据获取(包含TusharePro)](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/fetch_data)
@@ -81,7 +81,8 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 ### 3.1 [**聚宽平台**](https://www.joinquant.com/)
 
 欢迎在聚宽平台关注我：量客攻城狮
-- 对应代码请查看: [egs_online_platform/聚宽_JoinQuant](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform/%E8%81%9A%E5%AE%BD_JoinQuant)  
+- 具体策略详细介绍和源码请单击如下对应策略链接访问查看
+- 聚宽使用介绍请查看: [egs_online_platform/聚宽_JoinQuant](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform/%E8%81%9A%E5%AE%BD_JoinQuant)  
 - 该部分代码仅能在 [**聚宽平台**](https://www.joinquant.com/) 运行
 
 
