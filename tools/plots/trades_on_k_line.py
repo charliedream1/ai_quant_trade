@@ -33,22 +33,27 @@ from tools.log.log_util import addlog, log
 
 
 @addlog(name='plot_trades_on_capital')
-def plot_trades_on_capital(capital_list: list,
+def plot_trades_on_capital(stock_id: str,
+                           capital_list: list,
                            df_trade: pd.DataFrame(),
                            save_plt_path: str):
     """
+    :param stock_id: stock id
     :param capital_list: account capital changing list
     :param df_trade: trading info Dataframe
     :param save_plt_path: save path for the plots
     :return: None
     """
     # todo: add draw of base capital, base return
+    # create figure object
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
 
     # 1. plot trades on capital line
     # create title
-    plt.title('Trading Details with Capital Changing')
+    ax1.set_title(str(stock_id) + 'Trading Details with Capital Changing')
     # make plot of capital changing
-    plt.plot(range(len(capital_list)), capital_list)
+    ax1.plot(range(len(capital_list)), capital_list)
 
     # make annotation of buying and selling
     for i in range(len(df_trade)):
@@ -65,25 +70,31 @@ def plot_trades_on_capital(capital_list: list,
         #  <-> bidirectional arrow
         # -|> triangle arrow
         # <|- reversed triangle arrow
-        plt.annotate(text=df_trade['trade_type'].iloc[i],
+        ax1.annotate(text=df_trade['trade_type'].iloc[i],
                      xy=(df_trade['time_index'].iloc[i],
                          df_trade['capital'].iloc[i]),
                      xytext=(df_trade['time_index'].iloc[i],
                              df_trade['capital'].iloc[i] + offset_val),
                      arrowprops={'arrowstyle': '->'})
 
-    plt.grid(True, axis='both')  # enable grids
+    ax1.grid(True, axis='both')  # enable grids
 
     if len(save_plt_path):
         # save as a vector graph to prevent of blur effect
-        plt.savefig(save_plt_path, dpi=300)
+        # ax1.savefig(save_plt_path, dpi=300)
+        # above gives all of warnings:
+        #   The PostScript backend does not support transparency;
+        #   partially transparent artists will be rendered opaque.
+        fig.savefig(save_plt_path, format="svg", transparent=True)
 
 
 @addlog(name='plot_trades_on_k_line')
-def plot_trades_on_k_line(df_stock: pd.DataFrame(),
+def plot_trades_on_k_line(stock_id: str,
+                          df_stock: pd.DataFrame(),
                           df_trade: pd.DataFrame(),
                           save_plt_path: str):
     """
+    :param stock_id: stock_id
     :param df_stock: stock info dataframe
     :param df_trade: trading info dataframe
     :param save_plt_path: plot saving path
@@ -144,7 +155,7 @@ def plot_trades_on_k_line(df_stock: pd.DataFrame(),
     # set properties of each figure
     ax1.grid(True, axis='both')  # enable grids
     ax2.grid(True, axis='both')  # enable grids
-    ax1.set_title('K Line')
+    ax1.set_title(str(stock_id) + 'K Line')
     ax2.set_title('Volume Changing')
 
     # plt.grid(True, axis='both')  # enable grids
@@ -152,7 +163,11 @@ def plot_trades_on_k_line(df_stock: pd.DataFrame(),
 
     if len(save_plt_path):
         # save as a vector graph to prevent of blur effect
-        fig.savefig(save_plt_path, dpi=300)
+        # fig.savefig(save_plt_path, dpi=300)
+        # above gives all of warnings:
+        #   The PostScript backend does not support transparency;
+        #   partially transparent artists will be rendered opaque.
+        fig.savefig(save_plt_path, format="svg", transparent=True)
 
 
 def show_plt():

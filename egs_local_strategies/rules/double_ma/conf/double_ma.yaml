@@ -8,7 +8,7 @@ data_condition:
   # for tushare, without payment, benchmark data not available
   benchmark: 'None' # '000001.XSHG'
   # todo: consider to read from csv
-  stock_lst: ['000001.SZ']  # '600000.SH'
+  stock_lst: ['000001.SZ', '600000.SH']
   start_time: 2018-01-01  # todo: move date backward the length of ma_long
   end_time: 2019-12-30
   time_freq: daily  # todo: add more options

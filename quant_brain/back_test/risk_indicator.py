@@ -29,9 +29,9 @@ from tools.log.log_util import addlog, log
 def cal_risk_indicator(capital: float,
                        base_rise: float,
                        capital_list: list,
-                       df_trade: pd.DataFrame(),
-                       df_index: pd.DataFrame(),
-                       metrics_save_path: str):
+                       df_trade: pd.DataFrame,
+                       df_index: pd.DataFrame,
+                       metrics_save_path: str) -> pd.DataFrame:
     """
     :param capital: initial money you have for stock trading
     :param base_rise: e.g. Bank Deposit Rate, risk-free interest rate
@@ -39,7 +39,7 @@ def cal_risk_indicator(capital: float,
     :param df_trade: detailed trading info dataframe
     :param df_index: benchmark of market index
     :param metrics_save_path: path to save risk indicator
-    :return:
+    :return: dataframe with all calculated risk indicators
     """
     indicator_dict = {}
     capital_series = pd.Series(capital_list)
@@ -139,6 +139,8 @@ def cal_risk_indicator(capital: float,
     # type2: Capital Now > Original Capital, count 1 win
     # type3: type 1 and 2 all satisfied
     # todo: need to confirm it's correct (I implemented type3)
+    # fixme: if u have multiple trades, it had to distinguish which trade wins or lose,
+    #  it might result wrong calculation
     total_trades = len(df_trade)  # todo: whether to remove 1 ?
     win_cnt = 0
     # neglect 1st trade, due to no win or loss for 1st buy
@@ -207,3 +209,5 @@ def cal_risk_indicator(capital: float,
     # 2. save trading info
     save_path = os.path.join(metrics_save_path, 'trading_info.csv')
     df_trade.to_csv(save_path)
+
+    return df_result

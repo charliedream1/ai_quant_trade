@@ -97,7 +97,7 @@ class BackTester:
 
             df_stock_dict[key] = df
 
-        # (todo: maybe u need consider of handle unequal data)
+        # (todo: maybe u need consider of handle unequal data due to remove nan value)
         # check data len equal
         self._data_len = len(list(df_stock_dict.values())[0])
         log.info('Data Len: %d' % self._data_len)
@@ -109,6 +109,34 @@ class BackTester:
 
         return df_stock_dict
 
+    @addlog(name='record_log')
+    def record_log(self,
+                   stock_id,
+                   index,
+                   order_type,
+                   pos,
+                   trade_message
+                   ):
+        self._account.daily_trading_lst. \
+            append(str(self._df_dict[stock_id].iloc[index]['trade_date']) + '\n')
+
+        df_info = copy.deepcopy(self._df_dict[stock_id].iloc[index])
+        df_info['time_index'] = index
+        df_info['trade_type'] = order_type
+        df_info['pos'] = pos
+        df_info['capital'] = self._account.total_capital
+
+        if stock_id not in self._account.trade_dict.keys():
+            self._account.trade_dict[stock_id] = pd.DataFrame()
+
+        self._account.trade_dict[stock_id] = \
+            self._account.trade_dict[stock_id].append(df_info, ignore_index=True)
+
+        self._account.daily_trading_lst.append(trade_message + '\n')
+
+        message = '\n' + '===' * 30 + '\n'
+        self._account.daily_trading_lst.append(message)
+
     @addlog(name='single trading process')
     def trading_ctrl(self, index):
         trade_sign = False
@@ -116,15 +144,47 @@ class BackTester:
 
         # todo: potential bug for multiple stock trading
         #  different order of buy and sell, may raise issue of no cash
-        for stock_id in self._df_dict.keys():
-            # get available cash to buy stock
-            order_funds = equal_allocation(self._account, self.stock_num)
+        buy_lst, sell_lst = [], []
 
+        # 1. generate buy and sell lst
+        for stock_id in self._df_dict.keys():
             # timing control, -1 to avoid future
             ma_short_val = self._df_dict[stock_id]['ma_short'].iloc[index - 1]
             ma_long_val = self._df_dict[stock_id]['ma_long'].iloc[index - 1]
             hold = True if stock_id in self._account.pos_dict.keys() else False
             trade_type = double_ma_timing(ma_short_val, ma_long_val, hold)
+
+            if trade_type == 'buy':
+                buy_lst.append(stock_id)
+            elif trade_type == 'sell':
+                sell_lst.append(stock_id)
+
+        # 2. process sell lst first in case of no cash to buy
+        for stock_id in sell_lst:
+            trade_type = 'sell'
+            order_funds = 0
+            # make order
+            order_type, pos, trade_message = order_value(self._account,
+                                                         stock_id,
+                                                         self._df_dict[stock_id].iloc[index],
+                                                         trade_type,
+                                                         order_funds,
+                                                         self.order_cost)
+
+            # log trading info into account for historical check
+            if len(order_type):
+                trade_sign = True
+                self.record_log(stock_id,
+                                index,
+                                order_type,
+                                pos,
+                                trade_message)
+
+        # 3. process buy lst
+        for stock_id in buy_lst:
+            # get available cash to buy stock
+            order_funds = equal_allocation(self._account, self.stock_num)
+            trade_type = 'buy'
 
             # make order
             order_type, pos, trade_message = order_value(self._account,
@@ -137,26 +197,13 @@ class BackTester:
             # log trading info into account for historical check
             if len(order_type):
                 trade_sign = True
-                self._account.daily_trading_lst. \
-                    append(str(self._df_dict[stock_id].iloc[index]['trade_date']) + '\n')
+                self.record_log(stock_id,
+                                index,
+                                order_type,
+                                pos,
+                                trade_message)
 
-                df_info = copy.deepcopy(self._df_dict[stock_id].iloc[index])
-                df_info['time_index'] = index
-                df_info['trade_type'] = order_type
-                df_info['pos'] = pos
-                df_info['capital'] = self._account.total_capital
-
-                if stock_id not in self._account.trade_dict.keys():
-                    self._account.trade_dict[stock_id] = pd.DataFrame()
-
-                self._account.trade_dict[stock_id] = \
-                    self._account.trade_dict[stock_id].append(df_info, ignore_index=True)
-
-                self._account.daily_trading_lst.append(trade_message + '\n')
-
-                message = '\n' + '===' * 30 + '\n'
-                self._account.daily_trading_lst.append(message)
-
+        # 4. final trade record
         # check total capital in account
         total_capital = self._account.get_total_capital()
         self._account.funds_chg_lst.append(total_capital)
@@ -192,24 +239,27 @@ class BackTester:
         log.info('*** Total Trading Times: %d' % self._trade_cnt)
 
         # calculate risk indicator
-        cal_risk_indicator(self.test_conditions['capital'],
-                           self.test_conditions['base_rate'],
-                           self._account.funds_chg_lst,
-                           self._account.pd_gather_trades,
-                           self._df_benchmark,
-                           self._args.exp_dir)
+        df_result = cal_risk_indicator(self.test_conditions['capital'],
+                                       self.test_conditions['base_rate'],
+                                       self._account.funds_chg_lst,
+                                       self._account.pd_gather_trades,
+                                       self._df_benchmark,
+                                       self._args.exp_dir)
+        print(df_result)
 
         # make plots
         for stock_id in self._account.trade_dict.keys():
             # 1. plot sell/buy on total capital
-            save_path = os.path.join(self._args.exp_dir, str(stock_id) + 'plot_trades_on_capital.eps')
-            plot_trades_on_capital(self._account.funds_chg_lst,
+            save_path = os.path.join(self._args.exp_dir, str(stock_id) + '_plot_trades_on_capital.svg')
+            plot_trades_on_capital(stock_id,
+                                   self._account.funds_chg_lst,
                                    self._account.trade_dict[stock_id],
                                    save_path)
 
             # 2. plot sell/buy on K line
-            save_path = os.path.join(self._args.exp_dir, str(stock_id) + 'plot_trades_on_k_line.eps')
-            plot_trades_on_k_line(self._df_dict[stock_id].iloc[1:, :],
+            save_path = os.path.join(self._args.exp_dir, str(stock_id) + '_plot_trades_on_k_line.svg')
+            plot_trades_on_k_line(stock_id,
+                                  self._df_dict[stock_id].iloc[1:, :],
                                   self._account.trade_dict[stock_id],
                                   save_path)
         show_plt()
