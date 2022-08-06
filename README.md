@@ -57,6 +57,12 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 
 ![trades_on_k_line](./img/trades_on_k_line.png)
 
+如何使用：
+1. 安装所需库
+```shell
+pip install requirements.txt
+```
+2. 查看策略文件夹下文档并运行对应实例即可
 
 ## 2. [**知识宝库**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
 
