@@ -247,6 +247,11 @@ class BackTester:
                                        self._args.exp_dir)
         print(df_result)
 
+        total_capital = self._account.get_total_capital()
+        print('Account Capital: ', total_capital)
+        print('Account Net Profit: ',
+              total_capital - self.test_conditions['capital'])
+
         # make plots
         for stock_id in self._account.trade_dict.keys():
             # 1. plot sell/buy on total capital

@@ -177,20 +177,35 @@ def cal_risk_indicator(capital: float,
     pre_flag = False
     # neglect 1st trade, due to no win or loss for 1st buy
     for i in range(1, total_trades):
-        if df_trade['capital'].iloc[i] < capital:
-            if df_trade['capital'].iloc[i] < df_trade['capital'].iloc[i-1]:
-                loss = capital - df_trade['capital'].iloc[i]
-                if pre_flag:
-                    cur_con_losses += loss + pre_loss
-                    max_con_losses = max(max_con_losses, cur_con_losses)
-                    pre_loss = 0
-                else:
-                    max_con_losses = max(max_con_losses, loss)
-                    cur_con_losses = 0
-                    pre_loss = loss
+        if df_trade['capital'].iloc[i] < df_trade['capital'].iloc[i-1]:
+            loss = df_trade['capital'].iloc[i-1] - df_trade['capital'].iloc[i]
+            if pre_flag:
+                cur_con_losses += loss + pre_loss
+                max_con_losses = max(max_con_losses, cur_con_losses)
+                pre_loss = 0
+            else:
+                max_con_losses = max(max_con_losses, loss)
+                cur_con_losses = 0
+                pre_loss = loss
 
-                pre_flag = True
-                continue
+            pre_flag = True
+            continue
+
+    # for i in range(1, total_trades):
+    #     if df_trade['capital'].iloc[i] < capital:
+    #         if df_trade['capital'].iloc[i] < df_trade['capital'].iloc[i-1]:
+    #             loss = capital - df_trade['capital'].iloc[i]
+    #             if pre_flag:
+    #                 cur_con_losses += loss + pre_loss
+    #                 max_con_losses = max(max_con_losses, cur_con_losses)
+    #                 pre_loss = 0
+    #             else:
+    #                 max_con_losses = max(max_con_losses, loss)
+    #                 cur_con_losses = 0
+    #                 pre_loss = loss
+    #
+    #             pre_flag = True
+    #             continue
 
         pre_flag = False
         cur_con_losses = 0
