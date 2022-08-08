@@ -8,3 +8,6 @@
 
 ![BigQuant智能策略](./a_img/BigQuant.png)
 <center>BigQuant智能策略</center>
+
+自动量化策略生成平台，无编程基础也能用：
+https://www.bladequant.com/

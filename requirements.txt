@@ -2,7 +2,6 @@ flake8~=3.9.0
 pandas~=1.2.4
 tushare~=1.2.85
 yfinance~=0.1.70
-numpy>=1.22
 scikit-learn~=0.24.1
 PyQt5
 matplotlib~=3.3.4
@@ -11,3 +10,7 @@ yaml~=0.2.5
 pyyaml~=5.4.1
 mplfinance~=0.12.9b1
 typeguard~=2.13.0
+deepforest~=0.1.5
+# deepforest requires < 1.20.0 (after 1.20, C api changed a lot), however,
+#    version < 1.22.0 has security problem
+numpy~=1.19.5
