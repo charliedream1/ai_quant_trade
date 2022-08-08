@@ -110,23 +110,24 @@ def cal_risk_indicator(capital: float,
     # used to evaluate every one risk u take, the non-risk returns
     # the larger value is, the more returns while more risk u take, vice versa
     # usually, the larger value is, the better
-    # Sharp Ratio = (Rp - Rf) / Op
-    # Rp: annual return, Rf: no-risk interest rate, Op: changing rate of the strategy
+    # Sharp Ratio = (Rp - Rf) / Sigma(p)
+    # Rp: annual return, Rf: no-risk interest rate,
+    # Sigma(p): changing rate of the strategy (Annual standard deviation of  Strategy Returns)
     sharp_ratio = ffn.calc_sharpe(capital_returns)
     indicator_dict['sharp_ratio'] = sharp_ratio
     log.info('Sharp Rate: %.5f' % sharp_ratio)
 
     # 6. calculate max withdraw
     # evaluate max loss of the strategy, the smaller the value the better
-    # max_draw_down = (Px-Py)/Px, (Px, PY: max value during a time)
+    # max_draw_down = (Px-Py)/Px, (Px, PY: max and min value during a time)
     max_withdraw = ffn.calc_max_drawdown(capital_series)
     indicator_dict['max_withdraw'] = max_withdraw
     log.info('Max Withdraw: %.5f' % max_withdraw)
 
     # 7. Sortino Ratio
     # evaluate strategy loss, the larger value the better
-    # Sharp Ratio = (Rp - Rf) / Od
-    # Rp: annual return, Rf: no-risk interest rate, Od: strategy downward volatility
+    # Sortino Ratio = (Rp - Rf) / Sigma(d)
+    # Rp: annual return, Rf: no-risk interest rate, Sigma(d): strategy downward volatility
     sortino_ratio = ffn.calc_sortino_ratio(capital_returns)
     indicator_dict['sortino_ratio'] = sortino_ratio
     log.info('Sortino Rate: %.5f' % sortino_ratio)
