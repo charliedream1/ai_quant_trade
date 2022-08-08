@@ -1,4 +1,4 @@
-&emsp;&emsp;详细代码请查看：https://github.com/charliedream1/ai_quant_trade，
+&emsp;&emsp;详细代码请查看：https://github.com/charliedream1/ai_quant_trade
 
 &emsp;&emsp;文末将附上对应代码压缩文件包，以及聚宽对应代码样例。
 
