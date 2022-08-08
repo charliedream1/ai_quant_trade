@@ -45,7 +45,9 @@ ai_quant_trade工具的目标意在提供一款集量化炒股知识、工具及
 * tools: 辅助工具等
 
 ## 1. [**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
-可在本地可构建一套独立的量化交易系统，对应示例请查看: [egs_local_strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)   
+可在本地可构建一套独立的量化交易系统
+* 示例请查看: [egs_local_strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)
+* [详细使用教程](https://github.com/charliedream1/ai_quant_trade/tree/master/docs/%E6%9C%AC%E4%BB%93%E5%BA%93%E6%95%99%E7%A8%8B)
 
 [回测框架](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/back_test)
 * [数据获取(包含TusharePro)](https://github.com/charliedream1/ai_quant_trade/tree/master/quant_brain/fetch_data)
