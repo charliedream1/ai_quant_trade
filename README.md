@@ -112,6 +112,10 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 * [详解: 股票数据获取及图形分析(附详细代码)](https://www.joinquant.com/view/community/detail/8fe84d0d25dcf1a6da72e442460cdf36)
 
 
+## 关注
+[知乎](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
+
+
 ## 讨论
 欢迎在 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions) 中发起讨论。
 
