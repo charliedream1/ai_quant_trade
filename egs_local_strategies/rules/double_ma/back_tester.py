@@ -29,7 +29,7 @@ from quant_brain.back_test.account_info import Account
 from quant_brain.back_test.trading_ctrl import order_value
 from quant_brain.rules.timing_ctrl.moving_average import double_ma_timing
 from quant_brain.portfolio.capital_allocation import equal_allocation
-from quant_brain.fetch_data.get_tushare_data import TuShareData
+from quant_brain.data_prep.api_tushare_data import TuShareData
 from quant_brain.back_test.risk_indicator import cal_risk_indicator
 
 from tools.plots.trades_on_k_line import plot_trades_on_capital, plot_trades_on_k_line, show_plt

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author   : liyi
 # @Time     : 2022/7/5 8:13
-# @File     : get_tushare_data.py
+# @File     : api_tushare_data.py
 # @Project  : ai_quant_trade
 # Copyright (c) Personal 2022 liyi
 # Function Description: get stock data from tushare api
@@ -40,7 +40,7 @@ import tushare as ts
 # replace below with your token and comment my import
 # tushare_token = 'xxxx'
 from data.private.tushare_token import tushare_token
-from quant_brain.fetch_data.api_stock_data import StockDataApi
+from quant_brain.data_prep.api_stock_data import StockDataApi
 from tools.date_time.date_format_check import validate
 from tools.log.log_util import addlog, log
 
@@ -53,6 +53,7 @@ class TuShareData(StockDataApi, ABC):
         ts.set_token(tushare_token)
         self.ts_pro = ts.pro_api()
 
+    # todo: will be moved to external functions
     @addlog(name='Acquire All data from Tushare')
     def get_df_data(self,
                     benchmark: str,
@@ -108,7 +109,8 @@ class TuShareData(StockDataApi, ABC):
             data_dict[code] = df
 
         return data_dict
-
+    
+    # todo: u might consider to use parallel to accelerate
     @addlog(name='Query Data')
     def query_data(self,
                    code_type: str,
@@ -148,6 +150,9 @@ class TuShareData(StockDataApi, ABC):
                     # get index data
                     df = self.ts_pro.index_daily(ts_code=code,
                                                  start_date=start_time, end_date=end_time)
+                elif code_type == 'stk_factor':
+                    df = self.ts_pro.stk_factor(ts_code=code,
+                                                 start_date=start_time, end_date=end_time)
             except Exception as e:
                 log.error('Caught exception in Tushare Data Acquisition %s' % e)
                 traceback.print_exc()
@@ -159,3 +164,23 @@ class TuShareData(StockDataApi, ABC):
                 df.to_csv(csv_dir)
 
         return df
+
+    @addlog(name='get stock list and basic info')
+    def get_stk_basic(self, exchange: str) -> list:
+        """
+        :param exchange: 交易所 SSE上交所 SZSE深交所 BSE北交所
+        :return: stock list
+        """
+        # #查询当前所有正常上市交易的股票列表
+        # （注册后修改个人信息）即可免费调取
+        # list_status: 上市状态 L上市 D退市 P暂停上市，默认是L
+        # exchange: 交易所 SSE上交所 SZSE深交所 BSE北交所
+        # market: 市场类别 （主板/创业板/科创板/CDR/北交所）
+        # df = self.ts_pro.query('stock_basic', exchange='SSE',
+        #                        list_status='L',
+        #                        fields='ts_code,symbol,name,area,industry,market,list_date')
+        df = self.ts_pro.query('stock_basic', exchange=exchange,
+                               list_status='L',
+                               fields='ts_code')
+
+        return df.to_list()
