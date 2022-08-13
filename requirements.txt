@@ -11,6 +11,4 @@ pyyaml~=5.4.1
 mplfinance~=0.12.9b1
 typeguard~=2.13.0
 deepforest~=0.1.5
-# deepforest requires < 1.20.0 (after 1.20, C api changed a lot), however,
-#    version < 1.22.0 has security problem
-numpy~=1.19.5
+numpy~=1.22.0
