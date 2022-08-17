@@ -31,18 +31,24 @@
 # - 如果没有缴费加入会员，很多接口都无法调用(每个接口调用需要的积分数，请查看接口文档)
 
 import os
+import sys
 from abc import ABC
 import pandas as pd
 import datetime
 import traceback
 
 import tushare as ts
-# replace below with your token and comment my import
-# tushare_token = 'xxxx'
-from data.private.tushare_token import tushare_token
-from quant_brain.data_prep.api_stock_data import StockDataApi
+from quant_brain.data_io.api_stock_data import StockDataApi
 from tools.date_time.date_format_check import validate
 from tools.log.log_util import addlog, log
+
+# replace below with your token and comment my import
+# tushare_token = 'xxxx'
+try:
+    from data.private.tushare_token import tushare_token
+except ImportError:
+    print('Please add your tushare token here!')
+    sys.exit(1)
 
 
 class TuShareData(StockDataApi, ABC):
@@ -109,7 +115,7 @@ class TuShareData(StockDataApi, ABC):
             data_dict[code] = df
 
         return data_dict
-    
+
     # todo: u might consider to use parallel to accelerate
     @addlog(name='Query Data')
     def query_data(self,
@@ -152,7 +158,7 @@ class TuShareData(StockDataApi, ABC):
                                                  start_date=start_time, end_date=end_time)
                 elif code_type == 'stk_factor':
                     df = self.ts_pro.stk_factor(ts_code=code,
-                                                 start_date=start_time, end_date=end_time)
+                                                start_date=start_time, end_date=end_time)
             except Exception as e:
                 log.error('Caught exception in Tushare Data Acquisition %s' % e)
                 traceback.print_exc()
@@ -165,6 +171,7 @@ class TuShareData(StockDataApi, ABC):
 
         return df
 
+    # ======= todo: above functions will be removed, below would be new
     @addlog(name='get stock list and basic info')
     def get_stk_basic(self, exchange: str) -> list:
         """
@@ -184,3 +191,70 @@ class TuShareData(StockDataApi, ABC):
                                fields='ts_code')
 
         return df.to_list()
+
+    @addlog(name='Get market data for certain stock')
+    def get_stk_data(self,
+                     code_type: str,
+                     code: str,
+                     start_time: str,
+                     end_time: str,
+                     time_freq: str = 'daily',
+                     skip_download: bool = True,
+                     csv_dir: str = '',
+                     index=0,
+                     total=1
+                     ) -> pd.DataFrame:
+        """
+        :param code_type: index or stock
+        :param code: id for query data
+        :param start_time: query start time
+        :param end_time: query end time
+        :param time_freq: frequency of data, e.g. daily or minutes
+        :param skip_download: if csv exist, it will skip download
+        :param csv_dir: csv dir to save query data
+        :return: query data with dataframe type
+        :param index: used in parallel mode to indicate the index number of job
+        :param total: used in parallel mode to indicate total job number
+        """
+        assert code_type in ['fund_daily', 'index_daily', 'stk_factor']
+        log.info('Processing {} {}/{}'.format(code, index, total))
+
+        # loading data
+        if os.path.exists(csv_dir) and skip_download:
+            # load file if exist
+            df = pd.read_csv(csv_dir, index_col=0)
+        else:
+            assert start_time < end_time
+            df = pd.DataFrame()
+
+            try:
+                if code_type == 'fund_daily':
+                    # get stock data
+                    df = self.ts_pro.query(time_freq, ts_code=code,
+                                           start_date=start_time, end_date=end_time)
+                elif code_type == 'index_daily':
+                    # get index data
+                    df = self.ts_pro.index_daily(ts_code=code,
+                                                 start_date=start_time, end_date=end_time)
+                elif code_type == 'stk_factor':
+                    # get stock data
+                    df_base = self.ts_pro.query(time_freq, ts_code=code,
+                                                start_date=start_time, end_date=end_time)
+                    # get technical factor
+                    df_factor = self.ts_pro.stk_factor(ts_code=code,
+                                                       start_date=start_time, end_date=end_time)
+
+                    # merge two dataframe, take the intersection according to date
+                    df = pd.merge(df_base, df_factor, how='inner')
+
+            except Exception as e:
+                log.error('Caught exception in Tushare Data Acquisition %s' % e)
+                traceback.print_exc()
+
+            if len(df):
+                # reverse df, make start from history to current
+                df = df.reindex(index=df.index[::-1])
+                df = df.reset_index(drop=True)  # reset index
+                df.to_csv(csv_dir)
+
+        return df

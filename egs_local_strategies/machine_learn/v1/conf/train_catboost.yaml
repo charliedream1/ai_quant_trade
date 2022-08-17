@@ -1,6 +1,6 @@
 # data engine and time range
-data_source: tushare  # todo: add more options
 data_condition:
+  data_source: tushare  # todo: add more options
   skip_download: True  # if already downloaded to local, skip it
   # benchmark to get market index,
   #  000001.XSHG: Shanghai securities composite index
@@ -8,22 +8,21 @@ data_condition:
   # for tushare, without payment, benchmark data not available
   benchmark: None # '000001.XSHG'
   # 交易所: SSE上交所 SZSE深交所 BSE北交所
-  stock_pool: 'SSE'  # pool to select stock
+  stk_pool: 'SSE'  # pool to select stock
   # todo: consider to read from csv
-  stock_lst: []  # leave empty to acquire all
-  stock_num: 10  # limit max train number for fast test, -1: use all
+  stk_lst: []  # leave empty to acquire all
+  stk_num: 10  # limit max train number for fast test, -1: use all
   time_freq: daily  # todo: add more options
   # todo: move date backward the length of ma_long
-  train: [2018-01-01, 2019-12-30]
-  eval: [2018-01-01, 2019-12-30]
-  test: [2018-01-01, 2019-12-30]
+ 快麻木了，，，，，，，，，，了【】l'l'l'l'l'lo'm'mo'ko'ji'ji'j'o'o'o'o'o'o'oi'ji'ji'j'jii'iiiiiiiiiiiiiiiii
+  # factor_type:
   nan_process: drop  # drop, zero, mean, (todo) synthesis
   preprocess: [ 'normalization', 'standardization','de-extremum' ]
   # todo: for classification, u need to decide class number
   label_type: regression  # regression, classification
 
 model_config:
-  model_type: deep_forest
+  model_type: catboost
   kwargs:
     loss: RMSE
     learning_rate: 0.0421
@@ -38,6 +37,10 @@ backtest:
   account: 100000  # total money available for trading
 
   strategy_config:
+    pos_ctrl:
+      strategy: topk
+      topk: 10
+      dropNum: 5
     selection: mdl
     timing: mdl
     risk_ctrl: none
