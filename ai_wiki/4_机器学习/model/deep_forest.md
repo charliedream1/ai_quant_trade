@@ -224,5 +224,5 @@ Deep Forest平均性能最好。Histogram-based GBDT (e.g., HGBDT, XGB HIST, Lig
 * LightGBM: Light Gradient Boosting Machine
 
 # 6. 深入分析原理
-![df21_architecture](./img/df21_architecture.png)
+![df21_architecture](img/df21_architecture.png)
 
