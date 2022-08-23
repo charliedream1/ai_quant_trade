@@ -15,6 +15,7 @@ Qlib是由微软推出的一款量化交易平台，是一个非常体系化、�
 
 ## 1.2 缺点
 - 每个样例中requirements.txt里的torch版本都不同，且比较老
+- 不支持多GPU训练
 
 # 2. 文档及教程
 * 官方文档：https://qlib.readthedocs.io/en/latest/index.html
