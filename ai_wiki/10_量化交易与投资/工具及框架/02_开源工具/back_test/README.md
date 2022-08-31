@@ -1,0 +1,3 @@
+- zipline
+- backtrader
+- ffn
