@@ -53,6 +53,36 @@
 
 - 库以失效，无法获取数据，但可获取宏观经济数据
 
+## 1.5 数据库
+
+1. [microsoft/qlib-server: Qlib-Server is the data server system for Qlib. It enable Qlib to run in online mode. Under online mode, the data will be deployed as a shared data service. The data and their cache will be shared by all the clients. The data retrieval performance is expected to be improved due to a higher rate of cache hits. It will consume less disk space, too. (github.com)](https://github.com/microsoft/qlib-server)
+
+   * qlib配套数据库，提供一个全新的数据库，据说速度比现有任何数据库速度都快。
+2. [Time Series Data Products | InfluxData](https://www.influxdata.com/products/)
+
+   * Go写的分布式时间序列数据库
+3. [man-group/arctic: High performance datastore for time series and tick data (github.com)](https://github.com/man-group/arctic)
+
+   * 2.8K星，LGPL-2.1协议，商用不友好
+   * 基于mongodb和python的高性能时间序列和tick数据存储
+4. [KX: The Leading Provider of Time-Series Database Technology](https://kx.com/)
+
+   * 收费的高性能金融序列数据库解决方案
+5. [Schema Design for Time Series Data in MongoDB | MongoDB](https://www.mongodb.com/blog/post/schema-design-for-time-series-data-in-mongodb)
+
+   * 用mongodb存储时间序列数据
+
+6. [kairosdb/kairosdb: Fast scalable time series database (github.com)](https://github.com/kairosdb/kairosdb)
+
+   * 1.7K星，Apache-2.0协议
+   * 基于Cassandra的时间序列数据库
+7. [OpenTSDB/opentsdb: A scalable, distributed Time Series Database. (github.com)](https://github.com/OpenTSDB/opentsdb)
+   * 4.7K星，LGPL-2.1,GPL-3.0协议
+   * 基于HBase的时间序列数据库
+
+8. [SQLite Home Page](https://www.sqlite.org/index.html)
+   * 轻量级数据库
+
 # 2. 数据处理及因子计算
 
 ## 2.1 数据处理
@@ -120,9 +150,11 @@
 * 更加适合期货，以及作为实盘接口
 
 2. [shidenggui/easytrader: 提供同花顺客户端/国金/华泰客户端/雪球的基金、股票自动程序化交易以及自动打新，支持跟踪 joinquant /ricequant 模拟交易 和 实盘雪球组合, 量化交易组件 (github.com)](https://github.com/shidenggui/easytrader)
-
    * 主要可以跟踪聚宽实盘模拟交易，以及实盘
    * 6.7k星，MIT协议，已2年没有更新
+3. [yutiansut/QUANTAXIS: QUANTAXIS 支持任务调度 分布式部署的 股票/期货/期权 数据/回测/模拟/交易/可视化/多账户 纯本地量化解决方案 (github.com)](https://github.com/yutiansut/QUANTAXIS)
+   * 6.7K星，MIT协议，4个月未更新
+   * 提供数据/因子库/模拟盘实盘接口
 
 ## 3.3 国产开源框架
 
