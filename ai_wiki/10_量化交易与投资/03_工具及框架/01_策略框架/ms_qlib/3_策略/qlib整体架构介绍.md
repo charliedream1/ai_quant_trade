@@ -1,6 +1,6 @@
 # 1. 简介
 
-&emsp;&emsp;笔记记录与20220902.
+&emsp;&emsp;笔记记录于20220902.
 
 ![qlib模块及运行流程.png](img/qlib模块及逻辑关系.png)
 
@@ -32,6 +32,20 @@ Interface：提供用户接口，报告和执行结果
 * 之后自动解压
 
 # 3. 辅助模块
+
+1. 类初始化
+&emsp;&emsp;根据yaml中配置的类路径，对如数据处理类(Data Handler)、模型类、回测类、分析类
+实例化对象。
+
+```
+  qlib/utils/__init__.py
+```
+
+&emsp;&emsp;函数init_instance_by_config：
+* 如果是可接受类型，直接返回config
+* 如果是str类型，加载pkl文件
+* 通过函数get_callable_kwargs实例化对象
+
 
 # 4. 数据加载模块
 
