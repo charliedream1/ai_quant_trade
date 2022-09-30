@@ -93,7 +93,8 @@ class WindDataLoader:
             log.error("Error Message:" + stock_codes.iloc[0, 0])
             raise LookupError
 
-        file_name = 'stock_lst_' + args.market_code + '_' + query_date.replace('-', '') + '.csv'
+        # file_name = 'stock_lst_' + args.market_code + '_' + query_date.replace('-', '') + '.csv'
+        file_name = 'stock_lst_' + args.market_code + '.csv'
         out_csv_path = os.path.join(args.exp_dir, file_name)
         stock_codes.to_csv(out_csv_path, index=False)
 
@@ -122,7 +123,6 @@ class WindDataLoader:
         clean_dirs(out_path)
         make_dirs(out_path)
 
-        #
         for wind_code in stock_codes['wind_code']:
             p_bar.update(1)
             p_bar.set_description("Processing %s: (%d / %d)" % (wind_code, cnt, total_num))
@@ -132,9 +132,16 @@ class WindDataLoader:
             if os.path.exists(out_csv_path):
                 continue
 
-            error_code, data = w.wsd(wind_code, args.wsd_fields,
-                                     args.start_time, args.end_time,
-                                     "unit=1;PriceAdj={}".format(args.adjust_type), usedf=True)
+            if args.freq == '1d':
+                error_code, data = w.wsd(wind_code, args.wsd_fields,
+                                         args.start_time, args.end_time,
+                                         "unit=1;PriceAdj={}".format(args.adjust_type), usedf=True)
+            elif args.freq == '1m':
+                error_code, data = w.wsi(wind_code, args.wsd_fields, args.start_time, args.end_time,
+                                         "PriceAdj={}".format(args.adjust_type), usedf=True)
+            else:
+                log.error('Wrong Param set for args.freq')
+                raise ValueError
 
             if error_code != 0:
                 log.error(wind_code + ":ErrorCode:" + str(error_code))
@@ -223,20 +230,28 @@ def main():
         # columns name for data frame
         args.cols_name = 'amount,open,high,low,close,factor,vwap,volume'
         # wind data filed name, check meaning above
+        #  for daily data
         # args.wsd_fields = 'amt,open,high,low,close,adjfactor,vwap,volume'
-        args.wsd_fields = "open,high,low,close,volume,chg,amt,pre_close,adjfactor," + \
-                          "turn,trade_status,susp_reason,maxupordown,maxup,maxdown,open_auction_price," + \
-                          "open_auction_volume,open_auction_amount"
+        # args.wsd_fields = "open,high,low,close,volume,chg,amt,pre_close,adjfactor," + \
+        #                   "turn,trade_status,susp_reason,maxupordown,maxup,maxdown,open_auction_price," + \
+        #                   "open_auction_volume,open_auction_amount"
+        # for minute data
+        args.wsd_fields = 'open,high,low,close,volume,amt,chg,pct_chg'
 
         # price adjust type, pre-adjust:F, post-adjust:B, NO adjust: N
         args.adjust_type = 'B'
-        args.freq = '1d'
-        args.start_time = '2005-01-01'
-        args.end_time = '2022-09-26'
+        args.freq = '1m'   # 1d: daily, 1m: 1 minute
+        # for daily data
+        # args.start_time = '2005-01-01'
+        # args.end_time = '2022-09-26'
+        # for minute data
+        args.start_time = '2022-09-29 10:00:00'
+        args.end_time = '2022-09-29 10:05:00'
 
         out_dir = r'E:\Data\wind\cn_data\lte_300_SH'
-        out_folder_name = args.freq + '_' + args.start_time.replace('-', '') + '_' + \
-                          args.end_time.replace('-', '')
+        out_folder_name = args.freq + '_' + \
+                          args.start_time.replace('-', '').replace(' ', '').replace(':', '') + '_' + \
+                          args.end_time.replace('-', '').replace(' ', '').replace(':', '')
         args.exp_dir = os.path.join(out_dir, out_folder_name)
 
         make_dirs(args.exp_dir)
@@ -246,8 +261,14 @@ def main():
         df_trade_calendar = wind_loader.dump_trade_calendar(args)
 
     if args.start_stage <= 2 and args.stop_stage >= 2:
-        # if query_date empty, use today
-        df_stock_list = wind_loader.get_stock_list(args, query_date=args.end_time)
+        file_name = 'stock_lst_' + args.market_code + '.csv'
+        out_csv_path = os.path.join(args.exp_dir, file_name)
+
+        if os.path.exists(out_csv_path):
+            df_stock_list = pd.read_csv(out_csv_path)
+        else:
+            # if query_date empty, use today
+            df_stock_list = wind_loader.get_stock_list(args, query_date=args.end_time)
         wind_loader.dump_market_data_simple(args, df_stock_list)
 
 
