@@ -33,6 +33,7 @@ sys.path.append(os.path.abspath(path + ('/..' * 3)))
 from tools.log.log_util import addlog, log
 from tools.file_io.config import override_config
 from tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
+from tools.file_io.load_csv import get_self_select_stock_lst
 
 
 # fixme: some issue might occur for Data Dump Issue
@@ -102,11 +103,11 @@ class WindDataLoader:
 
     @staticmethod
     @addlog(name='Dump market data to CSV')
-    def dump_market_data_simple(args, stock_codes: pd.DataFrame):
+    def dump_market_data_simple(args, stock_codes: list):
         """
         Dump data with simple way without too much checks
         :param args: args class
-        :param stock_codes: dataframe of stock list, column with stock code and Chinese name
+        :param stock_codes: stock code list
         :return:
         """
         # fixme: some issue might occur for Data Dump Issue
@@ -123,7 +124,7 @@ class WindDataLoader:
         clean_dirs(out_path)
         make_dirs(out_path)
 
-        for wind_code in stock_codes['wind_code']:
+        for wind_code in stock_codes:
             p_bar.update(1)
             p_bar.set_description("Processing %s: (%d / %d)" % (wind_code, cnt, total_num))
 
@@ -164,6 +165,8 @@ def get_args():
     parser.add_argument('--start_stage', default=1, type=int, help='config file')
     parser.add_argument('--stop_stage', default=100, type=int, help='config file')
 
+    parser.add_argument('--self_sel_stock_path', default=None, type=str,
+                        help='xls path for self selected stock list')
     parser.add_argument('--market_code', default='000300.SH', type=str,
                         help='market code to acquire corresponding stock list')
     parser.add_argument('--cols_name',
@@ -225,28 +228,30 @@ def main():
         args.start_stage = 2
         args.stop_stage = 100
 
+        args.self_sel_stock_path = r'E:\Data\stock_pool\证券.xls'
         args.market_code = '000300.SH'  # 沪深300
+        args.freq = '1m'   # 1d: daily, 1m: 1 minute
 
         # columns name for data frame
         args.cols_name = 'amount,open,high,low,close,factor,vwap,volume'
-        # wind data filed name, check meaning above
-        #  for daily data
-        # args.wsd_fields = 'amt,open,high,low,close,adjfactor,vwap,volume'
-        # args.wsd_fields = "open,high,low,close,volume,chg,amt,pre_close,adjfactor," + \
-        #                   "turn,trade_status,susp_reason,maxupordown,maxup,maxdown,open_auction_price," + \
-        #                   "open_auction_volume,open_auction_amount"
-        # for minute data
-        args.wsd_fields = 'open,high,low,close,volume,amt,chg,pct_chg'
+
+        if args.freq == '1d':
+            # wind data filed name, check meaning above
+            #  for daily data
+            args.wsd_fields = 'amt,open,high,low,close,adjfactor,vwap,volume'
+            # args.wsd_fields = "open,high,low,close,volume,chg,amt,pre_close,adjfactor," + \
+            #                   "turn,trade_status,susp_reason,maxupordown,maxup,maxdown,open_auction_price," + \
+            #                   "open_auction_volume,open_auction_amount"
+            args.start_time = '2008-01-01'
+            args.end_time = '2022-09-26'
+        else:
+            # for minute data
+            args.wsd_fields = 'open,high,low,close,volume,amt,chg,pct_chg'
+            args.start_time = '2022-03-29 10:00:00'
+            args.end_time = '2022-06-29 10:05:00'
 
         # price adjust type, pre-adjust:F, post-adjust:B, NO adjust: N
         args.adjust_type = 'B'
-        args.freq = '1m'   # 1d: daily, 1m: 1 minute
-        # for daily data
-        # args.start_time = '2005-01-01'
-        # args.end_time = '2022-09-26'
-        # for minute data
-        args.start_time = '2022-09-29 10:00:00'
-        args.end_time = '2022-09-29 10:05:00'
 
         out_dir = r'E:\Data\wind\cn_data\lte_300_SH'
         out_folder_name = args.freq + '_' + \
@@ -261,15 +266,19 @@ def main():
         df_trade_calendar = wind_loader.dump_trade_calendar(args)
 
     if args.start_stage <= 2 and args.stop_stage >= 2:
-        file_name = 'stock_lst_' + args.market_code + '.csv'
-        out_csv_path = os.path.join(args.exp_dir, file_name)
-
-        if os.path.exists(out_csv_path):
-            df_stock_list = pd.read_csv(out_csv_path)
+        if args.self_sel_stock_path is not None or args.self_sel_stock_path != '':
+            stock_lst = get_self_select_stock_lst(args.self_sel_stock_path)
         else:
-            # if query_date empty, use today
-            df_stock_list = wind_loader.get_stock_list(args, query_date=args.end_time)
-        wind_loader.dump_market_data_simple(args, df_stock_list)
+            file_name = 'stock_lst_' + args.market_code + '.csv'
+            out_csv_path = os.path.join(args.exp_dir, file_name)
+
+            if os.path.exists(out_csv_path):
+                df_stock_list = pd.read_csv(out_csv_path)
+            else:
+                # if query_date empty, use today
+                df_stock_list = wind_loader.get_stock_list(args, query_date=args.end_time)
+            stock_lst = df_stock_list['wind_code']
+        wind_loader.dump_market_data_simple(args, stock_lst)
 
 
 if __name__ == '__main__':
