@@ -157,6 +157,41 @@ class WindDataLoader:
         p_bar.close()
         log.info('Total Processed: ({} / {})'.format(cnt, total_num))
 
+    @staticmethod
+    @addlog(name='Dump index data to CSV')
+    def dump_index_data(args, trade_calendar_lst):
+        df_index_val = pd.DataFrame(columns=['date', 'CLOSE'])
+        total_num = len(trade_calendar_lst)
+        cnt = 0
+        p_bar = tqdm(total_num)
+
+        for item in trade_calendar_lst:
+            p_bar.update(1)
+            p_bar.set_description("Processing %s: (%d / %d)" % (item, cnt, total_num))
+
+            # 获取收盘价
+            error_code, data = w.wss(args.market_code, "close",
+                                     "tradeDate={};priceAdj={};cycle=D".format(item, args.adjust_type),
+                                     usedf=True)
+            df_index_val = df_index_val.append({'date': item, 'CLOSE': data['CLOSE'][0]},
+                                               ignore_index=True)
+
+            if error_code != 0:
+                log.error(item + ":ErrorCode:" + str(error_code))
+                log.error("Error Message:" + data.iloc[0, 0])
+                continue
+
+            cnt += 1
+
+        file_name = args.market_code + '_' + trade_calendar_lst[0].replace('_', '') + \
+            trade_calendar_lst[-1].replace('_', '')
+        out_file_path = os.path.join(args.exp_dir, file_name)
+        df_index_val.to_csv(out_file_path)
+
+        p_bar.close()
+        log.info('Total Processed: ({} / {})'.format(cnt, total_num))
+
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Handle Wind Data')
@@ -229,7 +264,7 @@ def main():
         args.stop_stage = 100
 
         args.self_sel_stock_path = r'E:\Data\stock_pool\证券.xls'
-        args.market_code = '000300.SH'  # 沪深300
+        args.market_code = '000300.SH'  # 沪深300：000300.SH'， 上证：000001.SH
         args.freq = '1m'   # 1d: daily, 1m: 1 minute
 
         # columns name for data frame
@@ -238,17 +273,19 @@ def main():
         if args.freq == '1d':
             # wind data filed name, check meaning above
             #  for daily data
-            args.wsd_fields = 'amt,open,high,low,close,adjfactor,vwap,volume'
+            args.wsd_fields = 'amt,open,high,low,close,adjfactor,vwap,volume,' \
+                              'chg,turn,trade_status,maxupordown,maxup,maxdown'
             # args.wsd_fields = "open,high,low,close,volume,chg,amt,pre_close,adjfactor," + \
             #                   "turn,trade_status,susp_reason,maxupordown,maxup,maxdown,open_auction_price," + \
             #                   "open_auction_volume,open_auction_amount"
             args.start_time = '2008-01-01'
             args.end_time = '2022-09-26'
         else:
+            # there is no too much limitation for minute data
             # for minute data
             args.wsd_fields = 'open,high,low,close,volume,amt,chg,pct_chg'
-            args.start_time = '2022-03-29 10:00:00'
-            args.end_time = '2022-06-29 10:05:00'
+            args.start_time = '2022-01-29 10:00:00'
+            args.end_time = '2022-05-05 10:05:00'
 
         # price adjust type, pre-adjust:F, post-adjust:B, NO adjust: N
         args.adjust_type = 'B'
