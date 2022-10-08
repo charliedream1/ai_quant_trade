@@ -84,7 +84,7 @@ def main():
         args.stop_stage = 100
 
         # 沪深300：000300.SH'， 上证：000001.SH
-        args.market_code = ['000300.SH', '000001.SH']
+        args.market_code = '000001.SH'  # ['000300.SH', '000001.SH']
 
         args.start_time = '2008-01-01'
         args.end_time = '2022-09-26'

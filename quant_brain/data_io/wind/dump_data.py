@@ -184,13 +184,12 @@ class WindDataLoader:
             cnt += 1
 
         file_name = args.market_code + '_' + trade_calendar_lst[0].replace('_', '') + \
-            trade_calendar_lst[-1].replace('_', '')
+            trade_calendar_lst[-1].replace('_', '') + '.csv'
         out_file_path = os.path.join(args.exp_dir, file_name)
         df_index_val.to_csv(out_file_path)
 
         p_bar.close()
         log.info('Total Processed: ({} / {})'.format(cnt, total_num))
-
 
 
 def get_args():
@@ -260,12 +259,12 @@ def main():
     if args.debug_off:
         debug = False
     if debug:
-        args.start_stage = 2
+        args.start_stage = 1
         args.stop_stage = 100
 
-        args.self_sel_stock_path = r'E:\Data\stock_pool\证券.xls'
+        args.self_sel_stock_path = ''  # r'E:\Data\stock_pool\证券.xls'
         args.market_code = '000300.SH'  # 沪深300：000300.SH'， 上证：000001.SH
-        args.freq = '1m'   # 1d: daily, 1m: 1 minute
+        args.freq = '1d'   # 1d: daily, 1m: 1 minute
 
         # columns name for data frame
         args.cols_name = 'amount,open,high,low,close,factor,vwap,volume'
@@ -279,7 +278,7 @@ def main():
             #                   "turn,trade_status,susp_reason,maxupordown,maxup,maxdown,open_auction_price," + \
             #                   "open_auction_volume,open_auction_amount"
             args.start_time = '2008-01-01'
-            args.end_time = '2022-09-26'
+            args.end_time = '2022-09-30'
         else:
             # there is no too much limitation for minute data
             # for minute data
@@ -303,7 +302,7 @@ def main():
         df_trade_calendar = wind_loader.dump_trade_calendar(args)
 
     if args.start_stage <= 2 and args.stop_stage >= 2:
-        if args.self_sel_stock_path is not None or args.self_sel_stock_path != '':
+        if args.self_sel_stock_path is not None and args.self_sel_stock_path != '':
             stock_lst = get_self_select_stock_lst(args.self_sel_stock_path)
         else:
             file_name = 'stock_lst_' + args.market_code + '.csv'
