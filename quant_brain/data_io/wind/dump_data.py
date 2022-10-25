@@ -121,7 +121,6 @@ class WindDataLoader:
         p_bar = tqdm(total_num)
 
         out_path = os.path.join(args.exp_dir, 'stocks_data')
-        clean_dirs(out_path)
         make_dirs(out_path)
 
         for wind_code in stock_codes:
