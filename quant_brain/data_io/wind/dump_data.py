@@ -261,7 +261,7 @@ def main():
         args.start_stage = 1
         args.stop_stage = 100
 
-        args.self_sel_stock_path = ''  # r'E:\Data\stock_pool\证券.xls'
+        args.self_sel_stock_path = ''
         args.market_code = '000300.SH'  # 沪深300：000300.SH'， 上证：000001.SH
         args.freq = '1d'   # 1d: daily, 1m: 1 minute
 
@@ -288,7 +288,7 @@ def main():
         # price adjust type, pre-adjust:F, post-adjust:B, NO adjust: N
         args.adjust_type = 'B'
 
-        out_dir = r'E:\Data\wind\cn_data\lte_300_SH'
+        out_dir = r''
         out_folder_name = args.freq + '_' + \
                           args.start_time.replace('-', '').replace(' ', '').replace(':', '') + '_' + \
                           args.end_time.replace('-', '').replace(' ', '').replace(':', '')

@@ -92,7 +92,7 @@ def main():
         # price adjust type, pre-adjust:F, post-adjust:B, NO adjust: N
         args.adjust_type = 'B'
 
-        out_dir = r'E:\Data\wind\cn_data\index_data'
+        out_dir = r''
         out_folder_name = args.freq + '_' + \
                           args.start_time.replace('-', '').replace(' ', '').replace(':', '') + '_' + \
                           args.end_time.replace('-', '').replace(' ', '').replace(':', '') + '_' + args.adjust_type

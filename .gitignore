@@ -31,6 +31,7 @@ __pycache__/
 # macOS dir files
 .DS_Store
 
+# folders
 exp
 data
 raw_wav
