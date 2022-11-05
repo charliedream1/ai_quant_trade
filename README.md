@@ -133,7 +133,7 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 
 ``` bibtex
 @misc{ai_quant_trade,
-  author={Yi Li},
+  author={Charlie Lee},
   title={ai_quant_trade},
   year={2022},
   publisher = {GitHub},
