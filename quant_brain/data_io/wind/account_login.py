@@ -31,6 +31,7 @@ def logon_wind():
         log.info("Start failed")
         log.info("Error Code:" + str(start_ret.ErrorCode))
         log.info("Error Message:" + start_ret.Data[0])
+        raise ConnectionError
 
 
 def logon_account(account_file_path: str, market_type: str):
@@ -55,6 +56,7 @@ def logon_account(account_file_path: str, market_type: str):
     if wind_login.ErrorCode != 0:
         log.info("Simulation Account Login failed")
         log.info("Error Code:" + str(wind_login.ErrorCode))
+        raise ConnectionError
     log_id = wind_login.Data[0][0]  # 2nd 0 is to get first account id
 
-    return log_id
+    return account, log_id
