@@ -11,3 +11,5 @@ pyyaml~=5.4.1
 mplfinance~=0.12.9b1
 typeguard~=2.13.0
 numpy~=1.22.0
+chinese_calendar~=1.7.2
+python~=3.8.0
