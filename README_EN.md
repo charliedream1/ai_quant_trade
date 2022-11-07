@@ -27,7 +27,7 @@ Welcome to submit a question at [Github Issues](https://github.com/charliedream1
 
 ``` bibtex
 @misc{ai_quant_trade,
-  author={Yi Li},
+  author={Charlie Lee},
   title={ai_quant_trade},
   year={2022},
   publisher = {GitHub},
