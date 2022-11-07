@@ -85,6 +85,7 @@ class BidSimulator:
         p_bar = tqdm(self._stock_pool_num)
 
         for stock_code in self.stock_lst:
+            # todo: consider make parallel, currently, 181 stocks takes 5.45 min to complete
             p_bar.update(1)
             p_bar.set_description("Processing %s: (%d / %d)" % (stock_code, cnt, self._stock_pool_num))
 
