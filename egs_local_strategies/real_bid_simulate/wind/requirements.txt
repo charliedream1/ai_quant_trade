@@ -1,0 +1,1 @@
+ chinese-calendar~=1.7.2

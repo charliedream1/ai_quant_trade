@@ -24,7 +24,6 @@ import argparse
 import pandas as pd
 from datetime import datetime
 import time
-import schedule
 from tqdm import tqdm
 
 from WindPy import w
