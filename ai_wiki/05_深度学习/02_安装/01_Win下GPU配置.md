@@ -2,6 +2,19 @@
 &emsp;&emsp;带有英伟达显卡的个人游戏本PC，完全可以作为一个小型的深度学习训练机器。使用GPU训练速度比CPU要快出几十倍。
 本章主要介绍在Windows环境下，个人PC，配置GPU，构建深度学习环境。
 
+&emsp;&emsp;GPU配置常用网址汇总：英伟达的网址在国内访问不稳定，可以把com改为cn后，较为稳定：
+* CUDA和驱动版本有对应关系：https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
+* 驱动下载地址：https://www.nvidia.cn/geforce/drivers/
+* CUDA下载网站：https://developer.nvidia.cn/cuda-toolkit-archive
+* CUDA 10.2文档：https://docs.nvidia.com/cuda/archive/10.2/
+* CUDNN下载网页：https://developer.nvidia.cn/zh-cn/cudnn 
+* CUDNN 各文档：https://docs.nvidia.com/cuda/archive/10.2/ 
+
+&emsp;&emsp;深度学习库地址：
+* 官网：https://pytorch.org/get-started/previous-versions/
+* 历史版本：https://pytorch.org/get-started/previous-versions/
+
+
 # 1. 显卡状态查看
 ## 1.1 方法1：从设备管理器查看   
 &emsp;&emsp;桌面“我的电脑”右键菜单-->管理(G)  
