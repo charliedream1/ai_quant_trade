@@ -56,7 +56,7 @@ class BidSimulator:
         #       账户的市场类型，SHSZ：深圳上海A，CZC：郑商所，SHF：上期所，DCE：大商所，CFE：中金所，
         #       SHO：上证期权，HK：港股
         market_type = 'SHSZ'
-        self._hold_num = 200  # number of stock to hold
+        self._hold_num = 350  # number of stock to hold
         self.task_time = '9:30'  # timed task start time of each day
 
         # 1. logon account
