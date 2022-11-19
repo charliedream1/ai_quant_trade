@@ -1,4 +1,4 @@
-# Win10 + GTX 1050 Ti + CUDA10.2 + cudnn8.4
+# Win10 + GTX 1050 Ti + CUDA10.2 + cudnn8.6
 &emsp;&emsp;带有英伟达显卡的个人游戏本PC，完全可以作为一个小型的深度学习训练机器。使用GPU训练速度比CPU要快出几十倍。
 本章主要介绍在Windows环境下，个人PC，配置GPU，构建深度学习环境。
 
