@@ -43,3 +43,4 @@ a_private
 mlruns
 **/*build*
 ly_*
+log
