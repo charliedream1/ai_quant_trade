@@ -20,6 +20,7 @@
 ## :fire: 新特性
 &emsp;&emsp;本仓库正在从零开始构建，欢迎关注，学习并了解所有的底层和细节，才会赢！！！
 
+* 2023.01.01: [**本地深度强化学习策略: egs_local_strategies/reinforcement_learn/proto_sb3**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/reinforcement_learn/proto_sb3)
 * 2022.11.07： [**Wind本地实盘模拟**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/real_bid_simulate/wind)
 * 2022.08.03： 本地回测平台初步完善，支持[**双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma)
 
