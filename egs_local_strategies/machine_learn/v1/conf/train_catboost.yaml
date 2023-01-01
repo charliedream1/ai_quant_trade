@@ -14,7 +14,6 @@ data_condition:
   stk_num: 10  # limit max train number for fast test, -1: use all
   time_freq: daily  # todo: add more options
   # todo: move date backward the length of ma_long
- 快麻木了，，，，，，，，，，了【】l'l'l'l'l'lo'm'mo'ko'ji'ji'j'o'o'o'o'o'o'oi'ji'ji'j'jii'iiiiiiiiiiiiiiiii
   # factor_type:
   nan_process: drop  # drop, zero, mean, (todo) synthesis
   preprocess: [ 'normalization', 'standardization','de-extremum' ]
