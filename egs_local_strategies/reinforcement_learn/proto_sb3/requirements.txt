@@ -1,0 +1,5 @@
+baostock==0.8.8
+stable-baselines3==1.6.2
+gym==0.21.0
+torch==1.13.1
+tensorboard==2.11.0
