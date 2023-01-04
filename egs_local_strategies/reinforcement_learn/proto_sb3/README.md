@@ -86,7 +86,19 @@ reward = 1 if reward > 0 else reward = -100
 
 ### 策略梯度
 
-因为动作输出的数值是连续，因此使用基于策略梯度的优化算法，其中比较知名的是 [PPO 算法](https://arxiv.org/abs/1707.06347)，OpenAI 和许多文献已把 PPO 作为强化学习研究中首选的算法。PPO 优化算法 Python 实现参考 [stable-baselines](https://stable-baselines.readthedocs.io/en/master/modules/ppo2.html)。
+因为动作输出的数值是连续，因此使用基于策略梯度的优化算法，其中比较知名的是 [PPO 算法](https://arxiv.org/abs/1707.06347)，
+在 2017 年被提出，OpenAI 和许多文献已把 PPO 作为强化学习研究中首选的算法。PPO 优化算法 Python 实现参考 
+[stable-baselines](https://stable-baselines.readthedocs.io/en/master/modules/ppo2.html)。
+
+PPO 的优化目标与 TRPO 相同，但 PPO 用了一些相对简单的方法来求解。具体来说，PPO 有两种形式，一是 PPO-惩罚，二是 PPO-截断。
+
+1. PPO-惩罚
+    ![](.README_images/PPO惩罚.png)
+    
+2. PPO-截断
+    ![](.README_images/PPO-截断.png)
+    
+    ![](.README_images/PPO-截断示意图.png)
 
 ## 🕵️‍♀️ 模拟实验
 
@@ -368,3 +380,4 @@ reward = 1 if reward > 0 else reward = -100
 - [Create custom gym environments from scratch — A stock market example](https://towardsdatascience.com/creating-a-custom-openai-gym-environment-for-stock-trading-be532be3910e)
 - [notadamking/Stock-Trading-Environment](https://github.com/notadamking/Stock-Trading-Environment)
 - [Welcome to Stable Baselines docs! - RL Baselines Made Easy](https://stable-baselines.readthedocs.io/en/master)
+- 《动手学强化学习》
