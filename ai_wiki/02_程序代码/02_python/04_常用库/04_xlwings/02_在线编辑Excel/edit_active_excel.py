@@ -24,7 +24,7 @@ import pandas as pd
 import xlwings as xw
 import time
 
-file_path = os.path.join(os.getcwd(), '看盘表.xlsx')
+file_path = os.path.join(os.getcwd(), 'test.xlsx')
 
 wb = xw.Book(file_path)
 sht1 = wb.sheets['Sheet1']
