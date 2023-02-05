@@ -32,7 +32,7 @@
 | 2022.08.03 | [**基础回测框架 + 双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma) |
 
 ## 目录   
-[1.简介](#1.简介)  
+[1.简介](#1-简介)  
 [2. 使用](#2._使用)  
 [3. 本地量化平台](#3._本地量化平台)  
 [3.1 强化学习策略](#3.1_强化学习策略)  
