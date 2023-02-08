@@ -408,6 +408,32 @@
       此时需要O(w*d)个参数，只需要O(w*d)的运行时间和存储空间。
     * 但遗憾的是：并不是每个核都是可分离的。
 
+# 7. CNN常见搭配设计
+## 7.1 使用 cbr 组合
+在 cnn 模型中，卷积层（conv）一般后接 bn、relu 层，组成 cbr 套件。BN 层（batch normalization，
+简称 BN，批规范化层）很重要，是卷积层、激活函数层一样都是 cnn 模型的标配组件，
+其不仅加快了模型收敛速度，而且更重要的是在一定程度缓解了深层网络的一个难题“梯度弥散”，
+从而使得训练深层网络模型更加容易和稳定。
+
+另外，模型训练好后，模型推理时的卷积层和其后的 BN 层可以等价转换为一个带 bias 的卷积层
+（也就是通常所谓的“吸BN”），其原理参考深度学习推理时融合BN，轻松获得约5%的提速。
+
+对于 cv 领域的任务，建议无脑用 ReLU 激活函数。
+
+```python
+# cbr 组件示例代码
+def convbn_relu(in_planes, out_planes, kernel_size, stride, pad, dilation):
+    return nn.Sequential(
+        nn.Conv2d(in_planes, out_planes, 
+                  kernel_size=kernel_size, stride=stride, 
+                  padding=dilation if dilation > 1 else pad, 
+                  dilation=dilation, bias=False),
+        nn.BatchNorm2d(out_planes),
+        nn.ReLU(inplace=True)
+        )
+```
+
 # 参考
 [1] AI算法工程师手册  https://www.huaxiaozhuan.com/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/chapters/5_CNN.html  
 [2] 时域卷积网络（Temporal Convolutional Network，TCN）https://www.cnblogs.com/ZTianming/p/14654307.html
+[3] 深度学习炼丹-超参数设定和模型训练, https://mp.weixin.qq.com/s/upps5iZYHzRCZbEZ0wyvBg
