@@ -70,6 +70,12 @@ to 52 now
     - Date: 2020
     - Github: https://github.com/Artificial-Intelligence-Big-Data-Lab/A-Multi-Layer-and-Multi-Ensembled-Stock-Trader-Using-Deep-Learning-and-Deep-Reinforcement-Learning
 
+2. Adapt to Environment Sudden Changes by Learning a Context Sensitive Policy
+    - paper: https://aaai.org/papers/07637-adapt-to-environment-sudden-changes-by-learning-a-context-sensitive-policy/
+    - Date: 2022
+    - Github: https://github.com/FanmingL/ESCP
+    - Star: 8
+
 # 6. 图网络
 1. Modeling the Momentum Spillover Effect for Stock Prediction via Attribute-Driven Graph Attention Networks
     - paper: https://ojs.aaai.org/index.php/AAAI/article/view/16077
