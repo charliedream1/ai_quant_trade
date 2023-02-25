@@ -103,7 +103,7 @@
 
 1. 安装所需库
     ```shell
-    pip install requirements.txt
+    pip install -r requirements.txt
     ```
    
 2. 查看egs策略文件夹下文档, 并运行对应实例即可

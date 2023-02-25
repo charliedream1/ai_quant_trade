@@ -34,8 +34,12 @@ __pycache__/
 # folders
 exp
 data
+datasets
+results
 raw_wav
 tensorboard
+tensorboard_log
+trained_models
 zz_logs
 z_rubbish_bin
 bkp_prg
