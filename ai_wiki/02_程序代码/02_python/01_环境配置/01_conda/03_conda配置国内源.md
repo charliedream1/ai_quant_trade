@@ -1,4 +1,28 @@
-[转载自： https://zhuanlan.zhihu.com/p/434356947]
+最后编辑时间：2023-02-25
+
+# 1. 方法
+## 1.1 Windows配置
+- 来源：https://github.com/alibaba-damo-academy/FunASR/wiki/Windows%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85
+
+点击anaconda prompt命令窗口：
+运行命令： conda config --set show_channel_urls yes
+
+打开user下文件 .condarc，把里面的内容替换为清华源：
+```
+channels:
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/)
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/menpo/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/menpo/)
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/)
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/)
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/)
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/)
+- [http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/](http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/)
+show_channel_urls: true
+```
+
+# 2. 其它信息
+[转载自： https://zhuanlan.zhihu.com/p/434356947]  
+发布于 2021-11-29 18:35
 
 直接安装软件包速度太慢，经常被中断，所以需要配置国内镜像源。
 
@@ -64,10 +88,8 @@ torch.cuda.is_available()
 如果返回了 True， 恭喜您，成功安装了GPU版本。
 
 
-
-参考：
-
-https://blog.csdn.net/taoyu94/article/details/108150892
-https://www.bilibili.com/read/cv7476249
-https://www.jianshu.com/p/cd9b81f3e886
-发布于 2021-11-29 18:35
+# 参考
+[1] FunASR安装Wiki, https://github.com/alibaba-damo-academy/FunASR/wiki/Windows%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85
+[2] https://blog.csdn.net/taoyu94/article/details/108150892
+[3] https://www.bilibili.com/read/cv7476249
+[4] https://www.jianshu.com/p/cd9b81f3e886
