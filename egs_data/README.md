@@ -8,3 +8,6 @@
 
 3. 免费数据
     - Baostock
+    - qstock (主要基于东方财富和同花顺的免费接口)
+    - web_api (财经网接口)
+    - yfinance (国外股票市场数据)
