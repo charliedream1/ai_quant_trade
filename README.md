@@ -27,10 +27,10 @@
 | **时间**    |  **特性** |  **代码路径** |   
 |:-------- |:-------| :-------|
 | 2023.02.28 | [**机器学习自动挖掘5000个因子及股票趋势预测**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha/auto_alpha) | egs_alpha/auto_alpha|
-| 2023.02.05 | [**上班“摸鱼炒股”神器--超隐蔽“划水致富”: egs_aide/看盘神器**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1) | egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1 |
-| 2023.01.01 | [**本地深度强化学习策略: egs_local_strategies/reinforcement_learn/proto_sb3**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/reinforcement_learn/proto_sb3) | egs_trade/reinforcement_learn/proto_sb3 |
+| 2023.02.05 | [**上班“摸鱼炒股”神器--超隐蔽“划水致富”: egs_aide/看盘神器**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1) | egs_aide/看盘神器/v1 |
+| 2023.01.01 | [**本地深度强化学习策略: egs_local_strategies/reinforcement_learn/proto_sb3**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a001_proto_sb3) | egs_trade/rl/a001_proto_sb3 |
 | 2022.11.07 | [**Wind本地实盘模拟**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/real_bid_simulate/wind) | egs_trade/real_bid_simulate/wind | 
-| 2022.08.03 | [**基础回测框架 + 双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rules/double_ma) | egs_trade/rules/double_ma |
+| 2022.08.03 | [**基础回测框架 + 双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/vanilla/double_ma) | egs_trade/vanilla/double_ma |
 
 ## 目录   
 * [1. 简介](#1._简介)  
