@@ -1,0 +1,2 @@
+CQF的全称是Certificate in Quantitative Finance中文翻译为国际量化金融分析师，
+是全球量化金融领域专业的资格认证，并获得了不少金融公司的认可。
