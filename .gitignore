@@ -34,7 +34,6 @@ __pycache__/
 # folders
 exp
 data
-datasets
 results
 raw_wav
 tensorboard
