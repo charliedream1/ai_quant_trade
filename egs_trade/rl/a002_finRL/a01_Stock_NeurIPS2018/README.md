@@ -1,8 +1,19 @@
 # 1. 安装所需库
+
+- 主要依赖库
+    - 策略库：[finRL强化学习库](https://github.com/AI4Finance-Foundation/FinRL)
+    - 深度学习库：pytorch
+    - 强化学习库：stable-baselines3
+    - 以及其它一些辅助的库（详见requirements.txt）
+
+- 安装
     ```shell
     pip install -r requirements.txt
+    pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
     ```   
-    
+
+- ElegantRL库安装
+    - 是给一个强化学习库，比stable-baselines3更稳定，也可替换尝试这个库
     - 如果windows，且使用ElegantRL库，需要安装Microsoft C++ Build Tools (大约需要2.5G空间)    
       https://visualstudio.microsoft.com/visual-cpp-build-tools/   
       安装Microsoft Build Tools for Visual Studio，
@@ -10,27 +21,39 @@
 
 # 2. 策略介绍
 
-本策略使用道尔琼斯30支股票，通过5中深度强化学习算法进行模拟交易，
+- 市场：道尔琼斯30支股票
 
-同时使用投资组合管理-最大化均值方差方法作为基线进行对比。
+- 策略：
+    - 基线：传统策略，投资组合管理-最大化均值方差
+    - 深度强化学习算法进行模拟交易，包括：A2C, DDPG, PPO, TD3, SAC
+    
+- 参考：
+    - 策略：https://github.com/AI4Finance-Foundation/FinRL-Tutorials/tree/master/1-Introduction
+    - 论文：本样例复现论文
+        - Practical Deep Reinforcement Learning Approach for Stock Trading
+        - https://arxiv.org/abs/1811.07522
 
-本策略主要使用了[finRL强化学习库](https://github.com/AI4Finance-Foundation/FinRL), 
-notebook样例参考了(https://github.com/AI4Finance-Foundation/FinRL-Tutorials/tree/master/1-Introduction).
 
-相比原始notebook，主要修改：
-- 加入了大量中文的说明
-- 修改了部分无法跑通的bug
+- 相比原始notebook，主要修改：
+    - 加入了大量中文的说明
+    - 修改了部分无法跑通的bug
+
+- 训练环境：
+    - GPU：单卡大约需要15-30时间完成训练
+    - CPU：因训练速度过慢，未进行测试
 
 # 3. 使用介绍
 
 1. 获取数据
 
+   - （注意）从YahooDownloader下载美股数据，国内访问可能存在问题，因此可跳过此步骤，直接使用datasets文件夹下的数据
    - 运行 notebook: *1_Data.ipynb*. 会自动下载处理美股道尔琼斯30的OHLCV数据
    - 会生成2个文件：*train.csv*, *trade.csv* （在resources文件夹下提供）
 
 2. 训练强化学习模型
     
     - 运行 notebook: *2_Train.ipynb*. 展示如何在OpenAI gym-style的环境中处理数据，以及训练DRL模型
+    - 模型训练，共包含5个深度强化学习算法，A2C, DDPG, PPO, TD3, SAC
     - 生成训练好的强化学习模型.zip文件
 
 3. 回测
@@ -39,16 +62,9 @@ notebook样例参考了(https://github.com/AI4Finance-Foundation/FinRL-Tutorials
     - 回测模型，同时对比2个基线：最大化均值方差 和 道尔琼斯指数
     - 对资产变化进行绘图
 
-# 4. 文件说明
-- 1_Data.ipynb: 从YahooDownloader下载美股数据，国内访问可能存在问题，因此可跳过此步骤，
-  直接使用datasets文件夹下的数据
-- 2_Train.ipynb: 模型训练，共包含5个深度强化学习算法，A2C, DDPG, PPO, TD3, SAC，
-  强化学习库使用stable-baselines3
-- 3_Backtest.ipynb: 基线使用最大化均值方差投资组合管理方法，和强化学习进行对比
+# 4. 原理
 
-# 5. 原理
-
-## 5.1 原理介绍
+## 4.1 原理介绍
 
 ![](.README_images/强化学习图.png)
 
@@ -60,7 +76,7 @@ notebook样例参考了(https://github.com/AI4Finance-Foundation/FinRL-Tutorials
 
 强化学习是一种方法，让机器人学会提升表现，并达成目标。
 
-## 5.2 实现介绍
+## 4.2 实现介绍
 
 使用OpenAI gym的格式构建股票交易的环境。
 
@@ -85,8 +101,24 @@ state-action-reward的含义如下：
 - 环境：finrl/meta/env_stock_trading/env_stocktrading.py
 - 模型：finrl/agents/stablebaselines3/models.py
 
-# 6. 模型目录结构
+# 5. 模型目录结构
 ![](.README_images/输出目录结构.png)
+
+# 6. 实验结果
+
+实验策略
+- 基线：最大化均值方差
+- 深度强化学习策略A2C和SAC
+
+训练环境:
+- 单卡GPU进行训练，大约15-30分钟
+
+账户状态：
+- 初始化资金：1000000
+
+实验结果：3个策略均实现很高的收益。
+
+![](.README_images/实验结果.png)
 
 回测结果：
 ```
@@ -121,18 +153,34 @@ Tail ratio             1.029162
 Daily value at risk   -0.016218
 ```
 
-# 7. 实验结果
-时间结果分别是深度强化学习策略A2C和SAC，以及基线最大化均值方差。
+# 7. 潜在问题及不足
 
-初始化资金为1000000，可以看到3个策略均实现很高的收益。
-![](.README_images/实验结果.png)
+## 7.1 问题
+1. 该策略的状态信息用到了收盘价/最高价/最低价，可能看到了未来
 
-# 8. 潜在问题及不足
+   - 参考Issue: https://github.com/AI4Finance-Foundation/FinRL/issues/938
+   - 解释：不存在，因为不是机器学习的分类或预测问题，强化学习模型仅仅认为交易发生在收盘的最后一个时间点，
+     使用该时刻的信息进行交易。当然，当前策略的这种假设较为简单，仅是一个相对简单的原理演示的策略。更加
+     完善的股票环境可以产看FinRL-Meta: https://github.com/AI4Finance-Foundation/FinRL-Meta/tree/master/meta
 
-1. 训练和测试不一致：测试中引入了波动率及阈值（该问题正在确认中）
-2. （***）该策略的状态信息用到了收盘价/最高价/最低价，可能看到了未来（该问题正在确认中）
-3. 模拟环境中没有考虑滑点值
-4. 模拟环境没有考虑股票停牌的信息
+2. 训练和测试不一致：测试中引入了波动率及阈值
+    - 见Issue: https://github.com/AI4Finance-Foundation/FinRL-Tutorials/issues/50
+    - 模型无法完全学到风控策略，因为股市崩盘数据很少，因此，需要加入一些人工策略，出现大的波动时，卖出所有股票
+
+3. stable-baselines3的GPU环境下训练，调大batch size也没有加速
+   
+   - 可能sb3在GPU下优化不佳，可以尝试ElegantRL库
+
+4. pytorch存在远程恶意代码执行风险
+
+   - 使用>= 1.13.1的版本，以规避该漏洞
+
+## 7.2 不足
+
+模拟环境相对简单
+
+1. 模拟环境中没有考虑滑点值
+2. 模拟环境没有考虑股票停牌的信息
 
 # 8. 常见问题
 ## 8.1. 无法复现论文结果
@@ -165,17 +213,19 @@ Daily value at risk   -0.016218
      
 解决方法：
 1. 降低numpy版本
-2. 把数据改成二维的，即（10，）-》（1，10） （改完是否存在回测不完整性，没有详细验证）
+2. 把数据改成二维的，即（10，）-->（1，10） （改完是否存在回测不完整性，没有详细验证）
 3. 保持最上方所示的数据格式（推荐）
 
 ## 8.3. "zipline.assets" not found
 
 问题：  
+
     anaconda3\lib\site-packages\pyfolio\pos.py:26: UserWarning: Module "zipline.assets" not found; 
     mutltipliers will not be applied to position notionals.
       warnings.warn(
       
 原因：
+
 - pyfolio报出的错误，Quantopian's Zipline只支持3.7以下版本，不过zipline不是强制安装，可忽略。
 - 参考1：https://github.com/quantopian/pyfolio/issues/654
 - 参考2：https://github.com/AI4Finance-Foundation/FinRL/issues/313
