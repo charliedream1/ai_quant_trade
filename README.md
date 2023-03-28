@@ -26,7 +26,8 @@
 
 | **时间**    |  **特性** |  **代码路径** |   
 |:-------- |:-------| :-------|
-| 2023.02.28 | [**机器学习自动挖掘5000个因子及股票趋势预测**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha/auto_alpha) | egs_alpha/auto_alpha|
+| 2023.03.28 | [**强化学习多股票交易：年化收益53%**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018) | egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018 |
+| 2023.02.28 | [**机器学习自动挖掘5000个因子及股票趋势预测**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha/auto_alpha/tsfresh) | egs_alpha/auto_alpha/tsfresh |
 | 2023.02.05 | [**上班“摸鱼炒股”神器--超隐蔽“划水致富”**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1) | egs_aide/看盘神器/v1 |
 | 2023.01.01 | [**本地深度强化学习策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a001_proto_sb3) | egs_trade/rl/a001_proto_sb3 |
 | 2022.11.07 | [**Wind本地实盘模拟**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/real_bid_simulate/wind) | egs_trade/real_bid_simulate/wind | 
@@ -133,8 +134,19 @@
 
 ![trades_on_k_line](.README_images/强化学习.png)
 
-样例：
-* [**本地深度强化学习策略: egs_local_strategies/reinforcement_learn/proto_sb3**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/reinforcement_learn/proto_sb3)
+1. 样例介绍：
+
+    | **序号**    | **策略**  | **代码路径** |  **论文** |   
+    |:-------- |:-------- |:-------| :-------| 
+    | 1 | 原型  | egs_trade/rl/a001_proto_sb3 |  |
+    | 2 | 多股票交易 | egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018 | Practical Deep Reinforcement Learning Approach for Stock Trading （https://arxiv.org/abs/1811.07522） |
+
+2. 样例回测详情
+
+    | **序号**    | **策略**  | **市场**  | **年化收益** |  **最大回撤** |  **夏普率** | 
+    |:-------- |:-------- |:-------| :-------| :-------| :-------| 
+    | 1 | 原型 | 中国A股 |  |  | | 
+    | 2 | 多股票交易 | 美股道儿琼斯30 | 53.1% | -10.4%  | 2.17 |
 
 ### 3.2 图网络策略
 &emsp;&emsp;图网络可以更好的构建股票和股票之间的关系，同时关联股票、新闻、情绪等各类信息，能更好的挖掘全局关系网。
@@ -157,7 +169,12 @@
 (构建中，尽请期待。。。)
 
 ### 3.6 因子挖掘
-(构建中，尽请期待。。。)
+
+样例介绍：
+
+    | **序号**    | **策略**  | **代码路径** |  **论文** |   
+    |:-------- |:-------- |:-------| :-------| 
+    | 1 | 机器学习自动挖掘5000个因子及股票趋势预测 | egs_alpha/auto_alpha/tsfresh |  |
 
 ### 3.7 传统策略
 &emsp;&emsp;传统策略虽然看似昨日黄花，但其可操作性更强，仍又一定使用价值。深度学习和机器学习，往往需要配合规则使用。
