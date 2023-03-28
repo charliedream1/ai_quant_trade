@@ -7,6 +7,8 @@
 点击anaconda prompt命令窗口：
 运行命令： conda config --set show_channel_urls yes
 
+查看配置文件路径：conda config --show-sources
+
 打开user下文件 .condarc，把里面的内容替换为清华源：
 ```
 channels:
@@ -87,6 +89,9 @@ import torch
 torch.cuda.is_available()
 如果返回了 True， 恭喜您，成功安装了GPU版本。
 
+# 3. 手动下载包
+
+nvidia相关包：https://anaconda.org/nvidia/repo?type=conda&label=main
 
 # 参考
 [1] FunASR安装Wiki, https://github.com/alibaba-damo-academy/FunASR/wiki/Windows%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85
