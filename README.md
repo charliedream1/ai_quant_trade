@@ -6,8 +6,10 @@
 [![Python-Version](https://img.shields.io/badge/Python-3.8-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 
 [**AI炒股教程**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki)
-| [**本地策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)
+| [**本地策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade)
 | [**辅助操盘**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide)
+| [**因子挖掘**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha)
+| [**文本分析**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp)
 | [**数据处理**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data)
 | [**在线投研平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform)
 | [**使用文档**](https://github.com/charliedream1/ai_quant_trade/tree/master/docs)
@@ -26,7 +28,8 @@
 
 | **时间**    |  **特性** |  **代码路径** |   
 |:-------- |:-------| :-------|
-| 2023.03.28 | [**强化学习多股票交易：年化收益53%**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018) | egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018 |
+| 2023.04.09 | [**StructBERT市场情绪分析**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class) | egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class |
+| 2023.03.28 | [**强化学习多股票交易：年化收益53%**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018) | egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018 |
 | 2023.02.28 | [**机器学习自动挖掘5000个因子及股票趋势预测**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha/auto_alpha/tsfresh) | egs_alpha/auto_alpha/tsfresh |
 | 2023.02.05 | [**上班“摸鱼炒股”神器--超隐蔽“划水致富”**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1) | egs_aide/看盘神器/v1 |
 | 2023.01.01 | [**本地深度强化学习策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a001_proto_sb3) | egs_trade/rl/a001_proto_sb3 |
@@ -42,14 +45,18 @@
     * [3.3 深度学习策略](#3.3_深度学习策略)  
     * [3.4 机器学习策略](#3.4_机器学习策略)  
     * [3.5 高频交易](#3.5_高频交易)  
-    * [3.6 因子挖掘](#3.6_因子挖掘)  
-    * [3.7 传统策略](#3.7_传统策略)  
+    * [3.6 传统策略](#3.7_传统策略)  
 * [4. 实盘](#4._实盘)  
     * [4.1 实盘模拟](#4.1_实盘模拟)  
-* [5. 知识宝库](#5._知识宝库)  
-* [6. 在线投研平台](#6._在线投研平台)  
-    * [6.1 聚宽平台](#6.1_聚宽平台)  
-* [关注](#关注)   
+* [5. 辅助操盘](#5._辅助操盘) 
+* [6. 因子挖掘](#6._因子挖掘)   
+* [7. 数据获取](#7._数据获取)   
+* [8. 文本分析](#8._文本分析)   
+* [9. AI-烹饪指南](#9.__AI-烹饪指南)  
+* [10. 在线投研平台](#10._在线投研平台)  
+    * [10.1 聚宽平台](#10.1_聚宽平台)  
+* [打赏我](#打赏我)   
+* [关注我](#关注我)   
 * [讨论](#讨论)  
 * [技术支持](#技术支持)  
 * [常见问题](#常见问题)  
@@ -71,19 +78,21 @@
     │   ├── 进阶：机器学习、深度学习、强化学习、图网络
     │   ├── 实战：量化交易与投资、模型部署
     ├── docs (本仓库使用说明文档)
-    ├── egs_alpha (因子库)
     ├── egs_aide (辅助操盘工具)
     │   ├── 看盘神器 (上班“摸鱼炒股”神器--超隐蔽“划水致富”)
+    ├── egs_alpha (因子库)
     ├── egs_data (数据获取及处理)
     │   ├── wind (Wind万得数据处理)
-    ├── egs_trade (本地量化炒股策略)
-    │   ├── real_bid_simulate (实盘模拟)
-    │       ├── Wind万得实盘模拟
-    │   ├── reinforcement_learn (强化学习炒股)
-    │   ├── rules (传统规则类策略)
+    ├── egs_fin_nlp (文本分析)
+    │   ├── emotion_analysis (情感分析)
     ├── egs_online_platform (在线投研平台策略)
     │   ├── 优矿_Uqer
     │   ├── 聚宽_JoinQuant
+    ├── egs_trade (本地量化炒股策略)
+    │   ├── paper_trade (实盘模拟)
+    │       ├── wind万得实盘模拟
+    │   ├── rl (强化学习炒股)
+    │   ├── vanilla (传统规则类策略)
     ├── quant_brain (核心算法库)
     ├── runtime (模型的部署和实际使用)
     ├── tools (辅助工具)
@@ -93,10 +102,8 @@
     ```
 
 3. 支持的数据源
-    - Wind
-    - Baostock
-    - qstock
-    - Tushare
+
+    ![](.README_images/数据源.png)
 
 
 ## 2. 使用
@@ -112,7 +119,9 @@
 
 ## 3. 本地量化平台
 
-[**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies)  
+[**本地量化平台**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade)  
+
+代码详细参见目录：egs_trade
 
 可在本地可构建一套独立的量化交易系统，包含的策略：
 - AI策略
@@ -125,6 +134,9 @@
 - 传统规则类策略
 
 ### 3.1 强化学习策略
+
+&emsp;&emsp;代码详细参见目录：egs_trade/rl
+
 &emsp;&emsp;自从2017年AlphaGo与柯洁围棋大战之后，深度强化学习大火。
 
 &emsp;&emsp;相比于机器学习和深度学习, 强化学习是以最终目标为导向 (以交互作为目标) , 
@@ -139,14 +151,14 @@
     | **序号**    | **策略**  | **代码路径** |  **论文** |   
     |:-------- |:-------- |:-------| :-------| 
     | 1 | 原型  | egs_trade/rl/a001_proto_sb3 |  |
-    | 2 | 多股票交易 | egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018 | Practical Deep Reinforcement Learning Approach for Stock Trading （https://arxiv.org/abs/1811.07522） |
+    | 2 | FinRL教程0-NeurIPS2018 | egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018 | Practical Deep Reinforcement Learning Approach for Stock Trading （https://arxiv.org/abs/1811.07522） |
 
 2. 样例回测详情
 
     | **序号**    | **策略**  | **市场**  | **年化收益** |  **最大回撤** |  **夏普率** | 
     |:-------- |:-------- |:-------| :-------| :-------| :-------| 
     | 1 | 原型 | 中国A股 |  |  | | 
-    | 2 | 多股票交易 | 美股道儿琼斯30 | 53.1% | -10.4%  | 2.17 |
+    | 2 | FinRL教程0-NeurIPS2018 | 美股道儿琼斯30 | 53.1% | -10.4%  | 2.17 |
 
 ### 3.2 图网络策略
 &emsp;&emsp;图网络可以更好的构建股票和股票之间的关系，同时关联股票、新闻、情绪等各类信息，能更好的挖掘全局关系网。
@@ -168,43 +180,116 @@
 ### 3.5 高频交易
 (构建中，尽请期待。。。)
 
-### 3.6 因子挖掘
+### 3.6 传统策略
+&emsp;&emsp;传统策略虽然看似昨日黄花，但其可操作性更强，仍又一定使用价值。深度学习和机器学习，往往需要配合规则使用。
 
-样例介绍：
+1. [双均线策略](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/vanilla/double_ma)
+    - [详细使用教程](https://github.com/charliedream1/ai_quant_trade/tree/master/docs/%E6%9C%AC%E4%BB%93%E5%BA%93%E6%95%99%E7%A8%8B)
+    
+    ![trades_on_k_line](.README_images/trades_on_k_line.png)
+
+2. [投资组合管理7节教学](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/vanilla/portfolio_optimization)
+
+## 4. 实盘
+### 4.1 实盘模拟
+
+参见目录：egs_trade/paper_trade
+
+* [**Wind本地实盘模拟：双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/paper_trade/wind)
+
+## 5. 辅助操盘
+
+代码详细参见目录：egs_aide
+
+| **序号**    | **工具**  | **代码路径** |  
+|:-------- |:-------- |:-------| 
+| 1 | 定制化看盘工具 | egs_aide/看盘神器/v1 |
+
+## 6. 因子挖掘
+
+**代码详细参见目录：egs_alpha**
+
+### 6.1 因子挖掘
 
 | **序号**    | **策略**  | **代码路径** |  **论文** |   
 |:-------- |:-------- |:-------| :-------| 
 | 1 | 机器学习自动挖掘5000个因子及股票趋势预测 | egs_alpha/auto_alpha/tsfresh |  |
 
-### 3.7 传统策略
-&emsp;&emsp;传统策略虽然看似昨日黄花，但其可操作性更强，仍又一定使用价值。深度学习和机器学习，往往需要配合规则使用。
+### 6.2 因子库
 
-[双均线策略](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/rules/double_ma)
-- [详细使用教程](https://github.com/charliedream1/ai_quant_trade/tree/master/docs/%E6%9C%AC%E4%BB%93%E5%BA%93%E6%95%99%E7%A8%8B)
+| **序号**    | **因子库**  | 
+|:-------- |:-------- |
+| 1 | alpha101 | 
+| 2 | stockstats | 
+| 3 | ta_lib | 
 
-![trades_on_k_line](.README_images/trades_on_k_line.png)
+## 7. 数据处理 
+
+- 各类常见数据源使用详解
+- 统一数据源接口
+
+![](.README_images/数据源.png)
 
 
-## 4. 实盘
-### 4.1 实盘模拟
+## 8. 文本分析
 
-* [**Wind本地实盘模拟：双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies/real_bid_simulate/wind)
+| **序号**    | **工具**  | **代码路径** |  
+|:-------- |:-------- |:-------| 
+| 1 | [**StructBERT市场情绪分析**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class) | egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class |
 
 
-## 5. 知识宝库 
+## 9. AI-烹饪指南
 
-[**知识宝库**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_local_strategies) 
+[**AI-烹饪指南**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki) 
 
-&emsp;&emsp;这里汇总了各种量化相关的平台、开源资源和知识。这里是一个丰富的知识仓库和导航地图。  
+&emsp;&emsp;代码参见：ai_wiki
+
+&emsp;&emsp;本部分代码独立同步至仓库[**AI-烹饪指南**](https://github.com/charliedream1/ai_wiki)
+
+&emsp;&emsp;这里汇总了各种量化相关的平台、开源资源和知识。这里是一个丰富的知识仓库和导航地图。 
+ 
 &emsp;&emsp;这里将汇总包括量化投资，windows, linux, shell, vim, markdown，python, c++,机器学习数学基础， 
+
 leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经网络，语音识别、NLP和图像识别等基础知识
 
-* [量化交易与投资](https://github.com/charliedream1/ai_quant_trade/tree/master/docs/1_%E9%87%8F%E5%8C%96%E4%BA%A4%E6%98%93%E4%B8%8E%E6%8A%95%E8%B5%84)
-* [python量化工具库](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_tools)
-* [股票数据获取](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data)
+
+1. 代码结构和内容简介
+
+    ```
+    ai_wiki (AI全栈教学知识，以Markdown, Jupyter Notebook汇总知识体系)
+    ├── 01_系统平台 
+    │   ├── 基础：常用网站、通用工具
+    │   ├── 系统：Windows/Linux
+    ├── 02_程序代码 
+    │   ├── 编程：python, c, c++, 数据库, LeetCode
+    │   ├── 实战：常用工具、常见问题汇总
+    ├── 03_数学基础（程序员必备数学知识）
+    ├── 04_算法原理（传统算法，优化算法，遗传算法）
+    ├── 05_机器学习（资源+原理+实战）
+    ├── 06_深度学习（资源+原理+实战）
+    ├── 07_强化学习（资源+原理+实战）
+    ├── 08_图网络（资源+原理+实战）
+    ├── 09_模型部署（资源+原理+实战）
+    ├── 10_实践应用
+    │   ├── 01_开源平台
+    │   ├── 02_音频 (语音识别、唤醒、声纹、语音合成、语音增强)
+    │   ├── 03_文本处理 
+    │   ├── 04_时间序列 
+    │   ├── 05_图像识别 
+    ├── 11_面试
+    ├── 12_量化交易与投资
+    └── README.md
+
+    ```
+
+2. 量化相关资源
+
+   | **序号**    | **工具**  | **路径** |  
+    |:-------- |:-------- |:-------| 
+    | 1 | [**全网量化资源汇总**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki/12_量化交易与投资/01_资源) | ai_wiki/12_量化交易与投资/01_资源 |
 
 
-## 6. 在线投研平台
+## 10. 在线投研平台
 
 [**在线投研平台样例**](https://www.joinquant.com/)
 
@@ -215,7 +300,7 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 **注：如下策略仅在所述回测段有效，没有进行详细的调优和全周期验证。另外，没有策略能保证全周期有效的，
 如果实盘使用如下策略，请慎重使用**</font>)
 
-### 6.1 聚宽平台
+### 10.1 聚宽平台
 
 [**聚宽平台**](https://www.joinquant.com/)
 
@@ -241,8 +326,17 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
     * [详解: 股票数据获取及图形分析(附详细代码)](https://www.joinquant.com/view/community/detail/8fe84d0d25dcf1a6da72e442460cdf36)
 
 
-## 关注
-[知乎](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
+## 打赏我 
+
+您的支持是我前进的动力，即便“1毛钱”我也很开心啊，感谢您的打赏和支持 \(^o^)/
+
+![](.README_images/支付宝收款码_alma_new.jpg)
+
+
+## 关注我
+
+- [知乎](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
+- [聚宽](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
 
 
 ## 讨论
@@ -262,7 +356,7 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 
 ``` bibtex
 @misc{ai_quant_trade,
-  author={Charlie Lee},
+  author={Yi Li},
   title={ai_quant_trade},
   year={2022},
   publisher = {GitHub},
