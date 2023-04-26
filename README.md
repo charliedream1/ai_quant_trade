@@ -327,8 +327,8 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 
 您的支持是我前进的动力，即便“1毛钱”我也很开心啊，感谢您的打赏和支持 \(^o^)/
 
-<img src=".README_images/支付宝收款码_alma_new.jpg" width = "300" height = "200" alt="图片名称1" align=center />
-<img src=".README_images/微信收款码_alma_new.jpg" width = "300" height = "200" alt="图片名称2" align=center />
+<img src=".README_images/支付宝收款码_alma_new.jpg" width = "300" height = "390" alt="图片名称1" align=center />
+<img src=".README_images/微信收款码_alma_new.jpg" width = "300" height = "390" alt="图片名称2" align=center />
 
 ## 关注我
 
