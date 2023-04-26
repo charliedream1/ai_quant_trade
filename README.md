@@ -100,11 +100,7 @@
     └── README.md
  
     ```
-
-3. 支持的数据源
-
-    ![](.README_images/数据源.png)
-
+   
 
 ## 2. 使用
 
@@ -197,6 +193,7 @@
 
 * [**Wind本地实盘模拟：双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/paper_trade/wind)
 
+
 ## 5. 辅助操盘
 
 代码详细参见目录：egs_aide
@@ -238,13 +235,13 @@
 | 1 | [**StructBERT市场情绪分析**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class) | egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class |
 
 
-## 9. AI-烹饪指南
+## 9. AI-百科全书
 
-[**AI-烹饪指南**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki) 
+[**AI-百科全书**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki) 
 
 &emsp;&emsp;代码参见：ai_wiki
 
-&emsp;&emsp;本部分代码独立同步至仓库[**AI-烹饪指南**](https://github.com/charliedream1/ai_wiki)
+&emsp;&emsp;本部分代码独立同步至仓库[**AI-百科全书**](https://github.com/charliedream1/ai_wiki)
 
 &emsp;&emsp;这里汇总了各种量化相关的平台、开源资源和知识。这里是一个丰富的知识仓库和导航地图。 
  
@@ -330,9 +327,8 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 
 您的支持是我前进的动力，即便“1毛钱”我也很开心啊，感谢您的打赏和支持 \(^o^)/
 
-![](.README_images/支付宝收款码_alma_new.jpg)
-![](.README_images/微信收款码_alma_new.jpg)
-
+<img src=".README_images/支付宝收款码_alma_new.jpg" width = "300" height = "200" alt="图片名称1" align=center />
+<img src=".README_images/微信收款码_alma_new.jpg" width = "300" height = "200" alt="图片名称2" align=center />
 
 ## 关注我
 
