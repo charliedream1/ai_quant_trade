@@ -31,7 +31,7 @@
 | 2023.04.09 | [**StructBERT市场情绪分析**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class) | egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class |
 | 2023.03.28 | [**强化学习多股票交易：年化收益53%**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018) | egs_trade/rl/a002_finRL/a01_Stock_NeurIPS2018 |
 | 2023.02.28 | [**机器学习自动挖掘5000个因子及股票趋势预测**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha/auto_alpha/tsfresh) | egs_alpha/auto_alpha/tsfresh |
-| 2023.02.05 | [**上班“摸鱼炒股”神器--超隐蔽“划水致富”**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1) | egs_aide/看盘神器/v1 |
+| 2023.02.05 | [**定制化看盘软件**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide/%E7%9C%8B%E7%9B%98%E7%A5%9E%E5%99%A8/v1) | egs_aide/看盘神器/v1 |
 | 2023.01.01 | [**本地深度强化学习策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a001_proto_sb3) | egs_trade/rl/a001_proto_sb3 |
 | 2022.11.07 | [**Wind本地实盘模拟**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/real_bid_simulate/wind) | egs_trade/real_bid_simulate/wind | 
 | 2022.08.03 | [**基础回测框架 + 双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/vanilla/double_ma) | egs_trade/vanilla/double_ma |
@@ -79,7 +79,7 @@
     │   ├── 实战：量化交易与投资、模型部署
     ├── docs (本仓库使用说明文档)
     ├── egs_aide (辅助操盘工具)
-    │   ├── 看盘神器 (上班“摸鱼炒股”神器--超隐蔽“划水致富”)
+    │   ├── 看盘神器
     ├── egs_alpha (因子库)
     ├── egs_data (数据获取及处理)
     │   ├── wind (Wind万得数据处理)
