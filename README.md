@@ -52,7 +52,7 @@
 * [6. 因子挖掘](#6._因子挖掘)   
 * [7. 数据获取](#7._数据获取)   
 * [8. 文本分析](#8._文本分析)   
-* [9. AI-烹饪指南](#9.__AI-烹饪指南)  
+* [9. AI-实践指南](#9.__AI-实践指南)  
 * [10. 在线投研平台](#10._在线投研平台)  
     * [10.1 聚宽平台](#10.1_聚宽平台)  
 * [打赏我](#打赏我)   
@@ -235,13 +235,13 @@
 | 1 | [**StructBERT市场情绪分析**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class) | egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class |
 
 
-## 9. AI-百科全书
+## 9. AI-实践指南
 
-[**AI-百科全书**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki) 
+[**AI-实践指南**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki) 
 
 &emsp;&emsp;代码参见：ai_wiki
 
-&emsp;&emsp;本部分代码独立同步至仓库[**AI-百科全书**](https://github.com/charliedream1/ai_wiki)
+&emsp;&emsp;本部分代码独立同步至仓库[**AI-实践指南-**](https://github.com/charliedream1/ai_wiki)
 
 &emsp;&emsp;这里汇总了各种量化相关的平台、开源资源和知识。这里是一个丰富的知识仓库和导航地图。 
  
