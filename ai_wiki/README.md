@@ -1,4 +1,4 @@
-# AI-烹饪指南
+# AI-实践指南
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python-Version](https://img.shields.io/badge/Python-3.8-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
