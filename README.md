@@ -16,7 +16,7 @@
 
 <img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，或希望随时关注动态，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
 
-<div align="center"> <img src=".README_images/LOGO.jpg" width = 500 height = 300 /> </div>
+html <div align="center"> <img src=".README_images/LOGO.jpg" width = 500 height = 300 /> </div>
 
 **股票AI操盘手**
 
