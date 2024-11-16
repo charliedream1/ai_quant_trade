@@ -31,6 +31,11 @@
 
 <img src=".README_images/知识星球链接.png" width = "350" height = "180" alt="知识星球" align=center />
 
+**本仓库关联项目**
+
+- 《AI驯龙笔记》：https://github.com/charliedream1/ai_wiki
+  - 所有你要的AI全栈知识笔记都在这里
+
 ## :newspaper: 新特性 :fire:
 
 | **时间**    |  **特性** |  **代码路径** |   
