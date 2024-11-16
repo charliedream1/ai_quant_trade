@@ -25,6 +25,10 @@
 - 提供辅助操盘工具：辅助盯盘、股票推荐
 - 实盘部署工具：C++/CPU/GPU等部署
 
+**知识星球**
+
+<img src=".README_images/知识星球链接.png" width = "350" height = "180" alt="知识星球" align=center />
+
 ## :newspaper: 新特性 :fire:
 
 | **时间**    |  **特性** |  **代码路径** |   
@@ -56,6 +60,7 @@
 * [9. AI-实践指南](#9.__AI-实践指南)  
 * [10. 在线投研平台](#10._在线投研平台)  
     * [10.1 聚宽平台](#10.1_聚宽平台)  
+* [打赏我](#打赏我)  
 * [关注我](#关注我)   
 * [讨论](#讨论)  
 * [技术支持](#技术支持)  
@@ -321,6 +326,14 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
     * [龙虎榜数据筛选和过滤](https://www.joinquant.com/view/community/detail/a3a95cc7e53092aaea510d93bab9cb96)
     * [概念板块数据获取和选股](https://www.joinquant.com/view/community/detail/d1bf674ad163654aa263dac859762c90)
     * [详解: 股票数据获取及图形分析(附详细代码)](https://www.joinquant.com/view/community/detail/8fe84d0d25dcf1a6da72e442460cdf36)
+
+
+## 打赏我 
+
+您的支持是我前进的动力，即便“1毛钱”我也很开心啊，感谢您的打赏和支持 \(^o^)/
+
+<img src=".README_images/支付宝收款码_alma_new.jpg" width = "300" height = "390" alt="图片名称1" align=center />
+<img src=".README_images/微信收款码_alma_new.jpg" width = "300" height = "390" alt="图片名称2" align=center />
 
 
 ## 关注我
