@@ -33,7 +33,7 @@
 
 **微信公众号**
 
-<img src=".README_images/公众号链接.png" width = "350" height = "180" alt="微信公众号" align=center />
+<img src=".README_images/公众号链接.png" width = "430" height = "150" alt="微信公众号" align=center />
 
 **本仓库关联项目**
 
