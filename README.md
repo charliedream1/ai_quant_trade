@@ -31,6 +31,10 @@
 
 <img src=".README_images/知识星球链接.jpg" width = "350" height = "180" alt="知识星球" align=center />
 
+**公众号**
+
+<img src=".README_images/公众号链接.jpg" width = "350" height = "180" alt="知识星球" align=center />
+
 **本仓库关联项目**
 
 - 《AI驯龙笔记》：https://github.com/charliedream1/ai_wiki
