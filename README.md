@@ -25,16 +25,6 @@
 - 提供辅助操盘工具：辅助盯盘、股票推荐
 - 实盘部署工具：C++/CPU/GPU等部署
 
-**知识星球**
-
-欢迎加入我的知识星球，获取更多知识和服务！
-
-<img src=".README_images/知识星球链接.jpg" width = "350" height = "180" alt="知识星球" align=center />
-
-**微信公众号**
-
-<img src=".README_images/公众号链接.png" width = "430" height = "150" alt="微信公众号" align=center />
-
 **本仓库关联项目**
 
 - 《AI驯龙笔记》：https://github.com/charliedream1/ai_wiki
@@ -338,6 +328,24 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
     * [概念板块数据获取和选股](https://www.joinquant.com/view/community/detail/d1bf674ad163654aa263dac859762c90)
     * [详解: 股票数据获取及图形分析(附详细代码)](https://www.joinquant.com/view/community/detail/8fe84d0d25dcf1a6da72e442460cdf36)
 
+## 关注我
+
+- [知乎](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
+- [聚宽](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
+
+---
+
+**知识星球**
+
+欢迎加入我的知识星球，获取更多知识和服务！
+
+<img src=".README_images/知识星球链接.jpg" width = "350" height = "180" alt="知识星球" align=center />
+
+**微信公众号**
+
+<img src=".README_images/公众号链接.png" width = "430" height = "150" alt="微信公众号" align=center />
+
+---
 
 ## 打赏我 
 
@@ -345,12 +353,6 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 
 <img src=".README_images/支付宝收款码_alma_new.jpg" width = "300" height = "390" alt="图片名称1" align=center />
 <img src=".README_images/微信收款码_alma_new.jpg" width = "300" height = "390" alt="图片名称2" align=center />
-
-
-## 关注我
-
-- [知乎](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
-- [聚宽](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
 
 
 ## 讨论
