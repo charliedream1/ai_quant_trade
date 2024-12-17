@@ -361,8 +361,8 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
 
 ## 技术支持
 
-欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题。
-
+- 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题。
+- 加入知识星球，获取更多技术支持。
 
 ## 常见问题
 
