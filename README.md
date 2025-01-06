@@ -31,7 +31,9 @@
 
 欢迎加入我的知识星球，获取更多知识和服务！
 
-<img src=".README_images/知识星球链接.jpg" width = "350" height = "180" alt="知识星球" align=center />
+迎新年，限时优惠！！！
+
+<img src=".README_images/星球优惠券.png" width = "300" height = "380" alt="知识星球" align=center />
 
 **微信公众号**
 
