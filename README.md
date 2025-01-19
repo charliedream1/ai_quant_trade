@@ -29,13 +29,16 @@
 
 **知识星球**
 
-欢迎加入我的知识星球，获取更多知识和服务！
+🔥低至每日1毛|独家速成课|无痛学课|📺视频教程|
+开源避坑指南|自研工具代码|3分钟视频论文速度|图书馆
 
-迎新年，限时优惠！！！
+👇扫码查看“星球”更详细的介绍！
 
-<img src=".README_images/星球优惠券.png" width = "300" height = "380" alt="知识星球" align=center />
+<img src=".README_images/知识星球链接.jpg" width = "260" height = "360" alt="知识星球" align=center />
 
 **微信公众号**
+
+🔥最新资讯实时关注，资料获取！！！
 
 <img src=".README_images/公众号链接.png" width = "360" height = "150" alt="微信公众号" align=center />
 
