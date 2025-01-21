@@ -55,6 +55,11 @@
 
 ---
 
+- [知乎：391关注者](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
+- [聚宽：599关注者](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
+- 
+---
+
 **代码仓**   
 ✨AI股票操盘手: 
 - Github: https://github.com/charliedream1/ai_quant_trade
@@ -62,15 +67,11 @@
 
 **本仓库关联项目**
 
-✨AI驯龙笔记：
+✨AI大模型踩坑指南：
 - Github: https://github.com/charliedream1/ai_wiki
 - Gitee（国内镜像）：https://gitee.com/charlie1/ai_wiki.git
-- 简介：决策略与关键要点，分享各种实用案例，追踪前沿技术发展，囊括 AI 全栈知识，涵盖大模型、编程技术、机器学习、深度学习、强化学习、图神经网络、语音识别、NLP 及图像识别等领域
+- 简介：分享各种实用案例，追踪前沿技术发展，囊括 AI 全栈知识，涵盖大模型、编程技术、机器学习、深度学习、强化学习、图神经网络、语音识别、NLP 及图像识别等领域
 
----
-
-- [知乎：391关注者](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
-- [聚宽：599关注者](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
 ---
 
 ## :newspaper: 新特性 :fire:
