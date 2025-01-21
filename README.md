@@ -67,7 +67,7 @@
 
 **本仓库关联项目**
 
-✨AI大模型踩坑指南：
+✨AI大模型避坑指南：
 - Github: https://github.com/charliedream1/ai_wiki
 - Gitee（国内镜像）：https://gitee.com/charlie1/ai_wiki.git
 - 简介：分享各种实用案例，追踪前沿技术发展，囊括 AI 全栈知识，涵盖大模型、编程技术、机器学习、深度学习、强化学习、图神经网络、语音识别、NLP 及图像识别等领域
