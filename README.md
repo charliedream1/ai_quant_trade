@@ -16,7 +16,7 @@
 
 <img src="https://github.blog/wp-content/uploads/2020/09/github-stars-logo_Color.png" alt="drawing" width="25"/>**如果喜欢本项目，或希望随时关注动态，请给我点个赞吧 (页面右上角的小星星)，欢迎分享到社区!**
 
-<div align="center"> <img src=".README_images/LOGO.jpg" width = 320 height = 300 /> </div>
+<div align="center"> <img src=".README_images/LOGO_NEW.png" width = 290 height = 300 /> </div>
 
 **股票AI操盘手**
 
@@ -27,14 +27,25 @@
 
 ---
 
+## 配套资源
+
+本代码仓秉承收费和免费并行的原则。
+
+### 收费资源
+
 **知识星球**
 
 🔥低至每日1毛|独家速成课|无痛学课|📺视频教程|
-开源避坑指南|自研工具代码|3分钟视频论文速度|图书馆
+开源避坑指南|自研工具代码|3分钟视频论文速度|图书馆|
+全网最低价量化类星球之一|3天不满意免费退款
 
 👇扫码查看“星球”更详细的介绍！
 
 <img src=".README_images/知识星球链接.jpg" width = "260" height = "360" alt="知识星球" align=center />
+
+---
+
+### 免费资源
 
 **微信公众号**
 
@@ -56,6 +67,10 @@
 - Gitee（国内镜像）：https://gitee.com/charlie1/ai_wiki.git
 - 简介：决策略与关键要点，分享各种实用案例，追踪前沿技术发展，囊括 AI 全栈知识，涵盖大模型、编程技术、机器学习、深度学习、强化学习、图神经网络、语音识别、NLP 及图像识别等领域
 
+---
+
+- [知乎：391关注者](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
+- [聚宽：599关注者](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
 ---
 
 ## :newspaper: 新特性 :fire:
@@ -356,11 +371,6 @@ leetcode(c++, python)，机器学习、 深度学习、强化学习、图神经�
     * [龙虎榜数据筛选和过滤](https://www.joinquant.com/view/community/detail/a3a95cc7e53092aaea510d93bab9cb96)
     * [概念板块数据获取和选股](https://www.joinquant.com/view/community/detail/d1bf674ad163654aa263dac859762c90)
     * [详解: 股票数据获取及图形分析(附详细代码)](https://www.joinquant.com/view/community/detail/8fe84d0d25dcf1a6da72e442460cdf36)
-
-## 关注我
-
-- [知乎](https://www.zhihu.com/people/yi-dui-ji-mu-zai-kuang-xiang)
-- [聚宽](https://www.joinquant.com/user/d7aafd0b8b767b735bfb6f3639c81a6c)
 
 ---
 
