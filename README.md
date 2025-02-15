@@ -46,8 +46,8 @@
 👇扫码查看“星球”更详细的介绍（里面有搞笑漫画哦）！
 
 <center class="half">
-<img src=".README_images/知识星球_量化.jpg" width=230 height = "330" alt="知识星球"/>
-<img src=".README_images/知识星球_大模型.jpg" width=230 height = "330" alt="知识星球"/>
+<img src=".README_images/知识星球_量化.jpg" width=245 height = "350" alt="知识星球"/>
+<img src=".README_images/知识星球_大模型.jpg" width=245 height = "350" alt="知识星球"/>
 </center>
 
 👆上方扫描或者👇下方点击都可以进入星球查看更详细的介绍(由于星球还未超过30人，暂时无法被检索到，只能通过链接访问到)🎏
