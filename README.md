@@ -426,7 +426,9 @@
 
 - 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题。
 - 加入知识星球，获取更多技术支持。
-
+  - [AI智投星球](https://t.zsxq.com/dHt9l)：专注AI量化交易知识分享
+  - [大模型避坑指南](https://t.zsxq.com/q42Js)：专注编程、大模型、AI应用赋能
+  
 ## 常见问题
 
 请查看文档[**常见问题**](docs/02_常见问题)
