@@ -300,6 +300,9 @@
 2. [投资组合管理7节教学](egs_trade/vanilla/portfolio_optimization)
 
 ## 5. 实盘
+
+**代码详细参见目录：[egs_trade](egs_trade)**
+
 ### 5.1 实盘模拟
 
 1. [**Wind本地实盘模拟：双均线策略**](egs_trade/paper_trade/wind)
