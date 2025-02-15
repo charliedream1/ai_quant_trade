@@ -46,11 +46,11 @@
 👇扫码查看“星球”更详细的介绍（里面有搞笑漫画哦）！
 
 <center class="half">
-<img src=".README_images/知识星球_量化.jpg" width=210 height = "300" alt="知识星球"/>
-<img src=".README_images/知识星球_大模型.jpg" width=210 height = "300" alt="知识星球"/>
+<img src=".README_images/知识星球_量化.jpg" width=190 height = "290" alt="知识星球"/>
+<img src=".README_images/知识星球_大模型.jpg" width=190 height = "290" alt="知识星球"/>
 </center>
 
-👆上方扫描或者👇下方点击都可以进入星球查看更详细的介绍🎏
+👆上方扫描或者👇下方点击都可以进入星球查看更详细的介绍(由于星球还未超过30人，暂时无法被检索到，只能通过链接访问到)🎏
 
 - [AI智投星球](https://t.zsxq.com/dHt9l)：专注AI量化交易知识分享
 - [大模型避坑指南](https://t.zsxq.com/q42Js)：专注编程、大模型、AI应用赋能
