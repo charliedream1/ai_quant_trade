@@ -1,11 +1,11 @@
-# 股票AI操盘手  
+# AI量化交易操盘手  
 
 [**ENGLISH VERSION**](https://github.com/charliedream1/ai_quant_trade/blob/master/README_EN.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python-Version](https://img.shields.io/badge/Python-3.8-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 
-[**AI炒股教程**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki)
+[**AI量化教程**](https://github.com/charliedream1/ai_quant_trade/tree/master/ai_wiki)
 | [**本地策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade)
 | [**辅助操盘**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide)
 | [**因子挖掘**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha)
@@ -19,12 +19,13 @@
 
 <div align="center"> <img src=".README_images/LOGO_NEW.png" width = 290 height = 300 /> </div>
 
-**股票AI操盘手**
+**AI量化交易操盘手**
 
 - 一站式平台：从学习、模拟到实盘
 - 炒股策略：大模型、因子挖掘、传统策略、机器学习、深度学习、强化学习、图网络、高频交易等
 - 资源汇总：全网资源汇总、实战案例、论文解读、代码实现
 - 提供辅助操盘工具：辅助盯盘、股票推荐
+- 覆盖股票、基金、加密货币等多个市场
 - 实盘部署工具：python/C++/CPU/GPU等部署
 
 ---
@@ -57,9 +58,9 @@
 <img src=".README_images/知识星球_大模型.jpg" width=245 height = "350" alt="知识星球"/>
 </center>
 
-🎈随着人数增加，后续会随时调整价格。欢迎大家加入！
+🎈随着人数增加，以及内容的丰富和完善，后续会随时调整价格。欢迎大家加入！
 
-🧧帮助我们推广拉新可返现，详情请咨询星球内管理员。
+🧧帮助我们推广拉新可返现，详情请在公众号内咨询管理员。
 
 <font color= orange>🎯本代码仓会持续更新，但部分代码转为私有化维护仅在星球中可见，对应功能会在仓库中标注</font>  
 
@@ -81,7 +82,7 @@
 ---
 
 **代码仓 (永久免费)**   
-✨AI股票操盘手: 
+✨AI量化交易操盘手: 
 - Github: https://github.com/charliedream1/ai_quant_trade
 - Gitee（国内镜像）: https://gitee.com/charlie1/ai_quant_trade.git 
 
