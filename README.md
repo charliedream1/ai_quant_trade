@@ -72,7 +72,8 @@
 
 **微信公众号**
 
-🔥最新资讯实时关注，<font color= orange>关注并点赞任一篇文章，私信管理员，领取精美量化资料包一份！！！</font>
+🔥最新资讯实时关注
+🎁<font color= orange>关注并点赞任一篇文章，私信管理员，领取精美量化资料包一份！！！</font>
 
 <img src=".README_images/公众号链接.png" width = "320" height = "120" alt="微信公众号" align=center />
 
