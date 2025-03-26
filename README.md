@@ -50,6 +50,10 @@
 
 👇下方扫描二维码或者点击链接，都可以进入星球查看更详细的介绍🎏
 
+星球视频介绍：
+- 星球使用指南：https://mp.weixin.qq.com/s/SGc49e0xf24q5aUbf3rO0g?token=2028063978&lang=zh_CN
+- 学习路线及群内资源使用：https://mp.weixin.qq.com/s/3-U048mc0riVsdETrKr77g
+
 星球加入链接：
 - [AI智投星球](https://t.zsxq.com/dHt9l)：AI量化交易速成、前沿技术、实战案例、资源库
 - [AI速成营](https://t.zsxq.com/q42Js)：作为子星球，深入补充编程、大模型、AI基础、原理及金融方向实战及求职等的速成和案例分享，为[AI智投星球]提供扎实的基础知识内容，形成互补
