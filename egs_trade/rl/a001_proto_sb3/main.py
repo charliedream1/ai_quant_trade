@@ -19,6 +19,7 @@
 # limitations under the License.
 
 import os
+import sys
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -26,6 +27,9 @@ import matplotlib.pyplot as plt
 from stable_baselines3.ppo.policies import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3 import PPO
+
+path = os.getcwd()
+sys.path.append(os.path.abspath(path + ('/..' * 3)))
 
 from quant_brain.rl.envs.StockTradingEnv0 import StockTradingEnv
 from quant_brain.data_io.baostock.get_stock_data import Downloader
