@@ -1,5 +1,0 @@
-loguru
-tqdm
-langchain-openai
-langchain
-langchain-community

@@ -1,0 +1,3 @@
+huggingface_hub
+modelscope
+retrying
