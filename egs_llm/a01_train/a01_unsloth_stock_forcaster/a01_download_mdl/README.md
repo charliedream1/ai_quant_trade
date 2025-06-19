@@ -1,0 +1,1 @@
+unslot dynamic 2.0优化模型：https://docs.unsloth.ai/basics/qwen3-how-to-run-and-fine-tune
