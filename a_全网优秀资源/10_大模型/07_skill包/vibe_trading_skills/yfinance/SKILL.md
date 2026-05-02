@@ -1,0 +1,255 @@
+---
+name: yfinance
+description: yfinance global market data interface — retrieve OHLCV, financials, insider transactions, and institutional holdings for US stocks, HK stocks, ETFs, and indices via Yahoo Finance. Free, no API key required.
+category: data-source
+---
+# yfinance
+
+## Overview
+
+yfinance is an open-source Python wrapper for Yahoo Finance, providing global market data (US stocks, HK stocks, ETFs, indices) including historical and real-time quotes. **Completely free, no registration or API key required.**
+
+The project has a built-in yfinance DataLoader (`backtest/loaders/yfinance_loader.py`). When backtesting, set `source: "yfinance"` or `source: "auto"` to invoke it automatically.
+
+## Quick Start
+
+```bash
+pip install yfinance pandas
+```
+
+```python
+import yfinance as yf
+
+# Apple daily bars for the past year
+df = yf.download("AAPL", start="2025-01-01", end="2026-01-01", progress=False)
+print(df.head())
+
+# Tencent (HK-listed)
+df = yf.download("0700.HK", start="2025-01-01", end="2026-01-01", progress=False)
+print(df.head())
+```
+
+## Ticker Format Conversion
+
+The project uses a unified ticker format. The DataLoader automatically converts to yfinance format:
+
+| Project Format | yfinance Format | Market |
+|---------------|----------------|--------|
+| `AAPL.US` | `AAPL` | US stock |
+| `MSFT.US` | `MSFT` | US stock |
+| `700.HK` | `0700.HK` | HK stock |
+| `9988.HK` | `9988.HK` | HK stock |
+| `SPY.US` | `SPY` | US ETF |
+
+**Rules:**
+- US stocks: strip the `.US` suffix → use the raw ticker
+- HK stocks: keep `.HK`, pad the number to 4 digits (`700` → `0700`)
+
+## Supported Data Types
+
+### 1. Historical OHLCV
+
+```python
+import yfinance as yf
+import pandas as pd
+
+# Single stock
+df = yf.download("AAPL", start="2025-01-01", end="2026-01-01", progress=False)
+
+# Batch download
+df = yf.download(["AAPL", "MSFT", "GOOGL"], start="2025-01-01", end="2026-01-01", progress=False)
+
+# Specific interval
+df = yf.download("AAPL", start="2026-03-01", end="2026-03-30",
+                 interval="1h", progress=False)  # 1m/5m/15m/30m/1h/1d/1wk/1mo
+```
+
+**Supported intervals:**
+- Minute-level: `1m`, `2m`, `5m`, `15m`, `30m`, `60m`, `90m`
+- Hourly: `1h`
+- Daily and above: `1d`, `5d`, `1wk`, `1mo`, `3mo`
+
+**Minute data limits:**
+- `1m`: up to 7 days of history
+- `2m/5m/15m/30m/60m/90m`: up to 60 days
+- `1h`: up to 730 days
+- `1d` and above: unlimited
+
+### 2. Company Info
+
+```python
+ticker = yf.Ticker("AAPL")
+
+info = ticker.info
+print(f"Company: {info.get('longName')}")
+print(f"Industry: {info.get('industry')}")
+print(f"Market cap: {info.get('marketCap')}")
+print(f"PE: {info.get('trailingPE')}")
+print(f"EPS: {info.get('trailingEps')}")
+print(f"Dividend yield: {info.get('dividendYield')}")
+```
+
+### 3. Financial Statements
+
+```python
+ticker = yf.Ticker("AAPL")
+
+# Income statement (annual)
+income = ticker.financials
+# Income statement (quarterly)
+income_q = ticker.quarterly_financials
+
+# Balance sheet
+balance = ticker.balance_sheet
+
+# Cash flow statement
+cashflow = ticker.cashflow
+
+# Earnings data
+earnings = ticker.earnings
+```
+
+### 4. Dividends and Splits
+
+```python
+ticker = yf.Ticker("AAPL")
+
+# Dividend history
+dividends = ticker.dividends
+
+# Stock split history
+splits = ticker.splits
+
+# All corporate actions
+actions = ticker.actions
+```
+
+### 5. Institutional Holdings
+
+```python
+ticker = yf.Ticker("AAPL")
+
+# Institutional holders
+holders = ticker.institutional_holders
+
+# Major holders summary
+major = ticker.major_holders
+
+# Insider transactions
+insider = ticker.insider_transactions
+```
+
+### 6. Indices and ETFs
+
+```python
+# Major indices
+sp500 = yf.download("^GSPC", start="2025-01-01", end="2026-01-01", progress=False)  # S&P 500
+nasdaq = yf.download("^IXIC", start="2025-01-01", end="2026-01-01", progress=False)  # NASDAQ
+hsi = yf.download("^HSI", start="2025-01-01", end="2026-01-01", progress=False)      # Hang Seng Index
+
+# ETFs
+spy = yf.download("SPY", start="2025-01-01", end="2026-01-01", progress=False)
+qqq = yf.download("QQQ", start="2025-01-01", end="2026-01-01", progress=False)
+```
+
+### 7. FX Rates
+
+```python
+# Currency pairs
+usdcny = yf.download("CNY=X", start="2025-01-01", end="2026-01-01", progress=False)
+usdhkd = yf.download("HKD=X", start="2025-01-01", end="2026-01-01", progress=False)
+eurusd = yf.download("EURUSD=X", start="2025-01-01", end="2026-01-01", progress=False)
+```
+
+## Popular Ticker Reference
+
+### US Stocks
+
+| Ticker | Company |
+|--------|---------|
+| AAPL | Apple |
+| MSFT | Microsoft |
+| GOOGL | Alphabet (Google) |
+| AMZN | Amazon |
+| NVDA | NVIDIA |
+| META | Meta Platforms |
+| TSLA | Tesla |
+| BRK-B | Berkshire Hathaway |
+
+### HK Stocks
+
+| Project Format | yfinance Format | Company |
+|---------------|----------------|---------|
+| 700.HK | 0700.HK | Tencent |
+| 9988.HK | 9988.HK | Alibaba |
+| 9618.HK | 9618.HK | JD.com |
+| 3690.HK | 3690.HK | Meituan |
+| 1810.HK | 1810.HK | Xiaomi |
+| 2318.HK | 2318.HK | Ping An |
+
+### Major Indices
+
+| Ticker | Index |
+|--------|-------|
+| ^GSPC | S&P 500 |
+| ^DJI | Dow Jones Industrial Average |
+| ^IXIC | NASDAQ Composite |
+| ^HSI | Hang Seng Index |
+| ^N225 | Nikkei 225 |
+| ^FTSE | FTSE 100 |
+
+### Sector ETFs
+
+| Ticker | Sector |
+|--------|--------|
+| XLK | Technology |
+| XLF | Financials |
+| XLE | Energy |
+| XLV | Healthcare |
+| XLY | Consumer Discretionary |
+| XLP | Consumer Staples |
+| XLI | Industrials |
+| XLU | Utilities |
+
+## Backtest Usage
+
+### config.json Example
+
+```json
+{
+  "source": "yfinance",
+  "codes": ["AAPL.US", "MSFT.US"],
+  "start_date": "2020-01-01",
+  "end_date": "2026-03-30",
+  "initial_cash": 1000000,
+  "commission": 0.001,
+  "extra_fields": null
+}
+```
+
+### Cross-Market Auto Mode
+
+```json
+{
+  "source": "auto",
+  "codes": ["000001.SZ", "AAPL.US", "700.HK", "BTC-USDT"],
+  "start_date": "2024-01-01",
+  "end_date": "2026-03-30",
+  "initial_cash": 1000000,
+  "commission": 0.001,
+  "extra_fields": null
+}
+```
+
+`source: "auto"` routes automatically by ticker format: A-shares → tushare, HK/US stocks → yfinance, crypto → OKX.
+
+## Notes
+
+- **Free, no API key**: yfinance scrapes Yahoo Finance public data — no registration needed
+- **Rate limits**: high-frequency requests may trigger temporary Yahoo bans — prefer batch downloads over per-ticker loops
+- **Minute data range**: limited by Yahoo Finance (see table above)
+- **HK tickers**: Yahoo Finance uses 4-digit numbers + `.HK`; pad with leading zeros where needed
+- **Adjustment**: `auto_adjust=True` (default) returns forward-adjusted prices; the project loader uses `auto_adjust=False`
+- **Timezone**: returned data includes timezone info; the DataLoader strips it automatically
+- **extra_fields not supported**: yfinance via the backtest loader returns OHLCV only; PE/PB and other fundamentals require separate `yf.Ticker().info` calls
+- **Comparison with Tushare**: Tushare covers deep A-share data (financials, fund flows, block trades, etc.); yfinance covers global markets but with less depth
