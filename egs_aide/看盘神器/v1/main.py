@@ -87,8 +87,8 @@ class StockMonitor:
         sheet = self.wb.sheets[index]
         # log.info('Processing: ' + sheet.name)
 
-        row_num = sheet.api.UsedRange.Rows.count
-        col_num = sheet.api.UsedRange.Columns.count
+        row_num = sheet.api.UsedRange.Rows.Count
+        col_num = sheet.api.UsedRange.Columns.Count
         if row_num == 1 and col_num == 1:
             df_sht = pd.DataFrame()
         else:
