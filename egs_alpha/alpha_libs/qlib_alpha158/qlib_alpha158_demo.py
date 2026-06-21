@@ -5,17 +5,60 @@ Qlib Alpha158 因子计算 demo
 注意：
 1. 需要先安装依赖：pip install pyqlib akshare pandas
 2. 首次运行需要下载 qlib 数据：python -c "from qlib.data.data import GetData; GetData().qlib_data(target_dir='~/.qlib/qlib_data/cn_data', region='cn')"
+3. 当 akshare 不可用时，自动使用模拟数据
 """
 
-import akshare as ak
 import pandas as pd
-import qlib
-from qlib.data import D
-from qlib.contrib.data.handler import Alpha158
+import numpy as np
+
+
+def generate_mock_data(symbol="000001", days=240):
+    """生成模拟 OHLCV 数据（akshare 不可用时的后备）"""
+    np.random.seed(hash(symbol) % 2**32)
+    dates = pd.bdate_range("2023-01-01", periods=days)
+    base_price = 10 + np.random.rand() * 40
+    returns = np.random.randn(days) * 0.02
+    close = base_price * np.cumprod(1 + returns)
+    open_ = close * (1 + np.random.randn(days) * 0.01)
+    high = np.maximum(open_, close) * (1 + np.abs(np.random.randn(days)) * 0.01)
+    low = np.minimum(open_, close) * (1 - np.abs(np.random.randn(days)) * 0.01)
+    volume = np.random.randint(5000000, 50000000, size=days).astype(float)
+    df = pd.DataFrame({
+        "date": dates, "open": open_, "close": close,
+        "high": high, "low": low, "volume": volume,
+    }).set_index("date")
+    return df
+
+
+def get_stock_data(symbol, start_date="20230101", end_date="20231231"):
+    """获取股票数据，akshare 失败时使用模拟数据"""
+    try:
+        import akshare as ak
+        df = ak.stock_zh_a_hist(symbol=symbol, period="daily",
+                                start_date=start_date, end_date=end_date)
+        df = df.rename(columns={
+            "日期": "date", "开盘": "open", "收盘": "close",
+            "最高": "high", "最低": "low", "成交量": "volume",
+        })
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.set_index("date").sort_index()
+        print(f"  [akshare] 获取 {symbol} 成功，{len(df)} 条数据")
+        return df
+    except Exception as e:
+        print(f"  [模拟数据] akshare 不可用({type(e).__name__})，使用模拟数据: {symbol}")
+        return generate_mock_data(symbol)
 
 
 def demo_alpha158_via_qlib_data():
     """方式一：使用 qlib 内置数据源计算 Alpha158 因子"""
+    try:
+        import qlib
+        from qlib.data import D
+        from qlib.contrib.data.handler import Alpha158
+    except ImportError:
+        print("跳过：qlib 未安装，请运行 pip install pyqlib")
+        return
+
     # 初始化 qlib（需提前下载好数据）
     qlib.init(provider_uri="~/.qlib/qlib_data/cn_data", region="cn")
 
@@ -41,26 +84,19 @@ def demo_alpha158_via_qlib_data():
 
 
 def demo_alpha158_manual():
-    """方式二：使用 akshare 获取数据，手动计算部分 Alpha158 风格因子"""
-    # 用 akshare 获取平安银行日行情
-    df = ak.stock_zh_a_hist(symbol="000001", period="daily", start_date="20230101", end_date="20231231")
-    df = df.rename(columns={
-        "日期": "date", "开盘": "open", "收盘": "close",
-        "最高": "high", "最低": "low", "成交量": "volume",
-    })
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.set_index("date").sort_index()
-
+    """方式二：获取数据后手动计算部分 Alpha158 风格因子"""
+    df = get_stock_data("000001")
     close = df["close"]
     volume = df["volume"]
     high = df["high"]
     low = df["low"]
+    open_ = df["open"]
 
     # 手动计算几个 Alpha158 中的典型因子
     factors = pd.DataFrame(index=df.index)
 
     # 1. KBAR: (high-low)/open 风格因子
-    factors["KBAR"] = (high - low) / df["open"]
+    factors["KBAR"] = (high - low) / open_
 
     # 2. ROC10: 10日价格变化率
     factors["ROC10"] = close.pct_change(10)
@@ -91,7 +127,7 @@ def demo_alpha158_manual():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("Demo 1: 手动计算 Alpha158 风格因子（使用 akshare 数据）")
+    print("Demo 1: 手动计算 Alpha158 风格因子")
     print("=" * 60)
     demo_alpha158_manual()
 
@@ -101,5 +137,5 @@ if __name__ == "__main__":
     try:
         demo_alpha158_via_qlib_data()
     except Exception as e:
-        print(f"跳过（需先下载 qlib 数据）: {e}")
+        print(f"跳过（需先安装并下载 qlib 数据）: {e}")
         print("下载命令: python -c \"from qlib.data.data import GetData; GetData().qlib_data(target_dir='~/.qlib/qlib_data/cn_data', region='cn')\"")

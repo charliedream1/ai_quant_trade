@@ -6,23 +6,47 @@ jqfactor_analyzer 单因子分析 demo
     pip install jqfactor_analyzer akshare pandas numpy
 """
 
-import akshare as ak
 import pandas as pd
 import numpy as np
 
 
+def generate_mock_stock_data(symbols, days=240):
+    """生成模拟 OHLCV 数据（akshare 不可用时的后备）"""
+    dates = pd.bdate_range("2023-01-01", periods=days)
+    all_data = {}
+    for sym in symbols:
+        np.random.seed(hash(sym) % 2**32)
+        base_price = 10 + np.random.rand() * 40
+        returns = np.random.randn(days) * 0.02
+        close = base_price * np.cumprod(1 + returns)
+        open_ = close * (1 + np.random.randn(days) * 0.01)
+        high = np.maximum(open_, close) * (1 + np.abs(np.random.randn(days)) * 0.01)
+        low = np.minimum(open_, close) * (1 - np.abs(np.random.randn(days)) * 0.01)
+        volume = np.random.randint(5000000, 50000000, size=days).astype(float)
+        df = pd.DataFrame({
+            "开盘": open_, "收盘": close,
+            "最高": high, "最低": low, "成交量": volume,
+        }, index=dates)
+        all_data[sym] = df
+    return all_data
+
+
 def get_multi_stock_data(symbols, start_date="20230101", end_date="20231231"):
-    """用 akshare 获取多只股票的 OHLCV 数据"""
+    """用 akshare 获取多只股票的 OHLCV 数据，失败时使用模拟数据"""
     all_data = {}
     for sym in symbols:
         try:
+            import akshare as ak
             df = ak.stock_zh_a_hist(symbol=sym, period="daily",
                                      start_date=start_date, end_date=end_date)
             df["日期"] = pd.to_datetime(df["日期"])
             df = df.set_index("日期").sort_index()
             all_data[sym] = df
-        except Exception as e:
-            print(f"获取 {sym} 失败: {e}")
+        except Exception:
+            pass
+    if not all_data:
+        print("  [模拟数据] akshare 不可用，使用模拟数据")
+        all_data = generate_mock_stock_data(symbols)
     return all_data
 
 

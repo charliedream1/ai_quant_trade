@@ -6,12 +6,39 @@ gplearn 遗传规划因子挖掘 demo
     pip install gplearn akshare pandas numpy scikit-learn
 """
 
-import akshare as ak
 import pandas as pd
 import numpy as np
-from gplearn.genetic import SymbolicTransformer, SymbolicRegressor
-from gplearn.functions import make_function
-from gplearn.fitness import make_fitness
+
+
+def generate_mock_data(symbol="000001", days=480):
+    """生成模拟 OHLCV 数据（akshare 不可用时的后备）"""
+    np.random.seed(hash(symbol) % 2**32)
+    dates = pd.bdate_range("2022-01-01", periods=days)
+    base_price = 10 + np.random.rand() * 40
+    returns = np.random.randn(days) * 0.02
+    close = base_price * np.cumprod(1 + returns)
+    open_ = close * (1 + np.random.randn(days) * 0.01)
+    high = np.maximum(open_, close) * (1 + np.abs(np.random.randn(days)) * 0.01)
+    low = np.minimum(open_, close) * (1 - np.abs(np.random.randn(days)) * 0.01)
+    volume = np.random.randint(5000000, 50000000, size=days).astype(float)
+    df = pd.DataFrame({
+        "date": dates, "开盘": open_, "收盘": close,
+        "最高": high, "最低": low, "成交量": volume,
+    }).set_index("date")
+    return df
+
+
+def get_stock_data(symbol, start_date="20220101", end_date="20231231"):
+    """获取股票数据，akshare 失败时使用模拟数据"""
+    try:
+        import akshare as ak
+        df = ak.stock_zh_a_hist(symbol=symbol, period="daily",
+                                start_date=start_date, end_date=end_date)
+        print(f"  [akshare] 获取 {symbol} 成功，{len(df)} 条数据")
+        return df
+    except Exception as e:
+        print(f"  [模拟数据] akshare 不可用({type(e).__name__})，使用模拟数据: {symbol}")
+        return generate_mock_data(symbol)
 
 
 # ============================================================
@@ -85,30 +112,41 @@ def _corr(x, y):
     return np.zeros_like(x)
 
 
-# 注册自定义算子
-ts_sum = make_function(function=_ts_sum, name="ts_sum", arity=1)
-ts_mean = make_function(function=_ts_mean, name="ts_mean", arity=1)
-ts_std = make_function(function=_ts_std, name="ts_std", arity=1)
-ts_max = make_function(function=_ts_max, name="ts_max", arity=1)
-ts_min = make_function(function=_ts_min, name="ts_min", arity=1)
-delta = make_function(function=_delta, name="delta", arity=1)
-delay = make_function(function=_delay, name="delay", arity=1)
-rank = make_function(function=_rank, name="rank", arity=1)
-corr = make_function(function=_corr, name="corr", arity=2)
+# 注册自定义算子（需要 gplearn）
+try:
+    from gplearn.functions import make_function
+    from gplearn.genetic import SymbolicTransformer
+
+    ts_sum = make_function(function=_ts_sum, name="ts_sum", arity=1)
+    ts_mean = make_function(function=_ts_mean, name="ts_mean", arity=1)
+    ts_std = make_function(function=_ts_std, name="ts_std", arity=1)
+    ts_max = make_function(function=_ts_max, name="ts_max", arity=1)
+    ts_min = make_function(function=_ts_min, name="ts_min", arity=1)
+    delta = make_function(function=_delta, name="delta", arity=1)
+    delay = make_function(function=_delay, name="delay", arity=1)
+    rank = make_function(function=_rank, name="rank", arity=1)
+    corr = make_function(function=_corr, name="corr", arity=2)
+    _GPLEARN_AVAILABLE = True
+except ImportError:
+    _GPLEARN_AVAILABLE = False
 
 
 def demo_gplearn_factor_mining():
     """使用 gplearn 自动挖掘因子"""
+    if not _GPLEARN_AVAILABLE:
+        print("跳过：gplearn 未安装，请运行 pip install gplearn")
+        return
     print("=== 获取数据 ===")
     # 获取平安银行数据
-    df = ak.stock_zh_a_hist(symbol="000001", period="daily",
-                            start_date="20220101", end_date="20231231")
+    df = get_stock_data("000001")
     df = df.rename(columns={
         "日期": "date", "开盘": "open", "收盘": "close",
         "最高": "high", "最低": "low", "成交量": "volume",
     })
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.set_index("date").sort_index()
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.set_index("date")
+    df = df.sort_index()
 
     # 构造特征
     features = pd.DataFrame(index=df.index)

@@ -8,9 +8,45 @@ AlphaGen 强化学习因子挖掘 demo
 3. 安装：pip install torch qlib akshare
 """
 
-import akshare as ak
 import pandas as pd
 import numpy as np
+
+
+def generate_mock_data(symbol, days=240):
+    """生成模拟 OHLCV 数据（akshare 不可用时的后备）"""
+    np.random.seed(hash(symbol) % 2**32)
+    dates = pd.bdate_range("2023-01-01", periods=days)
+    base_price = 10 + np.random.rand() * 40
+    returns = np.random.randn(days) * 0.02
+    close = base_price * np.cumprod(1 + returns)
+    open_ = close * (1 + np.random.randn(days) * 0.01)
+    high = np.maximum(open_, close) * (1 + np.abs(np.random.randn(days)) * 0.01)
+    low = np.minimum(open_, close) * (1 - np.abs(np.random.randn(days)) * 0.01)
+    volume = np.random.randint(5000000, 50000000, size=days).astype(float)
+    df = pd.DataFrame({
+        "date": dates, "open": open_, "close": close,
+        "high": high, "low": low, "volume": volume,
+    }).set_index("date")
+    return df
+
+
+def get_stock_data(symbol, start_date="20230101", end_date="20231231"):
+    """获取股票数据，akshare 失败时使用模拟数据"""
+    try:
+        import akshare as ak
+        df = ak.stock_zh_a_hist(symbol=symbol, period="daily",
+                                start_date=start_date, end_date=end_date)
+        df = df.rename(columns={
+            "日期": "date", "开盘": "open", "收盘": "close",
+            "最高": "high", "最低": "low", "成交量": "volume",
+        })
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.set_index("date").sort_index()
+        print(f"  [akshare] 获取 {symbol} 成功，{len(df)} 条数据")
+        return df
+    except Exception as e:
+        print(f"  [模拟数据] akshare 不可用({type(e).__name__})，使用模拟数据: {symbol}")
+        return generate_mock_data(symbol)
 
 
 # ============================================================
@@ -141,14 +177,8 @@ def demo_alphagen_flow():
     all_factors = {}
 
     for sym in symbols:
-        df = ak.stock_zh_a_hist(symbol=sym, period="daily",
-                                 start_date="20230101", end_date="20231231")
-        df = df.rename(columns={
-            "日期": "date", "开盘": "open", "收盘": "close",
-            "最高": "high", "最低": "low", "成交量": "volume",
-        })
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.set_index("date").sort_index()
+        df = get_stock_data(sym)
+        df = df.sort_index()
 
         ops = AlphaOperators()
         close = df["close"]

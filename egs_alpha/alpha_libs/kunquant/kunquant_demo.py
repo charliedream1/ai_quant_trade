@@ -6,34 +6,55 @@ KunQuant 高性能因子计算 demo
     pip install KunQuant akshare pandas numpy
 """
 
-import akshare as ak
 import pandas as pd
 import numpy as np
 
 
+def generate_mock_data(symbol, days=240):
+    """生成模拟 OHLCV 数据（akshare 不可用时的后备）"""
+    np.random.seed(hash(symbol) % 2**32)
+    dates = pd.bdate_range("2023-01-01", periods=days)
+    base_price = 10 + np.random.rand() * 40
+    returns = np.random.randn(days) * 0.02
+    close = base_price * np.cumprod(1 + returns)
+    open_ = close * (1 + np.random.randn(days) * 0.01)
+    high = np.maximum(open_, close) * (1 + np.abs(np.random.randn(days)) * 0.01)
+    low = np.minimum(open_, close) * (1 - np.abs(np.random.randn(days)) * 0.01)
+    volume = np.random.randint(5000000, 50000000, size=days).astype(float)
+    df = pd.DataFrame({
+        "date": dates, "open": open_, "close": close,
+        "high": high, "low": low, "volume": volume,
+    }).set_index("date")
+    return df
+
+
 def get_stock_data(symbols, days=260):
-    """用 akshare 获取多只股票的 OHLCV 数据"""
+    """用 akshare 获取多只股票的 OHLCV 数据，失败时使用模拟数据"""
     all_data = {}
     for sym in symbols:
-        df = ak.stock_zh_a_hist(symbol=sym, period="daily", start_date="20230101", end_date="20231231")
-        df = df.rename(columns={
-            "日期": "date", "开盘": "open", "收盘": "close",
-            "最高": "high", "最低": "low", "成交量": "volume",
-        })
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.set_index("date").sort_index()
-        all_data[sym] = df[["open", "high", "low", "close", "volume"]].tail(days)
+        try:
+            import akshare as ak
+            df = ak.stock_zh_a_hist(symbol=sym, period="daily", start_date="20230101", end_date="20231231")
+            df = df.rename(columns={
+                "日期": "date", "开盘": "open", "收盘": "close",
+                "最高": "high", "最低": "low", "成交量": "volume",
+            })
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.set_index("date").sort_index()
+            all_data[sym] = df[["open", "high", "low", "close", "volume"]].tail(days)
+        except Exception:
+            print(f"  [模拟数据] akshare 不可用，使用模拟数据: {sym}")
+            all_data[sym] = generate_mock_data(sym, days)
     return all_data
 
 
 def demo_kunquant_alpha101():
     """使用 KunQuant 计算 Alpha101 因子"""
     try:
-        from KunQuant import Executor, Input
-        from KunQuant.builtin import *
+        from KunQuant import Executor
         from KunQuant.Alpha101 import alpha101
     except ImportError:
-        print("请先安装 KunQuant: pip install KunQuant")
+        print("跳过：KunQuant 未安装，请运行 pip install KunQuant")
         return
 
     # 获取数据（取 8 只股票以满足 AVX2 的 blocking_len=8）
@@ -87,8 +108,7 @@ def demo_pandas_vs_kunquant():
 
     # KunQuant 方式
     try:
-        from KunQuant import Executor, Input
-        from KunQuant.builtin import *
+        from KunQuant import Executor
         start = time.time()
         inputs = {}
         for sym, df in stock_data.items():
