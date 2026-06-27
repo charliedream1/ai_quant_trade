@@ -1,6 +1,16 @@
 """报告生成器
 
 将研报元数据 + 质量门禁结果 + LLM 分析结论，渲染为 Markdown 报告。
+报告结构：
+  索引
+  一、研报概览
+  二、质量门禁结果
+  三、机构共识统计
+  四、研报明细
+  五、多专家分析结论（含 PDF 摘要、图表提取）
+  六、数据来源
+  七、质量评估与幻觉检查
+  八、引用文章
 """
 from __future__ import annotations
 
@@ -67,11 +77,86 @@ def render_consensus(reports: list[ReportMeta]) -> str:
     return "\n".join(lines)
 
 
+def render_index(reports: list[ReportMeta], has_llm: bool, has_images: bool) -> str:
+    """渲染报告索引（目录）"""
+    lines = [
+        "| 章节 | 内容 |",
+        "|---|---|",
+        f"| 一、研报概览 | 标的、时间窗口、研报总数、机构数 |",
+        f"| 二、质量门禁结果 | 过期/白名单/评级缺失/利益冲突 |",
+        f"| 三、机构共识统计 | 评级分布、EPS/PE 共识、机构与分析师数 |",
+        f"| 四、研报明细 | {len(reports)} 篇研报的元数据表 |",
+    ]
+    if has_llm:
+        lines.append("| 五、多专家分析结论 | 基本面/评级/分歧/风险/决策/PDF 摘要/图表 |")
+    lines.append("| 六、数据来源 | 东方财富研报中心 |")
+    lines.append("| 七、质量评估与幻觉检查 | 结构/一致性校验、幻觉发现、置信度 |")
+    lines.append("| 八、引用文章 | 引用的原始研报列表（含 PDF 链接） |")
+    return "\n".join(lines)
+
+
+def render_references(reports: list[ReportMeta]) -> str:
+    """渲染引用文章列表（含 PDF 链接）"""
+    if not reports:
+        return "_无引用研报_"
+    lines = []
+    for i, r in enumerate(reports, 1):
+        # 引用格式：[序号] 标题. 机构, 日期. 分析师. [PDF链接]
+        researcher = f" {r.researcher}." if r.researcher else ""
+        rating = f" 评级：{r.org_rating}。" if r.org_rating else ""
+        pdf_link = r.pdf_url or "（无 PDF 链接）"
+        lines.append(f"{i}. **{r.title}**. {r.org_sname}, {r.publish_date}.{researcher}{rating}")
+        lines.append(f"   - PDF: {pdf_link}")
+        lines.append(f"   - info_code: `{r.info_code}`")
+    return "\n".join(lines)
+
+
+def render_quality_assessment(assessment) -> str:
+    """渲染质量评估与幻觉检查章节"""
+    lines = [
+        f"### 综合评分：**{assessment.overall_score:.0f} / 100**  |  置信度：**{assessment.confidence}**",
+        "",
+        f"- 报告字符数：{assessment.char_count}",
+        f"- 二级章节数：{assessment.section_count}",
+        f"- 表格数：{assessment.table_count}",
+        f"- 图片引用数：{assessment.image_ref_count}",
+        f"- 引用文章数：{assessment.citation_count}",
+        f"- 幻觉发现数：{assessment.hallucination_count}（HIGH: {assessment.high_severity_count}）",
+        "",
+        "### 结构校验",
+        "",
+        "| 校验项 | 结果 | 详情 |",
+        "|---|---|---|",
+    ]
+    for c in assessment.structure_checks:
+        status = "✅" if c.passed else "❌"
+        lines.append(f"| {c.name} | {status} | {c.detail} |")
+
+    lines += ["", "### 数据一致性校验", "",
+              "| 校验项 | 结果 | 详情 |",
+              "|---|---|---|"]
+    for c in assessment.consistency_checks:
+        status = "✅" if c.passed else "❌"
+        lines.append(f"| {c.name} | {status} | {c.detail} |")
+
+    if assessment.hallucination_findings:
+        lines += ["", "### 幻觉检查发现", "",
+                  "| 严重度 | 类别 | 描述 |",
+                  "|---|---|---|"]
+        for h in assessment.hallucination_findings:
+            lines.append(f"| {h.severity} | {h.category} | {h.description} |")
+    else:
+        lines += ["", "### 幻觉检查发现", "", "_未发现明显幻觉_"]
+
+    return "\n".join(lines)
+
+
 def generate_report(
     subject: str,
     reports: list[ReportMeta],
     quality: QualityResult,
     llm_analysis: Optional[dict] = None,
+    quality_assessment=None,
 ) -> str:
     """生成完整的 Markdown 研报分析报告
 
@@ -79,14 +164,23 @@ def generate_report(
     :param reports: 通过质量门禁的研报列表
     :param quality: 质量门禁结果
     :param llm_analysis: LLM 多专家分析结论（可选，由 supervisor 产出）
+    :param quality_assessment: QualityAssessment 对象（可选，由 report_validator 产出）
     """
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     llm_analysis = llm_analysis or {}
+    pdf_excerpts = llm_analysis.get("pdf_excerpts") or {}
+    pdf_images = llm_analysis.get("pdf_images") or {}
+    has_llm = bool(llm_analysis)
+    has_images = bool(pdf_images)
 
     sections = [
         f"# 券商研报分析报告：{subject}",
         "",
         f"> 生成时间：{now}  |  数据源：东方财富研报中心  |  仅作信息聚合，不构成投资建议",
+        "",
+        "## 索引",
+        "",
+        render_index(reports, has_llm, has_images),
         "",
         "## 一、研报概览",
         "",
@@ -114,11 +208,8 @@ def generate_report(
         "",
     ]
 
-    if llm_analysis:
-        sections += [
-            "## 五、多专家分析结论",
-            "",
-        ]
+    if has_llm:
+        sections += ["## 五、多专家分析结论", ""]
         if llm_analysis.get("fundamental_view"):
             sections.append(f"### 基本面观点\n\n{llm_analysis['fundamental_view']}\n")
         if llm_analysis.get("rating_consensus"):
@@ -130,13 +221,11 @@ def generate_report(
         if llm_analysis.get("decision_hint"):
             sections.append(f"### 综合判断\n\n**决策提示**：{llm_analysis['decision_hint']}\n")
         # PDF 解析摘要（来自 MarkItDown/pdfplumber，供 LLM 后续深度分析使用）
-        pdf_excerpts = llm_analysis.get("pdf_excerpts") or {}
         if pdf_excerpts:
             sections.append("### 研报 PDF 解析摘要（机器提取，待 LLM 深度分析）\n")
             for info_code, text in list(pdf_excerpts.items())[:3]:
                 sections.append(f"#### {info_code}\n\n```\n{text[:1500]}\n```\n")
         # PDF 图片清单（来自 PyMuPDF，可用于 LLM 多模态分析）
-        pdf_images = llm_analysis.get("pdf_images") or {}
         total_images = llm_analysis.get("total_images", 0)
         if pdf_images:
             sections.append(f"### 研报图表提取（共 {total_images} 张，可用于多模态分析）\n")
@@ -156,6 +245,25 @@ def generate_report(
         "- 东方财富研报中心：https://data.eastmoney.com/report/",
         "- 原始 PDF 版权归各券商研究所所有",
         "- 本报告由 broker-research-analyst skill 自动生成",
+        "",
+    ]
+
+    # 质量评估与幻觉检查章节
+    if quality_assessment is not None:
+        sections += [
+            "## 七、质量评估与幻觉检查",
+            "",
+            render_quality_assessment(quality_assessment),
+            "",
+        ]
+
+    # 引用文章章节
+    sections += [
+        "## 八、引用文章",
+        "",
+        "> 本报告引用的原始券商研报列表（按时间倒序）",
+        "",
+        render_references(reports),
         "",
         "---",
         "",
