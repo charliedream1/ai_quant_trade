@@ -197,3 +197,34 @@ def parse_pdf_with_mineru(file_path):
 4. **不推荐 Marker**：中文支持弱 + GPL 商用限制，与研报场景不匹配。
 
 **一句话总结**：用 MarkItDown 升级主解析路径，pdfplumber 兜底，MinerU 按需启用——这是研报场景下速度、精度、部署成本的最优平衡。
+
+## 八、改造实施结果（2026-06-27 已完成方案 A）
+
+### 8.1 已完成改造
+
+- ✅ `pdf_parser.py` 重构为三层架构（MarkItDown → pdfplumber → PyPDF2）
+- ✅ `ParsedReport` 新增 `parser_used` 字段，可追溯实际使用的解析器
+- ✅ `generate_report.py` 增加 PDF 摘要渲染章节
+- ✅ `report_router.py` 在 PDF 摘要中带 parser 标识
+- ✅ `requirements.txt` 加入 `markitdown[pdf]`
+- ✅ `config/settings.json` 新增 `pdf_parser` 配置段
+- ✅ 支持 `prefer_parser` 参数强制指定解析器
+- ✅ 提供 CLI 入口独立测试（`python pdf_parser.py xxx.pdf --sections`）
+
+### 8.2 实测验证（茅台研报）
+
+| 指标 | 改造前（pdfplumber） | 改造后（MarkItDown 为主） |
+|---|---|---|
+| 解析成功率 | 5/8 篇失败（PDF 格式问题） | **8/8 篇成功** |
+| 财务预测表 | 文本散乱，难以识别 | **完整 Markdown 表格**（营收/净利/毛利率/EPS/PE 多年数据） |
+| 评级/目标价 | 散落正文难提取 | **首页多栏布局完整解析**（评级、分析师、证书号、目标价） |
+| 段落识别 | 部分 | 投资要点/盈利预测/风险提示/估值均识别 |
+| 字符数 | — | 13913 字符/篇 |
+| 解析速度 | ~5 秒 | ~4 秒 |
+
+**关键发现**：实测中 pdfplumber 对部分 PDF（5/8）报 "No /Root object" 错误完全失败，而 MarkItDown 全部成功解析——**主路径反而比兜底更稳健**，三层架构的价值得到验证。
+
+### 8.3 待观察项
+
+- 复杂财务表格的 Markdown 化质量（合并单元格、跨页表格）仍不如 MinerU
+- 后续若引入 GPU 资源，可按方案 C 集成 MinerU 处理高精度场景

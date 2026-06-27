@@ -59,10 +59,20 @@ priority: primary
 |---|---|---|
 | `eastmoney_adapter.py` | 东方财富研报列表抓取 | `python eastmoney_adapter.py --code 600519 --type 0 --days 90` |
 | `pdf_downloader.py` | PDF 批量下载与缓存 | 由 report_router 内部调用 |
-| `pdf_parser.py` | PDF 文本抽取与段落识别 | 由 report_router 内部调用 |
+| `pdf_parser.py` | **PDF 解析（三层架构：MarkItDown → pdfplumber → PyPDF2）** | `python pdf_parser.py xxx.pdf --parser markitdown --sections` |
 | `report_quality_gate.py` | 质量门禁（时效/白名单/利益冲突） | 由 report_router 内部调用 |
 | `generate_report.py` | Markdown 报告生成 | 由 report_router 内部调用 |
 | `report_router.py` | **统一路由调度（主入口）** | `python report_router.py stock --code 600519 --output report.md` |
+
+### PDF 解析三层架构
+
+`pdf_parser.py` 采用主路径 + 兜底机制，任一解析器成功即返回：
+
+1. **MarkItDown（微软，主路径）**：LLM 友好的 Markdown 输出，保留表格/标题结构，中文支持好
+2. **pdfplumber（兜底 1）**：传统文本抽取，对部分 PDF 格式兼容性更好
+3. **PyPDF2（兜底 2）**：最简纯文本，最后保障
+
+可通过 `prefer_parser` 参数强制指定解析器，或在 `config/settings.json` 的 `pdf_parser.chain` 中调整优先级。
 
 ### 典型调用链
 

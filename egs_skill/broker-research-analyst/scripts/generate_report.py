@@ -129,6 +129,12 @@ def generate_report(
             sections.append(f"### 风险提示\n\n{llm_analysis['risk_warnings']}\n")
         if llm_analysis.get("decision_hint"):
             sections.append(f"### 综合判断\n\n**决策提示**：{llm_analysis['decision_hint']}\n")
+        # PDF 解析摘要（来自 MarkItDown/pdfplumber，供 LLM 后续深度分析使用）
+        pdf_excerpts = llm_analysis.get("pdf_excerpts") or {}
+        if pdf_excerpts:
+            sections.append("### 研报 PDF 解析摘要（机器提取，待 LLM 深度分析）\n")
+            for info_code, text in list(pdf_excerpts.items())[:3]:
+                sections.append(f"#### {info_code}\n\n```\n{text[:1500]}\n```\n")
 
     sections += [
         "## 六、数据来源",

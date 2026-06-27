@@ -71,7 +71,10 @@ def analyze_stock(
             try:
                 parsed = parse_pdf(path)
                 if parsed.parse_success:
-                    parsed_texts[meta.info_code] = parsed.excerpt(3000)
+                    # 带 parser 标识，便于追溯解析质量
+                    parsed_texts[meta.info_code] = (
+                        f"[parser: {parsed.parser_used}]\n{parsed.excerpt(3000)}"
+                    )
             except Exception as e:
                 LOGGER.warning("解析 PDF 失败 %s: %s", meta.info_code, e)
 

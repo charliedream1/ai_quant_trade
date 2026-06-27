@@ -10,7 +10,7 @@
 | 📊 **结构化提取** | 评级、目标价、EPS/PE 预测自动归一化 |
 | 👥 **多专家并行** | 6 位 Agent（审计/评级/基本面/风险/共识/主管）协同 |
 | 🛡️ **质量门禁** | 时效性 + 机构白名单 + 卖方利益冲突识别 |
-| 📄 **PDF 解析** | pdfplumber 抽取正文，识别投资要点/盈利预测/风险提示段落 |
+| 📄 **PDF 解析** | 三层架构（MarkItDown → pdfplumber → PyPDF2），保留表格结构，识别投资要点/盈利预测/风险提示段落 |
 | 📝 **报告生成** | 自动产出 Markdown 报告，含明细表与免责声明 |
 
 ## 快速开始
@@ -62,7 +62,7 @@ broker-research-analyst/
 ├── scripts/                    # Python 辅助脚本
 │   ├── eastmoney_adapter.py       # 东方财富研报接口适配（主数据源）
 │   ├── pdf_downloader.py          # PDF 批量下载与缓存
-│   ├── pdf_parser.py              # PDF 文本抽取与段落识别
+│   ├── pdf_parser.py              # PDF 解析（MarkItDown→pdfplumber→PyPDF2 三层兜底）
 │   ├── report_quality_gate.py     # 质量门禁（时效/白名单/利益冲突）
 │   ├── generate_report.py         # Markdown 报告生成
 │   └── report_router.py           # 统一路由调度（主入口）

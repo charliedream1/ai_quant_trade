@@ -1,6 +1,10 @@
-"""PDF 研报文本解析器
+"""PDF 研报文本解析器（三层架构）
 
-优先使用 pdfplumber（中文支持好），失败回退 PyPDF2。
+解析优先级：
+1. MarkItDown（微软，LLM 友好，表格/结构保留好）— 主路径
+2. pdfplumber（中文支持好）— 兜底 1
+3. PyPDF2（最简纯文本）— 兜底 2
+
 抽取正文文本，并尝试识别关键段落（投资要点/盈利预测/风险提示）。
 """
 from __future__ import annotations
@@ -21,6 +25,11 @@ SECTION_PATTERNS = {
     "valuation": r"(估值|目标价|估值分析)",
 }
 
+# 解析器优先级（用于结果中的 parser_used 字段标识）
+PARSER_MARKITDOWN = "markitdown"
+PARSER_PDFPLUMBER = "pdfplumber"
+PARSER_PYPDF2 = "pypdf2"
+
 
 @dataclass
 class ParsedReport:
@@ -31,6 +40,7 @@ class ParsedReport:
     page_count: int
     char_count: int
     parse_success: bool
+    parser_used: str = ""  # 实际使用的解析器
     error: str = ""
 
     def get_section(self, key: str) -> str:
@@ -41,8 +51,25 @@ class ParsedReport:
         return self.full_text[:max_chars]
 
 
+def _try_markitdown(file_path: Path) -> tuple[str, int]:
+    """使用 MarkItDown 抽取文本（主路径）
+
+    MarkItDown 输出 LLM 友好的 Markdown：
+    - 保留标题层级、列表、表格结构
+    - 财务预测表格转为 Markdown 表格
+    - 中文支持良好（基于 pdfminer.six）
+    """
+    from markitdown import MarkItDown
+    md = MarkItDown()
+    result = md.convert(str(file_path))
+    text = result.text_content or ""
+    # MarkItDown 不直接返回页数，用 attachPages 元信息或文本规模估算
+    pages = _estimate_pages(text)
+    return text, pages
+
+
 def _try_pdfplumber(file_path: Path) -> tuple[str, int]:
-    """使用 pdfplumber 抽取文本"""
+    """使用 pdfplumber 抽取文本（兜底 1）"""
     import pdfplumber
     texts, pages = [], 0
     with pdfplumber.open(str(file_path)) as pdf:
@@ -54,13 +81,20 @@ def _try_pdfplumber(file_path: Path) -> tuple[str, int]:
 
 
 def _try_pypdf2(file_path: Path) -> tuple[str, int]:
-    """使用 PyPDF2 兜底抽取"""
+    """使用 PyPDF2 兜底抽取（兜底 2）"""
     from PyPDF2 import PdfReader
     reader = PdfReader(str(file_path))
     texts = []
     for page in reader.pages:
         texts.append(page.extract_text() or "")
     return "\n".join(texts), len(reader.pages)
+
+
+def _estimate_pages(text: str) -> int:
+    """无页数信息时，按文本规模粗估页数（每页约 1500 字符）"""
+    if not text:
+        return 0
+    return max(1, len(text) // 1500)
 
 
 def extract_sections(full_text: str) -> dict:
@@ -93,10 +127,14 @@ def extract_sections(full_text: str) -> dict:
     return sections
 
 
-def parse_pdf(file_path: str | Path) -> ParsedReport:
-    """解析单个 PDF 文件
+def parse_pdf(file_path: str | Path, prefer_parser: str = "") -> ParsedReport:
+    """解析单个 PDF 文件（三层兜底）
+
+    解析优先级：MarkItDown → pdfplumber → PyPDF2
+    任一解析器成功即返回，不再尝试下一层。
 
     :param file_path: PDF 本地路径
+    :param prefer_parser: 强制指定解析器（markitdown/pdfplumber/pypdf2），空则按默认优先级
     :return: ParsedReport
     """
     file_path = Path(file_path)
@@ -106,33 +144,86 @@ def parse_pdf(file_path: str | Path) -> ParsedReport:
             char_count=0, parse_success=False, error="文件不存在"
         )
 
-    full_text, pages, error = "", 0, ""
-    # 优先 pdfplumber
-    try:
-        full_text, pages = _try_pdfplumber(file_path)
-    except Exception as e:
-        LOGGER.warning("pdfplumber 解析失败，回退 PyPDF2: %s", e)
+    # 解析器链：默认顺序或用户指定优先
+    default_chain = [
+        (PARSER_MARKITDOWN, _try_markitdown),
+        (PARSER_PDFPLUMBER, _try_pdfplumber),
+        (PARSER_PYPDF2, _try_pypdf2),
+    ]
+    if prefer_parser:
+        # 指定优先：把 prefer_parser 提到链首
+        chain = sorted(default_chain, key=lambda x: 0 if x[0] == prefer_parser else 1)
+    else:
+        chain = default_chain
+
+    full_text, pages, error, used = "", 0, "", ""
+    for name, fn in chain:
         try:
-            full_text, pages = _try_pypdf2(file_path)
-        except Exception as e2:
-            error = f"pdfplumber: {e} | PyPDF2: {e2}"
-            LOGGER.error("PDF 解析全部失败 [%s]: %s", file_path.name, error)
+            full_text, pages = fn(file_path)
+            if full_text and full_text.strip():
+                used = name
+                LOGGER.debug("使用 %s 解析成功 [%s]", name, file_path.name)
+                break
+        except ImportError:
+            LOGGER.debug("%s 未安装，跳过", name)
+            continue
+        except Exception as e:
+            LOGGER.warning("%s 解析失败 [%s]: %s", name, file_path.name, e)
+            error = f"{name}: {e}"
 
     full_text = full_text.strip()
-    sections = extract_sections(full_text) if full_text else {}
-    success = bool(full_text)
+    if not full_text:
+        return ParsedReport(
+            file_path=str(file_path), full_text="", sections={}, page_count=0,
+            char_count=0, parse_success=False, parser_used="",
+            error=error or "所有解析器均未产出文本",
+        )
 
+    sections = extract_sections(full_text)
     return ParsedReport(
         file_path=str(file_path),
         full_text=full_text,
         sections=sections,
         page_count=pages,
         char_count=len(full_text),
-        parse_success=success,
-        error=error,
+        parse_success=True,
+        parser_used=used,
+        error="",
     )
 
 
-def parse_batch(file_paths: list[str | Path]) -> list[ParsedReport]:
+def parse_batch(file_paths: list[str | Path], prefer_parser: str = "") -> list[ParsedReport]:
     """批量解析"""
-    return [parse_pdf(p) for p in file_paths]
+    return [parse_pdf(p, prefer_parser=prefer_parser) for p in file_paths]
+
+
+# CLI 入口：用于单独测试解析效果
+def main():
+    import argparse
+    import json
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    parser = argparse.ArgumentParser(description="PDF 研报解析器（三层架构）")
+    parser.add_argument("pdf", help="PDF 文件路径")
+    parser.add_argument("--parser", default="", choices=["", PARSER_MARKITDOWN, PARSER_PDFPLUMBER, PARSER_PYPDF2],
+                        help="指定解析器（空=自动选择最优）")
+    parser.add_argument("--excerpt", type=int, default=0, help="仅打印前 N 字（0=全文）")
+    parser.add_argument("--sections", action="store_true", help="打印识别到的段落")
+    args = parser.parse_args()
+
+    result = parse_pdf(args.pdf, prefer_parser=args.parser)
+    print(f"解析器: {result.parser_used}")
+    print(f"成功: {result.parse_success} | 字符数: {result.char_count} | 估算页数: {result.page_count}")
+    if result.error:
+        print(f"错误: {result.error}")
+    print("---")
+    if args.sections:
+        print("识别段落:")
+        print(json.dumps(result.sections, ensure_ascii=False, indent=2))
+        print("---")
+    text = result.excerpt(args.excerpt) if args.excerpt else result.full_text
+    print(text)
+
+
+if __name__ == "__main__":
+    main()
