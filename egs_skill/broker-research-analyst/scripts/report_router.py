@@ -62,26 +62,39 @@ def analyze_stock(
     )
     passed = quality.passed_reports
 
-    # 可选：下载并解析 PDF
+    # 可选：下载并解析 PDF（含图片提取）
     parsed_texts = {}
+    pdf_images = {}  # {info_code: [图片路径...]}
+    total_images = 0
     if download_pdf and passed:
         downloader = PdfDownloader(cache_dir="./cache", expire_days=30)
         result = downloader.download_batch(passed)
         for meta, path in zip(passed, result["success"] + result["cached"]):
             try:
-                parsed = parse_pdf(path)
+                parsed = parse_pdf(
+                    path,
+                    extract_imgs=True,
+                    image_output_dir="./cache/images",
+                )
                 if parsed.parse_success:
                     # 带 parser 标识，便于追溯解析质量
                     parsed_texts[meta.info_code] = (
                         f"[parser: {parsed.parser_used}]\n{parsed.excerpt(3000)}"
                     )
+                if parsed.image_count > 0:
+                    pdf_images[meta.info_code] = parsed.image_paths()
+                    total_images += parsed.image_count
             except Exception as e:
                 LOGGER.warning("解析 PDF 失败 %s: %s", meta.info_code, e)
+        if total_images:
+            LOGGER.info("共提取图片 %d 张，可用于 LLM 多模态分析", total_images)
 
     # 生成报告
     subject = f"{stock_name}（{stock_code}）" if stock_name else stock_code
     md = generate_report(subject, passed, quality, llm_analysis={
         "pdf_excerpts": parsed_texts,
+        "pdf_images": pdf_images,
+        "total_images": total_images,
     })
     report_path = ""
     if output:

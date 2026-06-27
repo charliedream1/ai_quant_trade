@@ -64,15 +64,22 @@ priority: primary
 | `generate_report.py` | Markdown 报告生成 | 由 report_router 内部调用 |
 | `report_router.py` | **统一路由调度（主入口）** | `python report_router.py stock --code 600519 --output report.md` |
 
-### PDF 解析三层架构
+### PDF 解析三层架构 + 图片提取
 
-`pdf_parser.py` 采用主路径 + 兜底机制，任一解析器成功即返回：
+`pdf_parser.py` 采用主路径 + 兜底机制，任一文本解析器成功即返回：
 
 1. **MarkItDown（微软，主路径）**：LLM 友好的 Markdown 输出，保留表格/标题结构，中文支持好
 2. **pdfplumber（兜底 1）**：传统文本抽取，对部分 PDF 格式兼容性更好
 3. **PyPDF2（兜底 2）**：最简纯文本，最后保障
 
-可通过 `prefer_parser` 参数强制指定解析器，或在 `config/settings.json` 的 `pdf_parser.chain` 中调整优先级。
+**图片提取**（独立于文本解析）：使用 **PyMuPDF（fitz）** 提取研报中的图表图片（营收走势、毛利率趋势、批发价走势等），保存为本地 JPEG/PNG 文件。MarkItDown 不支持图片提取，故单独用 PyMuPDF 实现，与文本解析解耦。
+
+- 自动过滤小图标（页眉 logo 等，宽度/高度 < 80px）
+- 按 `{pdf名}_images/p{页码}_img{序号}.{ext}` 命名
+- 图片路径写入 `ParsedReport.images`，供 LLM 多模态分析使用
+- 可通过 `extract_imgs=False` 关闭
+
+可通过 `prefer_parser` 参数强制指定文本解析器，或在 `config/settings.json` 的 `pdf_parser.chain` 中调整优先级。
 
 ### 典型调用链
 

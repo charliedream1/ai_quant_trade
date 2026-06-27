@@ -135,6 +135,20 @@ def generate_report(
             sections.append("### 研报 PDF 解析摘要（机器提取，待 LLM 深度分析）\n")
             for info_code, text in list(pdf_excerpts.items())[:3]:
                 sections.append(f"#### {info_code}\n\n```\n{text[:1500]}\n```\n")
+        # PDF 图片清单（来自 PyMuPDF，可用于 LLM 多模态分析）
+        pdf_images = llm_analysis.get("pdf_images") or {}
+        total_images = llm_analysis.get("total_images", 0)
+        if pdf_images:
+            sections.append(f"### 研报图表提取（共 {total_images} 张，可用于多模态分析）\n")
+            sections.append("> 研报中的图表（营收走势、毛利率趋势、批发价走势等）已提取为图片文件，"
+                            "支持 LLM 视觉模型读取以辅助分析图表趋势与异常。\n")
+            for info_code, paths in list(pdf_images.items())[:3]:
+                sections.append(f"**{info_code}**（{len(paths)} 张）：")
+                for p in paths[:5]:
+                    sections.append(f"- `{p}`")
+                if len(paths) > 5:
+                    sections.append(f"- ... 等 {len(paths)} 张")
+                sections.append("")
 
     sections += [
         "## 六、数据来源",
