@@ -102,10 +102,25 @@ def analyze_stock(
             result = downloader.download_batch(passed)
         except Exception as e:
             error_log.add_error("download", f"批量下载失败: {e}")
-            result = {"success": [], "cached": [], "failed": passed}
+            result = {"paths": [None] * len(passed), "success": [], "cached": [], "failed": passed}
 
-        downloaded = result["success"] + result["cached"]
-        for meta, path in zip(passed, downloaded):
+        # paths 与 passed 同序对齐，逐篇解析；None 表示下载失败（如反爬未绕过）
+        paths = result.get("paths") or [None] * len(passed)
+        download_ok = sum(1 for p in paths if p is not None)
+        error_log.add_info("download",
+                           f"下载完成: 成功 {download_ok}/{len(passed)}，"
+                           f"反爬挑战命中 {downloader.challenge_hits}，解算成功 {downloader.challenge_solved}")
+        if downloader.challenge_hits:
+            error_log.add_warning("download",
+                                  f"遇到东方财富反爬挑战 {downloader.challenge_hits} 次，"
+                                  f"已通过 node 解算 cookie 绕过 {downloader.challenge_solved} 次")
+        for meta in result.get("failed", []):
+            error_log.add_warning("download", f"PDF 下载失败",
+                                  info_code=meta.info_code, pdf_url=meta.pdf_url)
+
+        for meta, path in zip(passed, paths):
+            if path is None:
+                continue
             try:
                 parsed = parse_pdf(
                     path,
@@ -119,13 +134,13 @@ def analyze_stock(
                     )
                 else:
                     error_log.add_warning("parse", f"PDF 解析失败: {parsed.error}",
-                                          info_code=meta.info_code, pdf_path=path)
+                                          info_code=meta.info_code, pdf_path=str(path))
                 if parsed.image_count > 0:
                     pdf_images[meta.info_code] = parsed.image_paths()
                     total_images += parsed.image_count
             except Exception as e:
                 error_log.add_error("parse", f"解析 PDF 异常: {e}",
-                                    info_code=meta.info_code, pdf_path=path)
+                                    info_code=meta.info_code, pdf_path=str(path))
         if total_images:
             error_log.add_info("image", f"共提取图片 {total_images} 张")
 
