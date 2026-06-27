@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "name": "broker-research-analyst",
+  "data_sources": {
+    "primary": "eastmoney",
+    "secondary": "akshare",
+    "fallback": "websearch"
+  },
+  "eastmoney": {
+    "list_api": "https://reportapi.eastmoney.com/report/list",
+    "pdf_base": "https://pdf.dfcfw.com/pdf/H3_{infoCode}_1.pdf",
+    "default_page_size": 50,
+    "request_interval_sec": 1.0,
+    "timeout_sec": 20
+  },
+  "report_types": {
+    "0": "个股研报",
+    "1": "行业研报",
+    "2": "策略研报",
+    "3": "宏观研报",
+    "4": "公司研报",
+    "5": "基金研报"
+  },
+  "quality_gate": {
+    "expire_days": 90,
+    "min_report_count": 3,
+    "require_org_whitelist": true
+  },
+  "cache": {
+    "dir": "./cache",
+    "expire_days": 30,
+    "naming": "{org}_{code}_{date}.pdf"
+  }
+}
