@@ -33,6 +33,12 @@
   },
   "pdf_parser": {
     "prefer_parser": "",
-    "chain": ["markitdown", "pdfplumber", "pypdf2"]
+    "enable_mineru": false,
+    "mineru_backend": "pipeline",
+    "mineru_timeout_sec": 600,
+    "text_chain": ["mineru", "markitdown", "pdfplumber", "pypdf2"],
+    "image_chain": ["pymupdf", "pdfplumber"],
+    "image_min_width": 80,
+    "image_min_height": 80
   }
 }

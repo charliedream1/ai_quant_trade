@@ -29,9 +29,13 @@ SECTION_PATTERNS = {
 }
 
 # 解析器优先级（用于结果中的 parser_used 字段标识）
-PARSER_MARKITDOWN = "markitdown"
-PARSER_PDFPLUMBER = "pdfplumber"
-PARSER_PYPDF2 = "pypdf2"
+PARSER_MINERU = "mineru"        # 高精度路径（中文最强，表格HTML，需Python3.10-3.13+模型+推荐GPU）
+PARSER_MARKITDOWN = "markitdown"  # 默认主路径（微软，LLM友好，保留表格结构）
+PARSER_PDFPLUMBER = "pdfplumber"  # 兜底1
+PARSER_PYPDF2 = "pypdf2"          # 兜底2
+
+# 默认解析链顺序（MinerU 默认关闭，避免部署门槛过高；可在 settings.json 开启）
+DEFAULT_TEXT_CHAIN = [PARSER_MARKITDOWN, PARSER_PDFPLUMBER, PARSER_PYPDF2]
 
 # 图片提取相关常量
 IMAGE_PARSER_PYMUPDF = "pymupdf"
@@ -78,8 +82,53 @@ class ParsedReport:
         return [img.save_path for img in self.images]
 
 
+def _try_mineru(file_path: Path) -> tuple[str, int]:
+    """使用 MinerU 抽取文本（高精度路径，可选）
+
+    MinerU（OpenDataLab）专为中文 PDF 优化：
+    - 中文研报解析准确率 98.7%
+    - 财务预测表格转 HTML（合并单元格、跨页表格完整保留）
+    - 章节层级、公式 LaTeX、内置 OCR
+    - 需 Python 3.10-3.13、GB 级模型下载、推荐 GPU（CPU 可跑但慢）
+
+    部署：pip install "mineru[all]" && mineru-models-download
+    启用：在 config/settings.json 中将 mineru.enabled 设为 true
+    """
+    import subprocess
+    import tempfile
+
+    # 用 CLI 方式调用，避免直接依赖 mineru Python API 的版本差异
+    # mineru -p input.pdf -o output_dir -b pipeline（pipeline 模式兼容性最好）
+    with tempfile.TemporaryDirectory() as out_dir:
+        cmd = [
+            "mineru", "-p", str(file_path),
+            "-o", out_dir, "-b", "pipeline",
+        ]
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=600,  # 10 分钟超时
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"mineru 退出码 {result.returncode}: {result.stderr[:300]}")
+
+        # MinerU 输出结构：{out_dir}/{pdf_name}/{pdf_name}.md
+        pdf_stem = file_path.stem
+        md_path = Path(out_dir) / pdf_stem / "auto" / f"{pdf_stem}.md"
+        if not md_path.exists():
+            # 兼容不同版本输出路径
+            md_files = list(Path(out_dir).rglob("*.md"))
+            if not md_files:
+                raise RuntimeError(f"mineru 未产出 markdown，输出目录: {out_dir}")
+            md_path = md_files[0]
+
+        text = md_path.read_text(encoding="utf-8")
+        # MinerU 的 markdown 已含 HTML 表格，直接返回
+        # 页数从 markdown 估算（MinerU 不直接返回页数）
+        pages = _estimate_pages(text)
+        return text, pages
+
+
 def _try_markitdown(file_path: Path) -> tuple[str, int]:
-    """使用 MarkItDown 抽取文本（主路径）
+    """使用 MarkItDown 抽取文本（默认主路径）
 
     MarkItDown 输出 LLM 友好的 Markdown：
     - 保留标题层级、列表、表格结构
@@ -322,23 +371,46 @@ def extract_sections(full_text: str) -> dict:
     return sections
 
 
+def _build_parser_chain(prefer_parser: str = "", enable_mineru: bool = False) -> list:
+    """构建文本解析器链
+
+    顺序：MinerU（可选）→ MarkItDown → pdfplumber → PyPDF2
+    prefer_parser 指定时，把该解析器提到链首。
+    """
+    all_parsers = [
+        (PARSER_MINERU, _try_mineru),
+        (PARSER_MARKITDOWN, _try_markitdown),
+        (PARSER_PDFPLUMBER, _try_pdfplumber),
+        (PARSER_PYPDF2, _try_pypdf2),
+    ]
+    # 默认关闭 MinerU（部署门槛高），仅当显式开启时纳入
+    if not enable_mineru:
+        all_parsers = [p for p in all_parsers if p[0] != PARSER_MINERU]
+
+    if prefer_parser:
+        return sorted(all_parsers, key=lambda x: 0 if x[0] == prefer_parser else 1)
+    return all_parsers
+
+
 def parse_pdf(
     file_path: str | Path,
     prefer_parser: str = "",
     extract_imgs: bool = True,
     image_output_dir: str | Path = "./cache/images",
+    enable_mineru: bool = False,
 ) -> ParsedReport:
-    """解析单个 PDF 文件（三层兜底 + 图片提取）
+    """解析单个 PDF 文件（四层解析链 + 图片提取）
 
-    解析优先级：MarkItDown → pdfplumber → PyPDF2
+    文本解析链：MinerU（可选，高精度）→ MarkItDown（默认）→ pdfplumber → PyPDF2
     任一解析器成功即返回，不再尝试下一层。
-    图片提取独立于文本解析，使用 PyMuPDF，无论文本走哪条路径都能获取图片。
+    图片提取独立于文本解析（PyMuPDF 主 + pdfplumber 兜底）。
 
     :param file_path: PDF 本地路径
-    :param prefer_parser: 强制指定文本解析器（markitdown/pdfplumber/pypdf2），空则按默认优先级
+    :param prefer_parser: 强制指定文本解析器（mineru/markitdown/pdfplumber/pypdf2），空则按默认优先级
     :param extract_imgs: 是否提取图片（默认 True）
     :param image_output_dir: 图片保存目录
-    :return: ParsedReport（含 images 字段）
+    :param enable_mineru: 是否启用 MinerU 高精度路径（默认 False，需额外部署）
+    :return: ParsedReport（含 images 字段、parser_used 标识）
     """
     file_path = Path(file_path)
     if not file_path.exists():
@@ -347,17 +419,7 @@ def parse_pdf(
             char_count=0, parse_success=False, error="文件不存在"
         )
 
-    # 解析器链：默认顺序或用户指定优先
-    default_chain = [
-        (PARSER_MARKITDOWN, _try_markitdown),
-        (PARSER_PDFPLUMBER, _try_pdfplumber),
-        (PARSER_PYPDF2, _try_pypdf2),
-    ]
-    if prefer_parser:
-        # 指定优先：把 prefer_parser 提到链首
-        chain = sorted(default_chain, key=lambda x: 0 if x[0] == prefer_parser else 1)
-    else:
-        chain = default_chain
+    chain = _build_parser_chain(prefer_parser, enable_mineru)
 
     full_text, pages, error, used = "", 0, "", ""
     for name, fn in chain:
@@ -370,13 +432,17 @@ def parse_pdf(
         except ImportError:
             LOGGER.debug("%s 未安装，跳过", name)
             continue
+        except FileNotFoundError:
+            # mineru CLI 未安装时 subprocess 抛 FileNotFoundError
+            LOGGER.debug("%s CLI 未找到，跳过", name)
+            continue
         except Exception as e:
             LOGGER.warning("%s 解析失败 [%s]: %s", name, file_path.name, e)
             error = f"{name}: {e}"
 
     full_text = full_text.strip()
 
-    # 图片提取（独立于文本解析，PyMuPDF）
+    # 图片提取（独立于文本解析，PyMuPDF 主 + pdfplumber 兜底）
     images: list[ExtractedImage] = []
     if extract_imgs:
         try:
@@ -414,12 +480,14 @@ def parse_batch(
     prefer_parser: str = "",
     extract_imgs: bool = True,
     image_output_dir: str | Path = "./cache/images",
+    enable_mineru: bool = False,
 ) -> list[ParsedReport]:
     """批量解析"""
     return [
         parse_pdf(p, prefer_parser=prefer_parser,
                   extract_imgs=extract_imgs,
-                  image_output_dir=image_output_dir)
+                  image_output_dir=image_output_dir,
+                  enable_mineru=enable_mineru)
         for p in file_paths
     ]
 
@@ -430,14 +498,17 @@ def main():
     import json
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    parser = argparse.ArgumentParser(description="PDF 研报解析器（三层架构 + 图片提取）")
+    parser = argparse.ArgumentParser(description="PDF 研报解析器（四层解析链 + 图片提取）")
     parser.add_argument("pdf", help="PDF 文件路径")
-    parser.add_argument("--parser", default="", choices=["", PARSER_MARKITDOWN, PARSER_PDFPLUMBER, PARSER_PYPDF2],
+    parser.add_argument("--parser", default="",
+                        choices=["", PARSER_MINERU, PARSER_MARKITDOWN, PARSER_PDFPLUMBER, PARSER_PYPDF2],
                         help="指定文本解析器（空=自动选择最优）")
     parser.add_argument("--excerpt", type=int, default=0, help="仅打印前 N 字（0=全文）")
     parser.add_argument("--sections", action="store_true", help="打印识别到的段落")
     parser.add_argument("--no-images", action="store_true", help="跳过图片提取")
     parser.add_argument("--image-dir", default="./cache/images", help="图片保存目录")
+    parser.add_argument("--mineru", action="store_true",
+                        help="启用 MinerU 高精度路径（需额外部署：pip install mineru[all]）")
     args = parser.parse_args()
 
     result = parse_pdf(
@@ -445,6 +516,7 @@ def main():
         prefer_parser=args.parser,
         extract_imgs=not args.no_images,
         image_output_dir=args.image_dir,
+        enable_mineru=args.mineru,
     )
     print(f"文本解析器: {result.parser_used}")
     print(f"成功: {result.parse_success} | 字符数: {result.char_count} | 估算页数: {result.page_count}")

@@ -66,6 +66,18 @@ def analyze_stock(
     parsed_texts = {}
     pdf_images = {}  # {info_code: [图片路径...]}
     total_images = 0
+    # 读取 PDF 解析配置（支持 MinerU 高精度路径开关）
+    enable_mineru = False
+    try:
+        import json
+        from pathlib import Path
+        cfg_path = Path(__file__).parent.parent / "config" / "settings.json"
+        if cfg_path.exists():
+            cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+            enable_mineru = cfg.get("pdf_parser", {}).get("enable_mineru", False)
+    except Exception:
+        pass
+
     if download_pdf and passed:
         downloader = PdfDownloader(cache_dir="./cache", expire_days=30)
         result = downloader.download_batch(passed)
@@ -75,6 +87,7 @@ def analyze_stock(
                     path,
                     extract_imgs=True,
                     image_output_dir="./cache/images",
+                    enable_mineru=enable_mineru,
                 )
                 if parsed.parse_success:
                     # 带 parser 标识，便于追溯解析质量

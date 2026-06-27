@@ -64,15 +64,17 @@ priority: primary
 | `generate_report.py` | Markdown 报告生成 | 由 report_router 内部调用 |
 | `report_router.py` | **统一路由调度（主入口）** | `python report_router.py stock --code 600519 --output report.md` |
 
-### PDF 解析三层架构 + 图片提取
+### PDF 解析四层架构 + 图片提取（三工具结合）
 
-`pdf_parser.py` 采用主路径 + 兜底机制，任一文本解析器成功即返回：
+`pdf_parser.py` 采用配置驱动的分层解析链，任一文本解析器成功即返回：
 
-1. **MarkItDown（微软，主路径）**：LLM 友好的 Markdown 输出，保留表格/标题结构，中文支持好
-2. **pdfplumber（兜底 1）**：传统文本抽取，对部分 PDF 格式兼容性更好
-3. **PyPDF2（兜底 2）**：最简纯文本，最后保障
+**文本解析链**（按优先级）：
+1. **MinerU（可选，高精度路径）**：OpenDataLab 出品，专为中文 PDF 优化，表格转 HTML（合并单元格/跨页完整保留），章节层级精准，准确率 98.7%。需 Python 3.10-3.13 + GB 级模型 + 推荐 GPU。默认关闭，在 `config/settings.json` 中 `enable_mineru: true` 启用。
+2. **MarkItDown（默认主路径）**：微软出品，LLM 友好的 Markdown 输出，保留表格/标题结构，中文支持好，轻量无 GPU 依赖。
+3. **pdfplumber（兜底 1）**：传统文本抽取，对部分 PDF 格式兼容性更好。
+4. **PyPDF2（兜底 2）**：最简纯文本，最后保障。
 
-**图片提取**（独立于文本解析，双层架构）：
+**图片提取链**（独立于文本解析）：
 - **主路径 PyMuPDF（fitz）**：速度快（20x）、用 xref 自动去重、保留原格式（JPEG/PNG）
 - **兜底 pdfplumber**：当 PyMuPDF 不可用时降级，用内容哈希去重，转 PNG 保存
 - **MarkItDown 不支持 PDF 图片提取**（源码层面不调用 page.images，传 llm_client 参数也无效），故不用于图片提取
@@ -85,7 +87,19 @@ priority: primary
 - 可通过 `extract_imgs=False` 关闭
 - 详细调研见 [PDF_IMAGE_RESEARCH.md](../PDF_IMAGE_RESEARCH.md)
 
-可通过 `prefer_parser` 参数强制指定文本解析器，或在 `config/settings.json` 的 `pdf_parser.chain` 中调整优先级。
+**配置示例**（`config/settings.json`）：
+```json
+{
+  "pdf_parser": {
+    "enable_mineru": false,          // 设 true 启用 MinerU 高精度路径
+    "prefer_parser": "",              // 强制指定解析器（空=自动选择最优）
+    "text_chain": ["mineru", "markitdown", "pdfplumber", "pypdf2"],
+    "image_chain": ["pymupdf", "pdfplumber"]
+  }
+}
+```
+
+可通过 `prefer_parser` 参数强制指定文本解析器（`--parser mineru`），或 CLI 加 `--mineru` 启用高精度路径。
 
 ### 典型调用链
 
