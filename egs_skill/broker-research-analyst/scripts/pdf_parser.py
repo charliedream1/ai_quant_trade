@@ -132,8 +132,11 @@ def extract_images(
 ) -> list[ExtractedImage]:
     """从 PDF 提取图片并保存到磁盘
 
-    使用 PyMuPDF（fitz）独立提取，与文本解析解耦。
+    优先使用 PyMuPDF（fitz）提取，失败时回退 pdfplumber。
     研报中的图表（营收走势、毛利率趋势、批发价走势等）对分析有重要价值。
+
+    注意：MarkItDown 不支持 PDF 图片提取（源码层面不调用 page.images），
+    故用 PyMuPDF 为主路径，pdfplumber 为兜底。
 
     :param file_path: PDF 路径
     :param output_dir: 图片保存目录
@@ -141,27 +144,52 @@ def extract_images(
     :param min_height: 最小高度阈值
     :return: ExtractedImage 列表
     """
-    try:
-        import fitz  # PyMuPDF
-    except ImportError:
-        LOGGER.warning("PyMuPDF 未安装，跳过图片提取。安装：pip install PyMuPDF")
-        return []
-
     file_path = Path(file_path)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # 图片保存子目录命名：{pdf名}_images/
+    # 主路径：PyMuPDF（快、自动去重、保留原格式）
+    try:
+        images = _extract_images_pymupdf(file_path, output_dir, min_width, min_height)
+        if images:
+            return images
+        LOGGER.debug("PyMuPDF 未提取到图片，尝试 pdfplumber 兜底")
+    except ImportError:
+        LOGGER.debug("PyMuPDF 未安装，使用 pdfplumber 提取图片")
+    except Exception as e:
+        LOGGER.warning("PyMuPDF 提取失败 [%s]: %s，尝试 pdfplumber 兜底", file_path.name, e)
+
+    # 兜底：pdfplumber（已安装，提供 bbox 坐标，需手动去重）
+    try:
+        images = _extract_images_pdfplumber(file_path, output_dir, min_width, min_height)
+        if images:
+            return images
+    except ImportError:
+        LOGGER.warning("pdfplumber 也未安装，跳过图片提取")
+    except Exception as e:
+        LOGGER.warning("pdfplumber 提取失败 [%s]: %s", file_path.name, e)
+
+    return []
+
+
+def _extract_images_pymupdf(
+    file_path: Path,
+    output_dir: Path,
+    min_width: int,
+    min_height: int,
+) -> list[ExtractedImage]:
+    """PyMuPDF 提取图片（主路径）
+
+    优势：速度快（20x）、用 xref 自动去重、保留原格式（JPEG/PNG）
+    """
+    import fitz  # PyMuPDF
+
     pdf_stem = file_path.stem
     img_subdir = output_dir / f"{pdf_stem}_images"
     img_subdir.mkdir(parents=True, exist_ok=True)
 
     images: list[ExtractedImage] = []
-    try:
-        doc = fitz.open(str(file_path))
-    except Exception as e:
-        LOGGER.warning("PyMuPDF 打开 PDF 失败 [%s]: %s", file_path.name, e)
-        return []
+    doc = fitz.open(str(file_path))
 
     seen_xrefs = set()  # 去重：同一 xref 可能被多页引用
     for pno in range(len(doc)):
@@ -179,7 +207,6 @@ def extract_images(
                 continue
 
             w, h = base.get("width", 0), base.get("height", 0)
-            # 过滤小图标（页眉 logo、装饰元素等）
             if w < min_width or h < min_height:
                 continue
 
@@ -203,7 +230,65 @@ def extract_images(
             ))
 
     doc.close()
-    LOGGER.info("从 %s 提取图片 %d 张（保存至 %s）", file_path.name, len(images), img_subdir)
+    LOGGER.info("[PyMuPDF] 从 %s 提取图片 %d 张", file_path.name, len(images))
+    return images
+
+
+def _extract_images_pdfplumber(
+    file_path: Path,
+    output_dir: Path,
+    min_width: int,
+    min_height: int,
+) -> list[ExtractedImage]:
+    """pdfplumber 提取图片（兜底路径）
+
+    优势：已是项目依赖、提供 bbox 坐标
+    劣势：需手动去重、强制转 PNG（体积膨胀）、慢 20 倍
+    """
+    import pdfplumber
+    import io
+    from PIL import Image
+    import hashlib
+
+    pdf_stem = file_path.stem
+    img_subdir = output_dir / f"{pdf_stem}_images"
+    img_subdir.mkdir(parents=True, exist_ok=True)
+
+    images: list[ExtractedImage] = []
+    seen_hashes = set()  # 用图片内容哈希去重
+
+    with pdfplumber.open(str(file_path)) as pdf:
+        for pno, page in enumerate(pdf.pages):
+            for img_idx, img in enumerate(page.images):
+                try:
+                    img_data = img["stream"].get_data()
+                    img_hash = hashlib.md5(img_data).hexdigest()
+                    if img_hash in seen_hashes:
+                        continue
+                    seen_hashes.add(img_hash)
+
+                    pil_img = Image.open(io.BytesIO(img_data))
+                    w, h = pil_img.size
+                    if w < min_width or h < min_height:
+                        continue
+
+                    fname = f"p{pno + 1}_img{img_idx + 1}.png"
+                    fpath = img_subdir / fname
+                    pil_img.save(fpath, "PNG")
+
+                    images.append(ExtractedImage(
+                        page_no=pno + 1,
+                        img_index=img_idx + 1,
+                        save_path=str(fpath),
+                        width=w,
+                        height=h,
+                        ext="png",
+                        size_bytes=len(img_data),
+                    ))
+                except Exception as e:
+                    LOGGER.debug("pdfplumber 提取图片失败 p%d: %s", pno + 1, e)
+
+    LOGGER.info("[pdfplumber] 从 %s 提取图片 %d 张", file_path.name, len(images))
     return images
 
 

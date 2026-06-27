@@ -72,12 +72,18 @@ priority: primary
 2. **pdfplumber（兜底 1）**：传统文本抽取，对部分 PDF 格式兼容性更好
 3. **PyPDF2（兜底 2）**：最简纯文本，最后保障
 
-**图片提取**（独立于文本解析）：使用 **PyMuPDF（fitz）** 提取研报中的图表图片（营收走势、毛利率趋势、批发价走势等），保存为本地 JPEG/PNG 文件。MarkItDown 不支持图片提取，故单独用 PyMuPDF 实现，与文本解析解耦。
+**图片提取**（独立于文本解析，双层架构）：
+- **主路径 PyMuPDF（fitz）**：速度快（20x）、用 xref 自动去重、保留原格式（JPEG/PNG）
+- **兜底 pdfplumber**：当 PyMuPDF 不可用时降级，用内容哈希去重，转 PNG 保存
+- **MarkItDown 不支持 PDF 图片提取**（源码层面不调用 page.images，传 llm_client 参数也无效），故不用于图片提取
+
+提取研报中的图表图片（营收走势、毛利率趋势、批发价走势等），保存为本地文件，供 LLM 多模态分析。
 
 - 自动过滤小图标（页眉 logo 等，宽度/高度 < 80px）
 - 按 `{pdf名}_images/p{页码}_img{序号}.{ext}` 命名
 - 图片路径写入 `ParsedReport.images`，供 LLM 多模态分析使用
 - 可通过 `extract_imgs=False` 关闭
+- 详细调研见 [PDF_IMAGE_RESEARCH.md](../PDF_IMAGE_RESEARCH.md)
 
 可通过 `prefer_parser` 参数强制指定文本解析器，或在 `config/settings.json` 的 `pdf_parser.chain` 中调整优先级。
 
