@@ -13,12 +13,12 @@
     Row 9: 自选股 | 指数
     Row 10+: 中国平安 | 上证指数
 """
-import logging
 from typing import Optional
 
 import pandas as pd
 import xlwings as xw
 
+from excel_monitor.logger import get_logger
 from excel_monitor.config_loader import AppConfig
 from excel_monitor.core.excel_manager import ExcelManager
 
@@ -43,7 +43,7 @@ class ConfigSheetReader:
     """从 Excel 配置 Sheet 读取配置"""
 
     def __init__(self, excel_mgr: ExcelManager):
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         self.excel_mgr = excel_mgr
 
     def read_config(self, sheet_name: str,

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """大盘 Sheet：指数行情 + 行业板块 + 概念板块 + 涨停板"""
-import logging
-
+from excel_monitor.logger import get_logger
 from excel_monitor.sheets.base import BaseSheet
 from excel_monitor.config_loader import AppConfig
 
@@ -12,7 +11,7 @@ class MarketOverviewSheet(BaseSheet):
     def __init__(self, name, excel_mgr, data_provider, config=None):
         super().__init__(name, excel_mgr, data_provider)
         self.config = config or AppConfig()
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
 
     def init(self):
         """大盘 Sheet 无需静态初始化"""

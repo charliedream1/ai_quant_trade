@@ -7,11 +7,11 @@
 
 达到预警条件时：整行变红 + 弹窗提醒
 """
-import logging
 from typing import List, Optional
 
 import pandas as pd
 
+from excel_monitor.logger import get_logger
 from excel_monitor.sheets.base import BaseSheet
 from excel_monitor.config_loader import AppConfig
 from excel_monitor.core.alert_checker import (
@@ -30,7 +30,7 @@ class CustomWatchSheet(BaseSheet):
     def __init__(self, name, excel_mgr, data_provider, config=None):
         super().__init__(name, excel_mgr, data_provider)
         self.config = config or AppConfig()
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         self._stock_codes: list = []
         self._alert_conditions: List[AlertCondition] = []
         # 数据列数（用于写入时只清除数据区域，保留预警条件列）
@@ -93,7 +93,12 @@ class CustomWatchSheet(BaseSheet):
             vb_module.CodeModule.AddFromString(vba_code)
             self._logger.info("VBA 宏注入成功，点击按钮即可画K线")
         except Exception as e:
-            self._logger.warning(f"VBA 宏注入失败: {e}")
+            self._logger.warning(
+                f"VBA 宏注入失败: {e}。"
+                f"如需启用按钮，请在 Excel → 文件 → 选项 → 信任中心 → "
+                f"信任中心设置 → 宏设置 中勾选"
+                f"'信任对 VBA 工程对象模型的访问' 后重启程序。"
+            )
             self._logger.info(
                 "降级为轮询模式：在 D21 单元格输入 DRAW，"
                 "下次刷新时自动画K线"
@@ -304,9 +309,23 @@ class CustomWatchSheet(BaseSheet):
             self._show_popup(triggered_rows)
 
     def _write_data(self, df: pd.DataFrame):
-        """写入数据到 Sheet（只清除数据列，不触碰预警条件列）"""
+        """写入数据到 Sheet（只清除数据列，不触碰预警条件列）
+
+        重要：用户在 Excel 中可能填入中文名称（如"中国平安"）作为"代码"列，
+        此时 df 中代码列也会是中文。为避免后续刷新时按中文匹配失败，
+        在写入前用行情数据返回的标准代码替换中文代码列。
+        """
         if self.sheet is None:
             return
+
+        # 用行情数据返回的代码列替换原 df 的代码列
+        # 这样下次刷新时 _reload_from_excel 读到的就是标准代码
+        if not df.empty and "代码" in df.columns:
+            # 同时更新内存中的 _stock_codes，避免下次刷新再次传中文
+            new_codes = df["代码"].astype(str).tolist()
+            if new_codes:
+                self._stock_codes = new_codes
+
         # 只清除数据列区域（列 1 到 data_col_count）
         self.excel_mgr.clear_range(
             self.sheet, start_row=1, start_col=1,

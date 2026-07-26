@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/
+
+# 临时 Excel 文件（开发用，不应提交）
+verify2.xlsx
+verify_template.xlsx
+~$*.xlsx
+
+# 本地缓存（程序运行时自动生成）
+stock_pool.json
+
+# 调试脚本（开发过程产物）
+verify_*.py
+test_akshare_fields.py
+screenshot_*.py
+read_excel_to_html.py
+verify2_preview.html
+
+# 截图目录
+screenshots/
+
+# 安全扫描报告（不应入库）
+SECURITY_SCAN_REPORT.md
+
+# 视频生成器临时产物（不应提交：帧序列、音频、中间 mp4、ffmpeg concat 列表）
+video_generator/frames/
+video_generator/audio/
+video_generator/excel_screenshots/
+
+# 视频备份文件（不应提交）
+video_generator/*_备份.mp4
+video_generator/*_backup.mp4
+
+# Excel 模板（用户运行时自动生成，不应提交）
+看盘模板.xlsx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,9 +1,11 @@
 xlwings==0.36.6
 qstock==1.3.8
+backtrader==1.9.78.123
 pandas==3.0.3
 openpyxl==3.1.5
 pyyaml==6.0.3
 mplfinance==0.12.10b0
+loguru>=0.7.0
 pytest==9.0.3
 # 备选数据源（主源 qstock 失败时自动 fallback，参考 egs_data/）
 akshare>=1.12.0

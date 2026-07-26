@@ -25,6 +25,7 @@ if _SRC_DIR not in sys.path:
 import pandas as pd
 from openpyxl import load_workbook
 
+from excel_monitor.logger import get_logger
 from excel_monitor.config_loader import AppConfig, load_config
 from excel_monitor.core.data_provider import DataProvider
 from excel_monitor.core.alert_checker import AlertChecker, AlertCondition
@@ -36,19 +37,23 @@ from excel_monitor.sheets.sentiment_sheet import SentimentSheet
 from excel_monitor.utils.template_generator import create_template
 
 
+# 测试框架专用 logger（独立名称便于区分）
+_tlogger = get_logger("TestE2E")
+
+
 # ===== 测试工具 =====
 
 def _section(title):
-    print(f"\n{'='*60}")
-    print(f"  {title}")
-    print(f"{'='*60}")
+    _tlogger.info(f"{'='*60}")
+    _tlogger.info(f"  {title}")
+    _tlogger.info(f"{'='*60}")
 
 
 def _assert(condition, msg):
     if condition:
-        print(f"  [PASS] {msg}")
+        _tlogger.info(f"  [PASS] {msg}")
     else:
-        print(f"  [FAIL] {msg}")
+        _tlogger.error(f"  [FAIL] {msg}")
         raise AssertionError(msg)
 
 
@@ -72,7 +77,7 @@ def test_e2e_config_loading():
     _assert(len(cfg.custom_watch_columns) == 13, f"定制列数 = 13 (实际: {len(cfg.custom_watch_columns)})")
     _assert(cfg.sheets["market_overview"] == "大盘", "大盘 Sheet 名称正确")
     _assert(cfg.sheets["custom_watch"] == "个性定制看盘", "定制看盘 Sheet 名称正确")
-    print("  --> 配置加载通过")
+    _tlogger.info("  --> 配置加载通过")
 
 
 def test_e2e_template_generation():
@@ -160,7 +165,7 @@ def test_e2e_template_generation():
         _assert(fill.start_color.rgb in ("FF4472C4", "004472C4"),
                 f"表头填充色 = 4472C4 (实际: {fill.start_color.rgb})")
 
-        print("  --> 模板生成与结构验证通过")
+        _tlogger.info("  --> 模板生成与结构验证通过")
     finally:
         shutil.rmtree(tmp_dir)
 
@@ -208,7 +213,7 @@ def test_e2e_market_overview_full_refresh():
     # 验证写入被调用4次（指数+行业+概念+涨停，通过 excel_mgr.write_df）
     _assert(mock_excel.write_df.call_count == 4, f"Excel 写入 4次 (实际: {mock_excel.write_df.call_count})")
 
-    print("  --> 大盘 Sheet 刷新流程通过")
+    _tlogger.info("  --> 大盘 Sheet 刷新流程通过")
 
 
 def test_e2e_detailed_quotes_full_flow():
@@ -258,7 +263,7 @@ def test_e2e_detailed_quotes_full_flow():
     _assert(mock_data.get_billboard.call_count == 1, "龙虎榜被调用")
     _assert(mock_data.get_realtime_change.call_count == 1, "盘口异动被调用")
 
-    print("  --> 详细行情 Sheet 流程通过")
+    _tlogger.info("  --> 详细行情 Sheet 流程通过")
 
 
 def test_e2e_news_full_refresh():
@@ -295,7 +300,7 @@ def test_e2e_news_full_refresh():
     js_df = mock_excel.write_df.call_args_list[1][0][1]
     _assert(len(js_df) == 1, f"市场快讯 1 条 (实际: {len(js_df)})")
 
-    print("  --> 新闻 Sheet 刷新流程通过")
+    _tlogger.info("  --> 新闻 Sheet 刷新流程通过")
 
 
 def test_e2e_custom_watch_full_flow():
@@ -350,7 +355,7 @@ def test_e2e_custom_watch_full_flow():
     _assert("多余列" not in written_df.columns, "不包含'多余列'")
     _assert(len(written_df) == 2, f"写入 2 行数据 (实际: {len(written_df)})")
 
-    print("  --> 个性定制看盘 Sheet 流程通过")
+    _tlogger.info("  --> 个性定制看盘 Sheet 流程通过")
 
 
 def test_e2e_alert_full_flow():
@@ -408,7 +413,7 @@ def test_e2e_alert_full_flow():
     _assert(clear_call.kwargs.get("end_col") == 13,
             f"清除范围 end_col=13 (实际: {clear_call.kwargs.get('end_col')})")
 
-    print("  --> 预警完整流程通过")
+    _tlogger.info("  --> 预警完整流程通过")
 
 
 def test_e2e_main_entry_import():
@@ -438,7 +443,7 @@ def test_e2e_main_entry_import():
     from excel_monitor.utils.kline_chart import KLineChart
 
     _assert(True, "所有模块导入成功")
-    print("  --> 入口导入验证通过")
+    _tlogger.info("  --> 入口导入验证通过")
 
 
 def test_e2e_kline_chart_module():
@@ -462,7 +467,7 @@ def test_e2e_kline_chart_module():
     # 验证空数据返回空字符串
     _assert(chart.draw(pd.DataFrame()) == "", "空数据返回空字符串")
 
-    print("  --> K线图绘制模块验证通过")
+    _tlogger.info("  --> K线图绘制模块验证通过")
 
 
 def test_e2e_kline_full_flow():
@@ -543,7 +548,7 @@ def test_e2e_kline_full_flow():
     _assert(img_call[1]["row"] == cfg.kline_display_row, "图片行位置正确")
     _assert(img_call[1]["width"] == cfg.kline_image_width, "图片宽度正确")
 
-    print("  --> K线完整流程通过")
+    _tlogger.info("  --> K线完整流程通过")
 
 
 def test_e2e_sentiment_full_refresh():
@@ -599,7 +604,7 @@ def test_e2e_sentiment_full_refresh():
     north_df = mock_excel.write_df.call_args_list[0][0][1]
     _assert(len(north_df) == 3, f"北向资金截断为 3 条 (实际: {len(north_df)})")
 
-    print("  --> 资金情绪 Sheet 刷新流程通过")
+    _tlogger.info("  --> 资金情绪 Sheet 刷新流程通过")
 
 
 def test_e2e_sentiment_partial_failure_resilient():
@@ -629,15 +634,15 @@ def test_e2e_sentiment_partial_failure_resilient():
     _assert(mock_excel.write_df.call_count == 2,
             f"部分失败时写入 2 次 (实际: {mock_excel.write_df.call_count})")
 
-    print("  --> 资金情绪 Sheet 容错流程通过")
+    _tlogger.info("  --> 资金情绪 Sheet 容错流程通过")
 
 
 # ===== 主入口 =====
 
 def run_all():
-    print("\n" + "="*60)
-    print("  Excel 盯盘工具 V2 - 端到端测试")
-    print("="*60)
+    _tlogger.info(f"{'='*60}")
+    _tlogger.info("  Excel 盯盘工具 V2 - 端到端测试")
+    _tlogger.info(f"{'='*60}")
 
     tests = [
         test_e2e_config_loading,
@@ -662,13 +667,13 @@ def run_all():
             passed += 1
         except Exception as e:
             failed += 1
-            print(f"\n  [ERROR] {test.__name__}: {e}")
+            _tlogger.error(f"[ERROR] {test.__name__}: {e}")
             import traceback
-            traceback.print_exc()
+            _tlogger.error(traceback.format_exc())
 
-    print(f"\n{'='*60}")
-    print(f"  结果: {passed} 通过, {failed} 失败, 共 {len(tests)} 项")
-    print(f"{'='*60}\n")
+    _tlogger.info(f"{'='*60}")
+    _tlogger.info(f"  结果: {passed} 通过, {failed} 失败, 共 {len(tests)} 项")
+    _tlogger.info(f"{'='*60}")
 
     return 0 if failed == 0 else 1
 

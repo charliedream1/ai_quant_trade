@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """详细行情 Sheet：自选股实时行情 + 龙虎榜 + 盘口异动"""
-import logging
-
 import pandas as pd
 
+from excel_monitor.logger import get_logger
 from excel_monitor.sheets.base import BaseSheet
 from excel_monitor.config_loader import AppConfig
 
@@ -14,7 +13,7 @@ class DetailedQuotesSheet(BaseSheet):
     def __init__(self, name, excel_mgr, data_provider, config=None):
         super().__init__(name, excel_mgr, data_provider)
         self.config = config or AppConfig()
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         self._stock_codes: list = []
 
     def init(self):

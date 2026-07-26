@@ -14,11 +14,12 @@
     3. 统一返回 DataFrame，列名与 qstock 风格对齐（"代码" / "名称" / "最新" / "涨幅" 等）
     4. 同一数据类型可能有多个备选源，由 DataProvider 决定调用顺序
 """
-import logging
 import traceback
 from typing import List, Optional
 
 import pandas as pd
+
+from excel_monitor.logger import get_logger
 
 
 # === HTTP 公共配置（仅 eastmoney / tencent / netease 直接请求时用） ===
@@ -26,6 +27,9 @@ _HTTP_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     "Referer": "https://quote.eastmoney.com/",
 }
+
+# 国内财经 API 不应走系统代理（用户多为科学上网场景，代理对国内站点反而失败）
+_NO_PROXY = {"http": None, "https": None}
 
 
 def _safe_int(val, default=0):
@@ -99,7 +103,7 @@ class BackupSources:
     """
 
     def __init__(self, config=None):
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         # config 可为 AppConfig 或 dict，仅用于开关控制
         self._config = config or {}
         # 缓存已加载的库（避免重复 import）
@@ -113,6 +117,18 @@ class BackupSources:
             import akshare as ak
             self._akshare = ak
         return self._akshare
+
+    def _get_baostock(self):
+        """延迟加载 baostock（TCP 连接，登录一次后复用）"""
+        if not hasattr(self, "_baostock") or self._baostock is None:
+            import baostock as bs
+            lg = bs.login()
+            if lg.error_code != "0":
+                self._logger.warning(f"[baostock] 登录失败: {lg.error_msg}")
+                self._baostock = None
+            else:
+                self._baostock = bs
+        return self._baostock
 
     def _get_efinance(self):
         if self._efinance is None:
@@ -130,35 +146,61 @@ class BackupSources:
     # AKShare 备选源（参考 egs_data/akshare/akshare_demo.py + egs_data/news/news_demo.py）
     # =================================================================
     def akshare_stock_realtime(self, code_list: List[str]) -> pd.DataFrame:
-        """AKShare: A 股实时行情（东方财富）
+        """AKShare: A 股实时行情（新浪主，东方财富备）
 
         返回字段对齐 qstock 风格：代码/名称/最新价/涨跌幅/涨跌额/成交量/成交额/
                                  换手率/最高/最低/今开/昨收
+
+        注：
+            1. code_list 可能是代码也可能是名称，两种都匹配
+            2. 优先用新浪接口（更稳定，反爬少）；东方财富被反爬频率高
+            3. 新浪接口返回的代码列带 sh/sz/bj 前缀，需归一化以方便后续匹配
         """
         try:
             ak = self._get_akshare()
             codes = _normalize_codes(code_list)
-            if not codes:
+            if not codes and not code_list:
                 return pd.DataFrame()
-            # 拉全市场快照后按代码过滤（akshare 没有按代码批量查询的轻量接口）
-            df = ak.stock_zh_a_spot_em()
-            if df is None or df.empty:
-                return pd.DataFrame()
-            df = df[df["代码"].astype(str).isin(codes)].copy()
-            # 重命名到 qstock 兼容字段
-            rename = {
-                "最新价": "最新", "涨跌幅": "涨幅", "涨跌额": "涨跌额",
-                "成交量": "成交量", "成交额": "成交额", "换手率": "换手率",
-                "最高": "最高", "最低": "最低", "今开": "开盘", "昨收": "昨收",
-            }
-            df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
-            return df.reset_index(drop=True)
+
+            # 优先用新浪接口（稳定）
+            df = ak.stock_zh_a_spot()
+            if df is not None and not df.empty:
+                self._logger.info(f"[akshare] 使用新浪接口获取 {len(df)} 条实时行情")
+                code_col = "代码" if "代码" in df.columns else df.columns[0]
+                name_col = "名称" if "名称" in df.columns else df.columns[1]
+                # 归一化代码列（去 sh/sz 前缀）以便匹配
+                df[code_col] = df[code_col].astype(str).str.replace(
+                    r"^(sh|sz|bj)", "", regex=True
+                )
+                mask_code = df[code_col].astype(str).isin(codes) if codes else pd.Series([False]*len(df))
+                mask_name = df[name_col].astype(str).isin([str(c) for c in code_list if c and not str(c).strip().isdigit()])
+                df = df[mask_code | mask_name].copy()
+                return df.reset_index(drop=True)
+
+            # 备选：东方财富接口
+            try:
+                df = ak.stock_zh_a_spot_em()
+                if df is not None and not df.empty:
+                    self._logger.info(f"[akshare] 使用东方财富接口获取 {len(df)} 条实时行情")
+                    mask_code = df["代码"].astype(str).isin(codes) if codes else pd.Series([False]*len(df))
+                    mask_name = df["名称"].astype(str).isin([str(c) for c in code_list if c and not str(c).strip().isdigit()])
+                    df = df[mask_code | mask_name].copy()
+                    rename = {
+                        "最新价": "最新", "涨跌幅": "涨幅",
+                        "成交量": "成交量", "成交额": "成交额", "换手率": "换手率",
+                        "最高": "最高", "最低": "最低", "今开": "开盘", "昨收": "昨收",
+                    }
+                    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+                    return df.reset_index(drop=True)
+            except Exception as e_em:
+                self._logger.warning(f"[akshare] 东方财富接口失败: {e_em}")
+            return pd.DataFrame()
         except Exception as e:
             self._logger.warning(f"[akshare] 获取个股实时行情失败: {e}")
             return pd.DataFrame()
 
     def akshare_index_realtime(self, code_list: List[str]) -> pd.DataFrame:
-        """AKShare: 指数实时行情
+        """AKShare: 指数实时行情（优先新浪，东方财富备）
 
         qstock 接受指数简称（如 "上证指数"），akshare 需要代码（如 "000001"）。
         本方法尽量把常见简称映射到代码，未匹配的会被跳过。
@@ -179,39 +221,162 @@ class BackupSources:
             if not codes:
                 return pd.DataFrame()
 
-            rows = []
-            for code in codes:
-                try:
-                    # 实时指数快照
-                    df = ak.stock_zh_index_spot_em()
-                    if df is None or df.empty:
-                        continue
+            # 优先尝试新浪指数接口（稳定，反爬少）
+            try:
+                df = ak.stock_zh_index_spot_sina()
+                if df is not None and not df.empty:
+                    self._logger.info(f"[akshare] 使用新浪接口获取指数 {len(df)} 条")
+                    # 新浪返回 "代码" 和 "名称" 列
+                    if "代码" in df.columns:
+                        df["代码"] = df["代码"].astype(str)
+                        matched = df[df["代码"].isin([str(c) for c in codes])]
+                        if not matched.empty:
+                            rename = {
+                                "最新价": "最新", "涨跌幅": "涨幅",
+                                "涨跌额": "涨跌额", "成交量": "成交量",
+                                "成交额": "成交额",
+                            }
+                            matched = matched.rename(columns={
+                                k: v for k, v in rename.items() if k in matched.columns
+                            })
+                            return matched.reset_index(drop=True)
+            except Exception as e_sina:
+                self._logger.warning(f"[akshare] 新浪指数接口失败: {e_sina}")
+
+            # 备选：东方财富指数接口
+            try:
+                df = ak.stock_zh_index_spot_em()
+                if df is None or df.empty:
+                    return pd.DataFrame()
+                self._logger.info(f"[akshare] 使用东方财富接口获取指数 {len(df)} 条")
+                rows = []
+                for code in codes:
                     row = df[df["代码"].astype(str) == str(code)]
                     if not row.empty:
                         rows.append(row.iloc[0])
-                except Exception:
-                    continue
-            if not rows:
-                return pd.DataFrame()
-            df = pd.DataFrame(rows)
-            rename = {
-                "最新价": "最新", "涨跌幅": "涨幅", "涨跌额": "涨跌额",
-                "成交量": "成交量", "成交额": "成交额",
-            }
-            df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
-            return df.reset_index(drop=True)
+                if not rows:
+                    return pd.DataFrame()
+                df = pd.DataFrame(rows)
+                rename = {
+                    "最新价": "最新", "涨跌幅": "涨幅", "涨跌额": "涨跌额",
+                    "成交量": "成交量", "成交额": "成交额",
+                }
+                df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+                return df.reset_index(drop=True)
+            except Exception as e_em:
+                self._logger.warning(f"[akshare] 东方财富指数接口失败: {e_em}")
+
+            # 最终备选：直接调用新浪行情接口（http://hq.sinajs.cn）
+            return self._sina_index_direct(code_list)
         except Exception as e:
             self._logger.warning(f"[akshare] 获取指数行情失败: {e}")
             return pd.DataFrame()
+
+    def _sina_index_direct(self, code_list: List[str]) -> pd.DataFrame:
+        """新浪财经指数行情直连接口（最后兜底）
+
+        接口: http://hq.sinajs.cn/list=sh000001,sz399001
+        返回: var hq_str_sh000001="上证指数,3094.67,..."
+        """
+        try:
+            requests = self._get_requests()
+            name_to_sina = {
+                "上证指数": "sh000001", "深证成指": "sz399001",
+                "创业板指": "sz399006", "沪深300": "sh000300",
+                "上证50": "sh000016", "中证500": "sh000905",
+                "科创50": "sh000688",
+            }
+            sina_codes = []
+            for c in code_list:
+                c = str(c).strip()
+                sina_codes.append(name_to_sina.get(c, c))
+            if not sina_codes:
+                return pd.DataFrame()
+            url = f"http://hq.sinajs.cn/list={','.join(sina_codes)}"
+            headers = {
+                "User-Agent": _HTTP_HEADERS["User-Agent"],
+                "Referer": "https://finance.sina.com.cn/",
+            }
+            r = requests.get(url, headers=headers, timeout=10, proxies=_NO_PROXY)
+            r.encoding = "gbk"
+            rows = []
+            for line, orig_code in zip(r.text.strip().split("\n"), code_list):
+                if "=" not in line:
+                    continue
+                try:
+                    content = line.split("=", 1)[1].strip().strip(";").strip('"')
+                    fields = content.split(",")
+                    if len(fields) < 6:
+                        continue
+                    # 新浪指数格式：名称,开盘,昨收,最新,最高,最低,...
+                    name = fields[0]
+                    open_p = _safe_float(fields[1])
+                    pre_close = _safe_float(fields[2])
+                    price = _safe_float(fields[3])
+                    high = _safe_float(fields[4])
+                    low = _safe_float(fields[5])
+                    change = (price - pre_close) if (price and pre_close) else None
+                    change_pct = (change / pre_close * 100) if (change is not None and pre_close) else None
+                    rows.append({
+                        "代码": str(orig_code),
+                        "名称": name,
+                        "最新": price,
+                        "开盘": open_p,
+                        "昨收": pre_close,
+                        "最高": high,
+                        "最低": low,
+                        "涨跌额": change,
+                        "涨幅": change_pct,
+                    })
+                except Exception:
+                    continue
+            return pd.DataFrame(rows) if rows else pd.DataFrame()
+        except Exception as e:
+            self._logger.warning(f"[sina] 直连指数接口失败: {e}")
+            return pd.DataFrame()
+
+    def _call_with_timeout(self, fn, args=(), kwargs=None, timeout_sec=15):
+        """线程方式调用函数并设置超时（避免 akshare 内部卡死）
+
+        注意：线程无法真正终止正在执行的 Python 代码，但能让主线程
+        不被卡住，继续执行后续逻辑。
+        """
+        import threading
+        kwargs = kwargs or {}
+        result = [None]
+        error = [None]
+        done = [False]
+
+        def worker():
+            try:
+                result[0] = fn(*args, **kwargs)
+            except Exception as e:
+                error[0] = e
+            finally:
+                done[0] = True
+
+        t = threading.Thread(target=worker, daemon=True)
+        t.start()
+        t.join(timeout=timeout_sec)
+        if not done[0]:
+            raise TimeoutError(f"调用超时（{timeout_sec}s）")
+        if error[0]:
+            raise error[0]
+        return result[0]
 
     def akshare_news_cls(self) -> pd.DataFrame:
         """AKShare: 财联社电报快讯
 
         对齐 qstock qs.news_data() 返回字段：标题/内容/发布时间/发布日期
+        注：akshare 财联社接口偶尔会卡住，加了 15 秒超时保护。
         """
         try:
             ak = self._get_akshare()
-            df = ak.stock_info_global_cls(symbol="全部")
+            df = self._call_with_timeout(
+                ak.stock_info_global_cls,
+                kwargs={"symbol": "全部"},
+                timeout_sec=15,
+            )
             if df is None or df.empty:
                 return pd.DataFrame()
             # akshare 返回字段：标题、内容、发布时间
@@ -219,6 +384,9 @@ class BackupSources:
                 if col in df.columns:
                     df[col] = df[col].astype(str)
             return df.reset_index(drop=True)
+        except TimeoutError as e:
+            self._logger.warning(f"[akshare] 获取财联社电报超时: {e}")
+            return pd.DataFrame()
         except Exception as e:
             self._logger.warning(f"[akshare] 获取财联社电报失败: {e}")
             return pd.DataFrame()
@@ -227,13 +395,19 @@ class BackupSources:
         """AKShare: 东方财富全球财经快讯（替代金十数据）
 
         作为 qstock news_data('js') 的备选
+        注：加了 15 秒超时保护。
         """
         try:
             ak = self._get_akshare()
-            df = ak.stock_info_global_em()
+            df = self._call_with_timeout(
+                ak.stock_info_global_em, timeout_sec=15,
+            )
             if df is None or df.empty:
                 return pd.DataFrame()
             return df.reset_index(drop=True)
+        except TimeoutError as e:
+            self._logger.warning(f"[akshare] 获取全球快讯超时: {e}")
+            return pd.DataFrame()
         except Exception as e:
             self._logger.warning(f"[akshare] 获取全球快讯失败: {e}")
             return pd.DataFrame()
@@ -347,13 +521,24 @@ class BackupSources:
     def akshare_weibo_sentiment(self) -> pd.DataFrame:
         """AKShare: 微博舆情报告（新增数据类型）
 
-        字段：股票代码、股票名称、微博舆情指数、正负面情绪占比
+        原始字段：name, rate（akshare 接口返回）
+        统一重命名为：股票名称, 舆情指数
         """
         try:
             ak = self._get_akshare()
-            df = ak.stock_js_weibo_report(time_period="CNHOUR12")
+            df = self._call_with_timeout(
+                ak.stock_js_weibo_report,
+                kwargs={"time_period": "CNHOUR12"},
+                timeout_sec=15,
+            )
             if df is None or df.empty:
                 return pd.DataFrame()
+            # 字段重命名（akshare 返回英文列名，统一为中文）
+            rename = {
+                "name": "股票名称",
+                "rate": "舆情指数",
+            }
+            df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
             return df.head(50).reset_index(drop=True)
         except Exception as e:
             self._logger.warning(f"[akshare] 获取微博舆情失败: {e}")
@@ -363,10 +548,14 @@ class BackupSources:
         """AKShare: 新闻情绪指数（新增数据类型）
 
         字段：日期、新闻情绪指数
+        接口失败时返回空 DataFrame（不影响其他数据块写入）
         """
         try:
             ak = self._get_akshare()
-            df = ak.index_news_sentiment_scope()
+            df = self._call_with_timeout(
+                ak.index_news_sentiment_scope,
+                timeout_sec=15,
+            )
             if df is None or df.empty:
                 return pd.DataFrame()
             return df.tail(30).reset_index(drop=True)
@@ -399,8 +588,10 @@ class BackupSources:
                 "secids": secids,
                 "ut": "fa5fd1943c7b386f172d6893dbbd1",
             }
-            r = requests.get(url, params=params, headers=_HTTP_HEADERS, timeout=10)
-            data = r.json().get("data", {}).get("diff", []) or []
+            r = requests.get(url, params=params, headers=_HTTP_HEADERS,
+                             timeout=10, proxies=_NO_PROXY)
+            payload = r.json() or {}
+            data = (payload.get("data") or {}).get("diff") or []
             if not data:
                 return pd.DataFrame()
             rows = []
@@ -438,8 +629,10 @@ class BackupSources:
                 "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
                 "ut": "fa5fd1943c7b386f172d6893dbbd1",
             }
-            r = requests.get(url, params=params, headers=_HTTP_HEADERS, timeout=10)
-            klines = r.json().get("data", {}).get("klines", []) or []
+            r = requests.get(url, params=params, headers=_HTTP_HEADERS,
+                             timeout=10, proxies=_NO_PROXY)
+            payload = r.json() or {}
+            klines = (payload.get("data") or {}).get("klines") or []
             if not klines:
                 return pd.DataFrame()
             rows = [k.split(",") for k in klines]
@@ -472,8 +665,10 @@ class BackupSources:
                 "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65",
                 "ut": "b2884a393a59ad64002292a3e90d46a5",
             }
-            r = requests.get(url, params=params, headers=_HTTP_HEADERS, timeout=10)
-            klines = r.json().get("data", {}).get("klines", []) or []
+            r = requests.get(url, params=params, headers=_HTTP_HEADERS,
+                             timeout=10, proxies=_NO_PROXY)
+            payload = r.json() or {}
+            klines = (payload.get("data") or {}).get("klines") or []
             if not klines:
                 return pd.DataFrame()
             rows = [k.split(",") for k in klines]
@@ -489,39 +684,33 @@ class BackupSources:
             return pd.DataFrame()
 
     def eastmoney_guba_hot(self, page_size: int = 20) -> pd.DataFrame:
-        """东方财富: 股吧热门帖子
+        """东方财富: 热门个股排行榜（替代原股吧热门接口）
 
-        参考 egs_data/eastmoney/eastmoney_news_guba.py
-        字段：标题、发布时间、阅读量、评论数、点赞数
+        原 guba.eastmoney.com/list,000001,f_1.html 接口已不返回 article_list 变量，
+        改用 akshare 的 stock_hot_rank_em（东财人气榜）作为数据源，
+        返回字段：股票代码、股票名称、当前排名、排名较昨日变化
         """
         try:
-            import re
-            import json
-            requests = self._get_requests()
-            headers = {
-                "User-Agent": _HTTP_HEADERS["User-Agent"],
-                "Referer": "https://guba.eastmoney.com/",
-            }
-            url = "https://guba.eastmoney.com/list,000001,f_1.html"
-            r = requests.get(url, headers=headers, timeout=15)
-            match = re.search(r"var article_list=(\{.*?\});", r.text, re.DOTALL)
-            if not match:
+            ak = self._get_akshare()
+            df = self._call_with_timeout(
+                ak.stock_hot_rank_em,
+                timeout_sec=15,
+            )
+            if df is None or df.empty:
                 return pd.DataFrame()
-            data = json.loads(match.group(1))
-            posts = data.get("re", []) or []
-            rows = []
-            for p in posts[:page_size]:
-                title = p.get("post_title", "") or (p.get("post_content", "") or "")[:50]
-                rows.append({
-                    "标题": title,
-                    "发布时间": p.get("post_publish_time", ""),
-                    "阅读量": p.get("post_click_count", 0),
-                    "评论数": p.get("post_comment_count", 0),
-                    "点赞数": p.get("post_like_count", 0),
-                })
-            return pd.DataFrame(rows)
+            # 取前 page_size 条
+            df = df.head(page_size)
+            # 重命名为中文（akshare 返回字段：股票代码, 股票名称, 排名, 排名较昨日变化）
+            rename = {
+                "股票代码": "代码",
+                "股票名称": "名称",
+                "排名": "排名",
+                "排名较昨日变化": "排名变化",
+            }
+            df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+            return df.reset_index(drop=True)
         except Exception as e:
-            self._logger.warning(f"[eastmoney] 获取股吧热门失败: {e}")
+            self._logger.warning(f"[eastmoney] 获取热门个股排行失败: {e}")
             return pd.DataFrame()
 
     def eastmoney_guba_posts(self, code: str, page_size: int = 20) -> pd.DataFrame:
@@ -539,7 +728,7 @@ class BackupSources:
                 "Referer": f"https://guba.eastmoney.com/list,{code}.html",
             }
             url = f"https://guba.eastmoney.com/list,{code},f_1.html"
-            r = requests.get(url, headers=headers, timeout=15)
+            r = requests.get(url, headers=headers, timeout=15, proxies=_NO_PROXY)
             match = re.search(r"var article_list=(\{.*?\});", r.text, re.DOTALL)
             if not match:
                 return pd.DataFrame()
@@ -576,12 +765,13 @@ class BackupSources:
                 "page_index": 1, "ann_type": "A", "client_source": "web",
                 "stock_list": code, "f_node": "0", "s_node": "0",
             }
-            r = requests.get(url, params=params, headers=_HTTP_HEADERS, timeout=15)
+            r = requests.get(url, params=params, headers=_HTTP_HEADERS,
+                             timeout=15, proxies=_NO_PROXY)
             text = r.text
             if text.startswith("jQuery"):
                 text = text[text.index("(") + 1: text.rindex(")")]
-            data = json.loads(text)
-            items = data.get("data", {}).get("list", []) or []
+            data = json.loads(text) or {}
+            items = (data.get("data") or {}).get("list") or []
             if not items:
                 return pd.DataFrame()
             rows = []
@@ -617,7 +807,7 @@ class BackupSources:
                 return pd.DataFrame()
             tencent_codes = [self._tencent_code(c) for c in codes]
             url = f"http://qt.gtimg.cn/q={','.join(tencent_codes)}"
-            r = requests.get(url, timeout=10)
+            r = requests.get(url, timeout=10, proxies=_NO_PROXY)
             r.encoding = "gbk"
             rows = []
             for line in r.text.strip().split("\n"):
@@ -658,8 +848,10 @@ class BackupSources:
             tencent_code = self._tencent_code(code)
             url = "http://web.ifzq.gtimg.cn/appstock/app/fqkline/get"
             params = {"param": f"{tencent_code},day,,,{count},qfq"}
-            r = requests.get(url, params=params, timeout=10)
-            data = r.json().get("data", {}).get(tencent_code, {})
+            r = requests.get(url, params=params, timeout=10, proxies=_NO_PROXY)
+            payload = r.json() or {}
+            data = payload.get("data") or {}
+            data = data.get(tencent_code) or {}
             day_data = (data.get("day") or data.get("qfqday")
                         or data.get("hfqday") or [])
             rows = [row[:6] for row in day_data]
@@ -700,7 +892,7 @@ class BackupSources:
                 "start": start, "end": end,
                 "fields": "TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP",
             }
-            r = requests.get(url, params=params, timeout=15)
+            r = requests.get(url, params=params, timeout=15, proxies=_NO_PROXY)
             r.encoding = "gbk"
             df = pd.read_csv(StringIO(r.text))
             if df is None or df.empty:
@@ -733,12 +925,14 @@ class BackupSources:
         try:
             ef = self._get_efinance()
             codes = _normalize_codes(code_list)
-            if not codes:
+            if not codes and not code_list:
                 return pd.DataFrame()
             df = ef.stock.get_realtime_quotes()
             if df is None or df.empty:
                 return pd.DataFrame()
-            df = df[df["股票代码"].astype(str).isin(codes)].copy()
+            mask_code = df["股票代码"].astype(str).isin(codes) if codes else pd.Series([False]*len(df))
+            mask_name = df["股票名称"].astype(str).isin([str(c) for c in code_list if c and not str(c).strip().isdigit()])
+            df = df[mask_code | mask_name].copy()
             rename = {
                 "股票代码": "代码", "股票名称": "名称",
                 "最新价": "最新", "涨跌幅": "涨幅", "涨跌额": "涨跌额",
@@ -771,4 +965,94 @@ class BackupSources:
             return df.tail(count).head(count)
         except Exception as e:
             self._logger.warning(f"[efinance] 获取 K 线失败: {e}")
+            return pd.DataFrame()
+
+    # =================================================================
+    # BaoStock 备选源（TCP 10030 端口，绕开 HTTP 反爬限制）
+    # 参考 money_maker/egs_quant_trade/a001_news_track 项目实现
+    # =================================================================
+    def baostock_kline(self, code: str, count: int = 60,
+                       freq: str = "d") -> pd.DataFrame:
+        """BaoStock: 历史 K 线（日频）
+
+        BaoStock 使用 TCP 10030 端口，不受 HTTP 反爬限制，
+        作为 K 线数据的高可用备用源。
+        """
+        try:
+            bs = self._get_baostock()
+            if bs is None:
+                return pd.DataFrame()
+            code = _normalize_codes([code])[0]
+            prefix = _detect_market_prefix(code)
+            bs_code = f"{prefix}.{code}"
+            import datetime
+            end_date = datetime.datetime.now().strftime("%Y-%m-%d")
+            start_date = (datetime.datetime.now() -
+                          datetime.timedelta(days=count * 2 + 60)).strftime("%Y-%m-%d")
+            fields = "date,open,high,low,close,volume"
+            rs = bs.query_history_k_data_plus(
+                bs_code, fields,
+                start_date=start_date, end_date=end_date,
+                frequency="d", adjustflag="2",
+            )
+            if rs.error_code != "0":
+                self._logger.warning(f"[baostock] K线查询失败: {rs.error_msg}")
+                return pd.DataFrame()
+            data_list = []
+            while (rs.error_code == "0") and rs.next():
+                data_list.append(rs.get_row_data())
+            if not data_list:
+                return pd.DataFrame()
+            df = pd.DataFrame(data_list, columns=["date", "Open", "High", "Low", "Close", "Volume"])
+            for col in ["Open", "High", "Low", "Close", "Volume"]:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.set_index("date")
+            return df.tail(count).head(count)
+        except Exception as e:
+            self._logger.warning(f"[baostock] 获取 K 线失败: {e}")
+            return pd.DataFrame()
+
+    def baostock_stock_realtime(self, code_list: List[str]) -> pd.DataFrame:
+        """BaoStock: 实时行情快照（通过当日 K 线近似获取）
+
+        BaoStock 没有真正的"实时"行情接口，但可以通过 query_today_stock_kline
+        获取当日已成交的 K 线近似实时价格，作为最后 fallback 选项。
+        """
+        try:
+            bs = self._get_baostock()
+            if bs is None:
+                return pd.DataFrame()
+            codes = _normalize_codes(code_list)
+            if not codes:
+                return pd.DataFrame()
+            rows = []
+            for code in codes:
+                try:
+                    prefix = _detect_market_prefix(code)
+                    bs_code = f"{prefix}.{code}"
+                    rs = bs.query_today_stock_kline(
+                        code=bs_code, ktype="5",
+                    )
+                    if rs.error_code != "0":
+                        continue
+                    data_list = []
+                    while (rs.error_code == "0") and rs.next():
+                        data_list.append(rs.get_row_data())
+                    if not data_list:
+                        continue
+                    # 取最后一根 K 线近似最新价
+                    last = data_list[-1]
+                    rows.append({
+                        "代码": code,
+                        "名称": code,
+                        "最新": _safe_float(last[3]),
+                        "涨幅": None,
+                        "成交量": _safe_int(last[5]),
+                    })
+                except Exception:
+                    continue
+            return pd.DataFrame(rows) if rows else pd.DataFrame()
+        except Exception as e:
+            self._logger.warning(f"[baostock] 获取实时行情失败: {e}")
             return pd.DataFrame()

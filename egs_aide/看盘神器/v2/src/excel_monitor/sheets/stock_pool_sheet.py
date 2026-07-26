@@ -13,10 +13,9 @@
     A4: 代码    B4: 名称    C4: 市场    (表头)
     A5+: 数据行
 """
-import logging
-
 import pandas as pd
 
+from excel_monitor.logger import get_logger
 from excel_monitor.sheets.base import BaseSheet
 from excel_monitor.config_loader import AppConfig
 from excel_monitor.core.stock_pool import StockPool
@@ -35,7 +34,7 @@ class StockPoolSheet(BaseSheet):
                  stock_pool: StockPool = None):
         super().__init__(name, excel_mgr, data_provider)
         self.config = config or AppConfig()
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         self.pool = stock_pool or StockPool(
             cache_path=self.config.stock_pool_cache_path,
             cache_days=self.config.stock_pool_cache_days,
