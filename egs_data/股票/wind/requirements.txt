@@ -1,0 +1,4 @@
+pandas==2.3.3
+tqdm==4.68.3
+# 注意：本样例依赖 Wind 终端（WindPy），无法通过 pip 安装，需安装万得客户端后在 Wind 终端环境下运行。
+# 同时依赖项目内 tools 与 quant_brain 模块，需在项目根目录运行。

@@ -1,0 +1,4 @@
+efinance==0.5.8
+baostock==0.9.2
+requests==2.34.2
+pandas==2.3.3

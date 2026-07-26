@@ -1,0 +1,2 @@
+baostock==0.9.2
+pandas==2.3.3

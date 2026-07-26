@@ -1,0 +1,3 @@
+akshare==1.18.64
+efinance==0.5.8
+pandas==2.3.3
