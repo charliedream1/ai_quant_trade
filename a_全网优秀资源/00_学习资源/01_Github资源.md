@@ -18,15 +18,15 @@ Rockyzsu/stock 是一款由开发者 Rockyzsu 创建的开源项目，旨在为�
 - Github (451 stars): https://github.com/tkfy920/PythonQuantitativeFinance
 
 Python数据分析和金融量化投资方向可按照“基础知识、数据爬取、文本分析、金融量化、机器学习、深度学习”，给自己建立了学习路线图：
-（1）Python基础知识
-（2）金融量化常用库学习
-如：Numpy、Pandas、Scipy、Matplotlib等
-（3）爬虫基本知识+财经网站数据开源库
-如：Scrapy、tushare、baostock等
-（4）文本分析（NLP处理、词云分析、jieba分词）
-（5）机器学习（sklearn）
-（6）深度学习（TensorFlow）
+1. Python基础知识
+2. 金融量化常用库学习，如：Numpy、Pandas、Scipy、Matplotlib等
+3. 爬虫基本知识+财经网站数据开源库，如：Scrapy、tushare、baostock等
+4. 文本分析（NLP处理、词云分析、jieba分词）
+5. 机器学习（sklearn）
+6. 深度学习（TensorFlow）
+
 建议安装anaconda，自带Jupyter Notebook和Spyder。
+
 个人比较喜欢使用Jupyter Notebook来交互运行python程序，公众号上的文章和代码也都是使用它来完成的，文字使用md编译。至于Python基础，个人推荐看廖雪峰Python3入门教程（百度搜索）。
 
 # 3. StockAnalysisInPython
