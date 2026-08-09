@@ -8,7 +8,10 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
+from excel_monitor.logger import get_logger
 from excel_monitor.config_loader import AppConfig
+
+_logger = get_logger("TemplateGenerator")
 
 
 def _style_header(cell):
@@ -45,11 +48,11 @@ def create_template(output_path: str = None, config: AppConfig = None):
     ws2["B1"] = "名称"
     _style_header(ws2["A1"])
     _style_header(ws2["B1"])
-    # 示例自选股
-    ws2["A2"] = "中国平安"
-    ws2["B2"] = "中国平安"
-    ws2["A3"] = "贵州茅台"
-    ws2["B3"] = "贵州茅台"
+    # 使用配置文件中的自选股列表（替代原来只放2只示例）
+    for i, stock in enumerate(cfg.watch_stocks):
+        row = 2 + i
+        ws2.cell(row=row, column=1, value=stock)
+        ws2.cell(row=row, column=2, value=stock)
 
     # === Sheet 3: 新闻 ===
     ws3 = wb.create_sheet(cfg.sheets["news"])
@@ -74,16 +77,18 @@ def create_template(output_path: str = None, config: AppConfig = None):
         cell.alignment = Alignment(horizontal="center", vertical="center")
         thin = Side(border_style="thin", color="CCCCCC")
         cell.border = Border(left=thin, right=thin, top=thin, bottom=thin)
-    # 示例自选股
-    ws4["A2"] = "中国平安"
-    ws4["B2"] = "中国平安"
-    # 示例预警条件：涨跌幅上限 5%，价格下限 40
-    ws4.cell(row=2, column=alert_start_col + 1, value=5.0)   # 涨跌幅上限
-    ws4.cell(row=2, column=alert_start_col + 2, value=40.0)  # 价格下限
-    ws4["A3"] = "贵州茅台"
-    ws4["B3"] = "贵州茅台"
-    # 示例预警条件：价格上限 2000
-    ws4.cell(row=3, column=alert_start_col + 3, value=2000.0)  # 价格上限
+    # 使用配置文件中的自选股列表（替代原来只放2只示例）
+    for i, stock in enumerate(cfg.watch_stocks):
+        row = 2 + i
+        ws4.cell(row=row, column=1, value=stock)
+        ws4.cell(row=row, column=2, value=stock)
+    # 示例预警条件：第2行 涨跌幅上限 5%，价格下限 40
+    if len(cfg.watch_stocks) >= 1:
+        ws4.cell(row=2, column=alert_start_col + 1, value=5.0)   # 涨跌幅上限
+        ws4.cell(row=2, column=alert_start_col + 2, value=40.0)  # 价格下限
+    # 示例预警条件：第3行 价格上限 2000
+    if len(cfg.watch_stocks) >= 2:
+        ws4.cell(row=3, column=alert_start_col + 3, value=2000.0)  # 价格上限
 
     # K 线图操作区域（第 20 行开始）
     ws4["A20"] = "=== K 线图操作区 ==="
@@ -184,7 +189,7 @@ def create_template(output_path: str = None, config: AppConfig = None):
     ws7.column_dimensions["B"].width = 20
 
     wb.save(path)
-    print(f"模板已生成: {path}")
+    _logger.info(f"模板已生成: {path}")
     return path
 
 

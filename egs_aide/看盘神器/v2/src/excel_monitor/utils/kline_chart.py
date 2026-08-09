@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """K 线图绘制模块：使用 mplfinance 绘制 K 线并保存为图片"""
 import os
-import logging
 import tempfile
 
 import pandas as pd
+
+from excel_monitor.logger import get_logger
 
 
 def _get_mpf():
@@ -17,7 +18,7 @@ class KLineChart:
     """K 线图绘制器"""
 
     def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
 
     @staticmethod
     def validate_data(df: pd.DataFrame) -> bool:
@@ -91,5 +92,5 @@ class KLineChart:
         except Exception as e:
             self._logger.error(f"绘制 K 线失败: {e}")
             import traceback
-            traceback.print_exc()
+            self._logger.debug(traceback.format_exc())
             return ""

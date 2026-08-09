@@ -10,17 +10,25 @@
     3. 单点失败不影响整体：每个方法独立 try-except，最终失败返回空 DataFrame
     4. 备选源默认启用：可通过 AppConfig.enabled_backup_sources 关闭某些源
 """
-import logging
 import traceback
 from typing import List, Dict, Callable, Optional
 
 import pandas as pd
 
+from excel_monitor.logger import get_logger
 from excel_monitor.core.backup_sources import BackupSources
+
+# 模块级 logger，用于 _get_qstock 等模块级函数
+_logger = get_logger("DataProvider")
 
 
 def _get_qstock():
-    """延迟导入 qstock（避免 import 时触发网络请求）"""
+    """延迟导入 qstock
+
+    注意：qstock 在 import 时会发起网络请求获取最新交易日，
+    若网络不可达会抛 ConnectionError/ProxyError。
+    调用方需 try-except 捕获并降级到备选数据源。
+    """
     import qstock as qs
     return qs
 
@@ -34,7 +42,7 @@ class DataProvider:
     """
 
     def __init__(self, config=None):
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         # config 可为 AppConfig，从中读取 enabled_backup_sources
         self._config = config
         enabled = None
@@ -43,7 +51,7 @@ class DataProvider:
         self.backup = BackupSources(config)
         # 默认全部启用；用户可在 config 中关闭某个源
         self.enabled_sources = enabled or [
-            "akshare", "eastmoney", "tencent", "netease", "efinance",
+            "akshare", "eastmoney", "tencent", "netease", "efinance", "baostock",
         ]
 
     # ===== 纯逻辑方法（可测试） =====
@@ -134,12 +142,13 @@ class DataProvider:
 
     def get_stock_realtime(self, code_list: List[str]) -> pd.DataFrame:
         """获取个股实时行情
-        fallback 链：qstock → akshare → tencent → eastmoney → efinance
+        fallback 链：qstock → akshare(EM) → baostock(近似) → tencent → eastmoney → efinance
         """
         return self._try_with_fallback(
             primary_func=self._qstock_stock_realtime,
             fallback_chain=[
                 ("akshare", self.backup.akshare_stock_realtime),
+                ("baostock", self.backup.baostock_stock_realtime),
                 ("tencent", self.backup.tencent_stock_realtime),
                 ("eastmoney", self.backup.eastmoney_stock_realtime),
                 ("efinance", self.backup.efinance_stock_realtime),
@@ -151,7 +160,7 @@ class DataProvider:
     def get_industry_boards(self) -> pd.DataFrame:
         """获取行业板块行情
 
-        qstock 较稳定，仅 akshare 作为 fallback（其他源格式不统一）
+        fallback 链：qstock → akshare(东方财富) → akshare(新浪行业板块)
         """
         try:
             qs = _get_qstock()
@@ -160,16 +169,44 @@ class DataProvider:
                 return df
         except Exception as e:
             self._logger.warning(f"主源(qstock) 获取行业板块失败: {e}")
-        # fallback: akshare 行业板块
+        # fallback 1: akshare 东方财富
         if "akshare" in self.enabled_sources:
             try:
                 df = self._akshare_industry_boards()
                 if df is not None and not df.empty:
-                    self._logger.info("备选源[akshare] 成功获取 行业板块")
+                    self._logger.info("备选源[akshare/EM] 成功获取 行业板块")
                     return df
             except Exception as e:
-                self._logger.warning(f"备选源[akshare] 获取行业板块失败: {e}")
+                self._logger.warning(f"备选源[akshare/EM] 获取行业板块失败: {e}")
+        # fallback 2: akshare 新浪行业板块
+        if "akshare" in self.enabled_sources:
+            try:
+                df = self._akshare_industry_boards_sina()
+                if df is not None and not df.empty:
+                    self._logger.info("备选源[akshare/Sina] 成功获取 行业板块")
+                    return df
+            except Exception as e:
+                self._logger.warning(f"备选源[akshare/Sina] 获取行业板块失败: {e}")
         return pd.DataFrame()
+
+    def _akshare_industry_boards_sina(self) -> pd.DataFrame:
+        """AKShare: 新浪行业板块行情（fallback）
+
+        使用 ak.stock_sector_spot() 接口，比东方财富更稳定。
+        返回字段：label, 板块, 公司家数, 平均价格, 涨跌额, 涨跌幅, 总成交量,
+                 总成交额, 股票代码, 个股-涨跌幅, ...
+        """
+        ak = self.backup._get_akshare()
+        df = ak.stock_sector_spot()
+        if df is None or df.empty:
+            return pd.DataFrame()
+        rename = {
+            "label": "代码", "板块": "名称", "平均价格": "最新",
+            "涨跌幅": "涨幅", "涨跌额": "涨跌额",
+            "总成交量": "成交量", "总成交额": "成交额",
+        }
+        df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+        return df.reset_index(drop=True)
 
     def _akshare_industry_boards(self) -> pd.DataFrame:
         """AKShare: 行业板块行情（fallback）"""
@@ -187,7 +224,10 @@ class DataProvider:
         return df.reset_index(drop=True)
 
     def get_concept_boards(self) -> pd.DataFrame:
-        """获取概念板块行情"""
+        """获取概念板块行情
+
+        fallback 链：qstock → akshare(东方财富) → akshare(新浪概念板块)
+        """
         try:
             qs = _get_qstock()
             df = qs.realtime_data("概念板块")
@@ -195,15 +235,46 @@ class DataProvider:
                 return df
         except Exception as e:
             self._logger.warning(f"主源(qstock) 获取概念板块失败: {e}")
+        # fallback 1: akshare 东方财富
         if "akshare" in self.enabled_sources:
             try:
                 df = self._akshare_concept_boards()
                 if df is not None and not df.empty:
-                    self._logger.info("备选源[akshare] 成功获取 概念板块")
+                    self._logger.info("备选源[akshare/EM] 成功获取 概念板块")
                     return df
             except Exception as e:
-                self._logger.warning(f"备选源[akshare] 获取概念板块失败: {e}")
+                self._logger.warning(f"备选源[akshare/EM] 获取概念板块失败: {e}")
+        # fallback 2: akshare 新浪概念板块
+        if "akshare" in self.enabled_sources:
+            try:
+                df = self._akshare_concept_boards_sina()
+                if df is not None and not df.empty:
+                    self._logger.info("备选源[akshare/Sina] 成功获取 概念板块")
+                    return df
+            except Exception as e:
+                self._logger.warning(f"备选源[akshare/Sina] 获取概念板块失败: {e}")
         return pd.DataFrame()
+
+    def _akshare_concept_boards_sina(self) -> pd.DataFrame:
+        """AKShare: 新浪概念板块行情（fallback）
+
+        注：akshare 的 stock_sector_spot(indicator='概念资金流') 当前有 bug，
+        此处使用同花顺概念板块作为备选源。
+        """
+        ak = self.backup._get_akshare()
+        # 同花顺概念板块接口
+        try:
+            df = ak.stock_board_concept_name_ths()
+            if df is None or df.empty:
+                return pd.DataFrame()
+            rename = {
+                "概念名称": "名称", "代码": "代码",
+                "最新价": "最新", "涨跌幅": "涨幅",
+            }
+            df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+            return df.reset_index(drop=True)
+        except Exception:
+            return pd.DataFrame()
 
     def _akshare_concept_boards(self) -> pd.DataFrame:
         """AKShare: 概念板块行情（fallback）"""
@@ -228,7 +299,7 @@ class DataProvider:
             return df if df is not None and not df.empty else pd.DataFrame()
         except Exception as e:
             self._logger.error(f"获取涨停板失败: {e}")
-            traceback.print_exc()
+            self._logger.debug(traceback.format_exc())
             return pd.DataFrame()
 
     def get_billboard(self) -> pd.DataFrame:
@@ -239,7 +310,7 @@ class DataProvider:
             return df if df is not None and not df.empty else pd.DataFrame()
         except Exception as e:
             self._logger.error(f"获取龙虎榜失败: {e}")
-            traceback.print_exc()
+            self._logger.debug(traceback.format_exc())
             return pd.DataFrame()
 
     def get_realtime_change(self) -> pd.DataFrame:
@@ -250,7 +321,7 @@ class DataProvider:
             return df if df is not None and not df.empty else pd.DataFrame()
         except Exception as e:
             self._logger.error(f"获取盘口异动失败: {e}")
-            traceback.print_exc()
+            self._logger.debug(traceback.format_exc())
             return pd.DataFrame()
 
     # ===== 新闻类（多源 fallback） =====
@@ -335,7 +406,7 @@ class DataProvider:
     def get_kline_data(self, code: str, count: int = 60,
                        freq: str = "d") -> pd.DataFrame:
         """获取 K 线历史数据
-        fallback 链：qstock → tencent → eastmoney → akshare → efinance → netease
+        fallback 链：qstock → akshare → baostock → tencent → eastmoney → efinance → netease
 
         Args:
             code: 股票代码或名称
@@ -348,9 +419,10 @@ class DataProvider:
         return self._try_with_fallback(
             primary_func=self._qstock_kline,
             fallback_chain=[
+                ("akshare", self.backup.akshare_kline),
+                ("baostock", self.backup.baostock_kline),
                 ("tencent", self.backup.tencent_kline),
                 ("eastmoney", self.backup.eastmoney_kline),
-                ("akshare", self.backup.akshare_kline),
                 ("efinance", self.backup.efinance_kline),
                 ("netease", self.backup.netease_kline),
             ],

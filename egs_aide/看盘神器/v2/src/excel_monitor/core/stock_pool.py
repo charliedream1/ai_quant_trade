@@ -16,12 +16,13 @@
     - 例如 "pa" 匹配 "平安银行"、"600519" 匹配 "贵州茅台"
 """
 import json
-import logging
 import os
 import time
 from typing import List, Optional
 
 import pandas as pd
+
+from excel_monitor.logger import get_logger
 
 
 def _pinyin_first_letters(name: str) -> str:
@@ -81,7 +82,7 @@ class StockPool:
                  cache_days: int = 1):
         self.cache_path = cache_path
         self.cache_days = cache_days
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self.__class__.__name__)
         self.df: pd.DataFrame = pd.DataFrame()
 
     # =================================================================

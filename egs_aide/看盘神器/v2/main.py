@@ -11,8 +11,26 @@
 import os
 import sys
 import time
-import logging
 import argparse
+
+# 国内财经 API 不应走系统代理（用户若开了科学上网代理，反而无法访问国内站点）
+# 必须在 import qstock/akshare 等之前设置，因为这些库在 import 时会发起网络请求
+# 设置 NO_PROXY 让 requests 自动跳过国内财经域名
+_NO_PROXY_DOMAINS = (
+    "eastmoney.com,push2.eastmoney.com,push2his.eastmoney.com,"
+    "guba.eastmoney.com,np-anotice-stock.eastmoney.com,"
+    "gtimg.cn,qt.gtimg.cn,web.ifzq.gtimg.cn,"
+    "money.163.com,quotes.money.163.com,"
+    "sina.com.cn,sina.com,"
+    "tushare.pro,akshare.xyz,"
+    "baostock.com"
+)
+_existing_no_proxy = os.environ.get("NO_PROXY", "")
+if _existing_no_proxy:
+    os.environ["NO_PROXY"] = f"{_existing_no_proxy},{_NO_PROXY_DOMAINS}"
+else:
+    os.environ["NO_PROXY"] = _NO_PROXY_DOMAINS
+os.environ["no_proxy"] = os.environ["NO_PROXY"]
 
 # 将 src 目录加入 Python 路径，使 excel_monitor 包可被导入
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,6 +38,7 @@ _SRC_DIR = os.path.join(_BASE_DIR, "src")
 if _SRC_DIR not in sys.path:
     sys.path.insert(0, _SRC_DIR)
 
+from excel_monitor.logger import get_logger
 from excel_monitor.config_loader import AppConfig, load_config
 from excel_monitor.core.data_provider import DataProvider
 from excel_monitor.core.excel_manager import ExcelManager
@@ -33,13 +52,50 @@ from excel_monitor.sheets.sentiment_sheet import SentimentSheet
 from excel_monitor.sheets.stock_pool_sheet import StockPoolSheet
 from excel_monitor.utils.template_generator import create_template
 
+import xlwings as xw
+
 
 def setup_logging():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%H:%M:%S",
+    """loguru 已在 excel_monitor.logger 模块加载时配置，此处仅作占位
+
+    保留函数签名以兼容旧调用方，避免破坏既有调用约定。
+    """
+    # 触发 logger 模块导入即完成配置；显式调用确保 import 顺序无关
+    from excel_monitor import logger as _  # noqa: F401
+
+
+def _ensure_sheets(excel_mgr, cfg, logger):
+    """检测并自动补全缺失的 Sheet（兼容旧版模板）
+
+    若启用 sentimental / stock_pool 但模板缺少对应 Sheet，
+    则自动追加空 Sheet，由各 Sheet Handler 在 init() 中填充表头。
+    """
+    required = [
+        cfg.sheets["market_overview"],
+        cfg.sheets["detailed_quotes"],
+        cfg.sheets["news"],
+        cfg.sheets["custom_watch"],
+        cfg.sheets["config"],
+    ]
+    if cfg.sentiment_sheet_enabled:
+        required.append(cfg.sheets["sentiment"])
+    if cfg.stock_pool_sheet_enabled:
+        required.append(cfg.sheets["stock_pool"])
+
+    existing = [s.name for s in excel_mgr.wb.sheets]
+    missing = [name for name in required if name not in existing]
+    if not missing:
+        return
+
+    logger.warning(
+        f"检测到模板缺失 Sheet: {missing}，将自动追加空 Sheet。"
+        f"如需完整模板内容，请运行 python main.py --generate-template 重新生成。"
     )
+    for name in missing:
+        try:
+            excel_mgr.add_sheet(name)
+        except Exception as e:
+            logger.error(f"自动追加 Sheet '{name}' 失败: {e}")
 
 
 def main():
@@ -55,7 +111,7 @@ def main():
     args = parser.parse_args()
 
     setup_logging()
-    logger = logging.getLogger("main")
+    logger = get_logger("main")
 
     # 加载配置
     yaml_path = args.config or os.path.join(_BASE_DIR, "config.yaml")
@@ -76,6 +132,9 @@ def main():
     # 3. 初始化组件
     excel_mgr = ExcelManager(template_path)
     data_provider = DataProvider(cfg)
+
+    # 3.4 检测并自动补全缺失的 Sheet（兼容旧版模板）
+    _ensure_sheets(excel_mgr, cfg, logger)
 
     # 3.5 从 Excel "配置" Sheet 读取配置，覆盖 YAML 默认值
     config_reader = ConfigSheetReader(excel_mgr)
@@ -138,16 +197,51 @@ def main():
     logger.info(f"开始实时刷新，间隔 {cfg.refresh_interval} 秒...")
     try:
         while True:
+            # 检测 Excel 是否仍然存活
+            if not excel_mgr.is_alive():
+                logger.error("Excel 进程已退出，尝试重新打开...")
+                try:
+                    excel_mgr.wb = xw.Book(excel_mgr._xlsx_path)
+                    try:
+                        excel_mgr.wb.app.visible = True
+                    except Exception:
+                        pass
+                    logger.info(f"Excel 重新打开成功: {excel_mgr._xlsx_path}")
+                    # 重新获取 Sheet 对象
+                    for handler in handlers:
+                        try:
+                            handler.sheet = excel_mgr.get_sheet_by_name(handler.name)
+                        except Exception:
+                            pass
+                except Exception as e:
+                    logger.error(f"Excel 重新打开失败: {e}，等待 10 秒后重试...")
+                    time.sleep(10)
+                    continue
+
             for handler in handlers:
+                # 每个 handler 刷新前再次检测 Excel 存活，避免单次崩溃连锁影响
+                if not excel_mgr.is_alive():
+                    logger.error(f"Excel 进程在刷新 '{handler.name}' 前已退出，跳出本轮")
+                    break
                 try:
                     handler.refresh()
                 except Exception as e:
                     logger.error(f"Sheet '{handler.name}' 刷新失败: {e}")
+
+            # 每轮刷新后保存 Excel，确保数据不丢失
+            try:
+                excel_mgr.save()
+            except Exception:
+                pass
+
             time.sleep(cfg.refresh_interval)
     except KeyboardInterrupt:
         logger.info("用户中断，退出...")
     finally:
-        excel_mgr.close()
+        try:
+            excel_mgr.close()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

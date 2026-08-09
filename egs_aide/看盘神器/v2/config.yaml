@@ -19,7 +19,7 @@ sheets:
 
 # 启用的备选数据源（参考 egs_data/ 目录下的数据源示例）
 # 主源 qstock 失败时，按此列表顺序依次尝试 fallback
-# 可选值: akshare / eastmoney / tencent / netease / efinance
+# 可选值: akshare / eastmoney / tencent / netease / efinance / baostock
 # 注释或删除某个源名即关闭该源的 fallback 能力
 enabled_backup_sources:
   - "akshare"
@@ -27,6 +27,7 @@ enabled_backup_sources:
   - "tencent"
   - "netease"
   - "efinance"
+  - "baostock"
 
 # 资金情绪 Sheet（北向资金/微博舆情/新闻情绪/股吧热门）
 sentiment_sheet_enabled: true

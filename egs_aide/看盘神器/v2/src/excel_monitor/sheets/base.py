@@ -46,7 +46,13 @@ class BaseSheet(ABC):
         if df is None or df.empty:
             # 数据源未刷到，保持原数据不变
             return
-        # 先清除旧数据，再写入新数据
-        self.excel_mgr.clear_range(self.sheet, start_row=start_row,
-                                   start_col=start_col)
+        # 只清除数据实际占用的范围（+2行余量），避免清除过大范围导致 Excel 卡顿
+        n_rows = df.shape[0] + 2
+        n_cols = df.shape[1] + 2
+        self.excel_mgr.clear_range(
+            self.sheet, start_row=start_row, start_col=start_col,
+            end_row=start_row + n_rows, end_col=start_col + n_cols - 1
+        )
         self.excel_mgr.write_df(self.sheet, df, start_row, start_col)
+        # 写入后立即保存，避免因后续操作卡住导致数据丢失
+        self.excel_mgr.save()

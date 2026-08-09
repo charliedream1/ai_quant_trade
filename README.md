@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".README_images/LOGO_NEW.png" width="260" height="270" style="border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" />
+<img src=".README_images/LOGO_NEW.png" width="260" height="270" alt="AI量化交易操盘手" />
 
 # 🤖 AI量化交易操盘手
 
@@ -11,6 +11,16 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python-Version](https://img.shields.io/badge/Python-3.8+-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 [![Stars](https://img.shields.io/github/stars/charliedream1/ai_quant_trade?style=social)](https://github.com/charliedream1/ai_quant_trade)
+
+<p>
+  <sub>👇 关注公众号 · 加入知识星球，获取更多实战内容与视频教程</sub>
+</p>
+
+<a href="https://t.zsxq.com/dHt9l" title="AI智投星球">
+  <img src=".README_images/quant_qrcode.jpg" width="150" alt="AI智投星球" />
+</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src=".README_images/公众号链接.png" width="150" alt="微信公众号" />
 
 </div>
 
@@ -47,6 +57,7 @@
 
 | **时间** | **特性** |
 |:---|:---|
+| 2026.07.25 | 🆕 [**上班"摸鱼炒股"神器 V2：模块化盯盘系统 + 预警监控 + K线图 + 多源 fallback**](egs_aide/看盘神器/v2) |
 | 2025.08.09 | 🆕 [**推理型股价预测大模型训练教程（预测准确率提升20%，且可解析）**](egs_courses/01_推理型股价预测大模型训练教程.md) |
 | 2025.05.17 | 🆕 [**Unsloth推理型股价预测大模型（代码见本仓库、详细指南+模型见星球）**](egs_llm/a01_train/a01_unsloth_stock_forcaster) |
 | 2025.01.03 | [**大模型金融市场分析（视频教程见星球或公众号）**](egs_llm/b01_app/a01_hot_topic_report/v1_proto_internet) |
@@ -194,14 +205,28 @@ cd egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018
 
 ## 🛠️ 辅助操盘工具
 
-> 📁 **代码目录**：[egs_aide](egs_tools)
+> 📁 **代码目录**：[egs_aide](egs_aide)
 
-1. **[利用EXCEL看盘](egs_tools/a01_market_monitor_via_excel/v1)**
+1. **[利用EXCEL看盘 V1](egs_aide/看盘神器/v1)**
    - 👀 看盘时不容易被发现
    - 📋 可自定义添加要盯盘的股票
    - ⚡ 可利用 Excel 快速计算和处理数据
 
-2. **[Streamlit实时行情监控](egs_tools/a02_market_monitor_via_streamlit)**
+2. **[上班"摸鱼炒股"神器 V2：模块化盯盘系统](egs_aide/看盘神器/v2)** 🆕
+
+   ![看盘神器V2演示](egs_aide/看盘神器/v2/看盘神器V2演示.gif)
+
+   - 🏗️ **架构重构**：从单文件升级为模块化 `excel_monitor` 包，Sheet Handler 模式，每个 Sheet 刷新互相隔离
+   - 🔔 **预警监控**：自定义涨跌幅/价格上下限，触发后整行变红 + 弹窗提醒
+   - 📈 **K 线图**：Excel 里点按钮即画 K 线（mplfinance 蜡烛图 + 均线），无需切软件
+   - 💰 **资金情绪**：新增 Sheet 聚合北向资金 + 微博舆情 + 新闻情绪 + 股吧热门
+   - 🔍 **股票池选股**：内置全 A 股，代码/名称/拼音首字母模糊搜索 + 下拉框直接选，不用再查代码
+   - 🔄 **多源 fallback**：qstock 主源 + akshare/东财/腾讯/网易/efinance 备选源，单个挂了自动切换
+   - ⚙️ **配置热重载**：YAML + Excel "配置" Sheet，自选股/刷新间隔在 Excel 里改完热生效，无需重启
+   - 🧪 **开箱即用**：一条命令自动生成 Excel 模板（7 个 Sheet），不再需要额外准备股票列表
+   - ✅ **单元测试**：pytest 覆盖核心逻辑（156 项），可长时间稳定运行
+
+3. **[Streamlit实时行情监控](egs_tools/a02_market_monitor_via_streamlit)**
    - 🌐 基于 Web 的实时行情看板
 
 ---

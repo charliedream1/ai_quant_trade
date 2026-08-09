@@ -14,6 +14,31 @@
 每个样例目录下均包含 `README.md`（说明）与 `requirements.txt`（依赖，版本已用 `==` 锁定）。
 本目录根的 `requirements.txt` 为所有样例依赖的并集（总依赖）。
 
+## 数据源数量统计
+
+本目录共收录 **27** 个数据源样例，覆盖股票、基金、期货、加密货币、新闻舆情、宏观经济六大类。
+
+**按数据类型统计：**
+
+| 大类 | 数量 | 数据源 |
+| --- | ---: | --- |
+| `股票/` | 16 | akshare, baostock, cninfo, data_loader_framework, eastmoney, efinance, netease, pytdx, qlib, qstock, stooq, tencent, tushare, web_api, wind, yfinance |
+| `新闻/` | 5 | finnhub, gdelt, news, news_api, xueqiu |
+| `电子币/` | 2 | ccxt, cryptocompare |
+| `宏观经济/` | 2 | fred, world_bank |
+| `基金/` | 1 | fund |
+| `期货/` | 1 | futures |
+| **合计** | **27** | — |
+
+**按收费模式统计：**
+
+| 类型 | 数量 | 说明 |
+| --- | ---: | --- |
+| 完全免费 | 21 | 无需 API Key，开箱即用（akshare/baostock/qstock/efinance/ccxt/gdlt/fred 等） |
+| 免费（需注册 API Key） | 4 | cryptocompare, finnhub, news_api, xueqiu（Cookie） |
+| 部分免费 | 1 | tushare（免费额度有限） |
+| 收费 | 1 | wind（机构首选） |
+
 推荐源汇总：
 
 ![](.README_images/数据源汇总.png)
