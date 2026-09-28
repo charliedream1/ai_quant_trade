@@ -1,0 +1,4 @@
+- Website: https://univer.ai
+- GitHub: https://github.com/dream-num/univer
+- 支持codex\workbuddy等工具
+- 把office文件按照agent可理解的形式组织，便于agent操控office文件
