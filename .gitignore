@@ -52,3 +52,7 @@ ly_*
 logsite/
 site/
 *_bak
+
+# private config files (avoid leaking API keys / credentials)
+**/config_private.py
+**/config_private/*.py

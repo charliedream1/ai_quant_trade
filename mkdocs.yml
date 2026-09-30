@@ -16,6 +16,12 @@ edit_uri: edit/master/docs/
 docs_dir: docs
 site_dir: site
 
+# mkdocs hook: rewrite dot-prefixed directories in markdown asset paths so
+# they survive GitHub Pages / Cloudflare Pages deployment (which refuse to
+# serve files under hidden directories).
+hooks:
+  - zz_scripts/docs_hook.py
+
 # 版权信息（页脚显示）
 copyright: Copyright &copy; 2026 charliedream1 · Apache-2.0 License
 
@@ -85,26 +91,99 @@ extra:
 
 # 插件
 plugins:
+  - monorepo                  # 支持 egs/*/README.md 跨目录复用
   - search:
       lang:
         - zh
         - en
   - tags                       # 标签页
 
-# 导航结构（基于 docs/ 目录）
+# 导航结构
+# - 首页 + 站内教程：直接放 docs/ 下
+# - egs/* 项目集 / ai_notes 学习笔记：通过 monorepo 插件引用 egs/ 与 ai_notes/ 下 README.md
+# - 维护成本：新增 egs 项目时只需把 README.md 放在正确目录下，nav 自动出现
 nav:
   - 首页: index.md
-  - 发布操作指南: 发布操作指南.md
-  - Cloudflare Pages 部署（国内访问）: Cloudflare_Pages_部署指南.md
-  - 环境配置:
+  - 项目集:
+      - 交易策略:
+          - 双均线策略: ../egs_trade/vanilla/double_ma/README.md
+          - 文档教程: ../egs_trade/vanilla/double_ma/文档教程/README.md
+          - 动量轮动: ../egs_trade/vanilla/momentum_rotation/README.md
+          - 组合优化: ../egs_trade/vanilla/portfolio_optimization/README.md
+          - Qlib 多股票: ../egs_trade/ms_qlib/README.md
+          - PPO 强化学习: ../egs_trade/rl/a001_proto_sb3/README.md
+          - finRL NeurIPS 复现: ../egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018/README.md
+          - Wind 实盘: ../egs_trade/paper_trade/wind/README.md
+      - 数据源:
+          - Tushare: ../egs_data/股票/tushare/README.md
+          - Wind: ../egs_data/股票/wind/README.md
+          - AKShare: ../egs_data/股票/akshare/README.md
+          - Baostock: ../egs_data/股票/baostock/README.md
+          - 巨潮资讯: ../egs_data/股票/cninfo/README.md
+          - 东方财富: ../egs_data/股票/eastmoney/README.md
+          - EFinance: ../egs_data/股票/efinance/README.md
+          - 网易: ../egs_data/股票/netease/README.md
+          - Qlib 数据: ../egs_data/股票/qlib/README.md
+          - QStock: ../egs_data/股票/qstock/README.md
+          - 腾讯: ../egs_data/股票/tencent/README.md
+          - Web API: ../egs_data/股票/web_api/README.md
+          - YFinance: ../egs_data/股票/yfinance/README.md
+          - 基金: ../egs_data/基金/fund/README.md
+          - 期货: ../egs_data/期货/futures/README.md
+          - 加密货币 CCXT: ../egs_data/电子币/ccxt/README.md
+          - 加密货币 CryptoCompare: ../egs_data/电子币/cryptocompare/README.md
+          - 宏观经济 FRED: ../egs_data/宏观经济/fred/README.md
+          - 宏观经济 世界银行: ../egs_data/宏观经济/world_bank/README.md
+          - 雪球新闻: ../egs_data/新闻/xueqiu/README.md
+          - Finnhub 新闻: ../egs_data/新闻/finnhub/README.md
+          - GDELT 新闻: ../egs_data/新闻/gdelt/README.md
+          - NewsAPI: ../egs_data/新闻/news_api/README.md
+          - 通用新闻: ../egs_data/新闻/news/README.md
+      - 因子挖掘:
+          - Alpha101: ../egs_alpha/alpha_libs/alpha101/README.md
+          - Stockstats: ../egs_alpha/alpha_libs/stockstats/README.md
+          - TA-Lib: ../egs_alpha/alpha_libs/ta_lib/README.md
+          - auto_alpha: ../egs_alpha/auto_alpha/README.md
+          - tsfresh: ../egs_alpha/auto_alpha/tsfresh/README.md
+      - 大模型与 Skill:
+          - Unsloth 训练: ../egs_llm/a01_train/a01_unsloth_stock_forcaster/README.md
+          - 模型下载: ../egs_llm/a01_train/a01_unsloth_stock_forcaster/a01_download_mdl/README.md
+          - 模型训练: ../egs_llm/a01_train/a01_unsloth_stock_forcaster/a04_train/README.md
+          - 热点报告: ../egs_llm/b01_app/a01_hot_topic_report/v1_proto_internet/README.md
+          - 券商研报 Skill: ../egs_skill/broker-research-analyst/README.md
+      - 金融 NLP:
+          - 情感分析: ../egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class/README.md
+      - 在线平台:
+          - 聚宽说明: ../egs_online_platform/聚宽_JoinQuant/说明.md
+          - 优矿说明: ../egs_online_platform/优矿_Uqer/说明.md
+      - 辅助工具:
+          - 看盘神器 v1: ../egs_aide/看盘神器/v1/README.md
+          - 看盘神器 v2: ../egs_aide/看盘神器/v2/README.md
+  - 学习笔记:
+      - 论文笔记: ../ai_notes/03_论文/README.md
+      - 论文导航: ../ai_notes/03_论文/01_papers_with_code.md
+      - GPT 金融分析: ../ai_notes/03_论文/01_大模型/01_通用金融/01_GPT金融分析.md
+  - 教程 FAQ:
+      - Unsloth FAQ: ../egs_llm/a01_train/a01_unsloth_stock_forcaster/a00_FAQ/01_FAQ.md
+      - Skill 文档: ../egs_skill/broker-research-analyst/SKILL.md
+      - Skill 提案: ../egs_skill/PROPOSAL.md
+      - Skill 资料: ../egs_skill/SOURCE.md
+      - 回测报告: ../egs_skill/BACKTEST_REPORT.md
+      - E2E 测试报告: ../egs_skill/E2E_TEST_REPORT.md
+      - PDF 解析研究: ../egs_skill/PDF_PARSER_RESEARCH.md
+      - PDF 图片研究: ../egs_skill/PDF_IMAGE_RESEARCH.md
+      - finRL 复现结果: ../egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018/RESULT.md
+  - 进阶:
       - GPU 环境配置: 01_环境配置/01_GPU环境配置/01_Win下GPU配置.md
-      - Python 环境配置: 01_环境配置/02_python环境配置/01_conda安装.md
+      - Conda 安装: 01_环境配置/02_python环境配置/01_conda安装.md
       - Conda 国内源: 01_环境配置/02_python环境配置/02_conda配置国内源.md
       - Miniconda 安装: 01_环境配置/02_python环境配置/03_mini_conda安装.md
-  - 常见问题:
+      - Python 包依赖: 02_常见问题/01_python包依赖问题/README.md
       - GitHub 问题: 02_常见问题/02_Github问题.md
       - NumPy 版本问题: 02_常见问题/03_numpy_version_issue.md
-      - Python 包依赖: 02_常见问题/01_python包依赖问题/README.md
+  - 部署运维:
+      - 发布操作指南: 04_website_deployment/发布操作指南.md
+      - Cloudflare Pages 部署: 04_website_deployment/Cloudflare_Pages_部署指南.md
   - 社区:
       - 知识星球介绍: 03_星球使用和介绍/01_星球介绍.md
       - 新人指南: 03_星球使用和介绍/02_新人使用指南.md
