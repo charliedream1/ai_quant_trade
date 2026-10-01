@@ -41,30 +41,32 @@ class TestStockTradingEnv:
     def test_env_reset_returns_observation(self):
         df = _make_df(30)
         env = StockTradingEnv(df, 10000)
-        obs = env.reset()
+        obs, info = env.reset(seed=0)
         assert obs.shape == (19,)
         # observations are roughly normalized, allow tiny float drift around 0
         assert np.all(obs >= -1e-3) and np.all(obs <= 1.0 + 1e-3)
+        assert isinstance(info, dict)
 
     def test_env_step_returns_correct_tuple(self):
         df = _make_df(20)
         env = StockTradingEnv(df, 10000)
-        env.reset()
+        env.reset(seed=0)
         action = np.array([0.5, 0.5], dtype=np.float16)
-        obs, reward, done, info = env.step(action)
+        obs, reward, terminated, truncated, info = env.step(action)
         assert obs.shape == (19,)
         assert reward in (1, -100)
-        assert isinstance(done, bool)
+        assert isinstance(terminated, bool)
+        assert isinstance(truncated, bool)
         assert info == {}
 
     def test_env_can_run_a_few_steps(self):
         df = _make_df(40)
         env = StockTradingEnv(df, 10000)
-        obs = env.reset()
+        env.reset(seed=0)
         for _ in range(10):
             action = np.array([1.0, 0.5], dtype=np.float16)
-            obs, reward, done, _ = env.step(action)
-            if done:
+            obs, reward, terminated, truncated, _ = env.step(action)
+            if terminated or truncated:
                 break
         assert env.render() is not None
 
