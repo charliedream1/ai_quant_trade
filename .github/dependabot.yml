@@ -3,16 +3,18 @@
 version: 2
 
 updates:
-  # 1) GitHub Actions 升级
+  # 1) GitHub Actions 升级（minor+patch+major 全部聚合为单个 PR，减少邮件噪音；
+  #    major 跳版仍会在 PR 标题中体现，合并前人工确认即可）
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+    open-pull-requests-limit: 2
     groups:
-      actions-minor:
+      actions-all:
         patterns: ["*"]
-        update-types: ["minor", "patch"]
+        update-types: ["major", "minor", "patch"]
     commit-message:
       prefix: "ci"
     labels:
@@ -51,7 +53,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 2
+    groups:
+      pip-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "deps"
     labels:
@@ -62,7 +68,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 2
+    groups:
+      pip-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "deps"
     labels:
@@ -73,7 +83,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 2
+    groups:
+      pip-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "deps"
     labels:
