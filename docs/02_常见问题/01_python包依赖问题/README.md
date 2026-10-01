@@ -1,6 +1,8 @@
 # 1. 说明
 
-本文件最后更新时间：2025-02-15
+本文件最后更新时间：2025-02-15（2026-10-01 补充：根目录 `requirements.txt` 已删除，
+所有依赖全部下放到各 `egs_*` 子项目自带的 `requirements.txt` 中，
+请进入对应项目目录再安装。）
 
 注意：
 - 环境文件更新可能存在延迟
@@ -22,9 +24,14 @@
 
 # 2. 环境导入方法
 
+> ⚠️ 自 2026-10-01 起，仓库根目录不再提供统一的 `requirements.txt`。
+> 请进入目标 `egs_*` 子项目目录，使用其自带的依赖文件。
+
 使用pip
 
 ```bash
+# 例：进入某个 egs 子项目后安装
+cd egs_trade/vanilla/double_ma
 pip install -r requirements.txt
 #临时换源
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
@@ -33,5 +40,6 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 使用conda
 
 ```bash
- conda install --yes --file requirements.txt
+# 进入子项目目录后执行
+conda install --yes --file requirements.txt
 ```

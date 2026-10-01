@@ -701,6 +701,13 @@ def _warn_unmatched_readmes(projects: list[Project]) -> None:
                 rel = readme.relative_to(REPO_ROOT).as_posix()
             except ValueError:
                 continue
+            # Skip pytest cache / 顶层 egs_* 总览 README（不是项目）
+            parts = readme.parts
+            if ".pytest_cache" in parts:
+                continue
+            if rel.endswith("/README.md") and len(parts) == 3:
+                # egs_trade/README.md 这种顶层总览，不该暴露为项目页
+                continue
             if rel not in matched_sources:
                 unmatched.append(readme)
     if unmatched:

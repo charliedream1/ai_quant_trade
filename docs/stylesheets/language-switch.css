@@ -44,3 +44,31 @@
 /* 当 <html data-lang="zh"> 时翻转 */
 html[data-lang="zh"] .lang-en { display: none; }
 html[data-lang="zh"] .lang-zh { display: block; }
+
+/* Hero CTA 按钮（粉/紫主题色） */
+.cta-pill {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--md-primary-fg-color);
+  border-radius: 999px;
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  transition: background-color 0.2s, color 0.2s;
+}
+.cta-pill:hover {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+.cta-pill.cta-primary {
+  background: #e91e63;
+  border-color: #e91e63;
+  color: #fff;
+}
+.cta-pill.cta-primary:hover {
+  background: #ad1457;
+  border-color: #ad1457;
+  color: #fff;
+}

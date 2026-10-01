@@ -118,9 +118,12 @@ ai_quant_trade
 ├── quant_brain ........ Core algorithm library
 ├── runtime ............ Model deployment and real-world usage
 ├── tools .............. Auxiliary tools
-├── requirements.txt
 └── README.md
 ```
+
+> Each `egs_*/` sub-project now carries its **own `requirements.txt`** —
+> pick the project you want to run, then `pip install -r requirements.txt`
+> inside its directory. There is no global dependency file at the repo root.
 
 ---
 
@@ -132,11 +135,11 @@ This repository is not packaged as a Python package yet. Please clone the entire
 # 1. Clone the repo
 git clone https://github.com/charliedream1/ai_quant_trade.git
 
-# 2. Install dependencies
+# 2. Pick a project and install its own deps (no root requirements.txt)
+cd egs_trade/vanilla/double_ma
 pip install -r requirements.txt
 
-# 3. Enter the corresponding example directory and check the README to get started
-cd egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018
+# 3. Follow the project's own README to get started
 ```
 
 ---

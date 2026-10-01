@@ -63,6 +63,12 @@ jobs:
       - name: 同步生成 egs 包装页并校验源文件
         run: python zz_scripts/gen_project_wrappers.py
 
+      # 发布前静态检查：mkdocs.yml 语法 / nav 路径存在 / include 引用能解析 /
+      # 自动维护标记成对 / 首页中英文切换 / 静态资源都已登记。
+      # 任何一项失败都会 exit 1 并列出原因，避免 mkdocs build 半成品部署。
+      - name: mkdocs 发布前静态检查
+        run: python zz_scripts/check_docs_build.py
+
       - name: 构建文档站
         # 注：不开 --strict，因为部分 egs_*/README.md 自带指向 egs_local
         # （docs/ 之外）图片的相对链接（如 img/*.png、.README_images/*.png），

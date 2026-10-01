@@ -118,25 +118,29 @@ ai_quant_trade
 ├── quant_brain ........ コアアルゴリズムライブラリ
 ├── runtime ............ モデルデプロイと実使用
 ├── tools .............. 補助ツール
-├── requirements.txt
 └── README.md
 ```
 
+> 各 `egs_*/` サブプロジェクトは独自の **`requirements.txt`** を
+> 持つようになりました。利用したいプロジェクトのディレクトリで
+> `pip install -r requirements.txt` を実行してください。
+> リポジトリ直下に共通の依存ファイルはありません。
+
 ---
 
-## 🚀 クイックスタート
+## 🚀 クイック_START
 
-本リポジトリは現時点ではPythonパッケージとしてパッケージ化されていません。プロジェクト全体をクローンした後、各`egs`ディレクトリに入って詳細な**使用方法**と**原理説明**を確認してください。
+本リポジトリは現時点ではPythonパッケージとして打包化されていません。プロジェクト全体をクローンした後、各`egs`ディレクトリに入って詳細な**使用方法**と**原理説明**を確認してください。
 
 ```bash
 # 1. リポジトリをクローン
 git clone https://github.com/charliedream1/ai_quant_trade.git
 
-# 2. 依存関係をインストール
+# 2. 対象プロジェクトのディレクトリに入り、独自依存をインストール（ルートに requirements.txt はありません）
+cd egs_trade/vanilla/double_ma
 pip install -r requirements.txt
 
-# 3. 対応するサンプルディレクトリに入り、READMEを確認して使用開始
-cd egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018
+# 3. プロジェクト自身の README に従って利用開始
 ```
 
 ---

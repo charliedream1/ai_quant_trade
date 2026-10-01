@@ -118,9 +118,12 @@ ai_quant_trade
 ├── quant_brain ........ 核心算法库
 ├── runtime ............ 模型部署和实际使用
 ├── tools .............. 辅助工具
-├── requirements.txt
 └── README.md
 ```
+
+> 现在每个 `egs_*/` 子项目都自带独立的 **`requirements.txt`** —
+> 进入项目目录运行 `pip install -r requirements.txt` 即可。
+> 仓库根目录不再提供统一的依赖文件。
 
 ---
 
@@ -132,11 +135,11 @@ ai_quant_trade
 # 1. 克隆仓库
 git clone https://github.com/charliedream1/ai_quant_trade.git
 
-# 2. 安装依赖
+# 2. 进入对应子项目，安装该项目的独立依赖（根目录不再有统一 requirements.txt）
+cd egs_trade/vanilla/double_ma
 pip install -r requirements.txt
 
-# 3. 进入对应示例目录，查看 README 开始使用
-cd egs_trade/rl/a002_finRL_tutorial/a01_Stock_NeurIPS2018
+# 3. 按照该项目自身的 README 开始使用
 ```
 
 ---

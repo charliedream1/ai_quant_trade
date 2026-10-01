@@ -1,9 +1,10 @@
-<!-- 语言切换按钮：默认英文，点击切换。记忆到 localStorage，由
-     docs/javascripts/language-switch.js 控制 -->
+<!-- 语言切换按钮 -->
 <div class="language-switch" markdown>
 <button class="lang-btn active" data-lang="en" type="button">English</button>
 <button class="lang-btn" data-lang="zh" type="button">中文</button>
 </div>
+
+<div class="lang-en" markdown>
 
 # AI Quant Trader
 
@@ -11,26 +12,132 @@
   <img src="https://raw.githubusercontent.com/charliedream1/ai_quant_trade/master/.README_images/LOGO_NEW.png" width="200" alt="logo" />
 </p>
 
-<div class="lang-en" markdown>
+<p align="center">
+  <strong>One-Stop AI Quantitative Trading Platform · From Learning &amp; Simulation to Live Trading</strong>
+</p>
 
-> **One-Stop AI Quantitative Trading Platform · From Learning and Simulation to Live Trading**
-
-A practical knowledge hub for AI quant trading: project walkthroughs, documentation,
-and community entry points. Source code and per-project docs live on the
-[GitHub repository](https://github.com/charliedream1/ai_quant_trade). This site
-is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
+<p align="center">
+  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍.md">:material/account-group: Join the Knowledge Planet</a>
+  &nbsp;
+  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">:fontawesome-brands/github: GitHub Repo</a>
+</p>
 
 </div>
 
 <div class="lang-zh" hidden markdown>
 
-> **一站式 AI 量化交易平台 · 从学习、模拟到实盘**
+# AI 量化交易操盘手
 
-本站收录项目实战教程、文档与社区入口。代码与各项目说明托管在
-[GitHub 仓库](https://github.com/charliedream1/ai_quant_trade)，本文档由
-[MkDocs Material](https://squidfunk.github.io/mkdocs-material/) 驱动。
+<p align="center">
+  <img src="https://raw.githubusercontent.com/charliedream1/ai_quant_trade/master/.README_images/LOGO_NEW.png" width="200" alt="logo" />
+</p>
+
+<p align="center">
+  <strong>一站式 AI 量化交易平台 · 从学习、模拟到实盘</strong>
+</p>
+
+<p align="center">
+  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍.md">:material/account-group: 加入知识星球</a>
+  &nbsp;
+  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">:fontawesome-brands/github: GitHub 仓库</a>
+</p>
 
 </div>
+
+---
+
+<div class="lang-en" markdown>
+
+{% include "../snippets/readme_intro.md" %}
+
+</div>
+
+<div class="lang-zh" hidden markdown>
+
+{% include "../snippets/readme_intro.md" %}
+
+</div>
+
+---
+
+<div class="lang-en" markdown>
+
+## :material-star-circle: Featured: Knowledge Planet Community
+
+<div class="grid cards" markdown>
+
+-   :material/account-group: __[AIQuant Knowledge Planet](03_星球使用和介绍/01_星球介绍.md)__
+
+    ---
+
+    **Hands-on Q&A · Deep dives · Curated quant resources**
+
+    Join hundreds of quant enthusiasts to dissect strategies, run backtests, and ship trading bots. Daily curated posts from the planet owner:
+
+    - Project-grade tutorials (double MA, RL, alpha mining...)
+    - Strategy ideas, code snippets, lessons learned
+    - Research reports, papers, tools, and data sources
+
+    [:octicons-arrow-right-24: Planet Overview](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
+    [:octicons-arrow-right-24: Newbie Guide](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
+
+-   :material/book-open-page-variant: __[Newbie Guide](03_星球使用和介绍/02_新人使用指南.md)__
+
+    ---
+
+    Just joined the planet? Read this first.
+
+    - Planet mechanics / point rules
+    - Asking questions: templates and etiquette
+    - Resource navigation and FAQs
+    - Environment checklist before running projects
+
+    [:octicons-arrow-right-24: Read the Newbie Guide](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
+
+</div>
+
+</div>
+
+<div class="lang-zh" hidden markdown>
+
+## :material-star-circle: 重点推荐：知识星球社区 {#community}
+
+<div class="grid cards" markdown>
+
+-   :material/account-group: __[知识星球 · AIQuant 智投](03_星球使用和介绍/01_星球介绍.md)__
+
+    ---
+
+    **实战答疑 · 项目深度解读 · 量化资源分享**
+
+    与百位量化爱好者一起拆解策略、跑通回测、落地实盘。
+    每天都有星球主人原创 / 转发的硬核内容：
+
+    - 项目级深度教程（双均线、强化学习、因子挖掘……）
+    - 策略思路、代码片段、踩坑记录
+    - 研报、论文、工具与数据源一手资源
+
+    [:octicons-arrow-right-24: 查看星球介绍](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
+    [:octicons-arrow-right-24: 新人必读指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
+
+-   :material/book-open-page-variant: __[新人指南](03_星球使用和介绍/02_新人使用指南.md)__
+
+    ---
+
+    第一次加入星球？先看这一篇。
+
+    - 星球玩法 / 加入方式 / 积分规则
+    - 提问模板与求助姿势
+    - 资料查找路径 & 常见问题
+    - 项目跑通前的环境准备清单
+
+    [:octicons-arrow-right-24: 开始阅读新人指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
+
+</div>
+
+</div>
+
+---
 
 <!-- >>> AUTO-INDEX-START -->
 <!-- 项目集：自动维护，由 zz_scripts/gen_project_wrappers.py 同步 -->
@@ -186,97 +293,17 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
 </div>
 
 </div>
-<!-- <<< AUTO-INDEX-END --> --> -->
+<!-- <<< AUTO-INDEX-END --> --> --> -->
 
 ---
 
 <div class="lang-en" markdown>
 
-## Featured: Knowledge Planet Community
+## :material-map: Site Navigation
 
 <div class="grid cards" markdown>
 
--   :material-account-group: __[AIQuant Knowledge Planet](03_星球使用和介绍/01_星球介绍.md)__
-
-    ---
-
-    **Hands-on Q&A · Deep dives · Curated quant resources**
-
-    Join hundreds of quant enthusiasts to dissect strategies, run backtests, and ship trading bots.
-    Daily curated posts from the planet owner:
-
-    - Project-grade tutorials (double MA, RL, alpha mining...)
-    - Strategy ideas, code snippets, lessons learned
-    - Research reports, papers, tools, and data sources
-
-    [:octicons-arrow-right-24: Planet Overview](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
-    [:octicons-arrow-right-24: Newbie Guide](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
-
--   :material-book-open-page-variant: __[Newbie Guide](03_星球使用和介绍/02_新人使用指南.md)__
-
-    ---
-
-    Just joined the planet? Read this first.
-
-    - Planet mechanics / point rules
-    - Asking questions: templates and etiquette
-    - Resource navigation and FAQs
-    - Environment checklist before running projects
-
-    [:octicons-arrow-right-24: Read the Newbie Guide](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
-
-</div>
-
-</div>
-
-<div class="lang-zh" hidden markdown>
-
-## 重点推荐：知识星球社区 {#community}
-
-<div class="grid cards" markdown>
-
--   :material-account-group: __[知识星球 · AIQuant 智投](03_星球使用和介绍/01_星球介绍.md)__
-
-    ---
-
-    **实战答疑 · 项目深度解读 · 量化资源分享**
-
-    与百位量化爱好者一起拆解策略、跑通回测、落地实盘。
-    每天都有星球主人原创 / 转发的硬核内容：
-
-    - 项目级深度教程（双均线、强化学习、因子挖掘……）
-    - 策略思路、代码片段、踩坑记录
-    - 研报、论文、工具与数据源一手资源
-
-    [:octicons-arrow-right-24: 查看星球介绍](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
-    [:octicons-arrow-right-24: 新人必读指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
-
--   :material-book-open-page-variant: __[新人指南](03_星球使用和介绍/02_新人使用指南.md)__
-
-    ---
-
-    第一次加入星球？先看这一篇。
-
-    - 星球玩法 / 加入方式 / 积分规则
-    - 提问模板与求助姿势
-    - 资料查找路径 & 常见问题
-    - 项目跑通前的环境准备清单
-
-    [:octicons-arrow-right-24: 开始阅读新人指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
-
-</div>
-
-</div>
-
----
-
-<div class="lang-en" markdown>
-
-## Site Navigation
-
-<div class="grid cards" markdown>
-
--   :material-book-open-page-variant: __Study Notes__
+-   :material/book-open-page-variant: __Study Notes__
 
     ---
 
@@ -286,7 +313,7 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
     [Papers with Code →](_projects/notes/papers_with_code.md) ·
     [GPT for Finance →](_projects/notes/gpt_finance.md)
 
--   :material-help-circle: __Tutorials & FAQ__
+-   :material/help-circle: __Tutorials & FAQ__
 
     ---
 
@@ -296,7 +323,7 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
     [Skill Docs →](_projects/faq/skill_doc.md) ·
     [PDF Parser Research →](_projects/faq/pdf_parser_research.md)
 
--   :material-cog: __Advanced__
+-   :material/cog: __Advanced__
 
     ---
 
@@ -306,7 +333,7 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
     [Conda Install →](01_环境配置/02_python环境配置/01_conda安装.md) ·
     [GitHub Issues →](02_常见问题/02_Github问题.md)
 
--   :material-rocket-launch: __Deployment__
+-   :material/rocket-launch: __Deployment__
 
     ---
 
@@ -317,9 +344,62 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
 
 </div>
 
+</div>
+
+<div class="lang-zh" hidden markdown>
+
+## :material-map: 站点导航
+
+<div class="grid cards" markdown>
+
+-   :material/book-open-page-variant: __学习笔记__
+
+    ---
+
+    收录 `ai_notes/` 下的精选理论、论文与坑点笔记。
+
+    [论文笔记 →](_projects/notes/papers_readme.md) ·
+    [论文导航 →](_projects/notes/papers_with_code.md) ·
+    [GPT 金融分析 →](_projects/notes/gpt_finance.md)
+
+-   :material/help-circle: __教程与 FAQ__
+
+    ---
+
+    各项目的使用说明、FAQ、研究文档。
+
+    [Unsloth FAQ →](_projects/faq/unsloth_faq.md) ·
+    [Skill 文档 →](_projects/faq/skill_doc.md) ·
+    [PDF 解析研究 →](_projects/faq/pdf_parser_research.md)
+
+-   :material/cog: __进阶__
+
+    ---
+
+    环境配置、常见问题、部署运维。
+
+    [GPU 环境配置 →](01_环境配置/01_GPU环境配置/01_Win下GPU配置.md) ·
+    [Conda 安装 →](01_环境配置/02_python环境配置/01_conda安装.md) ·
+    [GitHub 问题 →](02_常见问题/02_Github问题.md)
+
+-   :material/rocket-launch: __部署运维__
+
+    ---
+
+    文档站发布到 GitHub Pages / Cloudflare Pages。
+
+    [发布操作指南 →](04_website_deployment/发布操作指南.md) ·
+    [Cloudflare 部署 →](04_website_deployment/Cloudflare_Pages_部署指南.md)
+
+</div>
+
+</div>
+
 ---
 
-## Highlights
+<div class="lang-en" markdown>
+
+## :material/trophy: Highlights at a Glance
 
 | Dimension | Description |
 |:---:|:---|
@@ -331,7 +411,7 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
 
 ---
 
-## Contributing
+## :material/handshake: Contributing
 
 - Open a PR: see [CONTRIBUTING.md](https://github.com/charliedream1/ai_quant_trade/blob/master/CONTRIBUTING.md)
 - Join the community: see the Knowledge Planet box above
@@ -340,54 +420,7 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
 
 <div class="lang-zh" hidden markdown>
 
-## 站点导航
-
-<div class="grid cards" markdown>
-
--   :material-book-open-page-variant: __学习笔记__
-
-    ---
-
-    收录 `ai_notes/` 下的精选理论、论文与坑点笔记。
-
-    [论文笔记 →](_projects/notes/papers_readme.md) ·
-    [论文导航 →](_projects/notes/papers_with_code.md) ·
-    [GPT 金融分析 →](_projects/notes/gpt_finance.md)
-
--   :material-help-circle: __教程与 FAQ__
-
-    ---
-
-    各项目的使用说明、FAQ、研究文档。
-
-    [Unsloth FAQ →](_projects/faq/unsloth_faq.md) ·
-    [Skill 文档 →](_projects/faq/skill_doc.md) ·
-    [PDF 解析研究 →](_projects/faq/pdf_parser_research.md)
-
--   :material-cog: __进阶__
-
-    ---
-
-    环境配置、常见问题、部署运维。
-
-    [GPU 环境配置 →](01_环境配置/01_GPU环境配置/01_Win下GPU配置.md) ·
-    [Conda 安装 →](01_环境配置/02_python环境配置/01_conda安装.md) ·
-    [GitHub 问题 →](02_常见问题/02_Github问题.md)
-
--   :material-rocket-launch: __部署运维__
-
-    ---
-
-    文档站发布到 GitHub Pages / Cloudflare Pages。
-
-    [发布操作指南 →](04_website_deployment/发布操作指南.md) ·
-    [Cloudflare 部署 →](04_website_deployment/Cloudflare_Pages_部署指南.md)
-
-</div>
-
----
-
-## 核心亮点
+## :material/trophy: 核心亮点
 
 | 维度 | 说明 |
 |:---:|:---|
@@ -399,7 +432,7 @@ is powered by [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
 
 ---
 
-## 贡献
+## :material/handshake: 贡献
 
 - 提交 PR：请参考仓库根目录 [CONTRIBUTING.md](https://github.com/charliedream1/ai_quant_trade/blob/master/CONTRIBUTING.md)
 - 加入社区 / 实战答疑：见上方 [重点推荐：知识星球社区](#community)
