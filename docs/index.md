@@ -54,7 +54,7 @@
 
 <div class="lang-zh" hidden markdown>
 
-{% include "../snippets/readme_intro.md" %}
+{% include "../snippets/readme_intro_zh.md" %}
 
 </div>
 

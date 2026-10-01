@@ -61,3 +61,4 @@ site/
 e2e_data/
 e2e_out/
 e2e_logs/
+.uploads/
