@@ -1,7 +1,7 @@
 import random
 import json
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 import pandas as pd
 import numpy as np
 
@@ -16,8 +16,14 @@ MAX_DAY_CHANGE = 1
 
 
 class StockTradingEnv(gym.Env):
-    """A stock trading environment for OpenAI gym"""
-    metadata = {'render.modes': ['human']}
+    """A stock trading environment for gymnasium.
+
+    Migrated from OpenAI gym 0.21 to gymnasium 0.29:
+      * step() now returns 5-tuple (obs, reward, terminated, truncated, info)
+      * reset() now returns 2-tuple (obs, info)
+      * metadata key changed from 'render.modes' to 'render_modes'
+    """
+    metadata = {'render_modes': ['human']}
 
     def __init__(self, df, init_balance):
         super(StockTradingEnv, self).__init__()
@@ -99,13 +105,14 @@ class StockTradingEnv(gym.Env):
     def step(self, action):
         # Execute one time step within the environment
         self._take_action(action)
-        done = False
+        terminated = False
+        truncated = False
 
         self.current_step += 1
 
         if self.current_step > len(self.df.loc[:, 'open'].values) - 1:
             self.current_step = 0  # loop training
-            # done = True
+            # terminated = True
 
         delay_modifier = (self.current_step / MAX_STEPS)
 
@@ -114,14 +121,17 @@ class StockTradingEnv(gym.Env):
         reward = 1 if reward > 0 else -100
 
         if self.net_worth <= 0:
-            done = True
+            terminated = True
 
         obs = self._next_observation()
 
-        return obs, reward, done, {}
+        return obs, reward, terminated, truncated, {}
 
-    def reset(self, new_df=None):
+    def reset(self, new_df=None, *, seed=None, options=None):
         # Reset the state of the environment to an initial state
+        # Use gymnasium's seeding contract: super().reset() handles RNG seeding.
+        super().reset(seed=seed)
+
         self.balance = self.init_balance
         self.net_worth = self.init_balance
         self.max_net_worth = self.init_balance
@@ -131,7 +141,7 @@ class StockTradingEnv(gym.Env):
         self.total_sales_value = 0
 
         # pass test dataset to environment
-        if new_df:
+        if new_df is not None:
             self.df = new_df
 
         # Set the current step to a random point within the data frame
@@ -139,7 +149,7 @@ class StockTradingEnv(gym.Env):
         #     0, len(self.df.loc[:, 'open'].values) - 6)
         self.current_step = 0
 
-        return self._next_observation()
+        return self._next_observation(), {}
 
     def render(self, mode='human', close=False):
         # Render the environment to the screen
