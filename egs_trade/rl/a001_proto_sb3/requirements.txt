@@ -2,4 +2,4 @@ baostock==0.8.8
 stable-baselines3==2.5.0
 gymnasium==0.29.1
 torch==2.7.1
-tensorboard==2.17.0
+tensorboard==2.21.0
