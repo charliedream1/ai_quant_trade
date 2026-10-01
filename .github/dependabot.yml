@@ -1,0 +1,80 @@
+# Dependabot 配置：自动跟踪 GitHub Actions 与 pip 依赖的版本与安全更新
+# 文档: https://docs.github.com/zh/code-security/dependabot/dependabot-version-updates/configuring-dependabot
+version: 2
+
+updates:
+  # 1) GitHub Actions 升级
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      actions-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "ci"
+
+  # 2) pip：仓库根（即使暂无根 requirements.txt，也声明一次，避免 Dependabot
+  #    把"找不到清单"当作 quality warning 反复提醒）
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 0   # 暂不真正开启，等有根 requirements.txt 再启用
+    ignore:
+      - dependency-name: "*"
+
+  # 3) pip：实际存在的子目录
+  - package-ecosystem: "pip"
+    directory: "/egs_data"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      pip-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "pip"
+    directory: "/egs_aide/看盘神器/v2"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "pip"
+    directory: "/egs_skill/broker-research-analyst"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "pip"
+    directory: "/egs_trade/rl/a001_proto_sb3"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
