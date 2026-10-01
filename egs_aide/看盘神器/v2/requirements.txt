@@ -9,5 +9,5 @@ loguru>=0.7.0
 pytest==9.0.3
 # 备选数据源（主源 qstock 失败时自动 fallback，参考 egs_data/）
 akshare>=1.12.0
-efinance>=0.5.0
+efinance>=0.5.9
 requests>=2.28.0
