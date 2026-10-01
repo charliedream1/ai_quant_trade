@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Author   : liyi (liyi_best@foxmail.com)
+# @Author   : liyi
 # @Time     : 2022/7/8 22:34
 # @File     : back_tester.py
 # @Project  : ai_quant_trade
@@ -25,20 +25,17 @@ import pandas as pd
 import yaml
 import copy
 
-path = os.getcwd()
-sys.path.append(os.path.abspath(path + ('/..' * 3)))
+from src.back_test.account_info import Account
+from src.back_test.trading_ctrl import order_value
+from src.rules.timing_ctrl.moving_average import double_ma_timing
+from src.portfolio.capital_allocation import equal_allocation
+from src.data_io.api_tushare_data import TuShareData
+from src.back_test.risk_indicator import cal_risk_indicator
 
-from quant_brain.back_test.account_info import Account
-from quant_brain.back_test.trading_ctrl import order_value
-from quant_brain.rules.timing_ctrl.moving_average import double_ma_timing
-from quant_brain.portfolio.capital_allocation import equal_allocation
-from quant_brain.data_io.api_tushare_data import TuShareData
-from quant_brain.back_test.risk_indicator import cal_risk_indicator
-
-from tools.plots.trades_on_k_line import plot_trades_on_capital, plot_trades_on_k_line, show_plt
-from tools.file_io.config import override_config
-from tools.file_io.make_nd_clean_dirs import make_dirs
-from tools.log.log_util import addlog, log
+from src.tools.plots.trades_on_k_line import plot_trades_on_capital, plot_trades_on_k_line, show_plt
+from src.tools.file_io.config import override_config
+from src.tools.file_io.make_nd_clean_dirs import make_dirs
+from src.tools.log.log_util import addlog, log
 
 
 class BackTester:
@@ -132,8 +129,11 @@ class BackTester:
         if stock_id not in self._account.trade_dict.keys():
             self._account.trade_dict[stock_id] = pd.DataFrame()
 
-        self._account.trade_dict[stock_id] = \
-            self._account.trade_dict[stock_id].append(df_info, ignore_index=True)
+        # ``DataFrame.append`` was removed in pandas 2.x; use pd.concat.
+        self._account.trade_dict[stock_id] = pd.concat(
+            [self._account.trade_dict[stock_id], df_info.to_frame().T],
+            ignore_index=True,
+        )
 
         self._account.daily_trading_lst.append(trade_message + '\n')
 
@@ -226,7 +226,10 @@ class BackTester:
                 trade_message = 'None'
             tmp_dict = {'time_index': index, 'capital': total_capital, 'trade_detail': trade_message}
             df_info = pd.DataFrame([tmp_dict.values()], columns=tmp_dict.keys())
-            self._account.pd_gather_trades = self._account.pd_gather_trades.append(df_info, ignore_index=True)
+            self._account.pd_gather_trades = pd.concat(
+                [self._account.pd_gather_trades, df_info],
+                ignore_index=True,
+            )
 
             message = '\n' + '===' * 30 + '\n'
             self._account.daily_trading_lst.append(message)

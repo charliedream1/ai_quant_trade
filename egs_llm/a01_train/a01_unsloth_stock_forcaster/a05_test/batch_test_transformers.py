@@ -25,9 +25,6 @@ from tqdm import tqdm
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-path = os.getcwd()
-sys.path.append(os.path.abspath(path + ('/..' * 3)))
-
 from src.tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
 
 

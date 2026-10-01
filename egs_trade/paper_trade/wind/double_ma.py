@@ -28,19 +28,16 @@ from tqdm import tqdm
 
 from WindPy import w
 
-path = os.getcwd()
-sys.path.append(os.path.abspath(path + ('/..' * 3)))
-
-from quant_brain.data_io.wind.account_login import logon_wind, logon_account
-from quant_brain.data_io.wind.query_rt_data import get_funds, check_account_info, \
+from src.data_io.wind.account_login import logon_wind, logon_account
+from src.data_io.wind.query_rt_data import get_funds, check_account_info, \
     get_stock_pool, check_position, log_out, get_rt_val
-from quant_brain.data_io.wind.utils import parse_val, my_callback
+from src.data_io.wind.utils import parse_val, my_callback
 
-from quant_brain.rules.timing_ctrl.moving_average import double_ma_timing
+from src.rules.timing_ctrl.moving_average import double_ma_timing
 
-from tools.date_time.chinese_calendar_check import is_workdays
-from tools.date_time.query_time import after_query_time
-from tools.log.log_util import addlog, log
+from src.tools.date_time.chinese_calendar_check import is_workdays
+from src.tools.date_time.query_time import after_query_time
+from src.tools.log.log_util import addlog, log
 
 
 class BidSimulator:

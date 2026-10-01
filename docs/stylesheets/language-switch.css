@@ -1,0 +1,46 @@
+/* 首页中英文切换按钮 + 默认语言控制
+   - 默认英文（HTML 默认显示 .lang-en，.lang-zh 隐藏）
+   - 用户点击按钮后切换两版显隐，记忆到 localStorage
+*/
+:root {
+  --lang-btn-active-bg: var(--md-primary-fg-color);
+  --lang-btn-active-fg: var(--md-primary-bg-color);
+  --lang-btn-bg: transparent;
+  --lang-btn-fg: var(--md-default-fg-color);
+  --lang-btn-border: var(--md-default-fg-color--light);
+}
+
+/* 顶部切换器：放在 markdown 顶部的 .language-switch 块内 */
+.language-switch {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+.language-switch .lang-btn {
+  cursor: pointer;
+  border: 1px solid var(--lang-btn-border);
+  background: var(--lang-btn-bg);
+  color: var(--lang-btn-fg);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font: inherit;
+  line-height: 1.2;
+}
+.language-switch .lang-btn:hover {
+  background: var(--md-default-fg-color--lightest);
+}
+.language-switch .lang-btn.active {
+  background: var(--lang-btn-active-bg);
+  color: var(--lang-btn-active-fg);
+  border-color: var(--lang-btn-active-bg);
+  font-weight: 600;
+}
+
+/* 默认显示英文，隐藏中文 */
+.lang-zh { display: none; }
+
+/* 当 <html data-lang="zh"> 时翻转 */
+html[data-lang="zh"] .lang-en { display: none; }
+html[data-lang="zh"] .lang-zh { display: block; }

@@ -28,15 +28,12 @@ from stable_baselines3.ppo.policies import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3 import PPO
 
-path = os.getcwd()
-sys.path.append(os.path.abspath(path + ('/..' * 3)))
+from src.rl.envs.StockTradingEnv0 import StockTradingEnv
+from src.data_io.baostock.get_stock_data import Downloader
 
-from quant_brain.rl.envs.StockTradingEnv0 import StockTradingEnv
-from quant_brain.data_io.baostock.get_stock_data import Downloader
-
-from tools.file_io.make_nd_clean_dirs import make_dirs
-from tools.file_io.find_files import find_file
-from tools.log.log_util import log
+from src.tools.file_io.make_nd_clean_dirs import make_dirs
+from src.tools.file_io.find_files import find_file
+from src.tools.log.log_util import log
 
 
 class ProtoRLSb3:

@@ -23,13 +23,10 @@ import sys
 import argparse
 import pandas as pd
 
-path = os.getcwd()
-sys.path.append(os.path.abspath(path + ('/..' * 3)))
+from src.data_io.wind.dump_data import WindDataLoader
 
-from quant_brain.data_io.wind.dump_data import WindDataLoader
-
-from tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
-from tools.file_io.load_csv import get_self_select_stock_lst
+from src.tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
+from src.tools.file_io.load_csv import get_self_select_stock_lst
 
 
 def get_args():

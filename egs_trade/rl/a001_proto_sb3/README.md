@@ -1,7 +1,11 @@
 # 📈 如何用深度强化学习自动炒股
 
 ## ✨前言
-本策略主要参考https://github.com/wangshub/RL-Stock，在原策略基础上主要做了如下优化：
+
+- 本文代码路径 (Github 2.8k 星)：https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/rl/a001_proto_sb3
+- 本策略主要参考并从如下代码仓引用了大量代码：https://github.com/wangshub/RL-Stock
+
+在原策略基础上主要做了如下优化：
 - 升级最新的基于pytorch的强化学习工具库stable-baselines3
 - 解决强化学习环境中Box精度警告
 - 解决强化学习环境中self.cost_basis分母除0警告

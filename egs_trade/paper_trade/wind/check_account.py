@@ -21,11 +21,8 @@
 import os
 import sys
 
-path = os.getcwd()
-sys.path.append(os.path.abspath(path + ('/..' * 3)))
-
-from quant_brain.data_io.wind.account_login import logon_wind, logon_account
-from quant_brain.data_io.wind.query_rt_data import get_funds, check_account_info
+from src.data_io.wind.account_login import logon_wind, logon_account
+from src.data_io.wind.query_rt_data import get_funds, check_account_info
 
 
 def quick_check_account(account_file_path, market_type):
