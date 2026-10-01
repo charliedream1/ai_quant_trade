@@ -1,7 +1,7 @@
 xlwings==0.36.6
 qstock==1.3.8
 backtrader==1.9.78.123
-pandas==3.0.3
+pandas==3.0.6
 openpyxl==3.1.5
 pyyaml==6.0.3
 mplfinance==0.12.10b0
