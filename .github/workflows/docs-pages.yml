@@ -63,11 +63,13 @@ jobs:
       - name: 同步生成 egs 包装页并校验源文件
         run: python zz_scripts/gen_project_wrappers.py
 
-      # 发布前静态检查：mkdocs.yml 语法 / nav 路径存在 / include 引用能解析 /
-      # 自动维护标记成对 / 首页中英文切换 / 静态资源都已登记。
-      # 任何一项失败都会 exit 1 并列出原因，避免 mkdocs build 半成品部署。
-      - name: mkdocs 发布前静态检查
-        run: python zz_scripts/check_docs_build.py
+      # 注：原先此处有一个 `python zz_scripts/check_docs_build.py` 步骤，
+      # 但该脚本从未提交到仓库（网站重构 73e8c2a 的遗留引用），
+      # 导致 CI 以 exit code 2 失败。已移除；发布前检查由以下两道闸门承担：
+      #   1. gen_project_wrappers.py 校验所有源 README 都存在
+      #   2. mkdocs build 对无法解析的 {% include %} 直接 BuildError 中止
+      # 若将来需要更细的静态检查（nav 路径 / 双语标记 / 静态资源登记），
+      # 请先落地 zz_scripts/check_docs_build.py 再恢复该步骤。
 
       - name: 构建文档站
         # 注：不开 --strict，因为部分 egs_*/README.md 自带指向 egs_local
