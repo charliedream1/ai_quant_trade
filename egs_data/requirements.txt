@@ -31,7 +31,7 @@ fredapi==0.5.2
 wbdata==1.1.0
 
 # 通用基础库
-pandas==2.3.3
+pandas==3.0.6
 requests==2.34.2
 pandas-datareader==0.10.0
 tqdm==4.68.3
