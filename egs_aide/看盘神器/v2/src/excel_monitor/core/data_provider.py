@@ -94,6 +94,9 @@ class DataProvider:
 
         # 1. 尝试主源
         try:
+            # primary_func 为绑定方法，签名由调用点保证与 args/kwargs 一致；
+            # CodeQL 对 Callable 动态分发会误报参数数量，此处显式抑制。
+            # codeql[py/call/wrong-number-of-arguments]
             df = primary_func(*args, **kwargs)
             if df is not None and not df.empty:
                 return df

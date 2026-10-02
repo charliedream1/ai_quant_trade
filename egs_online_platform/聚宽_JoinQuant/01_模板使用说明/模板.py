@@ -76,15 +76,19 @@ def after_market_close(context):
 # =========== 策略函数 =======================
 def sel_stock(context):
     # 选股策略
+    pass
 
 def buy_strategies(context):
     # 买入择时
+    pass
 
 def sell_strategies(context):
     # 卖出择时策略
+    pass
 
 def risk_ctrl(context):
     # 止损止盈风控
+    pass
 
 # ================================================
 # =========== 辅助函数 =======================

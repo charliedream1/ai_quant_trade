@@ -100,6 +100,36 @@ def _check_node_available() -> bool:
     return _NODE_AVAILABLE
 
 
+def _extract_first_script(body: bytes) -> bytes:
+    """用 html.parser 提取首个 <script> 内容，避免正则过滤被绕过"""
+    from html.parser import HTMLParser
+
+    class _ScriptExtractor(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self._in_script = False
+            self._content = bytearray()
+
+        def handle_starttag(self, tag, attrs):
+            if tag.lower() == "script":
+                self._in_script = True
+
+        def handle_endtag(self, tag):
+            if tag.lower() == "script":
+                self._in_script = False
+
+        def handle_data(self, data):
+            if self._in_script:
+                self._content.extend(data.encode("utf-8", errors="replace"))
+
+    parser = _ScriptExtractor()
+    try:
+        parser.feed(body.decode("utf-8", errors="replace"))
+    except Exception:
+        return b""
+    return bytes(parser._content).strip()
+
+
 def _solve_challenge(body: bytes, cookie_domain: str = ".dfcfw.com") -> dict:
     """执行挑战页 JS，解算出需设置的 cookie
 
@@ -107,11 +137,10 @@ def _solve_challenge(body: bytes, cookie_domain: str = ".dfcfw.com") -> dict:
     """
     if not _check_node_available():
         return {}
-    m = re.search(rb"<script[^>]*>(.*?)</script>", body, re.DOTALL)
-    if not m:
+    js_bytes = _extract_first_script(body)
+    if not js_bytes:
         LOGGER.warning("挑战页未找到 <script> 标签")
         return {}
-    js_bytes = m.group(1).strip()
     try:
         proc = subprocess.run(
             ["node", "-e", _NODE_RUNNER],
