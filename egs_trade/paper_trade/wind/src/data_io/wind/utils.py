@@ -20,7 +20,7 @@
 
 from WindPy import w
 
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import log
 
 
 def parse_val(in_data: w.WindData, query_fields_lst: list) -> dict:

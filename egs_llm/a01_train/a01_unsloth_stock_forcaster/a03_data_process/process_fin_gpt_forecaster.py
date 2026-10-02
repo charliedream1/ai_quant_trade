@@ -32,7 +32,7 @@ def convert_format(in_file_path):
         sys_msg = sys_msg.replace('[INST]<<SYS>>', '').strip()
         instruction = instruction.replace('[/INST]', '').strip()
         answer = row['answer']
-        label = row['label']
+        row['label']
         dialog = {
             "conversations": [
                 {"role": "system", "content": sys_msg},

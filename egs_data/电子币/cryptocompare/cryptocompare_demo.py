@@ -30,7 +30,7 @@ CryptoCompare 电子货币行情聚合接口示例
 
 import requests
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 120)
@@ -61,6 +61,7 @@ def _coingecko_fallback():
         if r.status_code == 200:
             return r.json()
     except Exception:
+        # 预期内异常，忽略
         pass
     return None
 

@@ -20,7 +20,7 @@
 
 import pandas as pd
 
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import addlog
 
 
 class Account:

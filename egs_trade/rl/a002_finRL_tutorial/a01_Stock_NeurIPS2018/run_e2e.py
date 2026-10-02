@@ -15,9 +15,7 @@ fails fast before user-visible breakage.
 """
 import os
 import re
-import inspect
 import numpy as np
-import pandas as pd
 
 FINRL_ENV = os.environ.get(
     'FINRL_ENV_PATH',
@@ -68,7 +66,7 @@ def test_finrl_parent_class():
 
 def test_sb3_compat():
     """Verify stable_baselines3 accepts a gymnasium env via DummyVecEnv."""
-    from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv
+    from stable_baselines3.common.vec_env import DummyVecEnv
     # Lightweight gymnasium env for the smoke test
     import gymnasium as gym
     from gymnasium import spaces

@@ -16,7 +16,6 @@ from eastmoney_adapter import (
     _to_float,
     _to_int,
     _parse_date,
-    REPORT_TYPE_STOCK,
 )
 
 

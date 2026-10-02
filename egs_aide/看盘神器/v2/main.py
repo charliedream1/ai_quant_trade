@@ -39,7 +39,7 @@ if _SRC_DIR not in sys.path:
     sys.path.insert(0, _SRC_DIR)
 
 from excel_monitor.logger import get_logger
-from excel_monitor.config_loader import AppConfig, load_config
+from excel_monitor.config_loader import load_config
 from excel_monitor.core.data_provider import DataProvider
 from excel_monitor.core.excel_manager import ExcelManager
 from excel_monitor.core.config_sheet_reader import ConfigSheetReader
@@ -205,6 +205,7 @@ def main():
                     try:
                         excel_mgr.wb.app.visible = True
                     except Exception:
+                        # 预期内异常，忽略
                         pass
                     logger.info(f"Excel 重新打开成功: {excel_mgr._xlsx_path}")
                     # 重新获取 Sheet 对象
@@ -212,6 +213,7 @@ def main():
                         try:
                             handler.sheet = excel_mgr.get_sheet_by_name(handler.name)
                         except Exception:
+                            # 预期内异常，忽略
                             pass
                 except Exception as e:
                     logger.error(f"Excel 重新打开失败: {e}，等待 10 秒后重试...")
@@ -232,6 +234,7 @@ def main():
             try:
                 excel_mgr.save()
             except Exception:
+                # 预期内异常，忽略
                 pass
 
             time.sleep(cfg.refresh_interval)
@@ -241,6 +244,7 @@ def main():
         try:
             excel_mgr.close()
         except Exception:
+            # 预期内异常，忽略
             pass
 
 

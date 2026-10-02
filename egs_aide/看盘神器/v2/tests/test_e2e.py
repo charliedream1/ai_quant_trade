@@ -28,7 +28,6 @@ from openpyxl import load_workbook
 from excel_monitor.logger import get_logger
 from excel_monitor.config_loader import AppConfig, load_config
 from excel_monitor.core.data_provider import DataProvider
-from excel_monitor.core.alert_checker import AlertChecker, AlertCondition
 from excel_monitor.sheets.market_overview import MarketOverviewSheet
 from excel_monitor.sheets.detailed_quotes import DetailedQuotesSheet
 from excel_monitor.sheets.news_sheet import NewsSheet
@@ -428,19 +427,6 @@ def test_e2e_main_entry_import():
         sys.path.insert(0, src_dir)
 
     # 验证所有模块可导入
-    from excel_monitor.config_loader import AppConfig, load_config
-    from excel_monitor.core.data_provider import DataProvider
-    from excel_monitor.core.excel_manager import ExcelManager
-    from excel_monitor.core.backup_sources import BackupSources
-    from excel_monitor.core.stock_pool import StockPool
-    from excel_monitor.sheets.market_overview import MarketOverviewSheet
-    from excel_monitor.sheets.detailed_quotes import DetailedQuotesSheet
-    from excel_monitor.sheets.news_sheet import NewsSheet
-    from excel_monitor.sheets.custom_watch import CustomWatchSheet
-    from excel_monitor.sheets.sentiment_sheet import SentimentSheet
-    from excel_monitor.sheets.stock_pool_sheet import StockPoolSheet
-    from excel_monitor.utils.template_generator import create_template
-    from excel_monitor.utils.kline_chart import KLineChart
 
     _assert(True, "所有模块导入成功")
     _tlogger.info("  --> 入口导入验证通过")

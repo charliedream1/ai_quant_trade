@@ -35,7 +35,6 @@ pd.set_option('display.width', 120)
 def _fallback_akshare(name, func, *args, **kwargs):
     """efinance 失败时回退到 akshare"""
     try:
-        import akshare as ak
         print(f"  [efinance 失败，回退到 akshare]")
         return func(*args, **kwargs)
     except Exception as e:
@@ -59,7 +58,7 @@ def demo_stock_history():
         # 改用 baostock（不同数据源）
         try:
             import baostock as bs
-            lg = bs.login()
+            bs.login()
             rs = bs.query_history_k_data_plus(
                 'sh.601318',
                 'date,code,open,high,low,close,volume,amount,pctChg',

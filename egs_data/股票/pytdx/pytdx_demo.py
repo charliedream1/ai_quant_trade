@@ -31,7 +31,7 @@ Pytdx (通达信) 数据接口示例
 
 import logging
 from contextlib import contextmanager
-from typing import Optional, List, Tuple, Generator
+from typing import List, Tuple
 
 import pandas as pd
 
@@ -133,6 +133,7 @@ def pytdx_session(hosts: List[Tuple[str, int]] = None):
             api.disconnect()
             logger.debug("连接已断开")
         except Exception:
+            # 预期内异常，忽略
             pass
 
 

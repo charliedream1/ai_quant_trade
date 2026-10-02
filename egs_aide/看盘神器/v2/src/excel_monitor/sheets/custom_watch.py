@@ -56,6 +56,7 @@ class CustomWatchSheet(BaseSheet):
         try:
             self.sheet.cells(21, 4).value = None
         except Exception:
+            # 预期内异常，忽略
             pass
         # 添加按钮（位于 D21 位置）
         self.excel_mgr.add_button(
@@ -86,6 +87,7 @@ class CustomWatchSheet(BaseSheet):
                 old = vb_project.VBComponents.Item(module_name)
                 vb_project.VBComponents.Remove(old)
             except Exception:
+                # 预期内异常，忽略
                 pass
             # 添加新模块（1 = vbext_ct_StdModule）
             vb_module = vb_project.VBComponents.Add(1)
@@ -117,6 +119,7 @@ class CustomWatchSheet(BaseSheet):
             try:
                 self.sheet.cells(21, 4).value = None
             except Exception:
+                # 预期内异常，忽略
                 pass
             # 触发画K线
             self.draw_kline()
@@ -260,6 +263,7 @@ class CustomWatchSheet(BaseSheet):
                     try:
                         return float(val)
                     except (ValueError, TypeError):
+                        # 预期内异常，忽略
                         pass
         return None
 

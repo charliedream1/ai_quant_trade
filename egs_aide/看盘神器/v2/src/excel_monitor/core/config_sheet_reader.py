@@ -13,10 +13,8 @@
     Row 9: 自选股 | 指数
     Row 10+: 中国平安 | 上证指数
 """
-from typing import Optional
 
 import pandas as pd
-import xlwings as xw
 
 from excel_monitor.logger import get_logger
 from excel_monitor.config_loader import AppConfig

@@ -11,7 +11,7 @@
   - 无字幕（GIF 体积敏感）
 """
 from pathlib import Path
-from PIL import Image, ImageSequence
+from PIL import Image
 
 BASE_DIR = Path(__file__).parent
 FRAMES_DIR = BASE_DIR / "frames"
@@ -161,7 +161,7 @@ def generate_gif():
         x += f.size[0]
     # 量化生成全局调色板
     palette_img_p = palette_img.quantize(colors=256, method=Image.Quantize.MEDIANCUT)
-    global_palette = palette_img_p.getpalette()
+    palette_img_p.getpalette()
 
     # 用全局调色板转换所有帧
     converted_frames = []

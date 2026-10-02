@@ -31,7 +31,7 @@ Baostock (证券宝) 数据接口示例
 
 import logging
 from contextlib import contextmanager
-from typing import Optional, Generator
+from typing import Generator
 
 import pandas as pd
 

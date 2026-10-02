@@ -19,18 +19,12 @@
 # limitations under the License.
 
 import os
-import sys
 import argparse
 import pandas as pd
-from datetime import datetime
-from tqdm import tqdm
 
 from src.data_io.wind.dump_data import WindDataLoader
 
-from src.tools.log.log_util import addlog, log
-from src.tools.file_io.config import override_config
-from src.tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
-from src.tools.file_io.load_csv import get_self_select_stock_lst
+from src.tools.file_io.make_nd_clean_dirs import make_dirs
 
 
 def get_args():

@@ -158,7 +158,7 @@ def test_refresh_clears_trigger_signal():
 
     # 应清除 D2 信号（sheet.cells(2,4).value = None）
     # 检查 cells 被赋值为 None
-    set_calls = [c for c in sheet.sheet.cells.call_args_list
+    [c for c in sheet.sheet.cells.call_args_list
                  if len(c[0]) >= 2 and c[0][0] == 2 and c[0][1] == 4]
     # cells(2,4).value = None 应该有调用
 

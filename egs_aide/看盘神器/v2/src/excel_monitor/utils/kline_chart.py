@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """K 线图绘制模块：使用 mplfinance 绘制 K 线并保存为图片"""
-import os
 import tempfile
 
 import pandas as pd

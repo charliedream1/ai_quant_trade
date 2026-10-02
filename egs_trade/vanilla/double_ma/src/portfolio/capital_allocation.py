@@ -19,7 +19,7 @@
 # limitations under the License.
 
 from src.back_test.account_info import Account
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import addlog
 
 
 @addlog(name='equal_allocation')

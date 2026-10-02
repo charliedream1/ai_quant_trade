@@ -18,10 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import sys
 import argparse
-import pandas as pd
 from datetime import datetime
 import time
 from tqdm import tqdm
@@ -29,9 +26,7 @@ from tqdm import tqdm
 from WindPy import w
 
 from src.data_io.wind.account_login import logon_wind, logon_account
-from src.data_io.wind.query_rt_data import get_funds, check_account_info, \
-    get_stock_pool, check_position, log_out, get_rt_val
-from src.data_io.wind.utils import parse_val, my_callback
+from src.data_io.wind.query_rt_data import get_funds, get_stock_pool, check_position, log_out, get_rt_val
 
 from src.rules.timing_ctrl.moving_average import double_ma_timing
 

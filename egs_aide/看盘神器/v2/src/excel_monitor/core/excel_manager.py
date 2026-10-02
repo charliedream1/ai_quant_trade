@@ -24,6 +24,7 @@ class ExcelManager:
         try:
             self.wb.app.visible = True
         except Exception:
+            # 预期内异常，忽略
             pass
         self._logger.info(f"已打开 Excel: {xlsx_path}")
 

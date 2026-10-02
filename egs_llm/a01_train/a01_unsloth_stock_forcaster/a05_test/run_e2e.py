@@ -11,7 +11,6 @@ Run from the project root:
 
     python run_e2e.py
 """
-import os
 import sys
 import shutil
 from pathlib import Path

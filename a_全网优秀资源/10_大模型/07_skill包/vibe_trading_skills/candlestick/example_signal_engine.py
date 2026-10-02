@@ -185,7 +185,7 @@ class SignalEngine:
         bd = _body(o, c)
         rng = _range(h, l)
         safe_rng = rng.replace(0, np.nan)
-        cond = (bd / safe_rng < self.body_pct) & (rng > 0)
+        (bd / safe_rng < self.body_pct) & (rng > 0)
         # 十字星为中性，不贡献方向分数
         return pd.Series(0, index=o.index)
 
@@ -210,7 +210,7 @@ class SignalEngine:
         us = _upper_shadow(o, c, h)
         ls = _lower_shadow(o, c, l)
         is_doji = (bd / safe_rng < self.body_pct) & (rng > 0)
-        cond = ((bd / safe_rng < 0.3) & (us > bd) & (ls > bd)
+        ((bd / safe_rng < 0.3) & (us > bd) & (ls > bd)
                 & (rng > 0) & ~is_doji)
         # 纺锤线为中性，不贡献方向分数
         return pd.Series(0, index=o.index)

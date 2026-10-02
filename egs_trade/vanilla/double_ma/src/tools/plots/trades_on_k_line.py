@@ -18,9 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import talib
 import pandas as pd
-import mplfinance as mpl
 # use old api
 from mplfinance.original_flavor import candlestick2_ohlc, volume_overlay
 import matplotlib
@@ -33,7 +31,7 @@ try:
 except Exception:
     matplotlib.use('Agg')
 
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import addlog
 
 
 @addlog(name='plot_trades_on_capital')

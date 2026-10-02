@@ -106,6 +106,7 @@ def select_stock_strategies(context):
     g.stock_list.clear()
 
     # 1.股票池筛选
+    buylist = []
     if g.select_option == '强势股':
         # 获取股票池所有数据
         q = query(valuation.code)
@@ -145,7 +146,8 @@ def select_stock_strategies(context):
             # 如果上一时间点价格高出100天平均价3%, 则加入备选股票
             if current_price > 1.0 * MA100:
                 g.stock_list.append(item)
-        except Exception as e:
+        except Exception:
+            # 预期内异常，忽略
             pass
 
     log.info('Total Selected Stock Num: ' + str(len(g.stock_list)))

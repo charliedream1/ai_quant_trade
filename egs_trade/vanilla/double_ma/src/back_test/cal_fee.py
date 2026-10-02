@@ -22,7 +22,7 @@ from random import choice
 from typeguard import check_argument_types
 import pandas as pd
 
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import addlog
 
 
 @addlog(name='calculate_fee')

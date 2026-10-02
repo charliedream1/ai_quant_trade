@@ -5,9 +5,8 @@
 纯 pandas/numpy 实现，无外部波浪库依赖。
 """
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
-import numpy as np
 import pandas as pd
 
 

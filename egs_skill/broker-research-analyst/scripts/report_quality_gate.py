@@ -11,8 +11,7 @@ from __future__ import annotations
 import logging
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import datetime
 
 from eastmoney_adapter import ReportMeta
 

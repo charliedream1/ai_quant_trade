@@ -5,7 +5,6 @@ import types
 from pathlib import Path
 from unittest import mock
 
-import pytest
 
 PROJ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJ))
@@ -54,7 +53,7 @@ def test_wind_data_loader_construction():
     fake_w = _install_wind_mock()
     # import lazily so the WindPy mock is in place
     from src.data_io.wind.dump_data import WindDataLoader
-    loader = WindDataLoader()
+    WindDataLoader()
     assert fake_w.start.called
 
 

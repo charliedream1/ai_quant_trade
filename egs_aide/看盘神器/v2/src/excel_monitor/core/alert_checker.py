@@ -7,7 +7,7 @@
 
 达到条件时返回 AlertResult，由 CustomWatchSheet 负责高亮和弹窗。
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional
 
 

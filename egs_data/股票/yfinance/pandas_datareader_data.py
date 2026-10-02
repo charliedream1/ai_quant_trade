@@ -20,7 +20,6 @@
 # 注意：雅虎已关闭国内服务，yahoo 源已不可用；stooq 源 URL 也已失效
 # 改用 FRED（美联储经济数据）源，免费、无需 API Key、国内可直连
 import pandas_datareader as web
-import pandas as pd
 
 print('web version', web.__version__)
 start_date = '2020-01-01'

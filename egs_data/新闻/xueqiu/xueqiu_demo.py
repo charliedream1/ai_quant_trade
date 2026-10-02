@@ -59,6 +59,7 @@ class XueqiuAPI:
             try:
                 self.session.get('https://xueqiu.com/', timeout=10)
             except Exception:
+                # 预期内异常，忽略
                 pass
 
     def get_stock_quote(self, symbol='SH601318'):
@@ -82,6 +83,7 @@ class XueqiuAPI:
                 print(f"  成交量: {quote.get('volume', 0)}")
                 return quote
         except Exception:
+            # 预期内异常，忽略
             pass
 
         # 雪球接口需要登录，回退到新浪实时行情
@@ -209,7 +211,7 @@ class XueqiuAPI:
 def demo_pysnowball():
     """使用 pysnowball 库获取数据"""
     try:
-        import pysnowball
+        import pysnowball  # noqa: F401  可选依赖探测
     except ImportError:
         print("pysnowball 未安装，请运行: pip install pysnowball")
         return

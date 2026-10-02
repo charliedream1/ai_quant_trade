@@ -19,13 +19,12 @@
 # limitations under the License.
 
 import os
-import sys
 import pandas as pd
 from tqdm import tqdm
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from src.tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
+from src.tools.file_io.make_nd_clean_dirs import make_dirs
 
 
 class Evaluator:
@@ -61,7 +60,7 @@ class Evaluator:
         # 记录每条 prompt 的真实长度（非 pad 部分），用于后面分割生成结果
         #    attention_mask 为 1 的位置就是实际输入
         attention_mask = inputs.attention_mask  # (batch_size, seq_len)
-        orig_lengths = attention_mask.sum(dim=1).tolist()  # list of ints, length=batch_size
+        attention_mask.sum(dim=1).tolist()  # list of ints, length=batch_size
 
         # 3. 批量生成（显式传递 attention_mask）
         output_ids = self.model.generate(

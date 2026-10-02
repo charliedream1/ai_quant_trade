@@ -13,7 +13,6 @@ import argparse
 import json
 import logging
 import sys
-from dataclasses import asdict
 from pathlib import Path
 
 # 保证 scripts 目录内模块互导
@@ -21,10 +20,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from eastmoney_adapter import (
     EastmoneyReportAdapter,
-    ReportMeta,
-    REPORT_TYPE_STOCK,
-    REPORT_TYPE_INDUSTRY,
-    REPORT_TYPE_STRATEGY,
 )
 from pdf_downloader import PdfDownloader
 from pdf_parser import parse_pdf

@@ -18,9 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import talib
 import pandas as pd
-import mplfinance as mpl
 # use old api
 from mplfinance.original_flavor import candlestick2_ohlc, volume_overlay
 import matplotlib
@@ -29,7 +27,7 @@ import matplotlib.pyplot as plt
 # Use Qt5Agg for plot show, otherwise, no plot shown
 matplotlib.use('Qt5Agg')
 
-from tools.log.log_util import addlog, log
+from tools.log.log_util import addlog
 
 
 @addlog(name='plot_trades_on_capital')

@@ -14,7 +14,6 @@
   3. ffmpeg 合成最终 MP4
 """
 import asyncio
-import os
 import subprocess
 from pathlib import Path
 
@@ -243,7 +242,7 @@ def render_promo_frame(scene: dict, progress: float) -> Image.Image:
     """
     img = Image.new("RGB", (WIDTH, HEIGHT), BG_COLOR)
     draw = ImageDraw.Draw(img, "RGBA")
-    variant = scene.get("variant", "opening")
+    scene.get("variant", "opening")
 
     # 顶部装饰条
     draw.rectangle([0, 0, WIDTH, 8], fill=PRIMARY)
@@ -376,6 +375,7 @@ def render_pain_points_frame(scene: dict, progress: float) -> Image.Image:
             _draw_text_centered_at(draw, "工作 vs 炒股，两头不能兼顾", px + pw // 2, py + ph + 18,
                                    cap_font, TEXT_DIM)
         except Exception:
+            # 预期内异常，忽略
             pass
 
     # 右侧：README 图片（1_有点慌.png）
@@ -402,6 +402,7 @@ def render_pain_points_frame(scene: dict, progress: float) -> Image.Image:
             _draw_text_centered_at(draw, "悄悄看盘，吓得心扑通跳", px + pw // 2, py + ph + 18,
                                    cap_font, (*TEXT_DIM, alpha))
         except Exception:
+            # 预期内异常，忽略
             pass
 
     # 底部 V2 解决方案
@@ -436,7 +437,7 @@ def render_solution_frame(scene: dict, progress: float) -> Image.Image:
 
     # 2行3列网格
     highlights = scene["highlights"]
-    cols, rows = 3, 2
+    cols, _rows = 3, 2
     card_w, card_h = 540, 340
     gap_x, gap_y = 40, 30
     total_w = cols * card_w + (cols - 1) * gap_x
@@ -661,7 +662,7 @@ def render_kline_demo_frame(scene: dict, progress: float) -> Image.Image:
         # 实体
         body_top = to_y(max(o, c))
         body_bot = to_y(min(o, c))
-        body_h = max(2, body_bot - body_top)
+        max(2, body_bot - body_top)
         draw.rectangle([cx - body_w / 2, body_top, cx + body_w / 2, body_bot],
                        fill=(*color, 255))
         closes.append(c)
@@ -890,7 +891,6 @@ def render_stock_pool_demo_frame(scene: dict, progress: float) -> Image.Image:
         draw.text((search_x, result_y), f"找到 {len(results)} 只匹配股票",
                   font=res_title_font, fill=(*ACCENT, res_alpha))
 
-        headers = ["代码", "名称", "市场"]
         col_x = [search_x, search_x + 300, search_x + 600]
         for i, (code, name, market) in enumerate(results):
             ry = result_y + 50 + i * (result_h + 12)
@@ -1258,6 +1258,7 @@ def get_audio_duration(audio_path: Path) -> float:
             h, mi, s = int(m.group(1)), int(m.group(2)), float(m.group(3))
             return h * 3600 + mi * 60 + s
     except Exception:
+        # 预期内异常，忽略
         pass
     return 5.0
 

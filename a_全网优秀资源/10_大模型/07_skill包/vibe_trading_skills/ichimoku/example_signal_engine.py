@@ -4,7 +4,7 @@
 纯 pandas 实现，无外部技术分析库依赖。
 """
 
-from typing import Dict, Optional
+from typing import Dict
 
 import pandas as pd
 

@@ -14,7 +14,6 @@
     3. 统一返回 DataFrame，列名与 qstock 风格对齐（"代码" / "名称" / "最新" / "涨幅" 等）
     4. 同一数据类型可能有多个备选源，由 DataProvider 决定调用顺序
 """
-import traceback
 from typing import List, Optional
 
 import pandas as pd

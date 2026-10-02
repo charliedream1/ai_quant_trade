@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Unit + e2e tests for refactored egs_trade/rl/a001_proto_sb3."""
-import os
 import sys
-import tempfile
 from pathlib import Path
 
 import numpy as np

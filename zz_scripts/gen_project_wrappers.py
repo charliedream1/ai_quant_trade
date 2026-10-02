@@ -32,7 +32,6 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
-from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[1]  # ai_quant_trade
 DOCS_PROJECTS_DIR = REPO_ROOT / "docs" / "_projects"
@@ -558,9 +557,9 @@ def _render_cards_block(cat_map: dict[str, list[Project]], lang: str) -> str:
                 )
                 # 数据源展示不写子标题，直接按子分类分行
                 if lang == "zh" and sub not in SUBCATEGORY_LABELS:
-                    prefix = ""
+                    pass
                 else:
-                    prefix = ""
+                    pass
                 lines.append(f"- {rendered}")
             blocks.append(
                 f"-   :{icon}: __{cat_disp}{count_str}__\n\n"

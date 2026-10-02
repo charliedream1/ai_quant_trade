@@ -587,7 +587,7 @@ def make_factors():
             v2011 = np.std(v20110, axis=0)
             v201 = v2010 - v2011
             v20 = v200 < v201
-            v21 = np.full(out.shape[0], 1.0)
+            np.full(out.shape[0], 1.0)
             v22000 = np.full(out.shape[0], 1.0)
             v220010 = volume[-1]
             v220011 = adv20[-1]
@@ -599,7 +599,7 @@ def make_factors():
             v22011 = np.full(out.shape[0], 1.0)
             v2201 = v22010 == v22011
             v220 = v2200 | v2201
-            v221 = np.full(out.shape[0], 1.0)
+            np.full(out.shape[0], 1.0)
             v2220 = np.full(out.shape[0], -1.0)
             v2221 = np.full(out.shape[0], 1.0)
             v222 = v2220 * v2221
@@ -661,7 +661,7 @@ def make_factors():
                 v110[-i0] = high[-i0]
             v11 = v110[-1] - v110[-3]
             v1 = v10 * v11
-            v2 = np.full(out.shape[0], 0.0)
+            np.full(out.shape[0], 0.0)
             vlgcl = np.empty(out.shape[0])
             vlgcl[v0] = v1[v0]
             vlgcl[~v0] = 0
@@ -797,7 +797,7 @@ def make_factors():
             v10 = np.full(out.shape[0], -1.0)
             v11 = np.full(out.shape[0], 1.0)
             v1 = v10 * v11
-            v2 = np.full(out.shape[0], 1.0)
+            np.full(out.shape[0], 1.0)
             vlgcl = np.empty(out.shape[0])
             vlgcl[v0] = v1[v0]
             vlgcl[~v0] = 1
@@ -1377,7 +1377,7 @@ def make_factors():
             v200 = v2000 - v2001
             v201 = np.full(out.shape[0], 0.0)
             v20 = v200 < v201
-            v21 = np.full(out.shape[0], 1.0)
+            np.full(out.shape[0], 1.0)
             v2200 = np.full(out.shape[0], -1.0)
             v2201 = np.full(out.shape[0], 1.0)
             v220 = v2200 * v2201
@@ -1458,7 +1458,7 @@ def make_factors():
             v011 = np.full(out.shape[0], 0.1)
             v01 = v010 * v011
             v0 = v00 < v01
-            v1 = np.full(out.shape[0], 1.0)
+            np.full(out.shape[0], 1.0)
             v200 = np.full(out.shape[0], -1.0)
             v201 = np.full(out.shape[0], 1.0)
             v20 = v200 * v201
@@ -1520,7 +1520,7 @@ def make_factors():
             v011 = np.full(out.shape[0], 0.05)
             v01 = v010 * v011
             v0 = v00 < v01
-            v1 = np.full(out.shape[0], 1.0)
+            np.full(out.shape[0], 1.0)
             v200 = np.full(out.shape[0], -1.0)
             v201 = np.full(out.shape[0], 1.0)
             v20 = v200 * v201

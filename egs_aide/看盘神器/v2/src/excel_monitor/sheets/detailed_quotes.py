@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """详细行情 Sheet：自选股实时行情 + 龙虎榜 + 盘口异动"""
-import pandas as pd
 
 from excel_monitor.logger import get_logger
 from excel_monitor.sheets.base import BaseSheet

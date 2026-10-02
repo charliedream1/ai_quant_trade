@@ -14,7 +14,6 @@ import json
 import logging
 import re
 from dataclasses import dataclass, field, asdict
-from typing import Optional
 
 from eastmoney_adapter import ReportMeta
 from report_quality_gate import QualityResult
@@ -275,7 +274,7 @@ def check_hallucination(
                     actual_researchers.add(name)
     actual_ratings = {r.em_rating for r in reports if r.em_rating}
     actual_eps_values = [r.predict_this_year_eps for r in reports if r.predict_this_year_eps]
-    actual_pe_values = [r.predict_this_year_pe for r in reports if r.predict_this_year_pe]
+    [r.predict_this_year_pe for r in reports if r.predict_this_year_pe]
 
     # 1. 实体幻觉：检查报告中提到的机构是否都在源数据中
     # 报告中明细表里的机构名

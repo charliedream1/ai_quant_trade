@@ -45,6 +45,15 @@ jobs:
           languages: ${{ matrix.language }}
           # security-and-quality 同时启用安全与质量规则集
           queries: security-and-quality
+          # 排除非项目核心代码，减少误报与扫描时间
+          paths-ignore: |
+            '**/zz_venv/**'
+            '**/__pycache__/**'
+            '**/*.egg-info/**'
+            '**/.ipynb_checkpoints/**'
+            'zz_scripts/**'
+            'a_全网优秀资源/**'
+            'egs_online_platform/聚宽_JoinQuant/01_模板使用说明/**'
 
       # 依赖自动安装：让 CodeQL 在 Python 项目上能解析 import
       - name: Perform CodeQL Analysis

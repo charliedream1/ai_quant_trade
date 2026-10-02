@@ -9,7 +9,7 @@
 
 import os
 import sys
-from typing import Dict, Optional
+from typing import Dict
 
 # smartmoneyconcepts prints emoji on import — force UTF-8 on Windows
 if sys.platform == "win32":
@@ -17,7 +17,6 @@ if sys.platform == "win32":
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
-import numpy as np
 import pandas as pd
 from smartmoneyconcepts import smc
 

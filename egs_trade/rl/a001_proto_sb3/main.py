@@ -19,7 +19,6 @@
 # limitations under the License.
 
 import os
-import sys
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt

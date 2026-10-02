@@ -34,8 +34,6 @@ yfinance 数据接口示例
 import os
 import tempfile
 import logging
-from collections import defaultdict
-from typing import Dict, List, Optional
 
 import pandas as pd
 import yfinance as yf

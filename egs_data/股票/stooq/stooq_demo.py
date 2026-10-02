@@ -31,7 +31,6 @@ Stooq 免费金融数据接口示例
 
 import csv
 import logging
-from datetime import datetime
 from io import StringIO
 from typing import Optional
 from urllib.error import HTTPError, URLError

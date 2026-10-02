@@ -24,7 +24,7 @@ from typing import Tuple
 
 from src.tools.file_io.load_csv import get_self_select_stock_lst
 from src.data_io.wind.utils import parse_val
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import log
 
 
 # ============ 1. Account Related ==============

@@ -1,9 +1,7 @@
 import random
-import json
 import logging
 import gymnasium as gym
 from gymnasium import spaces
-import pandas as pd
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -137,7 +135,7 @@ class StockTradingEnv(gym.Env):
             self.current_step = 0  # loop training
             # terminated = True
 
-        delay_modifier = (self.current_step / MAX_STEPS)
+        (self.current_step / MAX_STEPS)
 
         # profits
         reward = self.net_worth - self.init_balance

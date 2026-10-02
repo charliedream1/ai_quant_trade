@@ -144,7 +144,8 @@ def select_stock_strategies(context):
             # 如果上一时间点价格高出100天平均价3%, 则加入备选股票 // 过滤近期震荡过大股票
             if current_price > 1.0 * MA100 and not filter_vibrate_stock(item):
                 g.stock_list.append(item)
-        except Exception as e:
+        except Exception:
+            # 预期内异常，忽略
             pass
 
     log.info('Total Selected Stock Num MA100: ' + str(len(g.stock_list)))
@@ -216,7 +217,7 @@ def filter_vibrate_stock(security):
     # 选取近20日高点,低点
     for i in range(1, 21):
         # 获取股票的长期收盘价
-        MA100 = close_data['close'][-100 - i: -i].mean()
+        close_data['close'][-100 - i: -i].mean()
         pre_price = close_data['close'][-i - 1]
         current_price = close_data['close'][-i]
         future_price = close_data['close'][-i + 1]

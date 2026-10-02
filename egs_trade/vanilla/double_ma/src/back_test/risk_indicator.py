@@ -74,6 +74,7 @@ def cal_risk_indicator(capital: float,
     #  Cov: covariance, Var: variance of benchmark return
     # Beta > 1: strategy changing larger than benchmark one, vice versa
     # todo: due to index data not available from tushare api without pay
+    sign_rise = rise = None
     if len(df_index):
         strategy_pct_chg = capital_series.pct_change()
         strategy_pct_chg.fillna(0)

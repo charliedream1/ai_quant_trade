@@ -24,9 +24,8 @@
 from __future__ import annotations
 
 import logging
-import os
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from typing import Optional
 from urllib.parse import urlencode

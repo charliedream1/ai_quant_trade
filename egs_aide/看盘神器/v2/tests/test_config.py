@@ -3,7 +3,6 @@
 import os
 import tempfile
 
-import yaml
 
 from excel_monitor.config_loader import AppConfig, load_config
 

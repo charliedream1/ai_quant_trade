@@ -23,6 +23,7 @@ def main():
     try:
         xl.WindowState = -4137  # xlMaximized
     except Exception:
+        # 预期内异常，忽略
         pass
 
     wb = xl.Workbooks.Open(XLSX)
@@ -61,6 +62,7 @@ def main():
         wb.Save()
         xl.Quit()
     except Exception:
+        # 预期内异常，忽略
         pass
 
 

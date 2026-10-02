@@ -21,7 +21,7 @@
 import os
 from WindPy import w
 
-from src.tools.log.log_util import addlog, log
+from src.tools.log.log_util import log
 
 
 def logon_wind():

@@ -33,7 +33,7 @@
 
 import time
 import logging
-from typing import Dict, List, Optional, Protocol, Type, TypeVar, runtime_checkable
+from typing import Dict, List, Optional, Protocol, Type, runtime_checkable
 
 import pandas as pd
 

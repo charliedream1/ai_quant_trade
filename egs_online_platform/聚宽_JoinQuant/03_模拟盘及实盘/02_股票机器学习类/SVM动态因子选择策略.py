@@ -43,9 +43,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.svm import SVR
-from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import StandardScaler
 
 
 # =======================================================

@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 """Unit + e2e tests for refactored egs_trade/vanilla/double_ma."""
-import os
 import sys
-import tempfile
 import types
 from pathlib import Path
 from unittest import mock
 
 import numpy as np
 import pandas as pd
-import pytest
 
 PROJ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJ))

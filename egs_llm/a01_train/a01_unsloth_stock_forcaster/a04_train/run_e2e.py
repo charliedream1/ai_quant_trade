@@ -15,8 +15,6 @@ Markers covered:
 
 This is run in CI without a GPU; pure module / API checks.
 """
-import sys
-import types
 import inspect
 
 
@@ -48,7 +46,7 @@ def test_transformers_chat_template():
     except Exception as e:
         print(f'  SKIP transformers (not installed: {e})')
         return
-    sig = inspect.signature(AutoTokenizer.from_pretrained)
+    inspect.signature(AutoTokenizer.from_pretrained)
     # We can't easily test apply_chat_template without a real tokenizer, but we
     # can assert the attribute exists on the class.
     from transformers.tokenization_utils_base import PreTrainedTokenizerBase
@@ -59,7 +57,7 @@ def test_transformers_chat_template():
 
 def test_trl_sft():
     try:
-        from trl import SFTTrainer, SFTConfig
+        from trl import SFTConfig
     except Exception as e:
         print(f'  SKIP trl (not installed: {e})')
         return

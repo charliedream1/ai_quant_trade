@@ -25,7 +25,7 @@ GDELT Project 全球新闻事件+情绪数据接口示例
 
 import requests
 import pandas as pd
-from io import StringIO, BytesIO
+from io import BytesIO
 import zipfile
 
 pd.set_option('display.max_columns', None)

@@ -5,7 +5,6 @@
 """
 
 import tushare as ts
-import pandas as pd
 import os
 
 # 读取环境变量中的token, 或者读取本地记录的token

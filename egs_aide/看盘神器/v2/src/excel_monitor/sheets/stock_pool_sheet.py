@@ -150,6 +150,7 @@ class StockPoolSheet(BaseSheet):
             self.sheet.cells(self._trigger_cell[0],
                              self._trigger_cell[1]).value = None
         except Exception:
+            # 预期内异常，忽略
             pass
 
         if trigger == "SEARCH":

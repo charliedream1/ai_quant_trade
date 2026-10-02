@@ -27,9 +27,8 @@ def init_log(name='root'):
             if '$path' in data:
                 data = data.replace('$path', log_path)
             datalines.append(data)
-    f = open(config_file + '_bak', 'w')
-    f.writelines(datalines)
-    f.close()
+    with open(config_file + '_bak', 'w') as f:
+        f.writelines(datalines)
 
     del datalines
 

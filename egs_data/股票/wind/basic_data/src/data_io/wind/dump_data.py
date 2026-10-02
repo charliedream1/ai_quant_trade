@@ -19,7 +19,6 @@
 # limitations under the License.
 
 import os
-import sys
 import argparse
 import pandas as pd
 from datetime import datetime
@@ -28,8 +27,7 @@ from tqdm import tqdm
 from WindPy import w
 
 from src.tools.log.log_util import addlog, log
-from src.tools.file_io.config import override_config
-from src.tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs
+from src.tools.file_io.make_nd_clean_dirs import make_dirs, clean_dirs  # noqa: F401  re-export for tests
 from src.tools.file_io.load_csv import get_self_select_stock_lst
 
 
@@ -295,7 +293,7 @@ def main():
 
     wind_loader = WindDataLoader()
     if args.start_stage <= 1 and args.stop_stage >= 1:
-        df_trade_calendar = wind_loader.dump_trade_calendar(args)
+        wind_loader.dump_trade_calendar(args)
 
     if args.start_stage <= 2 and args.stop_stage >= 2:
         if args.self_sel_stock_path is not None and args.self_sel_stock_path != '':

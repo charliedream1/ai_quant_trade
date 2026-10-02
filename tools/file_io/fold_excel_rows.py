@@ -34,7 +34,6 @@ to
 
 import os
 import pandas as pd
-import math
 
 
 def parse_files(in_file, out_file, row_num=48, col_num=3, sheet_name='Sheet1'):

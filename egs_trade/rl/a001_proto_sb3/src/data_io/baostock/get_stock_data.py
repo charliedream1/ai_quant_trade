@@ -1,6 +1,4 @@
 import baostock as bs
-import pandas as pd
-import os
 
 from src.tools.file_io.make_nd_clean_dirs import make_dirs
 
