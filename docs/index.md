@@ -62,6 +62,48 @@
 
 <div class="lang-en" markdown>
 
+## :material-folder-multiple: Browse Projects on GitHub
+
+This site covers platform setup, FAQs, the knowledge planet and deployment only.
+For the full project catalogue (trading strategies, data sources, alpha mining,
+LLM skills, NLP, online platforms and utilities), please browse the repository
+directly:
+
+- [Trading Strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade){ target=_blank }
+- [Data Sources](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data){ target=_blank }
+- [Alpha Mining](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha){ target=_blank }
+- [LLM & Skills](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_llm){ target=_blank }
+- [Financial NLP](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp){ target=_blank }
+- [Online Platforms](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform){ target=_blank }
+- [Utilities](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide){ target=_blank }
+
+Each project ships its own `README.md` rendered natively by GitHub.
+
+</div>
+
+<div class="lang-zh" hidden markdown>
+
+## :material-folder-multiple: 项目集锦（请前往 GitHub 浏览）
+
+本站点只覆盖平台搭建、常见问题、知识星球与部署运维。
+完整项目集（交易策略、数据源、因子挖掘、大模型与 Skill、金融 NLP、在线平台、辅助工具）请直接浏览仓库：
+
+- [交易策略](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade){ target=_blank }
+- [数据源](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data){ target=_blank }
+- [因子挖掘](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha){ target=_blank }
+- [大模型与 Skill](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_llm){ target=_blank }
+- [金融 NLP](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp){ target=_blank }
+- [在线平台](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform){ target=_blank }
+- [辅助工具](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide){ target=_blank }
+
+每个项目都自带 `README.md`，由 GitHub 原生渲染。
+
+</div>
+
+---
+
+<div class="lang-en" markdown>
+
 ## :material-star-circle: Featured: Knowledge Planet Community
 
 <div class="grid cards" markdown>
@@ -132,264 +174,6 @@
     - 项目跑通前的环境准备清单
 
     [:octicons-arrow-right-24: 开始阅读新人指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
-
-</div>
-
-</div>
-
----
-
-<!-- >>> AUTO-INDEX-START -->
-<!-- 项目集：自动维护，由 zz_scripts/gen_project_wrappers.py 同步 -->
-
-<div class="lang-en" markdown>
-
-## Projects
-
-<div class="grid cards" markdown>
--   :material-chart-line: __Trading Strategies (9 projects)__
-
-    ---
-
-    - [PPO 强化学习](_projects/交易策略/a001_proto_sb3__egs_trade_rl_a001_proto_sb3.md)
-    - [Wind 实盘](_projects/交易策略/wind__egs_trade_paper_trade_wind.md)
-    - [finRL NeurIPS 复现](_projects/交易策略/a01_Stock_NeurIPS2018__egs_trade_rl_a002_finRL_tutorial_a01_Stock_NeurIPS2018.md)
-    - [finRL 复现结果](_projects/教程 FAQ/a01_Stock_NeurIPS2018__egs_trade_rl_a002_finRL_tutorial_a01_Stock_NeurIPS2018.md)
-    - [ms_qlib](_projects/交易策略/ms_qlib__egs_trade_ms_qlib.md)
-    - [动量轮动](_projects/交易策略/momentum_rotation__egs_trade_vanilla_momentum_rotation.md)
-    - [双均线策略](_projects/交易策略/double_ma__egs_trade_vanilla_double_ma.md)
-    - [文档教程](_projects/交易策略/文档教程__egs_trade_vanilla_double_ma_文档教程.md)
-    - [组合优化](_projects/交易策略/portfolio_optimization__egs_trade_vanilla_portfolio_optimization.md)
-
--   :material-database: __Data Sources (25 sources)__
-
-    ---
-
-- [akshare](_projects/数据源/akshare__egs_data_股票_akshare.md) · [baostock](_projects/数据源/baostock__egs_data_股票_baostock.md) · [basic_data](_projects/数据源/basic_data__egs_data_股票_wind_basic_data.md) · [cninfo](_projects/数据源/cninfo__egs_data_股票_cninfo.md) · [eastmoney](_projects/数据源/eastmoney__egs_data_股票_eastmoney.md) · [efinance](_projects/数据源/efinance__egs_data_股票_efinance.md) · [netease](_projects/数据源/netease__egs_data_股票_netease.md) · [qlib](_projects/数据源/qlib__egs_data_股票_qlib.md) · [qstock](_projects/数据源/qstock__egs_data_股票_qstock.md) · [tencent](_projects/数据源/tencent__egs_data_股票_tencent.md) · [tushare](_projects/数据源/tushare__egs_data_股票_tushare.md) · [web_api](_projects/数据源/web_api__egs_data_股票_web_api.md) · [wind](_projects/数据源/wind__egs_data_股票_wind.md) · [yfinance](_projects/数据源/yfinance__egs_data_股票_yfinance.md)
-- [fund](_projects/数据源/fund__egs_data_基金_fund.md)
-- [futures](_projects/数据源/futures__egs_data_期货_futures.md)
-- [ccxt](_projects/数据源/ccxt__egs_data_电子币_ccxt.md) · [cryptocompare](_projects/数据源/cryptocompare__egs_data_电子币_cryptocompare.md)
-- [fred](_projects/数据源/fred__egs_data_宏观经济_fred.md) · [world_bank](_projects/数据源/world_bank__egs_data_宏观经济_world_bank.md)
-- [finnhub](_projects/数据源/finnhub__egs_data_新闻_finnhub.md) · [gdelt](_projects/数据源/gdelt__egs_data_新闻_gdelt.md) · [news](_projects/数据源/news__egs_data_新闻_news.md) · [news_api](_projects/数据源/news_api__egs_data_新闻_news_api.md) · [xueqiu](_projects/数据源/xueqiu__egs_data_新闻_xueqiu.md)
-
--   :material-flask: __Alpha Mining (5 projects)__
-
-    ---
-
-    - [alpha101](_projects/因子挖掘/alpha101__egs_alpha_alpha_libs_alpha101.md)
-    - [auto_alpha](_projects/因子挖掘/auto_alpha__egs_alpha_auto_alpha.md)
-    - [stockstats](_projects/因子挖掘/stockstats__egs_alpha_alpha_libs_stockstats.md)
-    - [ta_lib](_projects/因子挖掘/ta_lib__egs_alpha_alpha_libs_ta_lib.md)
-    - [tsfresh](_projects/因子挖掘/tsfresh__egs_alpha_auto_alpha_tsfresh.md)
-
--   :material-robot: __LLM & Skills (6 projects)__
-
-    ---
-
-    - [Unsloth FAQ](_projects/教程 FAQ/a00_FAQ__egs_llm_a01_train_a01_unsloth_stock_forcaster_a00_FAQ.md)
-    - [Unsloth 训练](_projects/大模型与 Skill/a01_unsloth_stock_forcaster__egs_llm_a01_train_a01_unsloth_stock_forcaster.md)
-    - [券商研报 Skill](_projects/大模型与 Skill/broker-research-analyst__egs_skill_broker-research-analyst.md)
-    - [模型下载](_projects/大模型与 Skill/a01_download_mdl__egs_llm_a01_train_a01_unsloth_stock_forcaster_a01_download_mdl.md)
-    - [模型训练](_projects/大模型与 Skill/a04_train__egs_llm_a01_train_a01_unsloth_stock_forcaster_a04_train.md)
-    - [热点报告](_projects/大模型与 Skill/v1_proto_internet__egs_llm_b01_app_a01_hot_topic_report_v1_proto_internet.md)
-
--   :material-message-text: __Financial NLP (1 project)__
-
-    ---
-
-    - [01_StructBert_Binary_Class](_projects/金融 NLP/01_StructBert_Binary_Class__egs_fin_nlp_emotion_analysis_01_StructBert_Binary_Class.md)
-
--   :material-cloud: __Online Platforms (2 projects)__
-
-    ---
-
-    - [优矿_Uqer](_projects/在线平台/优矿_Uqer__egs_online_platform_优矿_Uqer.md)
-    - [聚宽_JoinQuant](_projects/在线平台/聚宽_JoinQuant__egs_online_platform_聚宽_JoinQuant.md)
-
--   :material-tools: __Utilities (3 projects)__
-
-    ---
-
-    - [v1](_projects/辅助工具/v1__egs_aide_看盘神器_v1.md)
-    - [v2](_projects/辅助工具/v2__egs_aide_看盘神器_v2.md)
-    - [看盘神器](_projects/辅助工具/看盘神器__egs_aide_看盘神器.md)
-
-</div>
-
-</div>
-
-<div class="lang-zh" hidden markdown>
-
-## 项目集
-
-<div class="grid cards" markdown>
--   :material-chart-line: __交易策略（9 个项目）__
-
-    ---
-
-    - [PPO 强化学习](_projects/交易策略/a001_proto_sb3__egs_trade_rl_a001_proto_sb3.md)
-    - [Wind 实盘](_projects/交易策略/wind__egs_trade_paper_trade_wind.md)
-    - [finRL NeurIPS 复现](_projects/交易策略/a01_Stock_NeurIPS2018__egs_trade_rl_a002_finRL_tutorial_a01_Stock_NeurIPS2018.md)
-    - [finRL 复现结果](_projects/教程 FAQ/a01_Stock_NeurIPS2018__egs_trade_rl_a002_finRL_tutorial_a01_Stock_NeurIPS2018.md)
-    - [ms_qlib](_projects/交易策略/ms_qlib__egs_trade_ms_qlib.md)
-    - [动量轮动](_projects/交易策略/momentum_rotation__egs_trade_vanilla_momentum_rotation.md)
-    - [双均线策略](_projects/交易策略/double_ma__egs_trade_vanilla_double_ma.md)
-    - [文档教程](_projects/交易策略/文档教程__egs_trade_vanilla_double_ma_文档教程.md)
-    - [组合优化](_projects/交易策略/portfolio_optimization__egs_trade_vanilla_portfolio_optimization.md)
-
--   :material-database: __数据源（25 个数据源）__
-
-    ---
-
-- [akshare](_projects/数据源/akshare__egs_data_股票_akshare.md) · [baostock](_projects/数据源/baostock__egs_data_股票_baostock.md) · [basic_data](_projects/数据源/basic_data__egs_data_股票_wind_basic_data.md) · [cninfo](_projects/数据源/cninfo__egs_data_股票_cninfo.md) · [eastmoney](_projects/数据源/eastmoney__egs_data_股票_eastmoney.md) · [efinance](_projects/数据源/efinance__egs_data_股票_efinance.md) · [netease](_projects/数据源/netease__egs_data_股票_netease.md) · [qlib](_projects/数据源/qlib__egs_data_股票_qlib.md) · [qstock](_projects/数据源/qstock__egs_data_股票_qstock.md) · [tencent](_projects/数据源/tencent__egs_data_股票_tencent.md) · [tushare](_projects/数据源/tushare__egs_data_股票_tushare.md) · [web_api](_projects/数据源/web_api__egs_data_股票_web_api.md) · [wind](_projects/数据源/wind__egs_data_股票_wind.md) · [yfinance](_projects/数据源/yfinance__egs_data_股票_yfinance.md)
-- [fund](_projects/数据源/fund__egs_data_基金_fund.md)
-- [futures](_projects/数据源/futures__egs_data_期货_futures.md)
-- [ccxt](_projects/数据源/ccxt__egs_data_电子币_ccxt.md) · [cryptocompare](_projects/数据源/cryptocompare__egs_data_电子币_cryptocompare.md)
-- [fred](_projects/数据源/fred__egs_data_宏观经济_fred.md) · [world_bank](_projects/数据源/world_bank__egs_data_宏观经济_world_bank.md)
-- [finnhub](_projects/数据源/finnhub__egs_data_新闻_finnhub.md) · [gdelt](_projects/数据源/gdelt__egs_data_新闻_gdelt.md) · [news](_projects/数据源/news__egs_data_新闻_news.md) · [news_api](_projects/数据源/news_api__egs_data_新闻_news_api.md) · [xueqiu](_projects/数据源/xueqiu__egs_data_新闻_xueqiu.md)
-
--   :material-flask: __因子挖掘（5 个项目）__
-
-    ---
-
-    - [alpha101](_projects/因子挖掘/alpha101__egs_alpha_alpha_libs_alpha101.md)
-    - [auto_alpha](_projects/因子挖掘/auto_alpha__egs_alpha_auto_alpha.md)
-    - [stockstats](_projects/因子挖掘/stockstats__egs_alpha_alpha_libs_stockstats.md)
-    - [ta_lib](_projects/因子挖掘/ta_lib__egs_alpha_alpha_libs_ta_lib.md)
-    - [tsfresh](_projects/因子挖掘/tsfresh__egs_alpha_auto_alpha_tsfresh.md)
-
--   :material-robot: __大模型与 Skill（6 个项目）__
-
-    ---
-
-    - [Unsloth FAQ](_projects/教程 FAQ/a00_FAQ__egs_llm_a01_train_a01_unsloth_stock_forcaster_a00_FAQ.md)
-    - [Unsloth 训练](_projects/大模型与 Skill/a01_unsloth_stock_forcaster__egs_llm_a01_train_a01_unsloth_stock_forcaster.md)
-    - [券商研报 Skill](_projects/大模型与 Skill/broker-research-analyst__egs_skill_broker-research-analyst.md)
-    - [模型下载](_projects/大模型与 Skill/a01_download_mdl__egs_llm_a01_train_a01_unsloth_stock_forcaster_a01_download_mdl.md)
-    - [模型训练](_projects/大模型与 Skill/a04_train__egs_llm_a01_train_a01_unsloth_stock_forcaster_a04_train.md)
-    - [热点报告](_projects/大模型与 Skill/v1_proto_internet__egs_llm_b01_app_a01_hot_topic_report_v1_proto_internet.md)
-
--   :material-message-text: __金融 NLP（1 个项目）__
-
-    ---
-
-    - [01_StructBert_Binary_Class](_projects/金融 NLP/01_StructBert_Binary_Class__egs_fin_nlp_emotion_analysis_01_StructBert_Binary_Class.md)
-
--   :material-cloud: __在线平台（2 个项目）__
-
-    ---
-
-    - [优矿_Uqer](_projects/在线平台/优矿_Uqer__egs_online_platform_优矿_Uqer.md)
-    - [聚宽_JoinQuant](_projects/在线平台/聚宽_JoinQuant__egs_online_platform_聚宽_JoinQuant.md)
-
--   :material-tools: __辅助工具（3 个项目）__
-
-    ---
-
-    - [v1](_projects/辅助工具/v1__egs_aide_看盘神器_v1.md)
-    - [v2](_projects/辅助工具/v2__egs_aide_看盘神器_v2.md)
-    - [看盘神器](_projects/辅助工具/看盘神器__egs_aide_看盘神器.md)
-
-</div>
-
-</div>
-<!-- <<< AUTO-INDEX-END --> --> --> --> -->
-
----
-
-<div class="lang-en" markdown>
-
-## :material-map: Site Navigation
-
-<div class="grid cards" markdown>
-
--   :material/book-open-page-variant: __Study Notes__
-
-    ---
-
-    Curated theory, paper notes, and lessons from `ai_notes/`.
-
-    [Paper Notes →](_projects/notes/papers_readme.md) ·
-    [Papers with Code →](_projects/notes/papers_with_code.md) ·
-    [GPT for Finance →](_projects/notes/gpt_finance.md)
-
--   :material/help-circle: __Tutorials & FAQ__
-
-    ---
-
-    Usage docs, FAQs, and research notes for each project.
-
-    [Unsloth FAQ →](_projects/faq/unsloth_faq.md) ·
-    [Skill Docs →](_projects/faq/skill_doc.md) ·
-    [PDF Parser Research →](_projects/faq/pdf_parser_research.md)
-
--   :material/cog: __Advanced__
-
-    ---
-
-    Environment setup, common questions, deployment.
-
-    [GPU Setup →](01_环境配置/01_GPU环境配置/01_Win下GPU配置.md) ·
-    [Conda Install →](01_环境配置/02_python环境配置/01_conda安装.md) ·
-    [GitHub Issues →](02_常见问题/02_Github问题.md)
-
--   :material/rocket-launch: __Deployment__
-
-    ---
-
-    Docs deploy via GitHub Pages / Cloudflare Pages.
-
-    [Deployment Guide →](04_website_deployment/发布操作指南.md) ·
-    [Cloudflare Pages →](04_website_deployment/Cloudflare_Pages_部署指南.md)
-
-</div>
-
-</div>
-
-<div class="lang-zh" hidden markdown>
-
-## :material-map: 站点导航
-
-<div class="grid cards" markdown>
-
--   :material/book-open-page-variant: __学习笔记__
-
-    ---
-
-    收录 `ai_notes/` 下的精选理论、论文与坑点笔记。
-
-    [论文笔记 →](_projects/notes/papers_readme.md) ·
-    [论文导航 →](_projects/notes/papers_with_code.md) ·
-    [GPT 金融分析 →](_projects/notes/gpt_finance.md)
-
--   :material/help-circle: __教程与 FAQ__
-
-    ---
-
-    各项目的使用说明、FAQ、研究文档。
-
-    [Unsloth FAQ →](_projects/faq/unsloth_faq.md) ·
-    [Skill 文档 →](_projects/faq/skill_doc.md) ·
-    [PDF 解析研究 →](_projects/faq/pdf_parser_research.md)
-
--   :material/cog: __进阶__
-
-    ---
-
-    环境配置、常见问题、部署运维。
-
-    [GPU 环境配置 →](01_环境配置/01_GPU环境配置/01_Win下GPU配置.md) ·
-    [Conda 安装 →](01_环境配置/02_python环境配置/01_conda安装.md) ·
-    [GitHub 问题 →](02_常见问题/02_Github问题.md)
-
--   :material/rocket-launch: __部署运维__
-
-    ---
-
-    文档站发布到 GitHub Pages / Cloudflare Pages。
-
-    [发布操作指南 →](04_website_deployment/发布操作指南.md) ·
-    [Cloudflare 部署 →](04_website_deployment/Cloudflare_Pages_部署指南.md)
 
 </div>
 
