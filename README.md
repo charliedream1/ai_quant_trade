@@ -115,10 +115,14 @@ ai_quant_trade
 │   ├── rl ............. Reinforcement learning for trading
 │   ├── ms_qlib ........ Microsoft Qlib framework
 │   └── vanilla ........ Traditional rule-based strategies
-├── quant_brain ........ Core algorithm library
 ├── runtime ............ Model deployment and real-world usage
 ├── tools .............. Auxiliary tools
 └── README.md
+
+> **Note**: `quant_brain/` was the historical core algorithm library. After
+> the project restructuring (commit `b7a8c0`), its modules now live inside
+> each `egs_*/.../src/` directory (e.g. `egs_trade/rl/a001_proto_sb3/src/`).
+> There is no top-level `quant_brain/` directory in this repository.
 ```
 
 > Each `egs_*/` sub-project now carries its **own `requirements.txt`** —
