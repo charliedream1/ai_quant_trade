@@ -1,9 +1,12 @@
 import random
 import json
+import logging
 import gymnasium as gym
 from gymnasium import spaces
 import pandas as pd
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 MAX_ACCOUNT_BALANCE = 2147483647
 MAX_NUM_SHARES = 2147483647
@@ -63,7 +66,27 @@ class StockTradingEnv(gym.Env):
             self.total_shares_sold / MAX_NUM_SHARES,
             self.total_sales_value / (MAX_NUM_SHARES * MAX_SHARE_PRICE),
         ])
-        return obs
+
+        # Sanitize the observation. Real OHLCV / fundamental data occasionally
+        # produces inf / nan (e.g. division-by-zero on the first row when a
+        # dividend / split resets price, missing peTTM for newly-listed
+        # stocks, log(0) on suspended trading days). Feeding those values
+        # into PPO's Gaussian policy head triggers PyTorch's
+        # `Normal.loc must satisfy Real()` constraint violation and aborts
+        # training. Replace non-finite values with 0 and clip to a sane
+        # range, while logging so the upstream data issue is not silently
+        # masked.
+        if not np.all(np.isfinite(obs)):
+            logger.warning(
+                "StockTradingEnv produced non-finite obs at step %s; "
+                "replacing nan->0, +-inf->0 before clipping. "
+                "Inspect the source dataframe for missing fields or "
+                "zero denominators.",
+                self.current_step,
+            )
+            obs = np.nan_to_num(obs, nan=0.0, posinf=0.0, neginf=0.0)
+        obs = np.clip(obs, -1e6, 1e6)
+        return obs.astype(np.float32)
 
     def _take_action(self, action):
         # Set the current price to a random price within the time step
