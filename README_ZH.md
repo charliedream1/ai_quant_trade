@@ -115,10 +115,14 @@ ai_quant_trade
 │   ├── rl ............. 强化学习炒股
 │   ├── ms_qlib ........ 微软Qlib框架
 │   └── vanilla ........ 传统规则类策略
-├── quant_brain ........ 核心算法库
 ├── runtime ............ 模型部署和实际使用
 ├── tools .............. 辅助工具
 └── README.md
+
+> **说明**：`quant_brain/` 是历史上的"核心算法库"目录。仓库重构后
+> （commit `b7a8c0`），相关模块已经下放到各 `egs_*/.../src/` 目录
+> （例如 `egs_trade/rl/a001_proto_sb3/src/`）。当前仓库根目录
+> **没有** `quant_brain/` 目录。
 ```
 
 > 现在每个 `egs_*/` 子项目都自带独立的 **`requirements.txt`** —
