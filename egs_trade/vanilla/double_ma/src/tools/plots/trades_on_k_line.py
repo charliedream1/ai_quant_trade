@@ -27,7 +27,11 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Use Qt5Agg for plot show, otherwise, no plot shown
-matplotlib.use('Qt5Agg')
+# 在无头环境（无 Qt 绑定）下回退到 Agg，避免 ImportError
+try:
+    matplotlib.use('Qt5Agg')
+except Exception:
+    matplotlib.use('Agg')
 
 from src.tools.log.log_util import addlog, log
 

@@ -246,24 +246,22 @@ def test_eastmoney_money_flow_with_mock():
 
 
 def test_eastmoney_guba_hot_with_mock():
-    """测试东方财富股吧热门（mock requests + 正则解析）"""
+    """测试东方财富人气榜（mock akshare.stock_hot_rank_em）"""
     bs = BackupSources()
-    mock_requests = MagicMock()
-    mock_response = MagicMock()
-    # 模拟东财股吧页面 HTML（末尾分号是真实格式，正则依赖它）
-    mock_response.text = (
-        'var article_list={"re":[{"post_title":"帖子1",'
-        '"post_publish_time":"2024-01-01 10:30","post_click_count":100,'
-        '"post_comment_count":5,"post_like_count":10}]};'
-    )
-    mock_requests.get.return_value = mock_response
+    mock_ak = MagicMock()
+    mock_ak.stock_hot_rank_em.return_value = pd.DataFrame({
+        "股票代码": ["600000", "000001"],
+        "股票名称": ["浦发银行", "平安银行"],
+        "排名": [1, 2],
+        "排名较昨日变化": [0, 1],
+    })
     import sys
-    sys.modules["requests"] = mock_requests
+    sys.modules["akshare"] = mock_ak
 
     df = bs.eastmoney_guba_hot(page_size=10)
     assert not df.empty
-    assert "标题" in df.columns
-    assert df.iloc[0]["标题"] == "帖子1"
+    assert "代码" in df.columns
+    assert df.iloc[0]["代码"] == "600000"
 
 
 def test_tencent_stock_realtime_with_mock():
