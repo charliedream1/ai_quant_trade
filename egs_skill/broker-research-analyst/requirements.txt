@@ -3,7 +3,7 @@ markitdown[pdf]>=0.0.1  # 默认主解析器（微软，LLM 友好，保留表�
 pdfplumber>=0.9.0        # 兜底解析器 1（中文支持好）+ 图片提取兜底
 PyPDF2>=3.9.0            # 兜底解析器 2（最简纯文本）
 PyMuPDF>=1.23.0          # 图片提取主路径（fitz，快、自动去重、保留原格式）
-Pillow>=10.0.0           # pdfplumber 图片提取依赖（PIL）
+Pillow>=12.3.0           # pdfplumber 图片提取依赖（PIL）
 akshare>=1.12.0          # 可选：辅助数据源
 
 # ===== 可选：高精度路径（需 Python 3.10-3.13 + GB 级模型 + 推荐 GPU）=====
