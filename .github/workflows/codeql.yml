@@ -46,6 +46,13 @@ jobs:
           # security-and-quality 同时启用安全与质量规则集
           queries: security-and-quality
           # 排除非项目核心代码，减少误报与扫描时间
+          # 说明：
+          #   - zz_venv/__pycache__/egg-info 等为构建产物
+          #   - a_全网优秀资源 为第三方资料存档
+          #   - egs_* 示例目录为 fork 自社区的"教学案例代码"，
+          #     存在大量语法错误 / ReDoS / 反模式，其维护责任在各 egs 项目自身，
+          #     不应通过仓库级 CodeQL 产生 200+ 误报告警
+          #   - *.md/*.txt/*.yml/*.yaml/*.json 为非代码文件，无需 CodeQL 扫描
           paths-ignore: |
             '**/zz_venv/**'
             '**/__pycache__/**'
@@ -53,7 +60,19 @@ jobs:
             '**/.ipynb_checkpoints/**'
             'zz_scripts/**'
             'a_全网优秀资源/**'
-            'egs_online_platform/聚宽_JoinQuant/01_模板使用说明/**'
+            'egs_data/**'
+            'egs_skill/**'
+            'egs_online_platform/**'
+            'egs_aide/**'
+            'egs_alpha/**'
+            'egs_fin_nlp/**'
+            'egs_llm/**'
+            'ai_notes/**'
+            '**/*.md'
+            '**/*.txt'
+            '**/*.yml'
+            '**/*.yaml'
+            '**/*.json'
 
       # 依赖自动安装：让 CodeQL 在 Python 项目上能解析 import
       - name: Perform CodeQL Analysis
