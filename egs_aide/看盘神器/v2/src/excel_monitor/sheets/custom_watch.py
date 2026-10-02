@@ -324,7 +324,10 @@ class CustomWatchSheet(BaseSheet):
             # 同时更新内存中的 _stock_codes，避免下次刷新再次传中文
             new_codes = df["代码"].astype(str).tolist()
             if new_codes:
-                self._stock_codes = new_codes
+                # 保留未返回实时行情的原代码，避免重载后新增股票被丢失
+                returned = set(new_codes)
+                missing = [c for c in self._stock_codes if c not in returned]
+                self._stock_codes = new_codes + missing
 
         # 只清除数据列区域（列 1 到 data_col_count）
         self.excel_mgr.clear_range(

@@ -217,8 +217,9 @@ def cal_risk_indicator(capital: float,
 
     # === save to the file ===
     # 1. save risk indicator
-    df_result = pd.DataFrame(data=indicator_dict.values(),
-                             index=indicator_dict.keys())
+    # 用单列 DataFrame 构造，避免 pandas 3.x 对不均匀形状 values() 的 ValueError
+    df_result = pd.DataFrame({'value': list(indicator_dict.values())},
+                             index=list(indicator_dict.keys()))
     save_path = os.path.join(metrics_save_path, 'risk_indicator.csv')
     df_result.to_csv(save_path)
 

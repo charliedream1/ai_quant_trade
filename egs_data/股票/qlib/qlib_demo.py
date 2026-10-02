@@ -81,10 +81,18 @@ def ensure_data():
                           end='', flush=True)
         print("\n下载完成，正在解压...")
 
-        # 创建目标目录并解压
+        # 创建目标目录并解压（防御 tar slip：拒绝绝对路径与 .. 穿越）
         os.makedirs(QLIB_DATA_DIR, exist_ok=True)
+        abs_target = os.path.realpath(QLIB_DATA_DIR)
         with tarfile.open(tmp_tar, 'r:gz') as tar:
-            tar.extractall(path=QLIB_DATA_DIR)
+            safe_members = []
+            for m in tar.getmembers():
+                member_path = os.path.realpath(os.path.join(abs_target, m.name))
+                if not member_path.startswith(abs_target + os.sep) and member_path != abs_target:
+                    print(f"  跳过不安全条目（路径穿越）: {m.name}")
+                    continue
+                safe_members.append(m)
+            tar.extractall(path=QLIB_DATA_DIR, members=safe_members)
         os.remove(tmp_tar)
         print("解压完成")
         return True

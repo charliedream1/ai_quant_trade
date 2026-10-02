@@ -11,5 +11,5 @@ def after_trading_end(context):
     # 查询订单状态为 OrderStatus.held 的所有订单
     get_orders(status=OrderStatus.held)
     # 查询标的为 000002.XSHE 且状态为 OrderStatus.held 的所有订单
-    get_orders(security='000002.XSHE'，status=OrderStatus.held)
+    get_orders(security='000002.XSHE',status=OrderStatus.held)
 

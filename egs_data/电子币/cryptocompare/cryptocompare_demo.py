@@ -223,7 +223,9 @@ if __name__ == '__main__':
         print("提示: 未配置 API Key，部分接口（市值排名/K线/新闻）可能返回 401")
         print("免费注册: https://min-api.cryptocompare.com/")
     else:
-        print(f"API Key: {API_KEY}")
+        # 仅打印掩码，避免敏感信息明文落盘到日志
+        masked = API_KEY[:4] + "***" + API_KEY[-4:] if len(API_KEY) > 8 else "***"
+        print(f"API Key: {masked}")
     print()
 
     demo_price()
