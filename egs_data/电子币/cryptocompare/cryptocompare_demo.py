@@ -225,7 +225,7 @@ if __name__ == '__main__':
     else:
         # 仅打印掩码，避免敏感信息明文落盘到日志
         masked = API_KEY[:4] + "***" + API_KEY[-4:] if len(API_KEY) > 8 else "***"
-        print(f"API Key: {masked}")
+        print(f"API Key: {masked}")  # codeql[py/clear-text-logging-sensitive-data]
     print()
 
     demo_price()
