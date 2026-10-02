@@ -3,7 +3,7 @@
 解析优先级：
 1. MarkItDown（微软，LLM 友好，表格/结构保留好）— 主路径
 2. pdfplumber（中文支持好）— 兜底 1
-3. PyPDF2（最简纯文本）— 兜底 2
+3. pypdf（最简纯文本，PyPDF2 继任者）— 兜底 2
 
 图片提取：使用 PyMuPDF（fitz）独立提取图片本体并保存到磁盘，
 与文本解析解耦，无论文本用哪个解析器都能获取图片。
@@ -156,8 +156,8 @@ def _try_pdfplumber(file_path: Path) -> tuple[str, int]:
 
 
 def _try_pypdf2(file_path: Path) -> tuple[str, int]:
-    """使用 PyPDF2 兜底抽取（兜底 2）"""
-    from PyPDF2 import PdfReader
+    """使用 pypdf 兜底抽取（兜底 2）"""
+    from pypdf import PdfReader
     reader = PdfReader(str(file_path))
     texts = []
     for page in reader.pages:
@@ -373,7 +373,7 @@ def extract_sections(full_text: str) -> dict:
 def _build_parser_chain(prefer_parser: str = "", enable_mineru: bool = False) -> list:
     """构建文本解析器链
 
-    顺序：MinerU（可选）→ MarkItDown → pdfplumber → PyPDF2
+    顺序：MinerU（可选）→ MarkItDown → pdfplumber → pypdf
     prefer_parser 指定时，把该解析器提到链首。
     """
     all_parsers = [
@@ -400,7 +400,7 @@ def parse_pdf(
 ) -> ParsedReport:
     """解析单个 PDF 文件（四层解析链 + 图片提取）
 
-    文本解析链：MinerU（可选，高精度）→ MarkItDown（默认）→ pdfplumber → PyPDF2
+    文本解析链：MinerU（可选，高精度）→ MarkItDown（默认）→ pdfplumber → pypdf
     任一解析器成功即返回，不再尝试下一层。
     图片提取独立于文本解析（PyMuPDF 主 + pdfplumber 兜底）。
 

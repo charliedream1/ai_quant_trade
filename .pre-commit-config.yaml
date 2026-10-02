@@ -10,3 +10,9 @@ repos:
     hooks:
         - id: flake8
           args: ["--ignore=E501,F541,E266,E402,W503,E731,E203"]
+
+-   repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+    -   id: gitleaks
+        args: ["--verbose", "--redact"]

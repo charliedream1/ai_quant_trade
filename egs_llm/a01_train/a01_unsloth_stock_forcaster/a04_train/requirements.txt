@@ -1,18 +1,26 @@
-bitsandbytes==0.45.5
-accelerate==1.10.1
-xformers==0.0.27.post2
-peft==0.15.2
-trl==0.15.2
-triton==3.0.0
+bitsandbytes==0.50.2
+accelerate==1.15.0
+xformers==0.0.35
+peft==0.21.2
+trl==0.24.0
+triton==3.7.1
 cut_cross_entropy==25.1.1
-unsloth_zoo==2025.4.4
-sentencepiece==0.2.0
-protobuf==6.31.1
-datasets==2.21.0
-huggingface_hub==0.30.2
+unsloth_zoo==2026.9.9
+sentencepiece==0.2.2
+protobuf==7.36.2
+datasets==4.3.0
+huggingface_hub==1.33.0
 hf_transfer==0.1.9
-unsloth==2025.4.7
-torch==2.7.1
-torchvision==0.22.1
-torchaudio==2.7.1
-transformers==4.56.2
+unsloth==2026.9.14
+torch==2.12.1
+torchvision==0.27.1
+torchaudio==2.11.0
+transformers==5.5.0
+setuptools>=83.0.0
+# 安全说明：unsloth==2026.9.14 硬约束 torch<2.13.0 / datasets<4.4.0 / transformers<=5.5.0，
+# 导致以下 CVE 暂无法升级修复（训练环境，非生产对外服务）：
+#   - torch 2.12.1: CVE-2025-3000 (LOW, 本地 torch.jit.script 内存损坏, 修复于 2.13.0)
+#   - datasets 4.3.0: CVE-2026-66007 (HIGH, 网络, 需管理员交互, 修复于 5.0.1)
+#   - transformers 5.5.0: CVE-2026-9856 (MEDIUM, 路径穿越, 修复于 5.10.0)
+#   - transformers 5.5.0: CVE-2026-80047 (HIGH, 本地代码执行, 修复于 5.9.0)
+# 待 unsloth 发布支持更高版本的 release 后统一升级。

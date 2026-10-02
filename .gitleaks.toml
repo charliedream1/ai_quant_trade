@@ -1,0 +1,16 @@
+# gitleaks 配置：https://github.com/gitleaks/gitleaks
+# 对已知误报（HuggingFace 模型名 Org/Repo 格式）添加 allowlist
+
+title = "gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for known non-secret patterns"
+regexes = [
+    '''(model|tokenizer)\s*=\s*["'][A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+["']''',
+]
+paths = [
+    '''a_全网优秀资源/.*''',
+]

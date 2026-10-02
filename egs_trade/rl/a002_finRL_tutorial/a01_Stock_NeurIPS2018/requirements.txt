@@ -9,4 +9,5 @@ tensorboard
 pyfolio
 stable-baselines3==2.5.0
 gymnasium==0.29.1
-torch==2.7.1
+torch==2.13.0
+setuptools>=83.0.0
