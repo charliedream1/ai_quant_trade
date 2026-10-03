@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Author   : Yi Li (liyi_best@foxmail.com)
+# @Author   : Yi Li
 # @Time     : 2022/9/1 8:53
 # @File     : __init__.py.py
 # @Project  : ai_quant_trade

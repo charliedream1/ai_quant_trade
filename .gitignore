@@ -62,3 +62,9 @@ e2e_data/
 e2e_out/
 e2e_logs/
 .uploads/
+
+# local test/training artifacts
+**/.pytest_tmp/
+*.tfevents.*
+egs_trade/rl/a001_proto_sb3/log/
+egs_trade/vanilla/double_ma/exp_e2e/

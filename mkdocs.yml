@@ -8,8 +8,8 @@
 # 关键设计：
 # - docs_dir: docs（仅扫描 docs/ 子树）
 # - nav 手工维护 4 大类：环境配置 / 常见问题 / 星球使用 / 部署运维。
-#   全部指向 docs/ 下原生 markdown；egs_*/README.md 不再纳入站点（README 由
-#   GitHub 直接渲染），降低维护成本。
+#   全部指向 docs/ 下原生 markdown；仓库示例目录的 README 不再纳入站点，
+#   降低维护成本并避免发布链路依赖站点外文档。
 # - nav 文案用 `data-i18n-zh` / `data-i18n-en` 属性提供英文版本，
 #   docs/javascripts/language-switch.js 在切换时改 textContent。
 # - 首页用 .lang-en / .lang-zh 双块切正文（不切 nav），同一切换器驱动。
@@ -30,6 +30,7 @@ site_dir: site
 # 排除非文档内容
 exclude_docs: |
   intro.md
+  snippets/**
 
 # mkdocs hook: rewrite dot-prefixed directories in markdown asset paths so
 # they survive GitHub Pages / Cloudflare Pages deployment (which refuse to

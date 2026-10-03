@@ -12,15 +12,7 @@ on:
       - 'mkdocs.yml'
       - 'docs/**'
       - 'zz_scripts/docs_hook.py'
-      - 'zz_scripts/gen_project_wrappers.py'
-      - 'egs_*/**'
-      - 'egs_skill/**/*.md'
-      - 'ai_notes/**/*.md'
-      - 'README.md'
-      - 'README_ZH.md'
-      - 'README_JA.md'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
+      - 'zz_scripts/check_docs_publish_scope.py'
       - '.github/workflows/docs-pages.yml'
   # 支持手动触发
   workflow_dispatch:
@@ -53,34 +45,12 @@ jobs:
             "mkdocs>=1.6" \
             "mkdocs-material>=9.5" \
             "mkdocs-material-extensions>=1.3" \
-            "mkdocs-include-markdown-plugin>=4.0" \
             "pymdown-extensions>=10.7"
 
-      # 先跑 wrapper 生成器：核对所有 egs_*/README.md、ai_notes/*.md、
-      # egs_skill/*.md 源文件都存在并生成最新的 docs/_projects/<cat>/<slug>.md。
-      # 若任一源文件被改名 / 删掉 / 移动，本步会以 SystemExit(1) + MISSING 列表
-      # 失败，不会进入 mkdocs 构建，避免页面上残留字面 `{% include ... %}`。
-      - name: 同步生成 egs 包装页并校验源文件
-        run: python zz_scripts/gen_project_wrappers.py
-
-      # 注：原先此处有一个 `python zz_scripts/check_docs_build.py` 步骤，
-      # 但该脚本从未提交到仓库（网站重构 73e8c2a 的遗留引用），
-      # 导致 CI 以 exit code 2 失败。已移除；发布前检查由以下两道闸门承担：
-      #   1. gen_project_wrappers.py 校验所有源 README 都存在
-      #   2. mkdocs build 对无法解析的 {% include %} 直接 BuildError 中止
-      # 若将来需要更细的静态检查（nav 路径 / 双语标记 / 静态资源登记），
-      # 请先落地 zz_scripts/check_docs_build.py 再恢复该步骤。
+      - name: 校验文档站发布范围
+        run: python zz_scripts/check_docs_publish_scope.py
 
       - name: 构建文档站
-        # 注：不开 --strict，因为部分 egs_*/README.md 自带指向 egs_local
-        # （docs/ 之外）图片的相对链接（如 img/*.png、.README_images/*.png），
-        # 这些不在 mkdocs 文件集合里，--strict 会把它们当成 broken link 报错，
-        # 导致整个站无法发布。改用以下两道闸门拦截真正危险的失效：
-        #   1. 上一条 gen_project_wrappers.py 校验 59 个源 README 都存在
-        #   2. mkdocs-include-markdown-plugin 找不到 include 文件时抛
-        #      PluginError → BuildError（与 --strict 无关，会立即中止构建）
-        # egs_local 图片链接会在 wrapper 页面以 warning 形式列出，不阻断构建；
-        # 如需修，可逐项把 egs 内的图片复制/迁移到 docs/ 对应目录。
         run: mkdocs build --clean
 
       - name: 上传构建产物

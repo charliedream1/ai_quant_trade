@@ -2,9 +2,21 @@
 Qlib是由微软推出的一款量化交易平台，是一个非常体系化、流程化且非常优秀的基于机器学习的量化研究框架。
 它将量化研究与机器学习非常系统化的结合在一起。
 
-- 论文: [Qlib : An AI-oriented Quantitative Investment Platform](https://arxiv.org/pdf/2009.11189.pdf)   
+- 论文: [Qlib : An AI-oriented Quantitative Investment Platform](https://arxiv.org/pdf/2009.11189.pdf)
 - Github:  [qlib](https://github.com/microsoft/qlib)
-- [**在线文档**](https://qlib.readthedocs.io/en/latest/index.html)     
+- [**在线文档**](https://qlib.readthedocs.io/en/latest/index.html)
+
+## 1.0 安装（2026-10 更新：仓库不再附带本地 qlib 源码，统一走 pip 包）
+
+```bash
+pip install pyqlib
+# 或使用仓库根目录统一的依赖：
+pip install -r ../../requirements.txt
+```
+
+注意：从 2026-10 起，本目录及其子模块全部依赖 **pip 安装的 pyqlib 包**，
+**不再依赖仓库根目录下的本地 qlib 源码**（该源码历史上曾遮蔽 site-packages）。
+请不要在 `qlib/` 子目录下运行示例代码。
 
 ## 1.1 核心功能
 - 微软开发的AI量化投资平台，当前唯一且最完善的开源平台。

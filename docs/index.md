@@ -48,55 +48,78 @@
 
 <div class="lang-en" markdown>
 
-{% include "../snippets/readme_intro.md" %}
+## :material-compass-outline: Site Scope
+
+This documentation site is intentionally focused on maintained docs that live
+under `docs/`: environment setup, FAQs, community usage, and deployment
+operations. Repository code and standalone READMEs stay in the source
+repository and are not mirrored into the published MkDocs site.
+
+<div class="grid cards" markdown>
+
+-   :material-cog-outline: __[Environment Setup](01_环境配置/02_python环境配置/README.md)__
+
+    ---
+
+    Python, Conda, GPU, and local environment notes for preparing a runnable
+    development workstation.
+
+-   :material-help-circle-outline: __[FAQ](02_常见问题/01_python包依赖问题/README.md)__
+
+    ---
+
+    Dependency, GitHub, and common runtime issues collected in one place.
+
+-   :material-account-group: __[Knowledge Planet](03_星球使用和介绍/01_星球介绍.md)__
+
+    ---
+
+    Community entry points, onboarding, resource navigation, and support rules.
+
+-   :material-cloud-upload-outline: __[Deployment Ops](04_website_deployment/发布操作指南.md)__
+
+    ---
+
+    MkDocs, GitHub Pages, and Cloudflare Pages deployment procedures.
+
+</div>
 
 </div>
 
 <div class="lang-zh" hidden markdown>
 
-{% include "../snippets/readme_intro_zh.md" %}
+## :material-compass-outline: 站点范围
+
+本站点只发布 `docs/` 下维护的文档：环境配置、常见问题、知识星球使用说明和部署运维。
+仓库代码与独立 README 不再镜像进 MkDocs 站点，避免发布链路依赖站点外文档。
+
+<div class="grid cards" markdown>
+
+-   :material-cog-outline: __[环境配置](01_环境配置/02_python环境配置/README.md)__
+
+    ---
+
+    Python、Conda、GPU 与本地开发环境准备说明。
+
+-   :material-help-circle-outline: __[常见问题](02_常见问题/01_python包依赖问题/README.md)__
+
+    ---
+
+    依赖、GitHub、运行时版本等常见问题集中整理。
+
+-   :material-account-group: __[知识星球](03_星球使用和介绍/01_星球介绍.md)__
+
+    ---
+
+    社区入口、新人指南、资源导航和求助规则。
+
+-   :material-cloud-upload-outline: __[部署运维](04_website_deployment/发布操作指南.md)__
+
+    ---
+
+    MkDocs、GitHub Pages 和 Cloudflare Pages 发布流程。
 
 </div>
-
----
-
-<div class="lang-en" markdown>
-
-## :material-folder-multiple: Browse Projects on GitHub
-
-This site covers platform setup, FAQs, the knowledge planet and deployment only.
-For the full project catalogue (trading strategies, data sources, alpha mining,
-LLM skills, NLP, online platforms and utilities), please browse the repository
-directly:
-
-- [Trading Strategies](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade){ target=_blank }
-- [Data Sources](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data){ target=_blank }
-- [Alpha Mining](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha){ target=_blank }
-- [LLM & Skills](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_llm){ target=_blank }
-- [Financial NLP](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp){ target=_blank }
-- [Online Platforms](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform){ target=_blank }
-- [Utilities](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide){ target=_blank }
-
-Each project ships its own `README.md` rendered natively by GitHub.
-
-</div>
-
-<div class="lang-zh" hidden markdown>
-
-## :material-folder-multiple: 项目集锦（请前往 GitHub 浏览）
-
-本站点只覆盖平台搭建、常见问题、知识星球与部署运维。
-完整项目集（交易策略、数据源、因子挖掘、大模型与 Skill、金融 NLP、在线平台、辅助工具）请直接浏览仓库：
-
-- [交易策略](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade){ target=_blank }
-- [数据源](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_data){ target=_blank }
-- [因子挖掘](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_alpha){ target=_blank }
-- [大模型与 Skill](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_llm){ target=_blank }
-- [金融 NLP](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_fin_nlp){ target=_blank }
-- [在线平台](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_online_platform){ target=_blank }
-- [辅助工具](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_aide){ target=_blank }
-
-每个项目都自带 `README.md`，由 GitHub 原生渲染。
 
 </div>
 
