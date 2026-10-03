@@ -17,9 +17,9 @@
 </p>
 
 <p align="center">
-  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍.md">:material/account-group: Join the Knowledge Planet</a>
+  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍.md">Join the Knowledge Planet</a>
   &nbsp;
-  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">:fontawesome-brands/github: GitHub Repo</a>
+  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">GitHub Repo</a>
 </p>
 
 </div>
@@ -37,9 +37,9 @@
 </p>
 
 <p align="center">
-  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍.md">:material/account-group: 加入知识星球</a>
+  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍.md">加入知识星球</a>
   &nbsp;
-  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">:fontawesome-brands/github: GitHub 仓库</a>
+  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">GitHub 仓库</a>
 </p>
 
 </div>
@@ -131,7 +131,7 @@ repository and are not mirrored into the published MkDocs site.
 
 <div class="grid cards" markdown>
 
--   :material/account-group: __[AIQuant Knowledge Planet](03_星球使用和介绍/01_星球介绍.md)__
+-   :material-account-group: __[AIQuant Knowledge Planet](03_星球使用和介绍/01_星球介绍.md)__
 
     ---
 
@@ -146,7 +146,7 @@ repository and are not mirrored into the published MkDocs site.
     [:octicons-arrow-right-24: Planet Overview](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
     [:octicons-arrow-right-24: Newbie Guide](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
 
--   :material/book-open-page-variant: __[Newbie Guide](03_星球使用和介绍/02_新人使用指南.md)__
+-   :material-book-open-page-variant: __[Newbie Guide](03_星球使用和介绍/02_新人使用指南.md)__
 
     ---
 
@@ -169,7 +169,7 @@ repository and are not mirrored into the published MkDocs site.
 
 <div class="grid cards" markdown>
 
--   :material/account-group: __[知识星球 · AIQuant 智投](03_星球使用和介绍/01_星球介绍.md)__
+-   :material-account-group: __[知识星球 · AIQuant 智投](03_星球使用和介绍/01_星球介绍.md)__
 
     ---
 
@@ -185,7 +185,7 @@ repository and are not mirrored into the published MkDocs site.
     [:octicons-arrow-right-24: 查看星球介绍](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
     [:octicons-arrow-right-24: 新人必读指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
 
--   :material/book-open-page-variant: __[新人指南](03_星球使用和介绍/02_新人使用指南.md)__
+-   :material-book-open-page-variant: __[新人指南](03_星球使用和介绍/02_新人使用指南.md)__
 
     ---
 
@@ -206,7 +206,7 @@ repository and are not mirrored into the published MkDocs site.
 
 <div class="lang-en" markdown>
 
-## :material/trophy: Highlights at a Glance
+## :material-trophy: Highlights at a Glance
 
 | Dimension | Description |
 |:---:|:---|
@@ -218,7 +218,7 @@ repository and are not mirrored into the published MkDocs site.
 
 ---
 
-## :material/handshake: Contributing
+## :material-handshake: Contributing
 
 - Open a PR: see [CONTRIBUTING.md](https://github.com/charliedream1/ai_quant_trade/blob/master/CONTRIBUTING.md)
 - Join the community: see the Knowledge Planet box above
@@ -227,7 +227,7 @@ repository and are not mirrored into the published MkDocs site.
 
 <div class="lang-zh" hidden markdown>
 
-## :material/trophy: 核心亮点
+## :material-trophy: 核心亮点
 
 | 维度 | 说明 |
 |:---:|:---|
@@ -239,7 +239,7 @@ repository and are not mirrored into the published MkDocs site.
 
 ---
 
-## :material/handshake: 贡献
+## :material-handshake: 贡献
 
 - 提交 PR：请参考仓库根目录 [CONTRIBUTING.md](https://github.com/charliedream1/ai_quant_trade/blob/master/CONTRIBUTING.md)
 - 加入社区 / 实战答疑：见上方 [重点推荐：知识星球社区](#community)

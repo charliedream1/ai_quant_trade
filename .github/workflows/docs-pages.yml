@@ -11,6 +11,7 @@ on:
     paths:
       - 'mkdocs.yml'
       - 'docs/**'
+      - 'scripts/**'
       - 'zz_scripts/docs_hook.py'
       - 'zz_scripts/check_docs_publish_scope.py'
       - '.github/workflows/docs-pages.yml'
@@ -47,11 +48,8 @@ jobs:
             "mkdocs-material-extensions>=1.3" \
             "pymdown-extensions>=10.7"
 
-      - name: 校验文档站发布范围
-        run: python zz_scripts/check_docs_publish_scope.py
-
-      - name: 构建文档站
-        run: mkdocs build --clean
+      - name: 校验并构建文档站
+        run: bash scripts/build_docs.sh --python python
 
       - name: 上传构建产物
         uses: actions/upload-pages-artifact@v5

@@ -22,11 +22,8 @@ fi
 echo "==> 依赖版本："
 pip show mkdocs mkdocs-material 2>/dev/null | grep -E "^Name|^Version" || true
 
-echo "==> 校验文档站发布范围"
-python zz_scripts/check_docs_publish_scope.py
-
-echo "==> 构建文档站到 site/ 目录"
-mkdocs build --clean
+echo "==> 校验并构建文档站到 site/ 目录"
+bash scripts/build_docs.sh --python python
 
 echo "==> 构建完成，产物在 site/"
 ls -la site/ | head -10

@@ -53,6 +53,11 @@ logsite/
 site/
 *_bak
 
+# Documentation build/check scripts are source files and should be tracked.
+!scripts/build_docs.ps1
+!scripts/build_docs.sh
+!zz_scripts/check_docs_build.py
+
 # private config files (avoid leaking API keys / credentials)
 **/config_private.py
 **/config_private/*.py

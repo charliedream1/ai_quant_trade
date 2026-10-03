@@ -10,15 +10,15 @@
 # - nav 手工维护 4 大类：环境配置 / 常见问题 / 星球使用 / 部署运维。
 #   全部指向 docs/ 下原生 markdown；仓库示例目录的 README 不再纳入站点，
 #   降低维护成本并避免发布链路依赖站点外文档。
-# - nav 文案用 `data-i18n-zh` / `data-i18n-en` 属性提供英文版本，
-#   docs/javascripts/language-switch.js 在切换时改 textContent。
+# - nav 文案由 MkDocs 生成中文标签，docs/javascripts/language-switch.js
+#   按文本映射切换顶部 tabs、侧边栏和面包屑的中英文。
 # - 首页用 .lang-en / .lang-zh 双块切正文（不切 nav），同一切换器驱动。
 # - docs_hook.py 把 docs/ 下点号开头的图片目录在内存中改写为下划线前缀，
 #   避免 GitHub Pages / Cloudflare Pages 拒绝点号目录。
 
-site_name: AI量化交易操盘手
+site_name: AI Quant Trader
 site_url: https://charliedream1.github.io/ai_quant_trade/
-site_description: 一站式AI量化交易平台 · 从学习、模拟到实盘
+site_description: One-stop AI quantitative trading platform, from learning and simulation to live trading
 site_author: charliedream1
 repo_url: https://github.com/charliedream1/ai_quant_trade
 repo_name: charliedream1/ai_quant_trade
@@ -117,8 +117,8 @@ plugins:
         - en
   - tags                       # 标签页
 
-# 导航结构（手工维护，4 大类；nav 文本带 data-i18n 双语属性）
-# 修改 nav 时请同时更新 data-i18n-en，避免英文版退化为代码 ID。
+# 导航结构（手工维护，4 大类）
+# 修改 nav 文案时，请同步更新 docs/javascripts/language-switch.js 的 NAV_LABELS。
 nav:
   - 首页: index.md
   - 环境配置:
