@@ -1,0 +1,10 @@
+# 双均线策略 (egs_trade/vanilla/double_ma) — 独立依赖
+# 包含原仓库根 requirements.txt 的常用组合：tushare 数据 + matplotlib 图表 + ffn 指标 + 中文日历
+tushare>=1.2.85
+pandas>=1.2.4
+numpy>=1.22.0
+matplotlib>=3.3.4
+ffn>=0.3.6
+mplfinance>=0.12.9b1
+chinese_calendar>=1.7.2
+typeguard>=2.13.0

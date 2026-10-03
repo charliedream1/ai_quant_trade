@@ -1,0 +1,4 @@
+# Alpha101 因子库 (egs_alpha/alpha_libs/alpha101) — 独立依赖
+# WordQuant_alpha101_code 的 Python 实现，仅需 numpy/pandas 即可运行
+numpy>=1.22.0
+pandas>=1.2.4

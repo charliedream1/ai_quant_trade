@@ -1,0 +1,3 @@
+# 优矿 Uqer (egs_online_platform/优矿_Uqer) — 独立依赖
+# 优矿在线研究平台；本目录为示例策略代码，依赖优矿 SDK（在线运行）
+uqer>=1.0

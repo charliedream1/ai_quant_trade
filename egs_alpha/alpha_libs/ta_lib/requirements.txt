@@ -1,0 +1,5 @@
+# TA-Lib 因子库 (egs_alpha/alpha_libs/ta_lib) — 独立依赖
+# Windows 需手动下载 .whl 安装，详见 README.md
+TA-Lib>=0.4.24
+numpy>=1.22.0
+pandas>=1.2.4

@@ -1,0 +1,7 @@
+# 动量轮动 (egs_trade/vanilla/momentum_rotation) — 独立依赖
+# 策略核心：tushare 拉数 + pandas 回测
+tushare>=1.2.85
+pandas>=1.2.4
+numpy>=1.22.0
+ffn>=0.3.6
+chinese_calendar>=1.7.2

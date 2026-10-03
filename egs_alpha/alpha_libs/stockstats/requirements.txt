@@ -1,0 +1,4 @@
+# stockstats 因子库 (egs_alpha/alpha_libs/stockstats) — 独立依赖
+stockstats>=0.6.0
+pandas>=1.2.4
+numpy>=1.22.0

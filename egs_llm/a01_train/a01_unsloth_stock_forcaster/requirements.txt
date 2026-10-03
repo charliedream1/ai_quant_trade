@@ -1,0 +1,13 @@
+# Unsloth 股票预测训练 (egs_llm/a01_train/a01_unsloth_stock_forcaster) — 顶层入口依赖
+# 子项目 a01_download_mdl / a02_download_data / a03_data_process / a04_train / a05_test
+# 各自有自己的 requirements.txt；顶层安装核心包让 README 跑得起来。
+unsloth>=2025.4.7
+transformers>=4.51.3
+torch>=2.4.0
+peft>=0.15.2
+trl>=0.15.2
+bitsandbytes>=0.45.5
+accelerate>=1.6.0
+sentencepiece>=3
+datasets>=2.21.0
+huggingface_hub>=0.30.2

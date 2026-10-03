@@ -1,0 +1,8 @@
+# 看盘神器 v1 (egs_aide/看盘神器/v1) — 独立依赖
+# Excel 监控 + 异动提醒，原根目录 requirements.txt 的常用组合
+pandas>=1.2.4
+numpy>=1.22.0
+matplotlib>=3.3.4
+mplfinance>=0.12.9b1
+PyQt5>=5.15
+chinese_calendar>=1.7.2

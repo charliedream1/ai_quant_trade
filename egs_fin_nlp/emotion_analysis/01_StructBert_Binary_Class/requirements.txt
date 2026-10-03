@@ -1,0 +1,8 @@
+# StructBert 情感分析 (egs_fin_nlp/emotion_analysis/01_StructBert_Binary_Class) — 独立依赖
+# 二分类情感分析（StructBERT），依赖 pytorch + sklearn + jupyter
+torch>=2.0.0
+scikit-learn>=0.24.1
+transformers>=4.30.0
+pandas>=1.2.4
+numpy>=1.22.0
+jupyter>=1.0.0
