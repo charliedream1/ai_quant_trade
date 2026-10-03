@@ -12,8 +12,8 @@ on:
       - 'mkdocs.yml'
       - 'docs/**'
       - 'scripts/**'
-      - 'zz_scripts/docs_hook.py'
       - 'zz_scripts/check_docs_publish_scope.py'
+      - 'zz_scripts/check_docs_build.py'
       - '.github/workflows/docs-pages.yml'
   # 支持手动触发
   workflow_dispatch:
@@ -45,6 +45,7 @@ jobs:
           pip install --no-cache-dir \
             "mkdocs>=1.6" \
             "mkdocs-material>=9.5" \
+            "mkdocs-static-i18n>=1.3" \
             "mkdocs-material-extensions>=1.3" \
             "pymdown-extensions>=10.7"
 

@@ -1,24 +1,14 @@
-# MkDocs 项目配置文件
-# 文档站：AI量化交易操盘手
-# 框架：MkDocs Material（开源项目最流行的文档主题）
-# 本地预览：mkdocs serve
-# 本地构建：mkdocs build（产物在 site/ 目录，已 .gitignore）
-# 部署：GitHub Actions 自动发布到 GitHub Pages / Cloudflare Pages
-#
-# 关键设计：
-# - docs_dir: docs（仅扫描 docs/ 子树）
-# - nav 手工维护 4 大类：环境配置 / 常见问题 / 星球使用 / 部署运维。
-#   全部指向 docs/ 下原生 markdown；仓库示例目录的 README 不再纳入站点，
-#   降低维护成本并避免发布链路依赖站点外文档。
-# - nav 文案由 MkDocs 生成中文标签，docs/javascripts/language-switch.js
-#   按文本映射切换顶部 tabs、侧边栏和面包屑的中英文。
-# - 首页用 .lang-en / .lang-zh 双块切正文（不切 nav），同一切换器驱动。
-# - docs_hook.py 把 docs/ 下点号开头的图片目录在内存中改写为下划线前缀，
-#   避免 GitHub Pages / Cloudflare Pages 拒绝点号目录。
+# MkDocs documentation site configuration
+# Source scope: only maintained documentation under docs/ is published.
+# Multilingual model:
+# - Chinese is the default source language: docs/foo.md
+# - English translations live beside the source files: docs/foo.en.md
+# - mkdocs-static-i18n builds a static bilingual site and provides the
+#   Material language selector. No runtime translation API is used.
 
-site_name: AI Quant Trader
+site_name: AI 量化交易操盘手
 site_url: https://charliedream1.github.io/ai_quant_trade/
-site_description: One-stop AI quantitative trading platform, from learning and simulation to live trading
+site_description: 一站式 AI 量化交易平台，从学习、模拟到实盘
 site_author: charliedream1
 repo_url: https://github.com/charliedream1/ai_quant_trade
 repo_name: charliedream1/ai_quant_trade
@@ -27,98 +17,122 @@ edit_uri: edit/master/docs/
 docs_dir: docs
 site_dir: site
 
-# 排除非文档内容
 exclude_docs: |
   intro.md
   snippets/**
 
-# mkdocs hook: rewrite dot-prefixed directories in markdown asset paths so
-# they survive GitHub Pages / Cloudflare Pages deployment (which refuse to
-# serve files under hidden directories).
-hooks:
-  - zz_scripts/docs_hook.py
-
-# 版权信息（页脚显示）
 copyright: Copyright &copy; 2026 charliedream1 · Apache-2.0 License
 
-# 主题：Material（开源项目最流行，搜索/暗色/中文支持开箱即用）
 theme:
   name: material
   language: zh
   features:
-    - navigation.tabs          # 顶部标签栏导航
-    - navigation.sections      # 侧边栏分组
-    - navigation.expand        # 默认展开所有章节
-    - navigation.top           # 返回顶部按钮
-    - search.suggest           # 搜索建议
-    - search.highlight         # 搜索高亮
-    - content.code.copy        # 代码块一键复制
-    - content.tabs.link        # 内容标签页
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
   palette:
-    - scheme: default          # 亮色主题
+    - scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: 切换暗色模式
-    - scheme: slate            # 暗色主题
+    - scheme: slate
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-4
         name: 切换亮色模式
   font:
-    text: Noto Sans SC         # 中文字体
+    text: Noto Sans SC
     code: JetBrains Mono
 
-# Markdown 扩展
 markdown_extensions:
-  - admonition                 # 提示框
-  - pymdownx.details           # 可折叠详情
-  - pymdownx.superfences       # 增强代码块
-  - pymdownx.highlight:        # 代码高亮
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
-  - pymdownx.tabbed:           # 标签页
+  - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.tasklist:         # 任务列表
+  - pymdownx.tasklist:
       custom_checkbox: true
-  - pymdownx.emoji:            # emoji 支持
+  - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.arithmatex:       # 数学公式
+  - pymdownx.arithmatex:
       generic: true
-  - toc:                       # 目录
+  - toc:
       permalink: true
-  - attr_list                  # 属性列表（图片宽度等）
+  - attr_list
   - md_in_html
   - def_list
   - footnotes
 
-# 数学公式渲染
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - javascripts/language-switch.js   # 全站中英文切换（首页 + nav）
 
 extra_css:
-  - stylesheets/language-switch.css  # 中英文切换样式
+  - stylesheets/site.css
 
-# 页脚社交链接
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/charliedream1/ai_quant_trade
 
-# 插件
 plugins:
   - search:
       lang:
         - zh
         - en
-  - tags                       # 标签页
+  - tags
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: zh
+          default: true
+          name: 简体中文
+          build: true
+          site_name: AI 量化交易操盘手
+          site_description: 一站式 AI 量化交易平台，从学习、模拟到实盘
+          theme:
+            language: zh
+        - locale: en
+          name: English
+          build: true
+          site_name: AI Quant Trader
+          site_description: One-stop AI quantitative trading platform, from learning and simulation to live trading
+          theme:
+            language: en
+          nav_translations:
+            首页: Home
+            环境配置: Environment
+            GPU 环境配置: GPU Environment
+            GPU 配置 (Windows): GPU Setup (Windows)
+            Python 环境配置: Python Environment
+            Conda 安装: Conda Install
+            Conda 国内源配置: Conda Mirrors
+            Miniconda 安装: Miniconda Install
+            常见问题: FAQ
+            Python 包依赖问题: Python Dependencies
+            GitHub 问题: GitHub Issues
+            numpy 版本问题: numpy Version Issues
+            星球使用: Community
+            星球介绍: Community Overview
+            新人使用指南: New User Guide
+            部署运维: Deployment
+            发布操作指南: Publishing Guide
+            Cloudflare Pages 部署: Cloudflare Pages
 
-# 导航结构（手工维护，4 大类）
-# 修改 nav 文案时，请同步更新 docs/javascripts/language-switch.js 的 NAV_LABELS。
 nav:
   - 首页: index.md
   - 环境配置:

@@ -8,7 +8,7 @@
 # - 安装超时保护，避免卡死
 set -e
 
-DEPS="mkdocs>=1.6 mkdocs-material>=9.5 mkdocs-material-extensions>=1.3 pymdown-extensions>=10.7"
+DEPS="mkdocs>=1.6 mkdocs-material>=9.5 mkdocs-static-i18n>=1.3 mkdocs-material-extensions>=1.3 pymdown-extensions>=10.7"
 
 echo "==> 安装 Python 依赖（MkDocs Material）"
 # 优先官方源（Cloudflare 构建环境在海外，官方源通常最快）
@@ -20,7 +20,7 @@ if ! pip install --no-cache-dir --timeout 60 $DEPS; then
 fi
 
 echo "==> 依赖版本："
-pip show mkdocs mkdocs-material 2>/dev/null | grep -E "^Name|^Version" || true
+pip show mkdocs mkdocs-material mkdocs-static-i18n 2>/dev/null | grep -E "^Name|^Version" || true
 
 echo "==> 校验并构建文档站到 site/ 目录"
 bash scripts/build_docs.sh --python python

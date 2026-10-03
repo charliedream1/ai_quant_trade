@@ -168,7 +168,7 @@ Build output directory: site
 2. **构建日志**：Cloudflare Dashboard → Pages → 你的项目 → Deployments → 点失败的部署 → 看日志末尾的报错
 3. **本地能否构建**：
    ```bash
-   pip install mkdocs mkdocs-material pymdown-extensions
+   pip install mkdocs mkdocs-material mkdocs-static-i18n pymdown-extensions
    bash .cloudflare/scripts/build.sh
    ```
 4. **环境变量**：确认 `PYTHON_VERSION=3.11` 已设置

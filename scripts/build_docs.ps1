@@ -76,6 +76,7 @@ function Assert-NoForbiddenSiteContent {
 $deps = @(
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",
+    "mkdocs-static-i18n>=1.3",
     "mkdocs-material-extensions>=1.3",
     "pymdown-extensions>=10.7"
 )

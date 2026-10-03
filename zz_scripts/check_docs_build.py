@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Pre-flight check for mkdocs build. Run before `mkdocs build` in CI and
-locally; exit 1 if any check fails.
+Pre-flight check for the MkDocs documentation site.
 
-Pure stdlib — no mkdocs / yaml import required for parsing yaml nav.
+The published site is intentionally scoped to docs/ and is bilingual:
+- Chinese source pages use the normal .md filename.
+- English pages use the .en.md suffix.
+- Language switching is handled by mkdocs-static-i18n at build time, not by a
+  runtime JavaScript translator.
+- fallback_to_default is enabled for shared static assets, while this script
+  enforces that every publishable Markdown source has an English translation.
 """
 
 from __future__ import annotations
@@ -26,13 +31,7 @@ MARKER_PAIRS: list[tuple[str, str, str, str]] = [
 
 
 def _parse_simple_yaml_nav(text: str) -> list[tuple[int, str]]:
-    """Crude parser: extract `nav:`-block file paths as `(line, path)` pairs.
-
-    Only handles the subset our mkdocs.yml uses (relative .md paths,
-    including CJK characters in subdirectory names).
-    """
-    # Match ASCII path chars + CJK Unified Ideographs + SPACE (directory
-    # names like "教程 FAQ" contain a space) + extension .md.
+    """Extract Markdown file paths from the subset of mkdocs.yml nav we use."""
     path_re = re.compile(r"[A-Za-z0-9_./\-\u4e00-\u9fff ]+\.md")
     out: list[tuple[int, str]] = []
     in_nav = False
@@ -44,17 +43,18 @@ def _parse_simple_yaml_nav(text: str) -> list[tuple[int, str]]:
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
                 continue
-            # Heuristic: any token ending in .md that isn't a section header.
             for tok in path_re.findall(stripped):
-                # Strip leading/trailing whitespace so that directory names
-                # containing spaces (e.g. "教程 FAQ") resolve correctly.
                 out.append((i, tok.strip()))
-            # If indentation returns to column 0 on a non-nav key, nav ended.
             if line and not line.startswith((" ", "\t")) and ":" in stripped \
                     and not stripped.startswith("-"):
                 if re.match(r"^[a-z_]+:", stripped):
                     in_nav = False
     return out
+
+
+def _localized_markdown_path(path: str, locale: str) -> Path:
+    src = DOCS / path
+    return src.with_name(f"{src.stem}.{locale}{src.suffix}")
 
 
 def check_mkdocs_yml_parseable() -> list[str]:
@@ -64,13 +64,10 @@ def check_mkdocs_yml_parseable() -> list[str]:
         text = MKDOCS_YML.read_text(encoding="utf-8")
     except Exception as e:
         return [f"{MKDOCS_YML}: read failed: {e}"]
-    # Skip full yaml parse if PyYAML missing; use the simple parser instead.
     try:
         import yaml  # noqa: F401
         try:
-            # mkdocs.yml uses `!!python/name:material.extensions.emoji.twemoji`
-            # which safe_load rejects. Use BaseLoader to accept custom tags
-            # without constructing Python objects.
+            # mkdocs.yml uses !!python/name for pymdownx emoji support.
             yaml.load(text, Loader=yaml.BaseLoader)
         except Exception as e:
             return [f"{MKDOCS_YML}: yaml parse failed: {e}"]
@@ -79,16 +76,81 @@ def check_mkdocs_yml_parseable() -> list[str]:
     return []
 
 
+def check_i18n_config() -> list[str]:
+    text = MKDOCS_YML.read_text(encoding="utf-8")
+    required = [
+        "- i18n:",
+        "docs_structure: suffix",
+        "fallback_to_default: true",
+        "reconfigure_material: true",
+        "reconfigure_search: true",
+        "locale: zh",
+        "locale: en",
+        "nav_translations:",
+    ]
+    errors = [
+        f"{MKDOCS_YML}: missing i18n config entry: {item}"
+        for item in required
+        if item not in text
+    ]
+    legacy = [
+        "language-switch.js",
+        "language-switch.css",
+    ]
+    for item in legacy:
+        if item in text:
+            errors.append(
+                f"{MKDOCS_YML}: legacy runtime language switch still listed: {item}"
+            )
+    return errors
+
+
 def check_nav_files_exist() -> list[str]:
     text = MKDOCS_YML.read_text(encoding="utf-8")
     errors: list[str] = []
     for line_no, path in _parse_simple_yaml_nav(text):
         if path.startswith(("http://", "https://", "mailto:")):
             continue
-        # nav paths are relative to docs_dir = docs/.
         full = DOCS / path
         if not full.is_file():
             errors.append(f"{MKDOCS_YML}:{line_no}: nav file missing: {path}")
+    return errors
+
+
+def check_english_nav_translations_exist() -> list[str]:
+    text = MKDOCS_YML.read_text(encoding="utf-8")
+    errors: list[str] = []
+    for line_no, path in _parse_simple_yaml_nav(text):
+        if path.startswith(("http://", "https://", "mailto:")):
+            continue
+        translated = _localized_markdown_path(path, "en")
+        if not translated.is_file():
+            rel = translated.relative_to(REPO_ROOT).as_posix()
+            errors.append(
+                f"{MKDOCS_YML}:{line_no}: English translation missing: {rel}"
+            )
+    return errors
+
+
+def iter_publishable_default_markdown() -> list[Path]:
+    files: list[Path] = []
+    for path in DOCS.rglob("*.md"):
+        rel = path.relative_to(DOCS).as_posix()
+        if rel == "intro.md" or rel.startswith("snippets/"):
+            continue
+        if path.stem.endswith(".en"):
+            continue
+        files.append(path)
+    return sorted(files)
+
+
+def check_all_publishable_markdown_translated() -> list[str]:
+    errors: list[str] = []
+    for path in iter_publishable_default_markdown():
+        translated = path.with_name(f"{path.stem}.en{path.suffix}")
+        if not translated.is_file():
+            rel = translated.relative_to(REPO_ROOT).as_posix()
+            errors.append(f"English translation missing: {rel}")
     return errors
 
 
@@ -104,30 +166,52 @@ def check_auto_markers() -> list[str]:
         has_end = end in text
         if has_start != has_end:
             errors.append(
-                f"{label}: only one of the pair found "
+                f"{label}: only one of the marker pair was found "
                 f"(start={has_start}, end={has_end})"
             )
     return errors
 
 
-def check_index_has_language_switch() -> list[str]:
-    if not INDEX_MD.is_file():
-        return [f"{INDEX_MD}: not found"]
-    text = INDEX_MD.read_text(encoding="utf-8")
+def check_no_legacy_runtime_language_switch() -> list[str]:
     errors: list[str] = []
-    if "language-switch" not in text:
-        errors.append(f"{INDEX_MD}: missing <div class=\"language-switch\">")
-    # Two language blocks must exist.
-    if 'class="lang-en"' not in text:
-        errors.append(f"{INDEX_MD}: missing .lang-en block")
-    if 'class="lang-zh"' not in text:
-        errors.append(f"{INDEX_MD}: missing .lang-zh block")
+    legacy_files = [
+        DOCS / "javascripts" / "language-switch.js",
+        DOCS / "stylesheets" / "language-switch.css",
+    ]
+    for path in legacy_files:
+        if path.exists():
+            rel = path.relative_to(REPO_ROOT).as_posix()
+            errors.append(f"{rel}: remove legacy runtime language switch asset")
+
+    if INDEX_MD.is_file():
+        text = INDEX_MD.read_text(encoding="utf-8")
+        for token in ("lang-en", "lang-zh", "language-switch"):
+            if token in text:
+                errors.append(
+                    f"{INDEX_MD.relative_to(REPO_ROOT).as_posix()}: "
+                    f"legacy language block token still present: {token}"
+                )
+    return errors
+
+
+def check_no_dot_prefixed_docs_dirs() -> list[str]:
+    errors: list[str] = []
+    if not DOCS.is_dir():
+        return errors
+    for path in DOCS.rglob("*"):
+        if path.is_dir() and path.name.startswith("."):
+            rel = path.relative_to(REPO_ROOT).as_posix()
+            errors.append(f"{rel}: dot-prefixed docs directories are not publishable")
+    for path in DOCS.rglob("*.md"):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        if "](." in text:
+            errors.append(f"{rel}: contains dot-prefixed relative link")
     return errors
 
 
 def check_extra_assets_listed() -> list[str]:
-    """All *.css / *.js files in docs/stylesheets/ and docs/javascripts/
-    must appear in mkdocs.yml's extra_css / extra_javascript."""
+    """All CSS/JS files under docs assets must be listed in mkdocs.yml."""
     text = MKDOCS_YML.read_text(encoding="utf-8")
     errors: list[str] = []
 
@@ -136,9 +220,7 @@ def check_extra_assets_listed() -> list[str]:
         for css in css_dir.rglob("*.css"):
             rel = css.relative_to(DOCS).as_posix()
             if rel not in text:
-                errors.append(
-                    f"{MKDOCS_YML}: CSS file not in extra_css: {rel}"
-                )
+                errors.append(f"{MKDOCS_YML}: CSS file not in extra_css: {rel}")
 
     js_dir = DOCS / "javascripts"
     if js_dir.is_dir():
@@ -154,11 +236,14 @@ def check_extra_assets_listed() -> list[str]:
 def main() -> None:
     all_errors: list[tuple[str, list[str]]] = [
         ("mkdocs.yml parseable", check_mkdocs_yml_parseable()),
+        ("i18n config", check_i18n_config()),
         ("nav files exist", check_nav_files_exist()),
+        ("English nav translations exist", check_english_nav_translations_exist()),
+        ("all publishable Markdown translated", check_all_publishable_markdown_translated()),
         ("auto markers", check_auto_markers()),
-        ("index has language switch", check_index_has_language_switch()),
-        ("extra_css / extra_javascript up to date",
-         check_extra_assets_listed()),
+        ("no legacy runtime language switch", check_no_legacy_runtime_language_switch()),
+        ("no dot-prefixed docs asset dirs", check_no_dot_prefixed_docs_dirs()),
+        ("extra_css / extra_javascript up to date", check_extra_assets_listed()),
     ]
 
     total = 0
@@ -172,7 +257,7 @@ def main() -> None:
     if total:
         print(f"\n[check_docs_build] {total} issue(s) found. Aborting.")
         sys.exit(1)
-    print(f"[check_docs_build] OK — all {len(all_errors)} checks passed.")
+    print(f"[check_docs_build] OK - all {len(all_errors)} checks passed.")
 
 
 if __name__ == "__main__":

@@ -30,3 +30,7 @@ The scripts run:
 3. `mkdocs build --clean`
 4. a generated-site scan to ensure old project wrappers and external docs
    references did not reappear.
+
+The MkDocs site is bilingual. Chinese pages use the normal `.md` filename and
+English pages use the `.en.md` suffix. Every file referenced by `mkdocs.yml`
+`nav` must have a matching English translation.
