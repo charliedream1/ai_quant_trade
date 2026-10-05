@@ -5,8 +5,9 @@ This directory contains local equivalents of the documentation CI checks.
 Windows PowerShell:
 
 ```powershell
-.\scripts\build_docs.ps1 -Python D:\ProgramFiles\anaconda3\envs\py311\python.exe
-.\scripts\build_docs.ps1 -Python D:\ProgramFiles\anaconda3\envs\py311\python.exe -Serve
+.\scripts\build_docs.ps1
+.\scripts\build_docs.ps1 -Serve
+.\scripts\build_docs.ps1 -Python python
 ```
 
 Linux/macOS:

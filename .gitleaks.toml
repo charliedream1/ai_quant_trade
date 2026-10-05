@@ -6,11 +6,10 @@ title = "gitleaks config"
 [extend]
 useDefault = true
 
-[allowlist]
-description = "Allowlist for known non-secret patterns"
+[[allowlists]]
+targetRules = ["generic-api-key"]
+description = "Allow Hugging Face model and tokenizer identifiers"
+regexTarget = "match"
 regexes = [
-    '''(model|tokenizer)\s*=\s*["'][A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+["']''',
-]
-paths = [
-    '''a_全网优秀资源/.*''',
+    "(model|tokenizer)\\s*=\\s*[\"'][A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+[\"']",
 ]

@@ -63,7 +63,7 @@ def make_dirs(*dirs):
 
 **示例调用**：
 ```python
-output_path = '/data/output'
+output_path = 'output'
 make_dirs(output_path)
 ```
 
@@ -170,9 +170,9 @@ def main():
         "llm_max_input_tokens": 24500,
         "llm_temperature": 0,
     }
-    travily_api_key_file = '/home/api_key/TavilySearchApi.txt'
+    travily_api_key_file = os.getenv('TAVILY_API_KEY_FILE')
     search_top_k = 10
-    output_path = '/data/output'
+    output_path = os.getenv('REPORT_OUTPUT_DIR', 'output')
     make_dirs(output_path)
 
     topic_lst = ['低空经济', '人工智能']

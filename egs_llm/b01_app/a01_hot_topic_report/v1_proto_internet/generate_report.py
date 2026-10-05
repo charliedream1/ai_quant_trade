@@ -22,6 +22,7 @@ import os
 from loguru import logger
 from tqdm import tqdm
 from dataclasses import dataclass
+from typing import Optional
 
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
@@ -51,7 +52,7 @@ def clean_dirs(path: str):
 class Args:
     llm_config: dict
     topic_lst: list
-    travily_api_key_path: str
+    travily_api_key_path: Optional[str]
     search_top_k: int
     output_path: str
 
@@ -87,8 +88,12 @@ class Reporter:
         self.args = args
 
         # 实现网络搜索工具
-        with open(args.travily_api_key_path, 'r') as file:
-            api_key = file.read().replace('\n', '')
+        api_key = os.getenv('TAVILY_API_KEY', '').strip()
+        if not api_key and args.travily_api_key_path:
+            with open(args.travily_api_key_path, 'r', encoding='utf-8') as file:
+                api_key = file.read().strip()
+        if not api_key:
+            raise ValueError('Set TAVILY_API_KEY or TAVILY_API_KEY_FILE before running this script.')
 
         os.environ['TAVILY_API_KEY'] = api_key
         self.web_search_tool = TavilySearchResults(k=args.search_top_k)
@@ -134,9 +139,9 @@ def main():
         "llm_temperature": 0,
         "llm_batch_size": 26,
     }
-    travily_api_key_file = '/home/api_key/TavilySearchApi.txt'
+    travily_api_key_file = os.getenv('TAVILY_API_KEY_FILE')
     search_top_k = 10
-    output_path = '/data/output'
+    output_path = os.getenv('REPORT_OUTPUT_DIR', 'output')
     make_dirs(output_path)
 
     topic_lst = ['低空经济', '人工智能']
