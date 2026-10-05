@@ -4,7 +4,7 @@
 # 说明：各子样例目录下另有独立的 requirements.txt，仅包含该样例所需依赖。
 
 # 股票类
-akshare==1.18.97
+akshare==1.19.1
 baostock==0.9.4
 efinance==0.5.9
 pyqlib==0.9.7
@@ -16,7 +16,7 @@ tushare==1.4.29
 # (akshare / efinance 已在上方列出)
 
 # 电子币类
-ccxt==4.5.84
+ccxt==4.5.85
 
 # 新闻类
 newsapi-python==0.2.7
