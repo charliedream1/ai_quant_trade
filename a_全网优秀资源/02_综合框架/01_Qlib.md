@@ -1,2 +1,0 @@
-- Github (173 stars): https://github.com/QuantWorld2022/qlib_tutorial
-  - 相对偏老，2022年后未再更新

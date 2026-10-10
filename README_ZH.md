@@ -17,26 +17,38 @@
 </p>
 
 <a href="https://t.zsxq.com/dHt9l" title="AI智投星球">
-  <img src=".README_images/quant_qrcode.jpg" width="150" alt="AI智投星球" />
+  <img src=".README_images/quant_qrcode.jpg" width="200" alt="AI智投星球" />
 </a>
 &nbsp;&nbsp;&nbsp;&nbsp;
-<img src=".README_images/公众号链接.png" width="150" alt="微信公众号" />
+<img src=".README_images/公众号链接.png" width="200" alt="微信公众号" />
 
 </div>
 
 ---
 
-<p align="center">
-  <a href="#-新特性">🔥 新特性</a> •
-  <a href="#-简介">📖 简介</a> •
-  <a href="#-快速开始">🚀 快速开始</a> •
-  <a href="#-本地量化策略">📊 量化策略</a> •
-  <a href="#-大模型应用">🤖 大模型</a> •
-  <a href="#-因子挖掘">⛏️ 因子挖掘</a> •
-  <a href="#-数据处理">💾 数据</a> •
-  <a href="#-辅助操盘工具">🛠️ 工具</a> •
-  <a href="#-配套资源">🎁 资源</a>
-</p>
+## 📑 目录
+
+- [✨ 核心亮点](#-核心亮点)
+- [🔥 新特性](#-新特性)
+- [🌟 awesome_projects（重点推荐）](#-awesome_projects重点推荐)
+- [📖 简介](#-简介)
+- [🚀 快速开始](#-快速开始)
+- [📊 本地量化策略](#-本地量化策略)
+- [💰 实盘交易](#-实盘交易)
+- [🛠️ 辅助操盘工具](#-辅助操盘工具)
+- [⛏️ 因子挖掘](#-因子挖掘)
+- [💾 数据处理](#-数据处理)
+- [📝 文本分析](#-文本分析)
+- [🤖 大模型应用](#-大模型应用)
+- [📚 编程及AI基础知识](#-编程及ai基础知识)
+- [🌐 在线投研平台](#-在线投研平台)
+- [📖 量化资源集合](#-量化资源集合)
+- [🎁 配套资源](#-配套资源)
+- [💖 打赏我](#-打赏我)
+- [💬 讨论](#-讨论)
+- [🐛 技术支持](#-技术支持)
+- [❓ 常见问题](#-常见问题)
+- [📄 引用](#-引用)
 
 ---
 
@@ -58,9 +70,17 @@
 | **时间** | **特性** |
 |:---|:---|
 | 2026.07.25 | 🆕 [**上班"摸鱼炒股"神器 V2：模块化盯盘系统 + 预警监控 + K线图 + 多源 fallback**](egs_aide/看盘神器/v2) |
+
+<details>
+<summary>📂 <b>2025 年更新</b></summary>
+
+| **时间** | **特性** |
+|:---|:---|
 | 2025.08.09 | 🆕 [**推理型股价预测大模型训练教程（预测准确率提升20%，且可解析）**](egs_courses/01_推理型股价预测大模型训练教程.md) |
 | 2025.05.17 | 🆕 [**Unsloth推理型股价预测大模型（代码见本仓库、详细指南+模型见星球）**](egs_llm/a01_train/a01_unsloth_stock_forcaster) |
 | 2025.01.03 | [**大模型金融市场分析（视频教程见星球或公众号）**](egs_llm/b01_app/a01_hot_topic_report/v1_proto_internet) |
+
+</details>
 
 <details>
 <summary>📂 <b>2023 年更新</b></summary>
@@ -84,6 +104,65 @@
 | 2022.08.03 | [**基础回测框架 + 双均线策略**](https://github.com/charliedream1/ai_quant_trade/tree/master/egs_trade/vanilla/double_ma) |
 
 </details>
+
+---
+
+## 🌟 awesome_projects（重点推荐）
+
+> 📁 **目录**：[awesome_projects](awesome_projects)
+>
+> ⭐ **本仓库精华版块**：从全网海量资料中筛选、整理、点评的优质量化资源，一站式获取！
+
+### 🎯 这是什么？
+
+这是本仓库最核心的"资源宝库"——**我们花费大量精力从全网数万份资料中筛选、整理并附上点评**，按量化交易全流程分类，方便你快速找到所需工具和资料，少走弯路。
+
+**与本仓库其他版块的区别**：
+
+| 版块 | 定位 | 特点 |
+|:---|:---|:---|
+| `awesome_projects` ⭐ | 实战资源整合 | 收录全网优秀项目，附点评与对比 |
+| `egs_trade` | 完整策略实战 | 从0到1的策略实现教程 |
+| `egs_llm` | 大模型应用 | LLM 在金融的落地实践 |
+| `ai_notes` | 知识笔记 | 理论、概念、踩坑实录 |
+
+### ✨ 四大特色
+
+- 🔍 **优中选优**：从全网海量资源中精选，避免你重复踩坑
+- 📂 **分类清晰**：按量化交易全流程（数据→策略→回测→交易）分类，便于按需查找
+- 📝 **含点评解读**：不只是罗列链接，附有优缺点分析、上手指南
+- 🔄 **持续更新**：紧跟技术发展，持续收录新资源
+
+### 📚 资源分类一览
+
+| 序号 | 类别 | 核心内容 |
+|:---:|:---|:---|
+| 📚 [00-basics](awesome_projects/00-basics.md) | 入门学习 | 股票学习指南、入门教程 |
+| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学习资源 | GitHub量化资源、开源项目汇总 |
+| 📚 [00-resource-collections](awesome_projects/00-resource-collections.md) | 资源汇总 | 全量量化工具库分类汇总 |
+| 📊 [01-data](awesome_projects/01-data.md) | 数据获取 | 数据获取工具、新闻数据、多模态数据 |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主流量化框架 | Qlib、WonderTrader 等 |
+| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | 回测工具 | Backtrader、Zipline、RQAlpha 等 |
+| ⛏️ [04-factors](awesome_projects/04-factors.md) | 因子库 | alphalens、ta_lib 等 |
+| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 策略资源 | 传统/深度学习/强化学习/研报复现/投资组合 |
+| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 辅助工具 | K线形态识别、盯盘、办公工具 |
+| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可视化 | 量化图表与可视化 |
+| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | 知识图谱 | 传统方案与大模型方案 |
+| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高频交易 | 加密货币高频交易 |
+| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM 金融应用 | FinGPT、FinRobot、TradingAgents、Agent、RAG 等 |
+| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研平台 | 免费量化平台汇总 |
+| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 交易平台 | EasyTrader、VN.Py 等 |
+| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研报类 | 研报复现与来源 |
+
+### 🔥 重点推荐内容
+
+- 🤖 **大模型在金融的应用**：覆盖 FinGPT、FinMem、Self-Reflective、Stock-chain、TradingAgents、FinRobot 等最新研究与实战
+- 🛠️ **Skill 包合集（60+）**：包含缠论、技术分析、量化统计、基本面分析、加密货币、宏观分析等专业 Skill
+- 📊 **回测框架多维对比**：Backtrader、Zipline、RQAlpha、PyAlgoTrade、QuantDigger 等多框架实测对比
+- 🔬 **研报复现**：精选高质量券商研报并附复现代码
+- 💹 **交易策略全套**：从传统双均线到强化学习、图神经网络，覆盖各类型策略资源
+
+> 💡 **使用建议**：进入 [awesome_projects](awesome_projects) 目录按需浏览；如对某个项目感兴趣，可点击查看详细的介绍和点评。
 
 ---
 
@@ -283,63 +362,6 @@ pip install -r requirements.txt
 |:---:|:---|
 | 1 | [**大模型金融市场分析（视频教程见星球或公众号）**](egs_llm/b01_app/a01_hot_topic_report/v1_proto_internet) |
 | 2 | [**Unsloth推理型股价预测模型训练（代码开源、详细指南+模型见星球）**](egs_llm/a01_train/a01_unsloth_stock_forcaster) |
-
----
-
-## 🌟 a_全网优秀资源（重点推荐）
-
-> 📁 **目录**：[a_全网优秀资源](a_全网优秀资源)
->
-> ⭐ **本仓库精华版块**：从全网海量资料中筛选、整理、点评的优质量化资源，一站式获取！
-
-### 🎯 这是什么？
-
-这是本仓库最核心的"资源宝库"——**我们花费大量精力从全网数万份资料中筛选、整理并附上点评**，按量化交易全流程分类，方便你快速找到所需工具和资料，少走弯路。
-
-**与本仓库其他版块的区别**：
-
-| 版块 | 定位 | 特点 |
-|:---|:---|:---|
-| `a_全网优秀资源` ⭐ | 实战资源整合 | 收录全网优秀项目，附点评与对比 |
-| `egs_trade` | 完整策略实战 | 从0到1的策略实现教程 |
-| `egs_llm` | 大模型应用 | LLM 在金融的落地实践 |
-| `ai_notes` | 知识笔记 | 理论、概念、踩坑实录 |
-
-### ✨ 四大特色
-
-- 🔍 **优中选优**：从全网海量资源中精选，避免你重复踩坑
-- 📂 **分类清晰**：按量化交易全流程（数据→策略→回测→交易）分类，便于按需查找
-- 📝 **含点评解读**：不只是罗列链接，附有优缺点分析、上手指南
-- 🔄 **持续更新**：紧跟技术发展，持续收录新资源
-
-### 📚 资源分类一览
-
-| 序号 | 类别 | 核心内容 |
-|:---:|:---|:---|
-| 📚 `00_基础知识` | 入门学习 | 股票学习指南、入门教程 |
-| 🎓 `00_学习资源` | 资源汇总 | GitHub量化资源、开源项目汇总 |
-| 📊 `01_数据` | 数据获取 | 数据获取工具、新闻数据、多模态数据 |
-| 🏗️ `02_综合框架` | 主流量化框架 | Qlib、WonderTrader 等详解 |
-| 🔄 `03_回测框架` | 回测工具 | Backtrader、PyAlgoTrade、Zipline、RQAlpha、QuantDigger 等 |
-| ⛏️ `04_因子` | 因子库 | Alpha101、ta_lib、stockstats、alphalens 等 |
-| 💹 `05_交易策略` | 策略资源 | 传统/机器学习/深度学习/强化学习/图神经网络/研报复现/投资组合 |
-| 🛠️ `06_辅助工具` | 辅助工具 | K线形态识别、金融建模 |
-| 📊 `07_可视化` | 可视化库 | 量化图表与可视化 |
-| 🧠 `08_知识图谱` | 知识图谱 | 传统方案与大模型方案 |
-| ⚡ `09_高频交易` | 高频交易 | 加密货币高频交易 |
-| 🤖 `10_大模型` | LLM 金融应用 | FinGPT、FinRobot、TradingAgents、Agent、RAG、Skill包等 |
-| 🌐 `11_投研平台` | 在线平台 | 免费量化平台汇总 |
-| 💻 `12_交易平台` | 交易接口 | EasyTrader、VNPy 等 |
-
-### 🔥 重点推荐内容
-
-- 🤖 **大模型在金融的应用**：覆盖 FinGPT、FinMem、Self-Reflective、Stock-chain、TradingAgents、FinRobot 等最新研究与实战
-- 🛠️ **Skill 包合集（60+）**：包含缠论、技术分析、量化统计、基本面分析、加密货币、宏观分析等专业 Skill
-- 📊 **回测框架多维对比**：Backtrader、Zipline、RQAlpha、PyAlgoTrade、QuantDigger 等多框架实测对比
-- 🔬 **研报复现**：精选高质量券商研报并附复现代码
-- 💹 **交易策略全套**：从传统双均线到强化学习、图神经网络，覆盖各类型策略资源
-
-> 💡 **使用建议**：进入 [a_全网优秀资源](a_全网优秀资源) 目录按需浏览；如对某个项目感兴趣，可点击查看详细的介绍和点评。
 
 ---
 
