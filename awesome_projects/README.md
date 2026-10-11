@@ -2,11 +2,20 @@
 
 Curated, organized and reviewed high-quality quantitative resources from across the web — one-stop access to the best projects, tools and materials for quantitative trading.
 
+## Metadata Standard
+
+Project entries use a shared metadata format:
+
+- `Metadata`: language, GitHub stars, license and maintenance status.
+- `Docs/Homepage`: official documentation, homepage or `-` when no dedicated page was found.
+- `Value`: short review of where the project is useful and what to check before adoption.
+
+Maintenance labels are based on the latest public repository activity checked on 2026-10-11: `Active` means updated in 2026, `Recent` means updated in 2024-2025, `Stale` means updated in 2022-2023, `Inactive` means no update after 2021, and `Archived` follows the GitHub archived flag.
+
 ## Categories
 
 - [00-basics](00-basics.md) — Fundamentals & learning
 - [00-learning-resources](00-learning-resources.md) — Learning roadmaps & tutorials
-- [00-resource-collections](00-resource-collections.md) — Comprehensive curated tool lists
 - [01-data](01-data.md) — Data sources & datasets
 - [02-comprehensive-frameworks](02-comprehensive-frameworks.md) — Full-stack quant frameworks
 - [03-backtesting-frameworks](03-backtesting-frameworks.md) — Backtesting engines
