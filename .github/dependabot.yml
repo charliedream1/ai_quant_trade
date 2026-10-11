@@ -49,7 +49,7 @@ updates:
       - "dependencies"
 
   - package-ecosystem: "pip"
-    directory: "/egs_aide/看盘神器/v2"
+    directory: "/egs_aide/excel_stock_monitor/v2"
     schedule:
       interval: "weekly"
       day: "monday"

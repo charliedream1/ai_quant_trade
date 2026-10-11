@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 在 `egs_aide/看盘神器/v2/` 下开发模块化、配置驱动的 Excel 实时盯盘工具，包含大盘、详细行情、新闻、个性定制看盘四个 Sheet。
+**Goal:** 在 `egs_aide/excel_stock_monitor/v2/` 下开发模块化、配置驱动的 Excel 实时盯盘工具，包含大盘、详细行情、新闻、个性定制看盘四个 Sheet。
 
 **Architecture:** 采用策略模式——每个 Sheet 对应一个 Handler 类（继承 `BaseSheet`），由 `ExcelManager` 管理 xlwings 工作簿，`DataProvider` 封装 qstock 数据获取。`main.py` 负责组装和刷新循环。配置通过 `config.py` 集中管理，用户无需改代码即可定制自选股和显示列。
 
@@ -13,7 +13,7 @@
 ## 文件结构
 
 ```
-egs_aide/看盘神器/v2/
+egs_aide/excel_stock_monitor/v2/
 ├── main.py                  # 入口：组装组件 + 刷新循环
 ├── config.py                # 配置：刷新间隔、自选股、指数列表等
 ├── data_provider.py         # qstock 数据获取封装（含异常处理）
@@ -49,9 +49,9 @@ egs_aide/看盘神器/v2/
 ## Task 1: 项目初始化与依赖
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/requirements.txt`
-- Create: `egs_aide/看盘神器/v2/sheets/__init__.py`
-- Create: `egs_aide/看盘神器/v2/tests/__init__.py`
+- Create: `egs_aide/excel_stock_monitor/v2/requirements.txt`
+- Create: `egs_aide/excel_stock_monitor/v2/sheets/__init__.py`
+- Create: `egs_aide/excel_stock_monitor/v2/tests/__init__.py`
 
 - [ ] **Step 1: 创建 requirements.txt**
 
@@ -65,12 +65,12 @@ pytest
 
 - [ ] **Step 2: 创建包初始化文件**
 
-`egs_aide/看盘神器/v2/sheets/__init__.py`:
+`egs_aide/excel_stock_monitor/v2/sheets/__init__.py`:
 ```python
 # Sheet handlers package
 ```
 
-`egs_aide/看盘神器/v2/tests/__init__.py`:
+`egs_aide/excel_stock_monitor/v2/tests/__init__.py`:
 ```python
 # Tests package
 ```
@@ -83,7 +83,7 @@ Expected: 所有包安装成功
 - [ ] **Step 4: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/requirements.txt egs_aide/看盘神器/v2/sheets/__init__.py egs_aide/看盘神器/v2/tests/__init__.py
+git add egs_aide/excel_stock_monitor/v2/requirements.txt egs_aide/excel_stock_monitor/v2/sheets/__init__.py egs_aide/excel_stock_monitor/v2/tests/__init__.py
 git commit -m "feat(v2): init project structure and dependencies"
 ```
 
@@ -92,12 +92,12 @@ git commit -m "feat(v2): init project structure and dependencies"
 ## Task 2: 配置模块 (config.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/config.py`
-- Create: `egs_aide/看盘神器/v2/tests/test_config.py`
+- Create: `egs_aide/excel_stock_monitor/v2/config.py`
+- Create: `egs_aide/excel_stock_monitor/v2/tests/test_config.py`
 
 - [ ] **Step 1: 编写配置测试**
 
-`egs_aide/看盘神器/v2/tests/test_config.py`:
+`egs_aide/excel_stock_monitor/v2/tests/test_config.py`:
 ```python
 from config import AppConfig, SheetConfig
 
@@ -126,12 +126,12 @@ def test_custom_watch_columns():
 
 - [ ] **Step 2: 运行测试确认失败**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_config.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_config.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'config'`
 
 - [ ] **Step 3: 实现配置模块**
 
-`egs_aide/看盘神器/v2/config.py`:
+`egs_aide/excel_stock_monitor/v2/config.py`:
 ```python
 # -*- coding: utf-8 -*-
 """盯盘工具 V2 配置模块"""
@@ -190,13 +190,13 @@ class AppConfig:
 
 - [ ] **Step 4: 运行测试确认通过**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_config.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_config.py -v`
 Expected: PASS — 3 passed
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/config.py egs_aide/看盘神器/v2/tests/test_config.py
+git add egs_aide/excel_stock_monitor/v2/config.py egs_aide/excel_stock_monitor/v2/tests/test_config.py
 git commit -m "feat(v2): add config module with dataclass-based settings"
 ```
 
@@ -205,12 +205,12 @@ git commit -m "feat(v2): add config module with dataclass-based settings"
 ## Task 3: 数据提供者 (data_provider.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/data_provider.py`
-- Create: `egs_aide/看盘神器/v2/tests/test_data_provider.py`
+- Create: `egs_aide/excel_stock_monitor/v2/data_provider.py`
+- Create: `egs_aide/excel_stock_monitor/v2/tests/test_data_provider.py`
 
 - [ ] **Step 1: 编写数据转换测试**
 
-`egs_aide/看盘神器/v2/tests/test_data_provider.py`:
+`egs_aide/excel_stock_monitor/v2/tests/test_data_provider.py`:
 ```python
 import pandas as pd
 from data_provider import DataProvider
@@ -247,12 +247,12 @@ def test_rename_columns():
 
 - [ ] **Step 2: 运行测试确认失败**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_data_provider.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_data_provider.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'data_provider'`
 
 - [ ] **Step 3: 实现 DataProvider**
 
-`egs_aide/看盘神器/v2/data_provider.py`:
+`egs_aide/excel_stock_monitor/v2/data_provider.py`:
 ```python
 # -*- coding: utf-8 -*-
 """数据提供者：封装 qstock 数据获取，统一异常处理"""
@@ -397,13 +397,13 @@ class DataProvider:
 
 - [ ] **Step 4: 运行测试确认通过**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_data_provider.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_data_provider.py -v`
 Expected: PASS — 3 passed
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/data_provider.py egs_aide/看盘神器/v2/tests/test_data_provider.py
+git add egs_aide/excel_stock_monitor/v2/data_provider.py egs_aide/excel_stock_monitor/v2/tests/test_data_provider.py
 git commit -m "feat(v2): add DataProvider with qstock wrapper and error handling"
 ```
 
@@ -412,11 +412,11 @@ git commit -m "feat(v2): add DataProvider with qstock wrapper and error handling
 ## Task 4: Excel 管理器 (excel_manager.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/excel_manager.py`
+- Create: `egs_aide/excel_stock_monitor/v2/excel_manager.py`
 
 - [ ] **Step 1: 实现 ExcelManager**
 
-`egs_aide/看盘神器/v2/excel_manager.py`:
+`egs_aide/excel_stock_monitor/v2/excel_manager.py`:
 ```python
 # -*- coding: utf-8 -*-
 """Excel 管理器：封装 xlwings 工作簿操作"""
@@ -498,13 +498,13 @@ class ExcelManager:
 
 - [ ] **Step 2: 验证语法**
 
-Run: `cd egs_aide/看盘神器/v2 && python -c "import excel_manager; print('OK')"`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -c "import excel_manager; print('OK')"`
 Expected: 输出 `OK`（xlwings 在无 Excel 环境下 import 不报错即可）
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/excel_manager.py
+git add egs_aide/excel_stock_monitor/v2/excel_manager.py
 git commit -m "feat(v2): add ExcelManager wrapping xlwings operations"
 ```
 
@@ -513,11 +513,11 @@ git commit -m "feat(v2): add ExcelManager wrapping xlwings operations"
 ## Task 5: Sheet 基类 (sheets/base.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/sheets/base.py`
+- Create: `egs_aide/excel_stock_monitor/v2/sheets/base.py`
 
 - [ ] **Step 1: 实现 BaseSheet 抽象基类**
 
-`egs_aide/看盘神器/v2/sheets/base.py`:
+`egs_aide/excel_stock_monitor/v2/sheets/base.py`:
 ```python
 # -*- coding: utf-8 -*-
 """Sheet Handler 抽象基类"""
@@ -568,13 +568,13 @@ class BaseSheet(ABC):
 
 - [ ] **Step 2: 验证语法**
 
-Run: `cd egs_aide/看盘神器/v2 && python -c "from sheets.base import BaseSheet; print('OK')"`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -c "from sheets.base import BaseSheet; print('OK')"`
 Expected: 输出 `OK`
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/sheets/base.py
+git add egs_aide/excel_stock_monitor/v2/sheets/base.py
 git commit -m "feat(v2): add BaseSheet abstract class for sheet handlers"
 ```
 
@@ -583,12 +583,12 @@ git commit -m "feat(v2): add BaseSheet abstract class for sheet handlers"
 ## Task 6: 大盘 Sheet (sheets/market_overview.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/sheets/market_overview.py`
-- Create: `egs_aide/看盘神器/v2/tests/test_sheets.py`
+- Create: `egs_aide/excel_stock_monitor/v2/sheets/market_overview.py`
+- Create: `egs_aide/excel_stock_monitor/v2/tests/test_sheets.py`
 
 - [ ] **Step 1: 编写 Sheet Handler 测试（mock 数据）**
 
-`egs_aide/看盘神器/v2/tests/test_sheets.py`:
+`egs_aide/excel_stock_monitor/v2/tests/test_sheets.py`:
 ```python
 import pandas as pd
 from unittest.mock import MagicMock, patch
@@ -625,12 +625,12 @@ def test_market_overview_refresh_with_mock():
 
 - [ ] **Step 2: 运行测试确认失败**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'sheets.market_overview'`
 
 - [ ] **Step 3: 实现 MarketOverviewSheet**
 
-`egs_aide/看盘神器/v2/sheets/market_overview.py`:
+`egs_aide/excel_stock_monitor/v2/sheets/market_overview.py`:
 ```python
 # -*- coding: utf-8 -*-
 """大盘 Sheet：指数行情 + 行业板块 + 概念板块 + 涨停板"""
@@ -682,13 +682,13 @@ class MarketOverviewSheet(BaseSheet):
 
 - [ ] **Step 4: 运行测试确认通过**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py -v`
 Expected: PASS — 1 passed
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/sheets/market_overview.py egs_aide/看盘神器/v2/tests/test_sheets.py
+git add egs_aide/excel_stock_monitor/v2/sheets/market_overview.py egs_aide/excel_stock_monitor/v2/tests/test_sheets.py
 git commit -m "feat(v2): add MarketOverviewSheet with indices, boards, limit-up"
 ```
 
@@ -697,8 +697,8 @@ git commit -m "feat(v2): add MarketOverviewSheet with indices, boards, limit-up"
 ## Task 7: 详细行情 Sheet (sheets/detailed_quotes.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/sheets/detailed_quotes.py`
-- Modify: `egs_aide/看盘神器/v2/tests/test_sheets.py`
+- Create: `egs_aide/excel_stock_monitor/v2/sheets/detailed_quotes.py`
+- Modify: `egs_aide/excel_stock_monitor/v2/tests/test_sheets.py`
 
 - [ ] **Step 1: 添加详细行情测试**
 
@@ -740,12 +740,12 @@ def test_detailed_quotes_refresh_with_mock():
 
 - [ ] **Step 2: 运行测试确认失败**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py::test_detailed_quotes_refresh_with_mock -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py::test_detailed_quotes_refresh_with_mock -v`
 Expected: FAIL — `ModuleNotFoundError`
 
 - [ ] **Step 3: 实现 DetailedQuotesSheet**
 
-`egs_aide/看盘神器/v2/sheets/detailed_quotes.py`:
+`egs_aide/excel_stock_monitor/v2/sheets/detailed_quotes.py`:
 ```python
 # -*- coding: utf-8 -*-
 """详细行情 Sheet：自选股实时行情 + 龙虎榜 + 盘口异动"""
@@ -806,13 +806,13 @@ class DetailedQuotesSheet(BaseSheet):
 
 - [ ] **Step 4: 运行测试确认通过**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py -v`
 Expected: PASS — 2 passed
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/sheets/detailed_quotes.py egs_aide/看盘神器/v2/tests/test_sheets.py
+git add egs_aide/excel_stock_monitor/v2/sheets/detailed_quotes.py egs_aide/excel_stock_monitor/v2/tests/test_sheets.py
 git commit -m "feat(v2): add DetailedQuotesSheet with watchlist, billboard, changes"
 ```
 
@@ -821,8 +821,8 @@ git commit -m "feat(v2): add DetailedQuotesSheet with watchlist, billboard, chan
 ## Task 8: 新闻 Sheet (sheets/news_sheet.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/sheets/news_sheet.py`
-- Modify: `egs_aide/看盘神器/v2/tests/test_sheets.py`
+- Create: `egs_aide/excel_stock_monitor/v2/sheets/news_sheet.py`
+- Modify: `egs_aide/excel_stock_monitor/v2/tests/test_sheets.py`
 
 - [ ] **Step 1: 添加新闻 Sheet 测试**
 
@@ -856,12 +856,12 @@ def test_news_sheet_refresh_with_mock():
 
 - [ ] **Step 2: 运行测试确认失败**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py::test_news_sheet_refresh_with_mock -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py::test_news_sheet_refresh_with_mock -v`
 Expected: FAIL — `ModuleNotFoundError`
 
 - [ ] **Step 3: 实现 NewsSheet**
 
-`egs_aide/看盘神器/v2/sheets/news_sheet.py`:
+`egs_aide/excel_stock_monitor/v2/sheets/news_sheet.py`:
 ```python
 # -*- coding: utf-8 -*-
 """新闻 Sheet：财联社电报 + 市场快讯"""
@@ -906,13 +906,13 @@ class NewsSheet(BaseSheet):
 
 - [ ] **Step 4: 运行测试确认通过**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py -v`
 Expected: PASS — 3 passed
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/sheets/news_sheet.py egs_aide/看盘神器/v2/tests/test_sheets.py
+git add egs_aide/excel_stock_monitor/v2/sheets/news_sheet.py egs_aide/excel_stock_monitor/v2/tests/test_sheets.py
 git commit -m "feat(v2): add NewsSheet with CLS telegrams and JS market express"
 ```
 
@@ -921,8 +921,8 @@ git commit -m "feat(v2): add NewsSheet with CLS telegrams and JS market express"
 ## Task 9: 个性定制看盘 Sheet (sheets/custom_watch.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/sheets/custom_watch.py`
-- Modify: `egs_aide/看盘神器/v2/tests/test_sheets.py`
+- Create: `egs_aide/excel_stock_monitor/v2/sheets/custom_watch.py`
+- Modify: `egs_aide/excel_stock_monitor/v2/tests/test_sheets.py`
 
 - [ ] **Step 1: 添加个性定制看盘测试**
 
@@ -964,12 +964,12 @@ def test_custom_watch_refresh_with_mock():
 
 - [ ] **Step 2: 运行测试确认失败**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py::test_custom_watch_refresh_with_mock -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py::test_custom_watch_refresh_with_mock -v`
 Expected: FAIL — `ModuleNotFoundError`
 
 - [ ] **Step 3: 实现 CustomWatchSheet**
 
-`egs_aide/看盘神器/v2/sheets/custom_watch.py`:
+`egs_aide/excel_stock_monitor/v2/sheets/custom_watch.py`:
 ```python
 # -*- coding: utf-8 -*-
 """个性定制看盘 Sheet：用户自选股 + 自定义显示列"""
@@ -1033,13 +1033,13 @@ class CustomWatchSheet(BaseSheet):
 
 - [ ] **Step 4: 运行测试确认通过**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/test_sheets.py -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/test_sheets.py -v`
 Expected: PASS — 4 passed
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/sheets/custom_watch.py egs_aide/看盘神器/v2/tests/test_sheets.py
+git add egs_aide/excel_stock_monitor/v2/sheets/custom_watch.py egs_aide/excel_stock_monitor/v2/tests/test_sheets.py
 git commit -m "feat(v2): add CustomWatchSheet with configurable columns"
 ```
 
@@ -1048,11 +1048,11 @@ git commit -m "feat(v2): add CustomWatchSheet with configurable columns"
 ## Task 10: Excel 模板生成器 (create_template.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/create_template.py`
+- Create: `egs_aide/excel_stock_monitor/v2/create_template.py`
 
 - [ ] **Step 1: 实现模板生成脚本**
 
-`egs_aide/看盘神器/v2/create_template.py`:
+`egs_aide/excel_stock_monitor/v2/create_template.py`:
 ```python
 # -*- coding: utf-8 -*-
 """生成 Excel 看盘模板（使用 openpyxl）
@@ -1136,18 +1136,18 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: 运行生成模板**
 
-Run: `cd egs_aide/看盘神器/v2 && python create_template.py`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python create_template.py`
 Expected: 输出 `模板已生成: .../看盘模板.xlsx`
 
 - [ ] **Step 3: 验证模板文件存在**
 
-Run: `ls -la egs_aide/看盘神器/v2/看盘模板.xlsx`
+Run: `ls -la egs_aide/excel_stock_monitor/v2/看盘模板.xlsx`
 Expected: 文件存在
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/create_template.py egs_aide/看盘神器/v2/看盘模板.xlsx
+git add egs_aide/excel_stock_monitor/v2/create_template.py egs_aide/excel_stock_monitor/v2/看盘模板.xlsx
 git commit -m "feat(v2): add Excel template generator with 4 formatted sheets"
 ```
 
@@ -1156,11 +1156,11 @@ git commit -m "feat(v2): add Excel template generator with 4 formatted sheets"
 ## Task 11: 主入口 (main.py)
 
 **Files:**
-- Create: `egs_aide/看盘神器/v2/main.py`
+- Create: `egs_aide/excel_stock_monitor/v2/main.py`
 
 - [ ] **Step 1: 实现 main.py**
 
-`egs_aide/看盘神器/v2/main.py`:
+`egs_aide/excel_stock_monitor/v2/main.py`:
 ```python
 # -*- coding: utf-8 -*-
 """Excel 盯盘工具 V2 主入口
@@ -1251,13 +1251,13 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: 验证语法**
 
-Run: `cd egs_aide/看盘神器/v2 && python -c "import main; print('OK')"`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -c "import main; print('OK')"`
 Expected: 输出 `OK`
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add egs_aide/看盘神器/v2/main.py
+git add egs_aide/excel_stock_monitor/v2/main.py
 git commit -m "feat(v2): add main entry point with refresh loop"
 ```
 
@@ -1267,24 +1267,24 @@ git commit -m "feat(v2): add main entry point with refresh loop"
 
 - [ ] **Step 1: 运行全部测试**
 
-Run: `cd egs_aide/看盘神器/v2 && python -m pytest tests/ -v`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -m pytest tests/ -v`
 Expected: 所有测试通过（4+ tests）
 
 - [ ] **Step 2: 验证模板生成**
 
-Run: `cd egs_aide/看盘神器/v2 && python create_template.py`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python create_template.py`
 Expected: 生成 `看盘模板.xlsx`，含4个 Sheet
 
 - [ ] **Step 3: 验证 import 链完整**
 
-Run: `cd egs_aide/看盘神器/v2 && python -c "from main import main; print('import OK')"`
+Run: `cd egs_aide/excel_stock_monitor/v2 && python -c "from main import main; print('import OK')"`
 Expected: 输出 `import OK`
 
 - [ ] **Step 4: 更新 egs_aide/README.md**
 
 在 `egs_aide/README.md` 表格中添加 v2 行:
 ```markdown
-| 2 | 模块化盯盘工具V2 | egs_aide/看盘神器/v2 |
+| 2 | 模块化盯盘工具V2 | egs_aide/excel_stock_monitor/v2 |
 ```
 
 - [ ] **Step 5: Commit**
