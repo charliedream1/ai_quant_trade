@@ -48,7 +48,7 @@ class BackTester:
 
         # 1. load yaml file
         with open(args.config, 'r', encoding='utf8') as fin:
-            self.configs = yaml.load(fin, Loader=yaml.FullLoader)
+            self.configs = yaml.safe_load(fin)
         if len(args.override_config) > 0:
             self.configs = override_config(self.configs, args.override_config)
 
