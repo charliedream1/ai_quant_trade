@@ -145,7 +145,7 @@ class TestBackTesterE2E:
     def test_e2e_run_with_mock_data(self, tmp_path):
         import yaml
         with open(PROJ / 'conf' / 'double_ma.yaml', 'r', encoding='utf-8') as f:
-            cfg = yaml.load(f, Loader=yaml.FullLoader)
+            cfg = yaml.safe_load(f)
         stock_lst = cfg['data_condition']['stock_lst']
         benchmark = cfg['data_condition']['benchmark']
 

@@ -34,7 +34,7 @@ sys.path.insert(0, str(PROJ))
 import yaml  # noqa: E402
 
 with open(PROJ / 'conf' / 'double_ma.yaml', 'r', encoding='utf-8') as f:
-    cfg = yaml.load(f, Loader=yaml.FullLoader)
+    cfg = yaml.safe_load(f)
 stock_lst = cfg['data_condition']['stock_lst']
 benchmark = cfg['data_condition']['benchmark']
 
