@@ -63,7 +63,7 @@ pip install tushare
 1. 进入策略样例列表：egs_local_strategies->rules->double_ma
 2. 在conf/double_ma.yaml中配置回测条件，在stock_lst中设置待
    选择的股票，并设置回测日期
-3. 配置tushare的token: 在quant_brain->fetch_data->get_tushare_data.py
+3. 配置tushare的token: 在src/data_io/api_tushare_data.py
    的头文件中，将“from data.private.tushare_token import tushare_token”替换
    为“tushare_token = 'xxxx'”个人申请注册的token
 4. 运行回测脚本，之后在日志中可以查看风险指标，并可以得到交易K线图
@@ -76,7 +76,7 @@ python back_tester.py --debug_off --config conf/double_ma.yaml
 * 绘制的交易曲线图，以及风控指标csv文件将存储在exp文件夹下。
 
 # 2. 回测框架构
-&emsp;&emsp;核心代码可以在quant_brain中进行查看。主体结构如下：
+&emsp;&emsp;核心代码可以在src/中进行查看。主体结构如下：
 * 通过yaml配置回测条件，手工设置股票池待选股票及回测周期
 * 初始化：(1) 通过tushare获取股票数据 (2) 初始化账户信息
 * 回测流程：按照日期和股票双循环遍历，计算长短周期均线，获取卖出买入信号，更新账户信息
