@@ -132,7 +132,7 @@ PPO 的优化目标与 TRPO 相同，但 PPO 用了一些相对简单的方法�
         >> pip install baostock -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
       ```
     * 强化学习库：采用最新的stable-baselines3，其依赖pytorch 1.11以上版本
-    * 强化学习环境：基于gym构建，在quant_brain/rl/envs/StockTradingEnv0.py,
+    * 强化学习环境：基于gym构建，在src/rl/envs/StockTradingEnv0.py,
       基于开源代码https://github.com/wangshub/RL-Stock和
       https://github.com/notadamking/Stock-Trading-Environment
       
@@ -150,7 +150,7 @@ PPO 的优化目标与 TRPO 相同，但 PPO 用了一些相对简单的方法�
 >> pip install baostock -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
 ```
 
-数据获取代码quant_brain/data_io/baostock/get_stock_data.py，单独运行可执行如下命令：
+数据获取代码src/data_io/baostock/get_stock_data.py，单独运行可执行如下命令：
 
 ```python
 >> python get_stock_data.py
@@ -190,7 +190,7 @@ PPO 的优化目标与 TRPO 相同，但 PPO 用了一些相对简单的方法�
 
 ## 🍜代码解读
 
-### 1.数据获取：quant_brain/data_io/baostock/get_stock_data.py
+### 1.数据获取：src/data_io/baostock/get_stock_data.py
 1. 初始化
     ```python
     # 登录 baostock
@@ -225,7 +225,7 @@ PPO 的优化目标与 TRPO 相同，但 PPO 用了一些相对简单的方法�
     ```
 
 ### 2. 股票交易环境
-代码位于quant_brain/rl/envs/StockTradingEnv0.py，基于gym库构建
+代码位于src/rl/envs/StockTradingEnv0.py，基于gym库构建
 
 1. 获取观测数据
    读取股票的csv转换成pandas的dataframe格式，每一次获取一天的观测值，
