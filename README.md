@@ -28,32 +28,31 @@
 
 ## 📑 Table of Contents
 
-- [✨ Core Highlights](#-core-highlights)
-- [🔥 New Features](#-new-features)
-- [🌟 awesome_projects (Highly Recommended)](#-awesome_projects-highly-recommended)
-- [📖 Introduction](#-introduction)
-- [🚀 Quick Start](#-quick-start)
-- [🔐 Dependency Upgrade Log](#-dependency-upgrade-log)
-- [📊 Local Quantitative Strategies](#-local-quantitative-strategies)
-- [💰 Live Trading](#-live-trading)
-- [🛠️ Trading Assistant Tools](#-trading-assistant-tools)
-- [⛏️ Alpha Mining](#-alpha-mining)
-- [💾 Data Processing](#-data-processing)
-- [📝 Text Analysis](#-text-analysis)
-- [🤖 LLM Applications](#-llm-applications)
-- [📚 Programming & AI Basics](#-programming--ai-basics)
-- [🌐 Online Research Platforms](#-online-research-platforms)
-- [📖 Quant Resource Collection](#-quant-resource-collection)
-- [🎁 Companion Resources](#-companion-resources)
-- [💖 Support Me](#-support-me)
-- [💬 Discussion](#-discussion)
-- [🐛 Technical Support](#-technical-support)
-- [❓ FAQ](#-faq)
-- [📄 Citation](#-citation)
+- [1. ✨ Core Highlights](#1--core-highlights)
+- [2. 🔥 New Features](#2--new-features)
+- [3. 📖 Introduction](#3--introduction)
+- [4. 🌟 awesome_projects (Highly Recommended)](#4--awesome_projects-highly-recommended)
+- [5. 🚀 Quick Start](#5--quick-start)
+- [6. 📊 Local Quantitative Strategies](#6--local-quantitative-strategies)
+- [7. 💰 Live Trading](#7--live-trading)
+- [8. 🛠️ Trading Assistant Tools](#8--trading-assistant-tools)
+- [9. ⛏️ Alpha Mining](#9--alpha-mining)
+- [10. 💾 Data Processing](#10--data-processing)
+- [11. 📝 Text Analysis](#11--text-analysis)
+- [12. 🤖 LLM Applications](#12--llm-applications)
+- [13. 📚 Programming & AI Basics](#13--programming--ai-basics)
+- [14. 🌐 Online Research Platforms](#14--online-research-platforms)
+- [15. 📖 Quant Resource Collection](#15--quant-resource-collection)
+- [16. 🎁 Companion Resources](#16--companion-resources)
+- [17. 💖 Support Me](#17--support-me)
+- [18. 💬 Discussion](#18--discussion)
+- [19. 🐛 Technical Support](#19--technical-support)
+- [20. ❓ FAQ](#20--faq)
+- [21. 📄 Citation](#21--citation)
 
 ---
 
-## ✨ Core Highlights
+## 1. ✨ Core Highlights
 
 | 🎯 Positioning | 📌 Description |
 |:---:|:---|
@@ -66,11 +65,11 @@
 
 ---
 
-## 🔥 New Features
+## 2. 🔥 New Features
 
 | **Date** | **Feature** |
 |:---|:---|
-| 2026.07.25 | 🆕 [**"Stealth Stock Trading" Tool V2: Modular Monitoring System + Alert Monitoring + K-Line Charts + Multi-Source Fallback**](egs_aide/看盘神器/v2) |
+| 2026.07.25 | 🆕 [**"Stealth Stock Trading" Tool V2: Modular Monitoring System + Alert Monitoring + K-Line Charts + Multi-Source Fallback**](egs_aide/excel_stock_monitor/v2) |
 
 <details>
 <summary>📂 <b>2025 Updates</b></summary>
@@ -108,66 +107,7 @@
 
 ---
 
-## 🌟 awesome_projects (Highly Recommended)
-
-> 📁 **Directory**: [awesome_projects](awesome_projects)
->
-> ⭐ **The Highlight Section of This Repo**: Curated, organized, and reviewed top-quality quantitative resources from across the entire web, all in one place!
-
-### 🎯 What Is This?
-
-This is the most essential "resource treasure trove" of this repo — **we spent tremendous effort curating, organizing and reviewing tens of thousands of materials from across the web**, classified by the full quantitative trading workflow so that you can quickly find the tools and materials you need, avoiding detours.
-
-**Differences from Other Sections of This Repo:**
-
-| Section | Positioning | Features |
-|:---|:---|:---|
-| `awesome_projects` ⭐ | Hands-on Resource Aggregation | Curated excellent projects from across the web, with reviews and comparisons |
-| `egs_trade` | Complete Strategy Practice | Step-by-step strategy implementation tutorials |
-| `egs_llm` | LLM Applications | LLM practices in finance |
-| `ai_notes` | Knowledge Notes | Theory, concepts, pitfalls |
-
-### ✨ Four Major Features
-
-- 🔍 **Best of the Best**: Selected from the vast sea of resources across the web to avoid repeated pitfalls
-- 📂 **Clear Categorization**: Classified by the full quant workflow (data → strategy → backtest → trading), easy to find what you need
-- 📝 **With Reviews**: Not just links, but also pros/cons analysis and getting-started guides
-- 🔄 **Continuously Updated**: Keeping up with technology development, continuously adding new resources
-
-### 📚 Resource Category Overview
-
-| No. | Category | Core Content |
-|:---:|:---|:---|
-| 📚 [00-basics](awesome_projects/00-basics.md) | Beginner Learning | Stock learning guides, introductory tutorials |
-| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | Learning Resources | GitHub quant resources, open-source project collection |
-| 📚 [00-resource-collections](awesome_projects/00-resource-collections.md) | Resource Aggregation | Comprehensive categorized quant tool collection |
-| 📊 [01-data](awesome_projects/01-data.md) | Data Acquisition | Data tools, news data, multimodal data |
-| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | Mainstream Quant Frameworks | Qlib, WonderTrader, etc. |
-| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | Backtest Tools | Backtrader, Zipline, RQAlpha, etc. |
-| ⛏️ [04-factors](awesome_projects/04-factors.md) | Alpha Library | alphalens, ta_lib, etc. |
-| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | Strategy Resources | Traditional / DL / RL / report reproduction / portfolio |
-| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | Assistant Tools | K-line patterns, monitoring, office tools |
-| 📊 [07-visualization](awesome_projects/07-visualization.md) | Visualization | Quant charts and visualization |
-| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | Knowledge Graph | Traditional & LLM-based solutions |
-| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | High-Frequency Trading | Crypto HFT |
-| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM in Finance | FinGPT, FinRobot, TradingAgents, Agent, RAG, etc. |
-| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | Research Platforms | Free quant platform collection |
-| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | Trading Platforms | EasyTrader, VN.Py, etc. |
-| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | Research Reports | Report reproduction & sources |
-
-### 🔥 Highlighted Recommendations
-
-- 🤖 **LLM Applications in Finance**: Covers the latest research and practice including FinGPT, FinMem, Self-Reflective, Stock-chain, TradingAgents, FinRobot, etc.
-- 🛠️ **Skill Pack Collection (60+)**: Includes Chan Theory, technical analysis, quant statistics, fundamental analysis, crypto, macro analysis, etc.
-- 📊 **Backtest Framework Multi-dimensional Comparison**: Hands-on comparison of Backtrader, Zipline, RQAlpha, PyAlgoTrade, QuantDigger, etc.
-- 🔬 **Research Report Reproduction**: Selected high-quality broker research reports with reproduction code
-- 💹 **Complete Trading Strategies**: From traditional double MA to RL and GNN, covering all types of strategy resources
-
-> 💡 **Usage Tip**: Browse the [awesome_projects](awesome_projects) directory as needed; if you're interested in a project, click to view the detailed introduction and review.
-
----
-
-## 📖 Introduction
+## 3. 📖 Introduction
 
 ### Target Audience
 
@@ -195,15 +135,11 @@ ai_quant_trade
 │   ├── rl ............. Reinforcement learning for trading
 │   ├── ms_qlib ........ Microsoft Qlib framework
 │   └── vanilla ........ Traditional rule-based strategies
+├── quant_brain ........ Core algorithm library
 ├── runtime ............ Model deployment and real-world usage
 ├── tools .............. Auxiliary tools
 └── README.md
 ```
-
-> **Note**: `quant_brain/` was the historical core algorithm library. After
-> the project restructuring (commit `b7a8c00`), its modules now live inside
-> each `egs_*/.../src/` directory (e.g. `egs_trade/rl/a001_proto_sb3/src/`).
-> There is no top-level `quant_brain/` directory in this repository.
 
 > Each `egs_*/` sub-project now carries its **own `requirements.txt`** —
 > pick the project you want to run, then `pip install -r requirements.txt`
@@ -211,7 +147,56 @@ ai_quant_trade
 
 ---
 
-## 🚀 Quick Start
+## 4. 🌟 awesome_projects (Highly Recommended)
+
+> 📁 **Directory**: [awesome_projects](awesome_projects)
+>
+> ⭐ **The Highlight Section of This Repo**: Curated, organized, and reviewed top-quality quantitative resources from across the entire web, all in one place!
+
+### 🎯 What Is This?
+
+This is the most essential "resource treasure trove" of this repo — **we spent tremendous effort curating, organizing and reviewing tens of thousands of materials from across the web**, classified by the full quantitative trading workflow so that you can quickly find the tools and materials you need, avoiding detours.
+
+### ✨ Four Major Features
+
+- 🔍 **Best of the Best**: Selected from the vast sea of resources across the web to avoid repeated pitfalls
+- 📂 **Clear Categorization**: Classified by the full quant workflow (data → strategy → backtest → trading), easy to find what you need
+- 📝 **With Reviews**: Not just links, but also pros/cons analysis and getting-started guides
+- 🔄 **Continuously Updated**: Keeping up with technology development, continuously adding new resources
+
+### 📚 Resource Category Overview
+
+| No. | Category | Core Content |
+|:---:|:---|:---|
+| 📚 [00-basics](awesome_projects/00-basics.md) | Beginner Learning | Stock learning guides, introductory tutorials |
+| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | Learning Resources | GitHub quant resources, open-source project collection |
+| 📊 [01-data](awesome_projects/01-data.md) | Data Acquisition | Data tools, news data, multimodal data |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | Mainstream Quant Frameworks | Qlib, WonderTrader, etc. |
+| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | Backtest Tools | Backtrader, Zipline, RQAlpha, etc. |
+| ⛏️ [04-factors](awesome_projects/04-factors.md) | Alpha Library | alphalens, ta_lib, etc. |
+| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | Strategy Resources | Traditional / DL / RL / report reproduction / portfolio |
+| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | Assistant Tools | K-line patterns, monitoring, office tools |
+| 📊 [07-visualization](awesome_projects/07-visualization.md) | Visualization | Quant charts and visualization |
+| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | Knowledge Graph | Traditional & LLM-based solutions |
+| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | High-Frequency Trading | Crypto HFT |
+| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM in Finance | FinGPT, FinRobot, TradingAgents, Agent, RAG, etc. |
+| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | Research Platforms | Free quant platform collection |
+| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | Trading Platforms | EasyTrader, VN.Py, etc. |
+| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | Research Reports | Report reproduction & sources |
+
+### 🔥 Highlighted Recommendations
+
+- 🤖 **LLM Applications in Finance**: Covers the latest research and practice including FinGPT, FinMem, Self-Reflective, Stock-chain, TradingAgents, FinRobot, etc.
+- 🛠️ **Skill Pack Collection (60+)**: Includes Chan Theory, technical analysis, quant statistics, fundamental analysis, crypto, macro analysis, etc.
+- 📊 **Backtest Framework Multi-dimensional Comparison**: Hands-on comparison of Backtrader, Zipline, RQAlpha, PyAlgoTrade, QuantDigger, etc.
+- 🔬 **Research Report Reproduction**: Selected high-quality broker research reports with reproduction code
+- 💹 **Complete Trading Strategies**: From traditional double MA to RL and GNN, covering all types of strategy resources
+
+> 💡 **Usage Tip**: Browse the [awesome_projects](awesome_projects) directory as needed; each project entry now includes Stars, License, maintenance status, documentation/homepage and a value review.
+
+---
+
+## 5. 🚀 Quick Start
 
 This repository is not packaged as a Python package yet. Please clone the entire project, then navigate to each `egs` directory for detailed **usage instructions** and **principle explanations**.
 
@@ -230,18 +215,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🔐 Dependency Upgrade Log
-
-> Track record of dependency and toolchain changes that affect end users.
-> Full log: [docs/CHANGELOG.md](docs/CHANGELOG.md)
-
-To clear the 46 GitHub Dependabot security alerts flagged in Sep 2026, a coordinated dependency upgrade (CVE sweep + `gym` → `gymnasium` migration) was rolled out across the affected RL and LLM projects in [PR #25](https://github.com/charliedream1/ai_quant_trade/pull/25) and the follow-up [PR #43](https://github.com/charliedream1/ai_quant_trade/pull/43). All upgraded projects were end-to-end verified before merge.
-
-See [docs/CHANGELOG.md](docs/CHANGELOG.md) for the full upgrade table, migration notes (`gym` → `gymnasium`, Python 3.10 compatibility) and the end-to-end verification commands.
-
----
-
-## 📊 Local Quantitative Strategies
+## 6. 📊 Local Quantitative Strategies
 
 > 📁 **Code Directory**: [egs_trade](egs_trade)
 >
@@ -290,7 +264,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 💰 Live Trading
+## 7. 💰 Live Trading
 
 > 📁 **Code Directory**: [egs_trade](egs_trade)
 
@@ -303,18 +277,18 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 🛠️ Trading Assistant Tools
+## 8. 🛠️ Trading Assistant Tools
 
 > 📁 **Code Directory**: [egs_aide](egs_aide)
 
-1. **[Stock Monitoring with Excel V1](egs_aide/看盘神器/v1)**
+1. **[Stock Monitoring with Excel V1](egs_aide/excel_stock_monitor/v1)**
    - 👀 Hard to be spotted while monitoring stocks
    - 📋 Customizable stock watchlist
    - ⚡ Use Excel for fast calculation and data processing
 
-2. **["Stealth Stock Trading" Tool V2: Modular Monitoring System](egs_aide/看盘神器/v2)** 🆕
+2. **["Stealth Stock Trading" Tool V2: Modular Monitoring System](egs_aide/excel_stock_monitor/v2)** 🆕
 
-   ![Monitoring Tool V2 Demo](egs_aide/看盘神器/v2/看盘神器V2演示.gif)
+   ![Monitoring Tool V2 Demo](egs_aide/excel_stock_monitor/v2/看盘神器V2演示.gif)
 
    - 🏗️ **Architecture Refactor**: Upgraded from a single file to a modular `excel_monitor` package with Sheet Handler pattern; each Sheet refresh is isolated
    - 🔔 **Alert Monitoring**: Customizable upper/lower price/change limits; triggered rows turn red + popup reminders
@@ -331,7 +305,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## ⛏️ Alpha Mining
+## 9. ⛏️ Alpha Mining
 
 > 📁 **Code Directory**: [egs_alpha](egs_alpha)
 
@@ -351,7 +325,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 💾 Data Processing
+## 10. 💾 Data Processing
 
 > 📁 **Code Directory**: [egs_data](egs_data)
 
@@ -362,7 +336,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 📝 Text Analysis
+## 11. 📝 Text Analysis
 
 > 📁 **Code Directory**: [egs_fin_nlp](egs_fin_nlp)
 
@@ -372,7 +346,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 🤖 LLM Applications
+## 12. 🤖 LLM Applications
 
 > 📁 **Code Directory**: [egs_llm](egs_llm)
 
@@ -383,7 +357,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 📚 Programming & AI Basics
+## 13. 📚 Programming & AI Basics
 
 For easier maintenance, the original `ai_wiki` directory content (system operations, programming basics, AI basics, AI practice, etc.) has been independently synchronized to the repo **AI LLM Pitfall Guide**.
 
@@ -396,7 +370,7 @@ It records a large number of problems and solutions encountered in actual develo
 
 ---
 
-## 🌐 Online Research Platforms
+## 14. 🌐 Online Research Platforms
 
 > 📁 **Code Directory**: [egs_online_platform](egs_online_platform)
 
@@ -432,7 +406,7 @@ Research platforms are cloud platforms tailored for quant enthusiasts (quants), 
 
 ---
 
-## 📖 Quant Resource Collection
+## 15. 📖 Quant Resource Collection
 
 > [(Our article with 26,000+ reads on Zhihu) The Ultimate Collection of AI Stock Quantitative Trading Tools and Open-Source Projects](https://zhuanlan.zhihu.com/p/562878605)
 
@@ -445,7 +419,7 @@ We have re-categorized and reviewed all tools, collected in the [ai_notes](ai_no
 
 ---
 
-## 🎁 Companion Resources
+## 16. 🎁 Companion Resources
 
 This code repository adheres to the principle of **parallel paid and free** offerings.
 
@@ -516,7 +490,7 @@ One of the lowest-priced quant planets on the web | 3-day no-questions-asked ref
 
 ---
 
-## 💖 Support Me
+## 17. 💖 Support Me
 
 Your support is the driving force for me to move forward. Even "0.1 RMB" makes me happy. Thank you for your support \(^o^)/
 
@@ -528,22 +502,22 @@ Your support is the driving force for me to move forward. Even "0.1 RMB" makes m
 
 ---
 
-## 💬 Discussion
+## 18. 💬 Discussion
 
 Feel free to start a discussion in [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions).
 
-## 🐛 Technical Support
+## 19. 🐛 Technical Support
 
 - Feel free to submit issues at [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues)
 - Join the Knowledge Planet for more technical support
   - [AI智投星球](https://t.zsxq.com/dHt9l): Focused on AI quantitative trading knowledge sharing
   - [LLM Pitfall Guide](https://t.zsxq.com/q42Js): Focused on programming, LLMs, and AI application empowerment
 
-## ❓ FAQ
+## 20. ❓ FAQ
 
 Please see the documentation → [**FAQ**](docs/02_常见问题)
 
-## 📄 Citation
+## 21. 📄 Citation
 
 ```bibtex
 @misc{ai_quant_trade,

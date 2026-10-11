@@ -28,31 +28,31 @@
 
 ## 📑 目录
 
-- [✨ 核心亮点](#-核心亮点)
-- [🔥 新特性](#-新特性)
-- [🌟 awesome_projects（重点推荐）](#-awesome_projects重点推荐)
-- [📖 简介](#-简介)
-- [🚀 快速开始](#-快速开始)
-- [📊 本地量化策略](#-本地量化策略)
-- [💰 实盘交易](#-实盘交易)
-- [🛠️ 辅助操盘工具](#-辅助操盘工具)
-- [⛏️ 因子挖掘](#-因子挖掘)
-- [💾 数据处理](#-数据处理)
-- [📝 文本分析](#-文本分析)
-- [🤖 大模型应用](#-大模型应用)
-- [📚 编程及AI基础知识](#-编程及ai基础知识)
-- [🌐 在线投研平台](#-在线投研平台)
-- [📖 量化资源集合](#-量化资源集合)
-- [🎁 配套资源](#-配套资源)
-- [💖 打赏我](#-打赏我)
-- [💬 讨论](#-讨论)
-- [🐛 技术支持](#-技术支持)
-- [❓ 常见问题](#-常见问题)
-- [📄 引用](#-引用)
+- [1. ✨ 核心亮点](#1--核心亮点)
+- [2. 🔥 新特性](#2--新特性)
+- [3. 📖 简介](#3--简介)
+- [4. 🌟 awesome_projects（重点推荐）](#4--awesome_projects重点推荐)
+- [5. 🚀 快速开始](#5--快速开始)
+- [6. 📊 本地量化策略](#6--本地量化策略)
+- [7. 💰 实盘交易](#7--实盘交易)
+- [8. 🛠️ 辅助操盘工具](#8--辅助操盘工具)
+- [9. ⛏️ 因子挖掘](#9--因子挖掘)
+- [10. 💾 数据处理](#10--数据处理)
+- [11. 📝 文本分析](#11--文本分析)
+- [12. 🤖 大模型应用](#12--大模型应用)
+- [13. 📚 编程及AI基础知识](#13--编程及ai基础知识)
+- [14. 🌐 在线投研平台](#14--在线投研平台)
+- [15. 📖 量化资源集合](#15--量化资源集合)
+- [16. 🎁 配套资源](#16--配套资源)
+- [17. 💖 打赏我](#17--打赏我)
+- [18. 💬 讨论](#18--讨论)
+- [19. 🐛 技术支持](#19--技术支持)
+- [20. ❓ 常见问题](#20--常见问题)
+- [21. 📄 引用](#21--引用)
 
 ---
 
-## ✨ 核心亮点
+## 1. ✨ 核心亮点
 
 | 🎯 定位 | 📌 说明 |
 |:---:|:---|
@@ -65,11 +65,11 @@
 
 ---
 
-## 🔥 新特性
+## 2. 🔥 新特性
 
 | **时间** | **特性** |
 |:---|:---|
-| 2026.07.25 | 🆕 [**上班"摸鱼炒股"神器 V2：模块化盯盘系统 + 预警监控 + K线图 + 多源 fallback**](egs_aide/看盘神器/v2) |
+| 2026.07.25 | 🆕 [**上班"摸鱼炒股"神器 V2：模块化盯盘系统 + 预警监控 + K线图 + 多源 fallback**](egs_aide/excel_stock_monitor/v2) |
 
 <details>
 <summary>📂 <b>2025 年更新</b></summary>
@@ -107,66 +107,7 @@
 
 ---
 
-## 🌟 awesome_projects（重点推荐）
-
-> 📁 **目录**：[awesome_projects](awesome_projects)
->
-> ⭐ **本仓库精华版块**：从全网海量资料中筛选、整理、点评的优质量化资源，一站式获取！
-
-### 🎯 这是什么？
-
-这是本仓库最核心的"资源宝库"——**我们花费大量精力从全网数万份资料中筛选、整理并附上点评**，按量化交易全流程分类，方便你快速找到所需工具和资料，少走弯路。
-
-**与本仓库其他版块的区别**：
-
-| 版块 | 定位 | 特点 |
-|:---|:---|:---|
-| `awesome_projects` ⭐ | 实战资源整合 | 收录全网优秀项目，附点评与对比 |
-| `egs_trade` | 完整策略实战 | 从0到1的策略实现教程 |
-| `egs_llm` | 大模型应用 | LLM 在金融的落地实践 |
-| `ai_notes` | 知识笔记 | 理论、概念、踩坑实录 |
-
-### ✨ 四大特色
-
-- 🔍 **优中选优**：从全网海量资源中精选，避免你重复踩坑
-- 📂 **分类清晰**：按量化交易全流程（数据→策略→回测→交易）分类，便于按需查找
-- 📝 **含点评解读**：不只是罗列链接，附有优缺点分析、上手指南
-- 🔄 **持续更新**：紧跟技术发展，持续收录新资源
-
-### 📚 资源分类一览
-
-| 序号 | 类别 | 核心内容 |
-|:---:|:---|:---|
-| 📚 [00-basics](awesome_projects/00-basics.md) | 入门学习 | 股票学习指南、入门教程 |
-| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学习资源 | GitHub量化资源、开源项目汇总 |
-| 📚 [00-resource-collections](awesome_projects/00-resource-collections.md) | 资源汇总 | 全量量化工具库分类汇总 |
-| 📊 [01-data](awesome_projects/01-data.md) | 数据获取 | 数据获取工具、新闻数据、多模态数据 |
-| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主流量化框架 | Qlib、WonderTrader 等 |
-| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | 回测工具 | Backtrader、Zipline、RQAlpha 等 |
-| ⛏️ [04-factors](awesome_projects/04-factors.md) | 因子库 | alphalens、ta_lib 等 |
-| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 策略资源 | 传统/深度学习/强化学习/研报复现/投资组合 |
-| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 辅助工具 | K线形态识别、盯盘、办公工具 |
-| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可视化 | 量化图表与可视化 |
-| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | 知识图谱 | 传统方案与大模型方案 |
-| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高频交易 | 加密货币高频交易 |
-| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM 金融应用 | FinGPT、FinRobot、TradingAgents、Agent、RAG 等 |
-| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研平台 | 免费量化平台汇总 |
-| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 交易平台 | EasyTrader、VN.Py 等 |
-| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研报类 | 研报复现与来源 |
-
-### 🔥 重点推荐内容
-
-- 🤖 **大模型在金融的应用**：覆盖 FinGPT、FinMem、Self-Reflective、Stock-chain、TradingAgents、FinRobot 等最新研究与实战
-- 🛠️ **Skill 包合集（60+）**：包含缠论、技术分析、量化统计、基本面分析、加密货币、宏观分析等专业 Skill
-- 📊 **回测框架多维对比**：Backtrader、Zipline、RQAlpha、PyAlgoTrade、QuantDigger 等多框架实测对比
-- 🔬 **研报复现**：精选高质量券商研报并附复现代码
-- 💹 **交易策略全套**：从传统双均线到强化学习、图神经网络，覆盖各类型策略资源
-
-> 💡 **使用建议**：进入 [awesome_projects](awesome_projects) 目录按需浏览；如对某个项目感兴趣，可点击查看详细的介绍和点评。
-
----
-
-## 📖 简介
+## 3. 📖 简介
 
 ### 适合人群
 
@@ -194,15 +135,11 @@ ai_quant_trade
 │   ├── rl ............. 强化学习炒股
 │   ├── ms_qlib ........ 微软Qlib框架
 │   └── vanilla ........ 传统规则类策略
+├── quant_brain ........ 核心算法库
 ├── runtime ............ 模型部署和实际使用
 ├── tools .............. 辅助工具
 └── README.md
 ```
-
-> **说明**：`quant_brain/` 是历史上的"核心算法库"目录。仓库重构后
-> （commit `b7a8c00`），相关模块已经下放到各 `egs_*/.../src/` 目录
-> （例如 `egs_trade/rl/a001_proto_sb3/src/`）。当前仓库根目录
-> **没有** `quant_brain/` 目录。
 
 > 现在每个 `egs_*/` 子项目都自带独立的 **`requirements.txt`** —
 > 进入项目目录运行 `pip install -r requirements.txt` 即可。
@@ -210,7 +147,56 @@ ai_quant_trade
 
 ---
 
-## 🚀 快速开始
+## 4. 🌟 awesome_projects（重点推荐）
+
+> 📁 **目录**：[awesome_projects](awesome_projects)
+>
+> ⭐ **本仓库精华版块**：从全网海量资料中筛选、整理、点评的优质量化资源，一站式获取！
+
+### 🎯 这是什么？
+
+这是本仓库最核心的"资源宝库"——**我们花费大量精力从全网数万份资料中筛选、整理并附上点评**，按量化交易全流程分类，方便你快速找到所需工具和资料，少走弯路。
+
+### ✨ 四大特色
+
+- 🔍 **优中选优**：从全网海量资源中精选，避免你重复踩坑
+- 📂 **分类清晰**：按量化交易全流程（数据→策略→回测→交易）分类，便于按需查找
+- 📝 **含点评解读**：不只是罗列链接，附有优缺点分析、上手指南
+- 🔄 **持续更新**：紧跟技术发展，持续收录新资源
+
+### 📚 资源分类一览
+
+| 序号 | 类别 | 核心内容 |
+|:---:|:---|:---|
+| 📚 [00-basics](awesome_projects/00-basics.md) | 入门学习 | 股票学习指南、入门教程 |
+| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学习资源 | GitHub量化资源、开源项目汇总 |
+| 📊 [01-data](awesome_projects/01-data.md) | 数据获取 | 数据获取工具、新闻数据、多模态数据 |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主流量化框架 | Qlib、WonderTrader 等 |
+| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | 回测工具 | Backtrader、Zipline、RQAlpha 等 |
+| ⛏️ [04-factors](awesome_projects/04-factors.md) | 因子库 | alphalens、ta_lib 等 |
+| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 策略资源 | 传统/深度学习/强化学习/研报复现/投资组合 |
+| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 辅助工具 | K线形态识别、盯盘、办公工具 |
+| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可视化 | 量化图表与可视化 |
+| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | 知识图谱 | 传统方案与大模型方案 |
+| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高频交易 | 加密货币高频交易 |
+| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM 金融应用 | FinGPT、FinRobot、TradingAgents、Agent、RAG 等 |
+| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研平台 | 免费量化平台汇总 |
+| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 交易平台 | EasyTrader、VN.Py 等 |
+| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研报类 | 研报复现与来源 |
+
+### 🔥 重点推荐内容
+
+- 🤖 **大模型在金融的应用**：覆盖 FinGPT、FinMem、Self-Reflective、Stock-chain、TradingAgents、FinRobot 等最新研究与实战
+- 🛠️ **Skill 包合集（60+）**：包含缠论、技术分析、量化统计、基本面分析、加密货币、宏观分析等专业 Skill
+- 📊 **回测框架多维对比**：Backtrader、Zipline、RQAlpha、PyAlgoTrade、QuantDigger 等多框架实测对比
+- 🔬 **研报复现**：精选高质量券商研报并附复现代码
+- 💹 **交易策略全套**：从传统双均线到强化学习、图神经网络，覆盖各类型策略资源
+
+> 💡 **使用建议**：进入 [awesome_projects](awesome_projects) 目录按需浏览；每个项目条目已补充 Stars、License、维护状态、文档/主页和价值点评。
+
+---
+
+## 5. 🚀 快速开始
 
 本仓库暂未封装为 Python 包，请克隆整个项目后，进入各 `egs` 目录查看详细的 **使用说明** 和 **原理介绍**。
 
@@ -227,7 +213,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📊 本地量化策略
+## 6. 📊 本地量化策略
 
 > 📁 **代码目录**：[egs_trade](egs_trade)
 >
@@ -276,7 +262,7 @@ pip install -r requirements.txt
 
 ---
 
-## 💰 实盘交易
+## 7. 💰 实盘交易
 
 > 📁 **代码目录**：[egs_trade](egs_trade)
 
@@ -289,18 +275,18 @@ pip install -r requirements.txt
 
 ---
 
-## 🛠️ 辅助操盘工具
+## 8. 🛠️ 辅助操盘工具
 
 > 📁 **代码目录**：[egs_aide](egs_aide)
 
-1. **[利用EXCEL看盘 V1](egs_aide/看盘神器/v1)**
+1. **[利用EXCEL看盘 V1](egs_aide/excel_stock_monitor/v1)**
    - 👀 看盘时不容易被发现
    - 📋 可自定义添加要盯盘的股票
    - ⚡ 可利用 Excel 快速计算和处理数据
 
-2. **[上班"摸鱼炒股"神器 V2：模块化盯盘系统](egs_aide/看盘神器/v2)** 🆕
+2. **[上班"摸鱼炒股"神器 V2：模块化盯盘系统](egs_aide/excel_stock_monitor/v2)** 🆕
 
-   ![看盘神器V2演示](egs_aide/看盘神器/v2/看盘神器V2演示.gif)
+   ![看盘神器V2演示](egs_aide/excel_stock_monitor/v2/看盘神器V2演示.gif)
 
    - 🏗️ **架构重构**：从单文件升级为模块化 `excel_monitor` 包，Sheet Handler 模式，每个 Sheet 刷新互相隔离
    - 🔔 **预警监控**：自定义涨跌幅/价格上下限，触发后整行变红 + 弹窗提醒
@@ -317,7 +303,7 @@ pip install -r requirements.txt
 
 ---
 
-## ⛏️ 因子挖掘
+## 9. ⛏️ 因子挖掘
 
 > 📁 **代码目录**：[egs_alpha](egs_alpha)
 
@@ -337,7 +323,7 @@ pip install -r requirements.txt
 
 ---
 
-## 💾 数据处理
+## 10. 💾 数据处理
 
 > 📁 **代码目录**：[egs_data](egs_data)
 
@@ -348,7 +334,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📝 文本分析
+## 11. 📝 文本分析
 
 > 📁 **代码目录**：[egs_fin_nlp](egs_fin_nlp)
 
@@ -358,7 +344,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🤖 大模型应用
+## 12. 🤖 大模型应用
 
 > 📁 **代码目录**：[egs_llm](egs_llm)
 
@@ -369,7 +355,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📚 编程及AI基础知识
+## 13. 📚 编程及AI基础知识
 
 为了便于维护，已将原有的 `ai_wiki` 目录内容（系统操作、编程基础、AI基础、AI实践等）独立同步至仓库 **AI大模型避坑指南**。
 
@@ -382,7 +368,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🌐 在线投研平台
+## 14. 🌐 在线投研平台
 
 > 📁 **代码目录**：[egs_online_platform](egs_online_platform)
 
@@ -418,7 +404,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📖 量化资源集合
+## 15. 📖 量化资源集合
 
 > [(我们在知乎上2.6万阅读的文章) 史上最全AI股票量化交易工具和开源项目汇总](https://zhuanlan.zhihu.com/p/562878605)
 
@@ -431,7 +417,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🎁 配套资源
+## 16. 🎁 配套资源
 
 本代码仓秉承 **收费与免费并行** 的原则。
 
@@ -502,7 +488,7 @@ pip install -r requirements.txt
 
 ---
 
-## 💖 打赏我
+## 17. 💖 打赏我
 
 您的支持是我前进的动力，即便"1毛钱"我也很开心，感谢您的打赏和支持 \(^o^)/
 
@@ -514,22 +500,22 @@ pip install -r requirements.txt
 
 ---
 
-## 💬 讨论
+## 18. 💬 讨论
 
 欢迎在 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions) 中发起讨论。
 
-## 🐛 技术支持
+## 19. 🐛 技术支持
 
 - 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题
 - 加入知识星球，获取更多技术支持
   - [AI智投星球](https://t.zsxq.com/dHt9l)：专注AI量化交易知识分享
   - [大模型避坑指南](https://t.zsxq.com/q42Js)：专注编程、大模型、AI应用赋能
 
-## ❓ 常见问题
+## 20. ❓ 常见问题
 
 请查看文档 → [**常见问题**](docs/02_常见问题)
 
-## 📄 引用
+## 21. 📄 引用
 
 ```bibtex
 @misc{ai_quant_trade,

@@ -28,31 +28,31 @@
 
 ## 📑 目次
 
-- [✨ コアハイライト](#-コアハイライト)
-- [🔥 新機能](#-新機能)
-- [🌟 awesome_projects（重点推薦）](#-awesome_projects重点推薦)
-- [📖 紹介](#-紹介)
-- [🚀 クイック_START](#-クイック_start)
-- [📊 ローカル量化戦略](#-ローカル量化戦略)
-- [💰 実取引](#-実取引)
-- [🛠️ 補助トレーディングツール](#-補助トレーディングツール)
-- [⛏️ アルファ発掘](#-アルファ発掘)
-- [💾 データ処理](#-データ処理)
-- [📝 テキスト分析](#-テキスト分析)
-- [🤖 大規模モデル応用](#-大規模モデル応用)
-- [📚 プログラミングおよびAI基礎知識](#-プログラミングおよびai基礎知識)
-- [🌐 オンライン投研プラットフォーム](#-オンライン投研プラットフォーム)
-- [📖 量化リソースコレクション](#-量化リソースコレクション)
-- [🎁 付属リソース](#-付属リソース)
-- [💖 ご支援のお願い](#-ご支援のお願い)
-- [💬 ディスカッション](#-ディスカッション)
-- [🐛 テクニカルサポート](#-テクニカルサポート)
-- [❓ よくある質問](#-よくある質問)
-- [📄 引用](#-引用)
+- [1. ✨ コアハイライト](#1--コアハイライト)
+- [2. 🔥 新機能](#2--新機能)
+- [3. 📖 紹介](#3--紹介)
+- [4. 🌟 awesome_projects（重点推薦）](#4--awesome_projects重点推薦)
+- [5. 🚀 クイック_START](#5--クイック_start)
+- [6. 📊 ローカル量化戦略](#6--ローカル量化戦略)
+- [7. 💰 実取引](#7--実取引)
+- [8. 🛠️ 補助トレーディングツール](#8--補助トレーディングツール)
+- [9. ⛏️ アルファ発掘](#9--アルファ発掘)
+- [10. 💾 データ処理](#10--データ処理)
+- [11. 📝 テキスト分析](#11--テキスト分析)
+- [12. 🤖 大規模モデル応用](#12--大規模モデル応用)
+- [13. 📚 プログラミングおよびAI基礎知識](#13--プログラミングおよびai基礎知識)
+- [14. 🌐 オンライン投研プラットフォーム](#14--オンライン投研プラットフォーム)
+- [15. 📖 量化リソースコレクション](#15--量化リソースコレクション)
+- [16. 🎁 付属リソース](#16--付属リソース)
+- [17. 💖 ご支援のお願い](#17--ご支援のお願い)
+- [18. 💬 ディスカッション](#18--ディスカッション)
+- [19. 🐛 テクニカルサポート](#19--テクニカルサポート)
+- [20. ❓ よくある質問](#20--よくある質問)
+- [21. 📄 引用](#21--引用)
 
 ---
 
-## ✨ コアハイライト
+## 1. ✨ コアハイライト
 
 | 🎯 ポジショニング | 📌 説明 |
 |:---:|:---|
@@ -65,11 +65,11 @@
 
 ---
 
-## 🔥 新機能
+## 2. 🔥 新機能
 
 | **日時** | **機能** |
 |:---|:---|
-| 2026.07.25 | 🆕 [**「サボり株取引」神器 V2：モジュラー板監視システム + 警報モニタリング + K線チャート + マルチソースフォールバック**](egs_aide/看盘神器/v2) |
+| 2026.07.25 | 🆕 [**「サボり株取引」神器 V2：モジュラー板監視システム + 警報モニタリング + K線チャート + マルチソースフォールバック**](egs_aide/excel_stock_monitor/v2) |
 
 <details>
 <summary>📂 <b>2025年の更新</b></summary>
@@ -107,66 +107,7 @@
 
 ---
 
-## 🌟 awesome_projects（重点推薦）
-
-> 📁 **ディレクトリ**: [awesome_projects](awesome_projects)
->
-> ⭐ **本リポジトリの精华セクション**：Web全体の膨大な資料から選別・整理・レビューした高品質な量化リソースをワンストップで取得！
-
-### 🎯 これは何ですか？
-
-これは本リポジトリの最もコアな「リソースの宝庫」です — **Web全体の数万件の資料から選別・整理・レビューに多大な労力を費やし**、クォンツトレーディングの全フローに従って分類し、必要なツールと資料を素早く見つけられるようにしています。
-
-**本リポジトリの他セクションとの違い：**
-
-| セクション | ポジショニング | 特徴 |
-|:---|:---|:---|
-| `awesome_projects` ⭐ | 実践リソース集約 | Web全体の優れたプロジェクトを収録、レビューと比較付き |
-| `egs_trade` | 完全な戦略実践 | 0から1への戦略実装チュートリアル |
-| `egs_llm` | 大規模モデル応用 | 金融におけるLLMの実装実践 |
-| `ai_notes` | 知識ノート | 理論、概念、落とし穴の実録 |
-
-### ✨ 四大特色
-
-- 🔍 **精鋭選出**：Web全体の膨大なリソースから精選、繰り返し落とし穴を踏むのを回避
-- 📂 **明確な分類**：クォンツトレーディングの全フロー（データ→戦略→バックテスト→取引）に従って分類、ニーズに応じて検索しやすい
-- 📝 **レビュー解説付き**：リンクの羅列だけでなく、優缺点分析と入門ガイド付き
-- 🔄 **継続的更新**：技術の発展に追随し、新しいリソースを継続的に収録
-
-### 📚 リソース分類一覧
-
-| 番号 | カテゴリー | コアコンテンツ |
-|:---:|:---|:---|
-| 📚 [00-basics](awesome_projects/00-basics.md) | 入門学習 | 株式学習ガイド、入門チュートリアル |
-| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学習リソース | GitHub量化リソース、オープンソースプロジェクト集約 |
-| 📚 [00-resource-collections](awesome_projects/00-resource-collections.md) | リソース集約 | 全量量化ツールライブラリ分類集約 |
-| 📊 [01-data](awesome_projects/01-data.md) | データ取得 | データ取得ツール、ニュースデータ、マルチモーダルデータ |
-| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主要量化フレームワーク | Qlib、WonderTraderなど |
-| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | バックテストツール | Backtrader、Zipline、RQAlphaなど |
-| ⛏️ [04-factors](awesome_projects/04-factors.md) | アルファライブラリ | alphalens、ta_libなど |
-| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 戦略リソース | 伝統/深層学習/強化学習/研報再現/ポートフォリオ |
-| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 補助ツール | K線パターン認識、板監視、オフィスツール |
-| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可視化 | 量化チャートと可視化 |
-| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | ナレッジグラフ | 従来型とLLM型ソリューション |
-| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高頻度取引 | 暗号通貨高頻度取引 |
-| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM金融応用 | FinGPT、FinRobot、TradingAgents、Agent、RAGなど |
-| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研プラットフォーム | 無料量化プラットフォーム集約 |
-| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 取引プラットフォーム | EasyTrader、VN.Pyなど |
-| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研報類 | 研報再現とソース |
-
-### 🔥 重点推薦コンテンツ
-
-- 🤖 **金融における大規模モデルの応用**：FinGPT、FinMem、Self-Reflective、Stock-chain、TradingAgents、FinRobotなどの最新研究と実践をカバー
-- 🛠️ **Skillパック集（60+）**：纏論、技術分析、量化統計、ファンダメンタルズ分析、暗号通貨、マクロ分析などの専門Skillを含む
-- 📊 **バックテストフレームワーク多次元比較**：Backtrader、Zipline、RQAlpha、PyAlgoTrade、QuantDiggerなどの多フレームワーク実測比較
-- 🔬 **研報再現**：選り抜きの高品質な証券会社研報と再現コード付き
-- 💹 **取引戦略フルセット**：伝統的なダブル移動平均から強化学習、グラフニューラルネットまで、各タイプの戦略リソースをカバー
-
-> 💡 **使用建議**：[awesome_projects](awesome_projects)ディレクトリに入ってニーズに応じて閲覧してください；あるプロジェクトに興味があれば、クリックして詳細な紹介とレビューを確認できます。
-
----
-
-## 📖 紹介
+## 3. 📖 紹介
 
 ### 対象者
 
@@ -194,15 +135,11 @@ ai_quant_trade
 │   ├── rl ............. 強化学習による株取引
 │   ├── ms_qlib ........ Microsoft Qlibフレームワーク
 │   └── vanilla ........ 伝統的なルールベース戦略
+├── quant_brain ........ コアアルゴリズムライブラリ
 ├── runtime ............ モデルデプロイと実使用
 ├── tools .............. 補助ツール
 └── README.md
 ```
-
-> **注意**：`quant_brain/` は歴史上の「コアアルゴリズムライブラリ」ディレクトリです。
-> リポジトリの再構成（commit `b7a8c00`）以降、そのモジュールは各 `egs_*/.../src/`
-> （例：`egs_trade/rl/a001_proto_sb3/src/`）配下に移動しました。
-> 現在、リポジトリ直下に `quant_brain/` ディレクトリは**存在しません**。
 
 > 各 `egs_*/` サブプロジェクトは独自の **`requirements.txt`** を
 > 持つようになりました。利用したいプロジェクトのディレクトリで
@@ -211,7 +148,56 @@ ai_quant_trade
 
 ---
 
-## 🚀 クイック_START
+## 4. 🌟 awesome_projects（重点推薦）
+
+> 📁 **ディレクトリ**: [awesome_projects](awesome_projects)
+>
+> ⭐ **本リポジトリの精华セクション**：Web全体の膨大な資料から選別・整理・レビューした高品質な量化リソースをワンストップで取得！
+
+### 🎯 これは何ですか？
+
+これは本リポジトリの最もコアな「リソースの宝庫」です — **Web全体の数万件の資料から選別・整理・レビューに多大な労力を費やし**、クォンツトレーディングの全フローに従って分類し、必要なツールと資料を素早く見つけられるようにしています。
+
+### ✨ 四大特色
+
+- 🔍 **精鋭選出**：Web全体の膨大なリソースから精選、繰り返し落とし穴を踏むのを回避
+- 📂 **明確な分類**：クォンツトレーディングの全フロー（データ→戦略→バックテスト→取引）に従って分類、ニーズに応じて検索しやすい
+- 📝 **レビュー解説付き**：リンクの羅列だけでなく、優缺点分析と入門ガイド付き
+- 🔄 **継続的更新**：技術の発展に追随し、新しいリソースを継続的に収録
+
+### 📚 リソース分類一覧
+
+| 番号 | カテゴリー | コアコンテンツ |
+|:---:|:---|:---|
+| 📚 [00-basics](awesome_projects/00-basics.md) | 入門学習 | 株式学習ガイド、入門チュートリアル |
+| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学習リソース | GitHub量化リソース、オープンソースプロジェクト集約 |
+| 📊 [01-data](awesome_projects/01-data.md) | データ取得 | データ取得ツール、ニュースデータ、マルチモーダルデータ |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主要量化フレームワーク | Qlib、WonderTraderなど |
+| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | バックテストツール | Backtrader、Zipline、RQAlphaなど |
+| ⛏️ [04-factors](awesome_projects/04-factors.md) | アルファライブラリ | alphalens、ta_libなど |
+| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 戦略リソース | 伝統/深層学習/強化学習/研報再現/ポートフォリオ |
+| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 補助ツール | K線パターン認識、板監視、オフィスツール |
+| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可視化 | 量化チャートと可視化 |
+| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | ナレッジグラフ | 従来型とLLM型ソリューション |
+| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高頻度取引 | 暗号通貨高頻度取引 |
+| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM金融応用 | FinGPT、FinRobot、TradingAgents、Agent、RAGなど |
+| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研プラットフォーム | 無料量化プラットフォーム集約 |
+| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 取引プラットフォーム | EasyTrader、VN.Pyなど |
+| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研報類 | 研報再現とソース |
+
+### 🔥 重点推薦コンテンツ
+
+- 🤖 **金融における大規模モデルの応用**：FinGPT、FinMem、Self-Reflective、Stock-chain、TradingAgents、FinRobotなどの最新研究と実践をカバー
+- 🛠️ **Skillパック集（60+）**：纏論、技術分析、量化統計、ファンダメンタルズ分析、暗号通貨、マクロ分析などの専門Skillを含む
+- 📊 **バックテストフレームワーク多次元比較**：Backtrader、Zipline、RQAlpha、PyAlgoTrade、QuantDiggerなどの多フレームワーク実測比較
+- 🔬 **研報再現**：選り抜きの高品質な証券会社研報と再現コード付き
+- 💹 **取引戦略フルセット**：伝統的なダブル移動平均から強化学習、グラフニューラルネットまで、各タイプの戦略リソースをカバー
+
+> 💡 **使用建議**：[awesome_projects](awesome_projects)ディレクトリに入ってニーズに応じて閲覧してください；各プロジェクトには Stars、License、保守状況、ドキュメント/ホームページ、価値レビューを追記しています。
+
+---
+
+## 5. 🚀 クイック_START
 
 本リポジトリは現時点ではPythonパッケージとして打包化されていません。プロジェクト全体をクローンした後、各`egs`ディレクトリに入って詳細な**使用方法**と**原理説明**を確認してください。
 
@@ -228,7 +214,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📊 ローカル量化戦略
+## 6. 📊 ローカル量化戦略
 
 > 📁 **コードディレクトリ**: [egs_trade](egs_trade)
 >
@@ -277,7 +263,7 @@ pip install -r requirements.txt
 
 ---
 
-## 💰 実取引
+## 7. 💰 実取引
 
 > 📁 **コードディレクトリ**: [egs_trade](egs_trade)
 
@@ -290,18 +276,18 @@ pip install -r requirements.txt
 
 ---
 
-## 🛠️ 補助トレーディングツール
+## 8. 🛠️ 補助トレーディングツール
 
 > 📁 **コードディレクトリ**: [egs_aide](egs_aide)
 
-1. **[EXCELで板を見る V1](egs_aide/看盘神器/v1)**
+1. **[EXCELで板を見る V1](egs_aide/excel_stock_monitor/v1)**
    - 👀 板見時に発見されにくい
    - 📋 監視する銘柄をカスタマイズ可能
    - ⚡ Excelで素早く計算とデータ処理が可能
 
-2. **["サボり株取引"神器 V2：モジュラー板監視システム](egs_aide/看盘神器/v2)** 🆕
+2. **["サボり株取引"神器 V2：モジュラー板監視システム](egs_aide/excel_stock_monitor/v2)** 🆕
 
-   ![板監視神器V2デモ](egs_aide/看盘神器/v2/看盘神器V2演示.gif)
+   ![板監視神器V2デモ](egs_aide/excel_stock_monitor/v2/看盘神器V2演示.gif)
 
    - 🏗️ **アーキテクチャリファクタ**：単一ファイルからモジュラー`excel_monitor`パッケージにアップグレード、Sheet Handlerパターン、各Sheetのリフレッシュが互いに分離
    - 🔔 **警報モニタリング**：カスタマイズ可能な騰落率/価格上限・下限、トリガーで行全体が赤く変わる + ポップアップ通知
@@ -318,7 +304,7 @@ pip install -r requirements.txt
 
 ---
 
-## ⛏️ アルファ発掘
+## 9. ⛏️ アルファ発掘
 
 > 📁 **コードディレクトリ**: [egs_alpha](egs_alpha)
 
@@ -338,7 +324,7 @@ pip install -r requirements.txt
 
 ---
 
-## 💾 データ処理
+## 10. 💾 データ処理
 
 > 📁 **コードディレクトリ**: [egs_data](egs_data)
 
@@ -349,7 +335,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📝 テキスト分析
+## 11. 📝 テキスト分析
 
 > 📁 **コードディレクトリ**: [egs_fin_nlp](egs_fin_nlp)
 
@@ -359,7 +345,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🤖 大規模モデル応用
+## 12. 🤖 大規模モデル応用
 
 > 📁 **コードディレクトリ**: [egs_llm](egs_llm)
 
@@ -370,7 +356,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📚 プログラミングおよびAI基礎知識
+## 13. 📚 プログラミングおよびAI基礎知識
 
 メンテナンスを容易にするため、従来の`ai_wiki`ディレクトリの内容（システム操作、プログラミング基礎、AI基礎、AI実践など）は、リポジトリ**AI大規模モデル落とし穴ガイド**に独立して同期されています。
 
@@ -383,7 +369,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🌐 オンライン投研プラットフォーム
+## 14. 🌐 オンライン投研プラットフォーム
 
 > 📁 **コードディレクトリ**: [egs_online_platform](egs_online_platform)
 
@@ -419,7 +405,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📖 量化リソースコレクション
+## 15. 📖 量化リソースコレクション
 
 > [(Zhihuで2.6万回読まれた記事) 史上最全AI株式量化取引ツールとオープンソースプロジェクト集約](https://zhuanlan.zhihu.com/p/562878605)
 
@@ -432,7 +418,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🎁 付属リソース
+## 16. 🎁 付属リソース
 
 本コードリポジトリは**有料と無料の並行**原則を遵守しています。
 
@@ -503,7 +489,7 @@ Web最安値の量化プラネットの一つ | 3日以内不满意無料返金
 
 ---
 
-## 💖 ご支援のお願い
+## 17. 💖 ご支援のお願い
 
 ご支援は私の前進の原動力です。「0.1元」でも大変嬉しいです。ご支援ありがとうございます \(^o^)/
 
@@ -515,22 +501,22 @@ Web最安値の量化プラネットの一つ | 3日以内不满意無料返金
 
 ---
 
-## 💬 ディスカッション
+## 18. 💬 ディスカッション
 
 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions)でディスカッションを開始することを歓迎します。
 
-## 🐛 テクニカルサポート
+## 19. 🐛 テクニカルサポート
 
 - [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues)に問題を提出することを歓迎します
 - ナレッジプラネットに参加して、より多くのテクニカルサポートを取得
   - [AI智投星球](https://t.zsxq.com/dHt9l)：AI量化取引のナレッジ共有に焦点
   - [大規模モデル落とし穴ガイド](https://t.zsxq.com/q42Js)：プログラミング、大規模モデル、AI応用エンパワーメントに焦点
 
-## ❓ よくある質問
+## 20. ❓ よくある質問
 
 ドキュメントをご覧ください → [**よくある質問**](docs/02_常见问题)
 
-## 📄 引用
+## 21. 📄 引用
 
 ```bibtex
 @misc{ai_quant_trade,
