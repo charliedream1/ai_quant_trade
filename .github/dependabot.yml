@@ -1,4 +1,7 @@
 # Dependabot 配置：自动跟踪 GitHub Actions 与 pip 依赖的版本与安全更新
+# 策略：常规版本更新每半年集中检查一次（1月1日/7月1日）；安全漏洞不受此限制，
+#       由仓库设置的 "Dependabot security updates" 按告警即时处理（需在
+#       Settings → Code security → Dependabot security updates 中开启）
 # 文档: https://docs.github.com/zh/code-security/dependabot/dependabot-version-updates/configuring-dependabot
 version: 2
 
@@ -8,8 +11,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "semiannually"   # 每半年（1月1日/7月1日）检查一次；day 仅对 weekly 有效
     open-pull-requests-limit: 2
     groups:
       actions-all:
@@ -26,8 +28,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "semiannually"   # 每半年（1月1日/7月1日）检查一次；day 仅对 weekly 有效
     open-pull-requests-limit: 0   # 暂不真正开启，等有根 requirements.txt 再启用
     ignore:
       - dependency-name: "*"
@@ -36,8 +37,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/egs_data"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "semiannually"   # 每半年（1月1日/7月1日）检查一次；day 仅对 weekly 有效
     open-pull-requests-limit: 5
     groups:
       pip-minor:
@@ -51,8 +51,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/egs_aide/excel_stock_monitor/v2"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "semiannually"   # 每半年（1月1日/7月1日）检查一次；day 仅对 weekly 有效
     open-pull-requests-limit: 2
     groups:
       pip-minor:
@@ -66,8 +65,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/egs_skill/broker-research-analyst"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "semiannually"   # 每半年（1月1日/7月1日）检查一次；day 仅对 weekly 有效
     open-pull-requests-limit: 2
     groups:
       pip-minor:
@@ -81,8 +79,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/egs_trade/rl/a001_proto_sb3"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "semiannually"   # 每半年（1月1日/7月1日）检查一次；day 仅对 weekly 有效
     open-pull-requests-limit: 2
     groups:
       pip-minor:
