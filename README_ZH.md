@@ -534,6 +534,6 @@ pip install -r requirements.txt
 
 **如果本项目对你有帮助，请给一个 Star ⭐ 支持一下！**
 
-[![Stargazers over time](https://starchart.cc/charliedream1/ai_quant_trade.svg)](https://starchart.cc/charliedream1/ai_quant_trade)
+[![Stargazers over time](https://api.star-history.com/svg?repos=charliedream1/ai_quant_trade&type=Date)](https://star-history.com/#charliedream1/ai_quant_trade&Date)
 
 </div>

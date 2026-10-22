@@ -535,6 +535,6 @@ Web最安値の量化プラネットの一つ | 3日以内不满意無料返金
 
 **もしこのプロジェクトがお役に立ちましたら、Star ⭐ でサポートしてください！**
 
-[![Stargazers over time](https://starchart.cc/charliedream1/ai_quant_trade.svg)](https://starchart.cc/charliedream1/ai_quant_trade)
+[![Stargazers over time](https://api.star-history.com/svg?repos=charliedream1/ai_quant_trade&type=Date)](https://star-history.com/#charliedream1/ai_quant_trade&Date)
 
 </div>
