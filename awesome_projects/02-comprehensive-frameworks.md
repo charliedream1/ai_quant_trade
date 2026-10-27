@@ -15,6 +15,11 @@
   - Docs/Homepage: https://openbb.co
   - Value: Useful when research workflows need a broad data/analytics surface rather than only a backtest engine.
 
+- **[PandaAI QuantFlow](https://github.com/PandaAI-Tech/panda_quantflow)** — Integrated quant trading & ML workflow platform with a node-based visual workflow designer, built-in ML (XGBoost/LightGBM/RandomForest/SVM/neural networks), factor analysis, an event-driven backtest engine (stocks & futures), and a FastAPI service with multi-user workflow management and Docker deployment.
+  - Metadata: Language: JavaScript · Stars: 1,053 · License: GPL-3.0 · Maintenance: Recent (last push 2025-08-14)
+  - Docs/Homepage: -
+  - Value: Strong candidate for an end-to-end, low-code quant research & trading workbench; verify data-source licensing (bundled MongoDB market data) and the planned live-trading connectors (CTP/QMT) before production adoption.
+
 ## Financial Engineering Libraries
 
 - **[TF Quant Finance](https://github.com/google/tf-quant-finance)** — A TensorFlow library for quantitative finance by Google.
