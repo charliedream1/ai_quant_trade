@@ -5,7 +5,7 @@ pandas==3.0.6
 openpyxl==3.1.5
 pyyaml==6.0.3
 mplfinance==0.12.10b0
-loguru>=0.7.0
+loguru>=0.7.3
 pytest==9.1.1
 # 备选数据源（主源 qstock 失败时自动 fallback，参考 egs_data/）
 akshare>=1.19.1

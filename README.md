@@ -536,6 +536,6 @@ Please see the documentation → [**FAQ**](docs/02_常见问题)
 
 **If this project helps you, please give it a Star ⭐ to support!**
 
-[![Stargazers over time](https://starchart.cc/charliedream1/ai_quant_trade.svg)](https://starchart.cc/charliedream1/ai_quant_trade)
+[![Stargazers over time](https://api.star-history.com/svg?repos=charliedream1/ai_quant_trade&type=Date)](https://star-history.com/#charliedream1/ai_quant_trade&Date)
 
 </div>
