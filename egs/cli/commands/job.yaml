@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "job list": {"method":"GET","path":"/jobs","positions":{},"query":{"job_type":"str","enabled":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "job create": {"method":"POST","path":"/jobs","positions":{},"query":{},"fields":{"name":"str","job_type":"str","cron":"str","cron_expr":"str","enabled":"bool","target":"json","job_params":"json"},"execution":false,"market":false}
+  "job show": {"method":"GET","path":"/jobs/{job_id}","positions":{"job_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "job update": {"method":"PUT","path":"/jobs/{job_id}","positions":{"job_id":"int"},"query":{},"fields":{"name":"str","job_type":"str","cron":"str","cron_expr":"str","enabled":"bool","target":"json","job_params":"json"},"execution":false,"market":false}
+  "job delete": {"method":"DELETE","path":"/jobs/{job_id}","positions":{"job_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "job enable": {"method":"POST","path":"/jobs/{job_id}/enable","positions":{"job_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "job disable": {"method":"POST","path":"/jobs/{job_id}/disable","positions":{"job_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "job trigger": {"method":"POST","path":"/jobs/{job_id}/trigger","positions":{"job_id":"int"},"query":{},"fields":{},"execution":true,"market":false}
+  "job history": {"method":"GET","path":"/jobs/{job_id}/histories","positions":{"job_id":"int"},"query":{"status":"str","start_time":"str","end_time":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false,"unsupported_query":["start_time","end_time"]}

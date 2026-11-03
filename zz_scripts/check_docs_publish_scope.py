@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
 """Fail CI when the MkDocs site reaches outside its intended source scope."""
 
 from __future__ import annotations
 
 import sys
 from pathlib import Path
+
+from docs_policy import published
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,6 +26,8 @@ def iter_checked_files() -> list[Path]:
         for path in docs_dir.rglob("*"):
             if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
                 continue
+            if not published(path):
+                continue
             rel = path.relative_to(REPO_ROOT).as_posix()
             if rel == "docs/intro.md" or rel.startswith("docs/snippets/"):
                 continue
@@ -38,9 +41,6 @@ def main() -> None:
         ("old wrapper generator", "gen_project_" + "wrappers"),
         ("include outside docs", "../" + "snippets"),
         ("markdown include directive", "{%" + " include"),
-        ("example directory reference", "egs" + "_"),
-        ("example directory path", "egs" + "/"),
-        ("example directory path", "egs" + "\\"),
         ("notes wrapper source", "ai_" + "notes"),
         ("unused include plugin", "include-" + "markdown"),
     ]

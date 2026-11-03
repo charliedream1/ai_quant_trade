@@ -4,7 +4,8 @@ param(
     [switch]$Serve,
     [string]$HostName = "127.0.0.1",
     [int]$Port = 8000,
-    [switch]$Strict
+    [switch]$Strict,
+    [string]$SiteDir = "site"
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,6 +13,11 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Resolve-Path (Join-Path $ScriptDir "..")
 Set-Location $RepoRoot
+$ResolvedSiteDir = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $SiteDir))
+$RepoPrefix = ([string]$RepoRoot).TrimEnd([char[]]"\/") + [System.IO.Path]::DirectorySeparatorChar
+if (-not $ResolvedSiteDir.StartsWith($RepoPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "SiteDir must be a generated directory inside the repository."
+}
 
 function Invoke-Step {
     param(
@@ -31,14 +37,12 @@ function Invoke-Python {
 }
 
 function Assert-NoForbiddenSiteContent {
-    if (-not (Test-Path "site")) {
-        throw "site/ not found. Run mkdocs build first."
+    if (-not (Test-Path -LiteralPath $SiteDir -PathType Container)) {
+        throw "$SiteDir not found. Run mkdocs build first."
     }
 
     $patterns = @(
         "_projects",
-        "egs_",
-        "egs/",
         "gen_project_wrappers",
         "../snippets",
         "{% include",
@@ -46,7 +50,7 @@ function Assert-NoForbiddenSiteContent {
         "ai_notes"
     )
 
-    $files = Get-ChildItem -Path "site" -Recurse -File -Include `
+    $files = Get-ChildItem -Path $SiteDir -Recurse -File -Include `
         *.html,*.json,*.js,*.xml,*.txt
 
     if (Get-Command rg -ErrorAction SilentlyContinue) {
@@ -54,32 +58,26 @@ function Assert-NoForbiddenSiteContent {
         foreach ($pattern in $patterns) {
             $rgArgs += @("-e", $pattern)
         }
-        $rgArgs += "site"
+        $rgArgs += @("--", $SiteDir)
         & rg @rgArgs
         if ($LASTEXITCODE -eq 0) {
-            throw "Forbidden legacy docs content found in site/."
+            throw "Forbidden legacy docs content found in $SiteDir."
         }
         if ($LASTEXITCODE -ne 1) {
-            throw "rg failed while scanning site/."
+            throw "rg failed while scanning $SiteDir."
         }
     } else {
         $matches = $files | Select-String -SimpleMatch -Pattern $patterns
         if ($matches) {
             $matches | ForEach-Object { Write-Host $_ }
-            throw "Forbidden legacy docs content found in site/."
+            throw "Forbidden legacy docs content found in $SiteDir."
         }
     }
 
     Write-Host "[site scan] OK - no legacy project/include references found."
 }
 
-$deps = @(
-    "mkdocs>=1.6",
-    "mkdocs-material>=9.5",
-    "mkdocs-static-i18n>=1.3",
-    "mkdocs-material-extensions>=1.3",
-    "pymdown-extensions>=10.7"
-)
+$deps = @("-r", "requirements-docs.txt")
 
 Invoke-Step "Python version" {
     Invoke-Python --version
@@ -104,7 +102,7 @@ Invoke-Step "Check MkDocs config and assets" {
 }
 
 Invoke-Step "Build docs site" {
-    $buildArgs = @("-m", "mkdocs", "build", "--clean")
+    $buildArgs = @("-m", "mkdocs", "build", "--clean", "--site-dir", $SiteDir)
     if ($Strict) {
         $buildArgs += "--strict"
     }
@@ -116,7 +114,7 @@ Invoke-Step "Scan generated site" {
 }
 
 Write-Host ""
-Write-Host "==> Build complete: site/"
+Write-Host "==> Build complete: $SiteDir"
 Write-Host "==> Local URL after serving: http://$HostName`:$Port/ai_quant_trade/"
 
 if ($Serve) {

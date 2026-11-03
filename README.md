@@ -9,7 +9,7 @@
 [**中文版**](README_ZH.md) | [**日本語版**](README_JA.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python-Version](https://img.shields.io/badge/Python-3.8+-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
+[![Python-Version](https://img.shields.io/badge/Python-3.11%2B%20Workspace-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 [![Stars](https://img.shields.io/github/stars/charliedream1/ai_quant_trade?style=social)](https://github.com/charliedream1/ai_quant_trade)
 
 <p>
@@ -26,29 +26,34 @@
 
 ---
 
+**Knowledge update · 2026-11-02:** named file libraries, Markdown heading chunks, recursive model-keyword retrieval with zvec-grep, session attachments, source previews, and report/paper downloads. See the [knowledge guide](docs/usage/knowledge.md).
+
+**Latest update · 2026-11-01:** one [quant research workspace](#integrated-workspace) connects market views, visual strategy construction, backtests, AI sessions and cited knowledge. Start with the [workspace guide](docs/usage/workspace.md).
+
 ## 📑 Table of Contents
 
 - [1. ✨ Core Highlights](#1--core-highlights)
 - [2. 🔥 New Features](#2--new-features)
-- [3. 📖 Introduction](#3--introduction)
-- [4. 🌟 awesome_projects (Highly Recommended)](#4--awesome_projects-highly-recommended)
-- [5. 🚀 Quick Start](#5--quick-start)
-- [6. 📊 Local Quantitative Strategies](#6--local-quantitative-strategies)
-- [7. 💰 Live Trading](#7--live-trading)
-- [8. 🛠️ Trading Assistant Tools](#8--trading-assistant-tools)
-- [9. ⛏️ Alpha Mining](#9--alpha-mining)
-- [10. 💾 Data Processing](#10--data-processing)
-- [11. 📝 Text Analysis](#11--text-analysis)
-- [12. 🤖 LLM Applications](#12--llm-applications)
-- [13. 📚 Programming & AI Basics](#13--programming--ai-basics)
-- [14. 🌐 Online Research Platforms](#14--online-research-platforms)
-- [15. 📖 Quant Resource Collection](#15--quant-resource-collection)
-- [16. 🎁 Companion Resources](#16--companion-resources)
-- [17. 💖 Support Me](#17--support-me)
-- [18. 💬 Discussion](#18--discussion)
-- [19. 🐛 Technical Support](#19--technical-support)
-- [20. ❓ FAQ](#20--faq)
-- [21. 📄 Citation](#21--citation)
+- [3. 🧩 Integrated Quant Workspace (`src`)](#integrated-workspace)
+- [4. 📖 Introduction](#4--introduction)
+- [5. 🌟 awesome_projects (Highly Recommended)](#5--awesome_projects-highly-recommended)
+- [6. 🚀 Quick Start](#6--quick-start)
+- [7. 📊 Local Quantitative Strategies](#7--local-quantitative-strategies)
+- [8. 💰 Live Trading](#8--live-trading)
+- [9. 🛠️ Trading Assistant Tools](#9--trading-assistant-tools)
+- [10. ⛏️ Alpha Mining](#10--alpha-mining)
+- [11. 💾 Data Processing](#11--data-processing)
+- [12. 📝 Text Analysis](#12--text-analysis)
+- [13. 🤖 LLM Applications](#13--llm-applications)
+- [14. 📚 Programming & AI Basics](#14--programming--ai-basics)
+- [15. 🌐 Online Research Platforms](#15--online-research-platforms)
+- [16. 📖 Quant Resource Collection](#16--quant-resource-collection)
+- [17. 🎁 Companion Resources](#17--companion-resources)
+- [18. 💖 Support Me](#18--support-me)
+- [19. 💬 Discussion](#19--discussion)
+- [20. 🐛 Technical Support](#20--technical-support)
+- [21. ❓ FAQ](#21--faq)
+- [22. 📄 Citation](#22--citation)
 
 ---
 
@@ -69,6 +74,11 @@
 
 | **Date** | **Feature** |
 |:---|:---|
+| 2026.11.01 | 🆕 [**Integrated quant research workspace**](docs/usage/workspace.md): portfolio overview, market research, visual strategies, fee-aware backtests, AI project sessions and cited knowledge Q&A in one Gradio application. |
+| 2026.10.31 | [**Execution controls and research evidence**](docs/usage/access_and_execution.md): custom-source review, frozen parameter snapshots, backend process status, RAG citations and local document reading/Markdown editing. |
+| 2026.10.29 | [**Agent API/CLI backends and ten native research Skills**](docs/usage/agent_cli_skills.md), with recorded process events and explicit availability checks. |
+| 2026.10.28 | [**Bull/bear debate and team-contest strategies**](docs/usage/agent_strategies.md), alongside [Alpha mining, theme and regime research](docs/usage/alpha_mining.md). |
+| 2026.10.24 | [**Visual strategy workshop**](docs/usage/strategy_composition.md): cascades, parallel scoring, factor/model components and Portfolio/Risk. |
 | 2026.07.25 | 🆕 [**"Stealth Stock Trading" Tool V2: Modular Monitoring System + Alert Monitoring + K-Line Charts + Multi-Source Fallback**](egs_aide/excel_stock_monitor/v2) |
 
 <details>
@@ -107,7 +117,66 @@
 
 ---
 
-## 3. 📖 Introduction
+<a id="integrated-workspace"></a>
+
+## 3. 🧩 Integrated Quant Workspace (`src`)
+
+The new [`src/`](src) is a runnable research workspace: a modular **Gradio UI**, shared **REST API and CLI**, and one strategy/backtest pipeline. It connects market research, strategy construction, simulation, AI sessions and local knowledge in one project. The older `egs_*/` examples remain available as independent projects.
+
+[**Platform handbook**](docs/platform/index.md) · [**Workspace guide**](docs/usage/workspace.md) · [**Getting started**](docs/usage/quick_start.md) · [**Architecture and principles**](docs/principles/README.md) · [**CLI reference**](docs/usage/cli.md)
+
+| Capability | What you can do |
+| --- | --- |
+| Overview and market research | Inspect NAV/allocation/position statistics, news, sector/stock views, factor monitoring and relationship evidence. |
+| Strategy library and small models | Import rule strategies, ETF/industry rotation, LightGBM/XGBoost ranking and CPU MLP ensembles; preview YAML parameters and freeze each run. |
+| Visual composition, Portfolio and Risk | Build rule → model → Agent cascades or parallel scoring/voting, then apply allocation and risk components; inspect connected steps on the graph. |
+| Backtests and simulation | Set dates, commission/tax/slippage and execution assumptions; inspect NAV, drawdown, trades, attribution and parameter snapshots. |
+| Alpha and multi-Agent research | Run hypothesis → implementation → evaluation, theme/regime experiments, bull/bear debate and team contests with evidence and review gates. |
+| AI, native CLI and Skills | Use project sessions and attachments; select backend, permissions, model and reasoning settings. Agent backends include API/Codex/Qoder/TRAE/CodeBuddy where installed and qualified. |
+| Knowledge and documents | Ask local RAG questions with references, preview HTML/Office/PDF, edit Markdown and browse saved reports. |
+| Learning and operations | Read ordered quant lessons, schedule tasks, manage MCP/Skills and receive reviewable notifications. |
+
+### Watch the workspace
+
+**Nine modules in one page** — overview → market research → ETF research → learning → collapse navigation.
+
+![Integrated workspace navigation and portfolio overview](.README_images/workspace/en/navigation.gif)
+
+**Strategy construction and backtest review** — load a graph preset, inspect and drag a node, configure a backtest, then inspect its output and frozen parameters.
+
+![Visual strategy workflow and backtest evidence](.README_images/workspace/en/strategy-backtest.gif)
+
+**AI sessions and knowledge references** — attach a note, send with Enter, inspect the persisted status, ask a RAG question and find the Skill-report actions.
+
+![AI conversation, attachments and cited knowledge](.README_images/workspace/en/ai-knowledge.gif)
+
+This README and the Japanese README share recordings of the English interface with English captions.
+
+These GIFs are recorded from real clicks in an isolated **mock-data** service. Chat replies are explicitly mock; opening the Skill panel does not run a report. They demonstrate workflow and UI behavior, not investment performance or successful paid CLI/model execution. [Recording details](.README_images/workspace/README.md).
+
+### Code and run entry points
+
+| Location | Responsibility |
+| --- | --- |
+| [`src/frontend`](src/frontend), [`src/api`](src/api), [`src/cli`](src/cli) | Gradio modules, REST/WebSocket and command-line access to shared services. |
+| [`src/strategy`](src/strategy), [`src/engine`](src/engine), [`src/portfolio`](src/portfolio), [`src/risk`](src/risk) | Strategy ports, visual composition, execution ledger, allocation and risk. |
+| [`src/agent`](src/agent), [`src/alpha_mining`](src/alpha_mining), [`src/agent_strategies`](src/agent_strategies), [`src/skills`](src/skills) | Model/CLI providers, research orchestration and native Skills. |
+| [`src/data`](src/data), [`src/documents`](src/documents), [`src/knowledge`](src/knowledge), [`src/integration`](src/integration) | Market sources, local document/RAG support and MCP integrations. |
+| [`src/core`](src/core), [`src/scheduler`](src/scheduler), [`src/notifications`](src/notifications) | Settings, storage, access/execution support, task ownership and reminders. |
+| [`egs/`](egs), [`tests/`](tests), [`doc/`](doc), [`docs/`](docs) | YAML settings and launchers, regression tests, designs, user guides and principles. |
+
+The workspace requires **Python 3.11+** and the pinned root dependencies. Follow [environment setup](docs/usage/installation.md), then run from the repository root:
+
+```text
+.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role web
+.venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000/app/`. On Linux, create the declared environment and use `.venv-secure/bin/python`. Business settings live in YAML under `egs/`; private keys stay in local `.env` / `.llm_env`. See [access and source-review rules](docs/usage/access_and_execution.md) before remote use or custom Python execution. Qlib signal analysis and the native Qlib Workflow are separate capabilities; the latter needs its own data and configuration. Broker/live execution also requires a configured channel and checks.
+
+---
+
+## 4. 📖 Introduction
 
 ### Target Audience
 
@@ -123,7 +192,12 @@ ai_quant_trade
 │   ├── 资源 ........... Continuously collected excellent resources from across the web
 │   ├── 实战 ........... Hands-on usage, frameworks, libraries, and pitfalls
 │   └── 热点 ........... Financial market hot topics, tech hot topics, paper interpretations
-├── docs ............... Usage documentation for this repo
+├── src ................ Integrated workspace services and modular Gradio UI
+├── egs ................ Workspace YAML configuration and entry points
+├── tests .............. Workspace unit, integration and browser checks
+├── doc ................ Design documents
+├── docs ............... User guides, principles and the integrated documentation site
+├── start.py ........... Workspace service launcher
 ├── egs_aide ........... Trading assistant tools (monitoring tools, etc.)
 ├── egs_alpha .......... Alpha library & alpha mining
 ├── egs_data ........... Data acquisition & processing (Wind / open-source tools)
@@ -135,19 +209,16 @@ ai_quant_trade
 │   ├── rl ............. Reinforcement learning for trading
 │   ├── ms_qlib ........ Microsoft Qlib framework
 │   └── vanilla ........ Traditional rule-based strategies
-├── quant_brain ........ Core algorithm library
 ├── runtime ............ Model deployment and real-world usage
 ├── tools .............. Auxiliary tools
 └── README.md
 ```
 
-> Each `egs_*/` sub-project now carries its **own `requirements.txt`** —
-> pick the project you want to run, then `pip install -r requirements.txt`
-> inside its directory. There is no global dependency file at the repo root.
+> The integrated workspace uses the root `requirements.txt` / `pyproject.toml`, plus optional model dependencies and project environments. Legacy `egs_*/` examples keep their own dependency files; install only the environment for the project you choose.
 
 ---
 
-## 4. 🌟 awesome_projects (Highly Recommended)
+## 5. 🌟 awesome_projects (Highly Recommended)
 
 > 📁 **Directory**: [awesome_projects](awesome_projects)
 >
@@ -196,26 +267,15 @@ This is the most essential "resource treasure trove" of this repo — **we spent
 
 ---
 
-## 5. 🚀 Quick Start
+## 6. 🚀 Quick Start
 
-This repository is not packaged as a Python package yet. Please clone the entire project, then navigate to each `egs` directory for detailed **usage instructions** and **principle explanations**.
+For the integrated **`src` workspace**, follow [installation](docs/usage/installation.md) and [quick start](docs/usage/quick_start.md); run `start.py` from the repository root with Python3.11+. See [workspace capabilities and workflows](#integrated-workspace) for the main operations.
 
-```bash
-# 1. Clone the repo
-git clone https://github.com/charliedream1/ai_quant_trade.git
-
-# 2. Pick a project and install its own deps (no root requirements.txt)
-cd egs_trade/vanilla/double_ma
-pip install -r requirements.txt
-
-# 3. Follow the project's own README to get started
-```
-
-> Python baseline: 3.8+ on x86_64. Apple Silicon (M1/M2) users, please follow the conda setup notes in each project's README.
+For a legacy example, clone the repository, enter that `egs_*/` project and use its own requirements and README. These examples may have different Python and optional-library requirements; they do not all share the workspace runtime.
 
 ---
 
-## 6. 📊 Local Quantitative Strategies
+## 7. 📊 Local Quantitative Strategies
 
 > 📁 **Code Directory**: [egs_trade](egs_trade)
 >
@@ -264,7 +324,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 7. 💰 Live Trading
+## 8. 💰 Live Trading
 
 > 📁 **Code Directory**: [egs_trade](egs_trade)
 
@@ -277,7 +337,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 8. 🛠️ Trading Assistant Tools
+## 9. 🛠️ Trading Assistant Tools
 
 > 📁 **Code Directory**: [egs_aide](egs_aide)
 
@@ -288,7 +348,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 2. **["Stealth Stock Trading" Tool V2: Modular Monitoring System](egs_aide/excel_stock_monitor/v2)** 🆕
 
-   ![Monitoring Tool V2 Demo](egs_aide/excel_stock_monitor/v2/看盘神器V2演示.gif)
+   ![Monitoring Tool V2 — English feature illustration](.README_images/workspace/en/legacy-monitor.gif)
 
    - 🏗️ **Architecture Refactor**: Upgraded from a single file to a modular `excel_monitor` package with Sheet Handler pattern; each Sheet refresh is isolated
    - 🔔 **Alert Monitoring**: Customizable upper/lower price/change limits; triggered rows turn red + popup reminders
@@ -305,7 +365,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 9. ⛏️ Alpha Mining
+## 10. ⛏️ Alpha Mining
 
 > 📁 **Code Directory**: [egs_alpha](egs_alpha)
 
@@ -325,7 +385,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 10. 💾 Data Processing
+## 11. 💾 Data Processing
 
 > 📁 **Code Directory**: [egs_data](egs_data)
 
@@ -336,7 +396,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 11. 📝 Text Analysis
+## 12. 📝 Text Analysis
 
 > 📁 **Code Directory**: [egs_fin_nlp](egs_fin_nlp)
 
@@ -346,7 +406,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 12. 🤖 LLM Applications
+## 13. 🤖 LLM Applications
 
 > 📁 **Code Directory**: [egs_llm](egs_llm)
 
@@ -357,7 +417,7 @@ Compared with ML and DL, RL is **goal-oriented** (uses interaction as the object
 
 ---
 
-## 13. 📚 Programming & AI Basics
+## 14. 📚 Programming & AI Basics
 
 For easier maintenance, the original `ai_wiki` directory content (system operations, programming basics, AI basics, AI practice, etc.) has been independently synchronized to the repo **AI LLM Pitfall Guide**.
 
@@ -370,7 +430,7 @@ It records a large number of problems and solutions encountered in actual develo
 
 ---
 
-## 14. 🌐 Online Research Platforms
+## 15. 🌐 Online Research Platforms
 
 > 📁 **Code Directory**: [egs_online_platform](egs_online_platform)
 
@@ -406,7 +466,7 @@ Research platforms are cloud platforms tailored for quant enthusiasts (quants), 
 
 ---
 
-## 15. 📖 Quant Resource Collection
+## 16. 📖 Quant Resource Collection
 
 > [(Our article with 26,000+ reads on Zhihu) The Ultimate Collection of AI Stock Quantitative Trading Tools and Open-Source Projects](https://zhuanlan.zhihu.com/p/562878605)
 
@@ -419,7 +479,7 @@ We have re-categorized and reviewed all tools, collected in the [ai_notes](ai_no
 
 ---
 
-## 16. 🎁 Companion Resources
+## 17. 🎁 Companion Resources
 
 This code repository adheres to the principle of **parallel paid and free** offerings.
 
@@ -490,7 +550,7 @@ One of the lowest-priced quant planets on the web | 3-day no-questions-asked ref
 
 ---
 
-## 17. 💖 Support Me
+## 18. 💖 Support Me
 
 Your support is the driving force for me to move forward. Even "0.1 RMB" makes me happy. Thank you for your support \(^o^)/
 
@@ -502,22 +562,22 @@ Your support is the driving force for me to move forward. Even "0.1 RMB" makes m
 
 ---
 
-## 18. 💬 Discussion
+## 19. 💬 Discussion
 
 Feel free to start a discussion in [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions).
 
-## 19. 🐛 Technical Support
+## 20. 🐛 Technical Support
 
 - Feel free to submit issues at [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues)
 - Join the Knowledge Planet for more technical support
   - [AI智投星球](https://t.zsxq.com/dHt9l): Focused on AI quantitative trading knowledge sharing
   - [LLM Pitfall Guide](https://t.zsxq.com/q42Js): Focused on programming, LLMs, and AI application empowerment
 
-## 20. ❓ FAQ
+## 21. ❓ FAQ
 
 Please see the documentation → [**FAQ**](docs/02_常见问题)
 
-## 21. 📄 Citation
+## 22. 📄 Citation
 
 ```bibtex
 @misc{ai_quant_trade,

@@ -8,18 +8,18 @@
   <strong>一站式 AI 量化交易平台 · 从学习、模拟到实盘</strong>
 </p>
 
-<p align="center">
-  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍/">加入知识星球</a>
-  &nbsp;
-  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">GitHub 仓库</a>
-</p>
+[开始使用工作台](usage/workspace.md){ .cta-pill .cta-primary } · [知识星球](03_星球使用和介绍/01_星球介绍.md){ .cta-pill } · [GitHub 仓库](https://github.com/charliedream1/ai_quant_trade){ .cta-pill }
 
 ---
 
 ## :material-compass-outline: 站点范围
 
-本站点只发布 `docs/` 下维护的文档：环境配置、常见问题、知识星球使用说明和部署运维。
+本站点发布 `docs/` 下维护的工作台使用与原理指南、环境配置、常见问题、社区说明和部署运维。
 仓库代码与独立 README 不再镜像进 MkDocs 站点，避免发布链路依赖站点外文档。
+
+## AIQuant智投帮助中心
+
+[工作台使用路线](usage/workspace.md) · [平台概览](platform/index.md) · [使用文档](usage/README.md) · [原理文档](principles/README.md)。从安装、九模块入口和第一次回测开始，再按需使用模型、Agent、知识库与CLI；关键操作配实际界面及结果核对。
 
 <div class="grid cards" markdown>
 

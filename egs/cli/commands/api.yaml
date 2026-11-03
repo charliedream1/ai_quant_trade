@@ -1,0 +1,5 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "api operations": {"special":"operations","fields":{},"query":{},"positions":{}}
+  "api describe": {"special":"describe","positions":{"operation":"str"},"fields":{},"query":{}}
+  "api call": {"special":"api","fields":{"method":"str","path":"str","operation":"str"},"query":{},"positions":{}}

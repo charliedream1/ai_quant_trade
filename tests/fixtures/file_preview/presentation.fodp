@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.presentation">
+  <office:automatic-styles>
+    <style:page-layout style:name="page"><style:page-layout-properties fo:page-width="28cm" fo:page-height="21cm" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"/></style:page-layout>
+  </office:automatic-styles>
+  <office:master-styles><style:master-page style:name="Default" style:page-layout-name="page"/></office:master-styles>
+  <office:body><office:presentation>
+    <draw:page draw:name="Slide1" draw:master-page-name="Default">
+      <draw:frame svg:x="2cm" svg:y="2cm" svg:width="24cm" svg:height="5cm"><draw:text-box><text:p>量化研究阅读样本</text:p><text:p>Office文件只读，Markdown可以编辑保存。</text:p><text:p>功能验收样本，不是真实投资建议。</text:p></draw:text-box></draw:frame>
+    </draw:page>
+    <draw:page draw:name="Slide2" draw:master-page-name="Default">
+      <draw:frame svg:x="2cm" svg:y="2cm" svg:width="24cm" svg:height="5cm"><draw:text-box><text:p>第二页：组合配置与风险说明</text:p><text:p>关注回撤、流动性和集中度。</text:p></draw:text-box></draw:frame>
+    </draw:page>
+  </office:presentation></office:body>
+</office:document>

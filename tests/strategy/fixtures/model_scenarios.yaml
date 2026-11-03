@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+# 合成测试数据只验证模型和时间契约，不用于绩效宣传。
+start: '2025-01-06'
+periods: 110
+symbols: ['600519', '300750', '000001']
+price: 100.0
+drift: 0.0004
+amplitude: 0.012
+frequency: 0.23
+phase_step: 1.9
+open_gap: 0.001
+range: 0.015
+volume: 1000000
+volume_amplitude: 0.2

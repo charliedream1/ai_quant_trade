@@ -1,0 +1,14 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "backtest engines": {"method":"GET","path":"/backtest-engines","positions":{},"query":{},"fields":{},"execution":false,"market":true}
+  "backtest run": {"method":"POST","path":"/backtests","positions":{},"query":{},"fields":{"strategy_id":"int","engine":"str","symbols":"json","universe":"json","start_date":"str","end_date":"str","initial_capital":"float","initial_cash":"float","commission_rate":"float","slippage_rate":"float","order_type":"str","price_adjustment":"str","max_position_count":"int","max_position_weight":"float","lot_size":"int","history_bars":"int","params":"json","parameter_profile":"str","benchmark":"str","workflow_path":"str","provider_uri":"str","execution_costs":"json"},"execution":true,"market":true}
+  "backtest list": {"method":"GET","path":"/backtests","positions":{},"query":{"strategy_id":"int","status":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":true}
+  "backtest show": {"method":"GET","path":"/backtests/{task_id}","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true}
+  "backtest delete": {"method":"DELETE","path":"/backtests/{task_id}","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true,"confirm":true}
+  "backtest metrics": {"method":"GET","path":"/backtests/{task_id}/performance","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true}
+  "backtest curve": {"method":"GET","path":"/backtests/{task_id}/equity-curve","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true}
+  "backtest trades": {"method":"GET","path":"/backtests/{task_id}/trades","positions":{"task_id":"int"},"query":{"page":"int","page_size":"int"},"fields":{},"execution":false,"market":true}
+  "backtest attribution": {"method":"GET","path":"/backtests/{task_id}/attribution","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true}
+  "backtest snapshot": {"method":"GET","path":"/backtests/{task_id}","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true,"special":"snapshot"}
+  "backtest compare": {"method":"GET","path":"/backtests/{task_id}","positions":{},"query":{},"fields":{},"special":"compare"}
+  "backtest export": {"method":"GET","path":"/backtests/{task_id}/trades","positions":{"task_id":"int"},"query":{"page":"int","page_size":"int"},"fields":{},"execution":false,"market":true,"special":"export"}

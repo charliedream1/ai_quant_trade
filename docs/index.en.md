@@ -8,20 +8,20 @@
   <strong>One-Stop AI Quantitative Trading Platform · From Learning &amp; Simulation to Live Trading</strong>
 </p>
 
-<p align="center">
-  <a class="cta-pill cta-primary" href="03_星球使用和介绍/01_星球介绍/">Join the Knowledge Planet</a>
-  &nbsp;
-  <a class="cta-pill" href="https://github.com/charliedream1/ai_quant_trade">GitHub Repo</a>
-</p>
+[Start the workspace](usage/workspace.md){ .cta-pill .cta-primary } · [Knowledge Planet](03_星球使用和介绍/01_星球介绍.md){ .cta-pill } · [GitHub Repo](https://github.com/charliedream1/ai_quant_trade){ .cta-pill }
 
 ---
 
 ## :material-compass-outline: Site Scope
 
 This documentation site is intentionally focused on maintained docs that live
-under `docs/`: environment setup, FAQs, community usage, and deployment
-operations. Repository code and standalone READMEs stay in the source
+under `docs/`: workspace usage and principles, environment setup, FAQs,
+community usage, and deployment operations. Repository code and standalone READMEs stay in the source
 repository and are not mirrored into the published MkDocs site.
+
+## Quant research workspace
+
+[Workspace walkthrough](usage/workspace.md) · [Platform overview](platform/index.md) · [User guide](usage/README.md) · [Design principles](principles/README.md). Start with installation, the nine modules and a first backtest, then add models, agents, local knowledge and CLI workflows. New platform guides currently fall back to Chinese; language selection does not translate their content.
 
 <div class="grid cards" markdown>
 

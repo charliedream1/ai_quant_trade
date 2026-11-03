@@ -1,0 +1,17 @@
+# 文件格式：YAML，编码：UTF-8
+runtime_dir: .pytest_tmp/etf-real-20261020
+evidence_path: docs/audit/etf_market_evidence_2026-10-20.json
+report_path: docs/audit/etf_strategy_validation_2026-10-20.json
+symbols: ["510300", "510500", "159915", "512100"]
+history_bars: 240
+backtest:
+  initial_capital: 1000000
+  order_type: open
+  price_adjustment: qfq
+  max_position_count: 2
+  max_position_weight: 0.6
+  lot_size: 100
+  slippage_rate: 0.001
+strategies:
+  - {file: etf_momentum_rotation_strategy.py, profile: etf_momentum.yaml:baseline}
+  - {file: etf_trend_allocation_strategy.py, profile: etf_trend.yaml:baseline}

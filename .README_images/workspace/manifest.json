@@ -1,0 +1,247 @@
+{
+  "recorded_at": "2026-10-31",
+  "source": "Playwright screenshots from isolated mock server",
+  "simulated_market_and_chat": true,
+  "paid_model_calls": 0,
+  "files": [
+    {
+      "file": ".README_images/workspace/zh/navigation.gif",
+      "language": "zh",
+      "caption_language": "zh",
+      "ui_language": "zh",
+      "frames": 5,
+      "duration_ms": 10200,
+      "bytes": 812762,
+      "sha256": "eda4e9d3e3f9445616141b13817180070aa57745ab206f51219271693cc96cbc",
+      "source_frame_sha256": [
+        "4f25aa428aea5b16b136b8b0d23d7ae87146979f72386de45f0f23a0a6c0f021",
+        "b7596366a1737da7032cfb155c6b19f72806d3f2dfae95c649c2aee77f7a6010",
+        "925ce6d2fab25ea2f95974c2210a6f1fc8c6e376a622412905cff884224887c6",
+        "6f493a025a0e87b7675dd17567a434d300963a43a0167a284695bc3501e80b1b",
+        "410fb06f5c02156900773bbfc8bb6eb45181373338547c70a066e14cce4f2609"
+      ],
+      "subtitle_localized_on": "2026-11-01",
+      "recorded_at": "2026-10-31",
+      "mock_data": true,
+      "captions": [
+        "账户总览：查看净值、资金配置与持仓统计",
+        "行情研究：刷新指数、板块、新闻与个股信息",
+        "策略工作区：ETF、因子监控与Alpha研究入口",
+        "学习空间：按章节阅读量化基础课程",
+        "单页导航：收起侧栏，切换并复用模块页面"
+      ]
+    },
+    {
+      "file": ".README_images/workspace/zh/strategy-backtest.gif",
+      "language": "zh",
+      "caption_language": "zh",
+      "ui_language": "zh",
+      "frames": 6,
+      "duration_ms": 12600,
+      "bytes": 561572,
+      "sha256": "97618f3aa3efb7a4d519c02e70c907f9f49f5617ef8327dfb45a20854eeb1ddd",
+      "source_frame_sha256": [
+        "4dfe32f2fc6b25b8d7433ac36963286747dbe572d18a4cbeb6921fbc1a563012",
+        "522ec844550c62dd59a8d437798d1c1819cf14a347de452cc49d7297fcafbbe4",
+        "88ce1f3120752b2e4b2f0fa1e54cf6323fe751e2ce302bd72890f9e5f3a136f5",
+        "2308680133a83cba3b5d52bedca55ac8ae93b4183733c62ec9dd166dffc5d330",
+        "01d215ffcf3dd6545a5c62156b2474f92a1747fd70b3697c4a21e7e1bbae1346",
+        "d2e1a470a8a87b217bd1e5da8a36a931b7dfdcf2d8c086084d10d273b454b942"
+      ],
+      "subtitle_localized_on": "2026-11-01",
+      "recorded_at": "2026-10-31",
+      "mock_data": true,
+      "captions": [
+        "图形策略工坊：载入规则到组合配置的预置方案",
+        "点击节点：查看参数与上下游关联",
+        "拖拽节点：调整布局并查看步骤之间的关系",
+        "回测设置：指定日期、参数、费用与执行假设",
+        "回测结果：核对净值、基准与回撤",
+        "冻结参数快照：支持复核与重复运行"
+      ]
+    },
+    {
+      "file": ".README_images/workspace/zh/ai-knowledge.gif",
+      "language": "zh",
+      "caption_language": "zh",
+      "ui_language": "zh",
+      "frames": 6,
+      "duration_ms": 12800,
+      "bytes": 629590,
+      "sha256": "a963d3869c6730f82c2b5bde886bbfd4b5b8ed3ade93ab04dd95a25b51cfef60",
+      "source_frame_sha256": [
+        "31db651992ff2932667cb54b15d8d097e2f93cf065498ebfddd6e28f7c1c4229",
+        "e79fff44e0b915b764ea6433b431057b57f7ef3c46903d4dcf4acd39f9c9eece",
+        "4bfdbaff25d418eba14702231452babe6ae1f46fff5536ee4e4a4bc25677963a",
+        "5fd31a9e78a8d51df39787b5ccdbfbfcc3233a7a5735a074d29f98cba6e0aff5",
+        "96361af53841cf47ac26aac58ce4c877e942f598855a10af969e39dd0cf1fa46",
+        "235c34a1a44bf4aac4d294556b3a739685659ba8efe28c54d92a0047c2b3559a"
+      ],
+      "subtitle_localized_on": "2026-11-01",
+      "recorded_at": "2026-10-31",
+      "mock_data": true,
+      "captions": [
+        "AI工作台：项目会话、后端、权限、模型与思考设置",
+        "添加研究附件，按Enter发送；本次使用模拟回答",
+        "查看消息和过程状态；本次没有调用真实CLI",
+        "知识库问答：针对已保存资料提出问题",
+        "核对检索引用与回答，确认资料来源",
+        "打开Skill报告操作面板；本次没有生成报告"
+      ]
+    },
+    {
+      "file": ".README_images/workspace/en/navigation.gif",
+      "language": "en",
+      "caption_language": "en",
+      "ui_language": "en",
+      "frames": 3,
+      "duration_ms": 6600,
+      "bytes": 456440,
+      "sha256": "847b36c00779464f6b529275580345540231edde9436cb7f30ddaa1f6773f12f",
+      "source_frame_sha256": [
+        "203121e8ba557a83222675e4a291eda25eebc659102db0b1965bffb2cc2d90dc",
+        "203121e8ba557a83222675e4a291eda25eebc659102db0b1965bffb2cc2d90dc",
+        "e6124bd327b6b7aecf1f01cbfe97828c2e2f9426640f5a7095b84f38001a690b"
+      ],
+      "captions": [
+        "Portfolio overview: NAV, allocation and position statistics",
+        "Review cash allocation and risk exposure against saved snapshots",
+        "Collapse navigation to give the active content more space"
+      ],
+      "recorded_at": "2026-11-02"
+    },
+    {
+      "file": ".README_images/workspace/en/strategy-backtest.gif",
+      "language": "en",
+      "caption_language": "en",
+      "ui_language": "en",
+      "frames": 5,
+      "duration_ms": 11000,
+      "bytes": 518494,
+      "sha256": "e4678f027b2053eab6324fbbd3a9bcfd05bd3865632e6ac8b735d2feae9cd7b0",
+      "source_frame_sha256": [
+        "e067b0ed48076a708c777b46e590d5f46af2396b1bf985f795b19c50b1df7fb8",
+        "cc13e06b38081a3a2e98296c8f9b8564f63f935bf73800cf56f23cacbecfd092",
+        "e963bf28bd400e749a8c56aeba354b8130c3dd2a46d9ecdc7e18edc1b4a50491",
+        "a80edc29cf373dffb1ab02ff76e452af0530a613efd25627fe5303cfdd99ab9b",
+        "515166a43b58c6dd57fe1540490cd35d1d796a414b37013d1a6df4d7ebdd7a89"
+      ],
+      "captions": [
+        "Visual strategy workshop: inspect the rule-to-portfolio graph",
+        "Select a node to inspect its parameters and linked steps",
+        "Drag nodes to arrange the graph without running the strategy",
+        "Backtest setup: strategy, historical dates and execution assumptions",
+        "Review actual mock backtest output: NAV, benchmark and drawdown"
+      ],
+      "recorded_at": "2026-11-02"
+    },
+    {
+      "file": ".README_images/workspace/en/ai-knowledge.gif",
+      "language": "en",
+      "caption_language": "en",
+      "ui_language": "en",
+      "frames": 4,
+      "duration_ms": 8800,
+      "bytes": 357359,
+      "sha256": "2e47f5be09dbef2d1dc8e24367da19699273cc04db72cb2fc7d0bfa9fe4cf1d6",
+      "source_frame_sha256": [
+        "bc4490bfe71176126adb2d17a8caab1576a52190f95dce5ed03bbf380ac9798d",
+        "72dff0ed86643591c8d549673aa4011f165d991779989ca3912ac3e28055b5ba",
+        "53760fee06f8b952dce1c8a2c93f3b0f4e8e6100e74ff2358a058fb21912a50f",
+        "e0d971222bce843315ace6e7c2efaebdde1dfe0357ec2b7de07bf4f45a2bb7a0"
+      ],
+      "captions": [
+        "AI workspace: project sessions, backend, permissions, model and effort",
+        "Attach a research note and send with Enter (mock mode)",
+        "Submit messages with Enter from the compact English composer",
+        "Knowledge RAG: inspect the actual retrieved English source"
+      ],
+      "recorded_at": "2026-11-02"
+    },
+    {
+      "file": ".README_images/workspace/zh/legacy-monitor.gif",
+      "language": "zh",
+      "caption_language": "zh",
+      "ui_language": "zh",
+      "frames": 130,
+      "duration_ms": 15000,
+      "bytes": 4314835,
+      "sha256": "9d057f57cea4893f405eb52b9db26277db7ce746acf469e71412d29a21e17490",
+      "source_sha256": "b08f1d867b65fbde03ba94c09909052ddcdc286379f35c4f4ccb372a334677c9",
+      "subtitle_localized_on": "2026-11-01"
+    },
+    {
+      "file": ".README_images/workspace/en/legacy-monitor.gif",
+      "language": "en",
+      "caption_language": "en",
+      "ui_language": "en",
+      "kind": "localized feature illustration; not an English Excel runtime recording",
+      "frames": 130,
+      "duration_ms": 15000,
+      "bytes": 1575251,
+      "sha256": "a1e01d60282b38657a471250ac0cc64a7add2a05898bb959879efb1fde7cdc65",
+      "source_sha256": "b08f1d867b65fbde03ba94c09909052ddcdc286379f35c4f4ccb372a334677c9"
+    }
+  ],
+  "legacy_files": [
+    {
+      "file": ".README_images/workspace/navigation.gif",
+      "frames": 5,
+      "duration_ms": 10200,
+      "bytes": 817765,
+      "sha256": "3e1851645e00e7bd3100dd6e580866e7b8a0d6f6cd338551cc391c2d545bb2a8"
+    },
+    {
+      "file": ".README_images/workspace/strategy-backtest.gif",
+      "frames": 6,
+      "duration_ms": 12600,
+      "bytes": 563532,
+      "sha256": "0d8d8829062bfc5d3a1b8ca3e2b7458c9dba190cd44f6740bc56b93be4b5be50"
+    },
+    {
+      "file": ".README_images/workspace/ai-knowledge.gif",
+      "frames": 6,
+      "duration_ms": 12800,
+      "bytes": 624191,
+      "sha256": "72152529414e914fda7a2181b7477649aef826a1df942516631c2e967923183a"
+    }
+  ],
+  "documentation_mirrors": [
+    {
+      "source": ".README_images/workspace/zh/navigation.gif",
+      "file": "docs/usage/assets/demos/navigation.gif",
+      "caption_language": "zh",
+      "sha256": "eda4e9d3e3f9445616141b13817180070aa57745ab206f51219271693cc96cbc"
+    },
+    {
+      "source": ".README_images/workspace/zh/strategy-backtest.gif",
+      "file": "docs/usage/assets/demos/strategy-backtest.gif",
+      "caption_language": "zh",
+      "sha256": "97618f3aa3efb7a4d519c02e70c907f9f49f5617ef8327dfb45a20854eeb1ddd"
+    },
+    {
+      "source": ".README_images/workspace/zh/ai-knowledge.gif",
+      "file": "docs/usage/assets/demos/ai-knowledge.gif",
+      "caption_language": "zh",
+      "sha256": "a963d3869c6730f82c2b5bde886bbfd4b5b8ed3ade93ab04dd95a25b51cfef60"
+    }
+  ],
+  "readme_languages": {
+    "README_ZH.md": "zh",
+    "README.md": "en",
+    "README_JA.md": "en"
+  },
+  "localization_scope": "Chinese UI and captions; English UI and captions; legacy English is a feature illustration",
+  "english_recording": {
+    "recorded_at": "2026-11-02",
+    "states": 12,
+    "visible_chinese_in_captured_states": 0,
+    "data_mode": "mock",
+    "paid_calls": 0,
+    "source": "actual native English UI; graph, backtest, attachment, Enter and RAG",
+    "focused_screenshots": [
+      "AI composer",
+      "retrieved source table"
+    ]
+  }
+}

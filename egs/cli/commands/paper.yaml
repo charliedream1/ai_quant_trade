@@ -1,0 +1,13 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "paper list": {"method":"GET","path":"/paper-accounts","positions":{},"query":{"page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "paper create": {"method":"POST","path":"/paper-accounts","positions":{},"query":{},"fields":{"name":"str","strategy_id":"int","initial_capital":"float"},"execution":false,"market":false}
+  "paper reset": {"method":"POST","path":"/paper-accounts/{account_id}/reset","positions":{"account_id":"int"},"query":{},"fields":{"initial_capital":"float"},"execution":true,"market":false,"confirm":true}
+  "paper show": {"method":"GET","path":"/paper-accounts/{account_id}/overview","positions":{"account_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "paper order": {"method":"POST","path":"/paper-accounts/{account_id}/orders","positions":{"account_id":"int"},"query":{},"fields":{"symbol":"str","side":"str","order_type":"str","quantity":"int","price":"float"},"execution":true,"market":false}
+  "paper match": {"method":"POST","path":"/paper-accounts/{account_id}/orders/match","positions":{"account_id":"int"},"query":{},"fields":{},"execution":true,"market":false}
+  "paper cancel": {"method":"DELETE","path":"/paper-accounts/{account_id}/orders/{order_id}","positions":{"account_id":"int","order_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "paper orders": {"method":"GET","path":"/paper-accounts/{account_id}/orders","positions":{"account_id":"int"},"query":{"status":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "paper fills": {"method":"GET","path":"/paper-accounts/{account_id}/fills","positions":{"account_id":"int"},"query":{"symbol":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "paper positions": {"method":"GET","path":"/paper-accounts/{account_id}/positions","positions":{"account_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "paper equity": {"method":"GET","path":"/paper-accounts/{account_id}/equity-history","positions":{"account_id":"int"},"query":{"start_date":"str","end_date":"str"},"fields":{},"execution":false,"market":false,"unsupported_query":["start_date","end_date"]}

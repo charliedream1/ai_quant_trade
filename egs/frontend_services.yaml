@@ -1,0 +1,1386 @@
+# File format: YAML; encoding: UTF-8
+{
+  "version": 1,
+  "methods": {
+    "_ai_console_history": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_alpha_inspection": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "_build_dashboard": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_account": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_account_focus": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_market": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_market_brief": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_strategy": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_summary": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_dashboard_trade_history": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_build_learning_detail": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "_build_news": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "_build_paper_search": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "_build_research_reports": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "_capability_rows": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_command_metric": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_count_enabled_rows": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_dashboard_action_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_estimated_asset": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_estimated_market_value": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_estimated_pnl": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_estimated_risk": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_holding_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_live_trade_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_paper_trade_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_pending_orders": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_position_count": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_recent_order_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_risk_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_dashboard_strategy_rows": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_empty_dashboard_trade_row": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "_ensure_watchlist_group": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "_expert_name": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_factor_monitor_payload": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "_kb_qa_result": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "_kb_source_name": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "_live_alert_rows": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "_live_config_start_blockers": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "_live_dry_run_payload": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "_live_log_rows": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "_live_precheck_rows": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "_live_risk_frame": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "_model_id_for_name": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_normalize_ai_console_backend": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_optional_resource_pool_id": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "_overview_lane": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_overview_metric": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_preset_intro_markdown": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "_recommend_display_rows": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "_resolve_project_path": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_strategy_lifecycle_board": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "_strategy_lifecycle_next_step": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "_strategy_lifecycle_stage": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "_strategy_version_rows": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "_team_member_names": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_workflow_board": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "_workflow_outputs": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "add_recommendations_to_resource_pool": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "add_recommendations_to_watchlist": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "add_resource_pool_symbols": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "add_stock_to_watchlist": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "add_watchlist_symbols": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "ai_capability_cards": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_capability_catalog": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_file_preview": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_load_session": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_model_choices": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_nav": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_new_session": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_project_tree": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_send": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_send_stream": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_send_ui": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_console_sessions": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_expert_cards": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_expert_catalog": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_expert_detail": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_expert_to_task": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_expert_to_task_state": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_experts": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_job_catalog": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_job_template_cards": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_job_template_form": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_job_templates": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_team_cards": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_team_catalog": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_team_detail": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_team_to_task_state": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_teams": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_brief": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_chat": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_context": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_header": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_nav": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_overview": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "ai_workbench_state": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "alpha_add": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_attest": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_catalog": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_create": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_export": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_import": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_open_artifact": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_operate": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_poll": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_review": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "alpha_snapshot": [
+      "src.frontend.service.alpha",
+      "AlphaUIMixin"
+    ],
+    "backtest_analysis": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "backtest_detail": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "backtest_engines": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "backtest_param_snapshot": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "backtest_resolved_parameters": [
+      "src.frontend.service.parameters",
+      "ParameterServiceMixin"
+    ],
+    "backtest_to_paper_account": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "backtests": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "check_environment_variable": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "cli_build": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "cli_build_with_sessions": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "cli_retry": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "cli_sessions": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "compare_backtests": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "create_backtest": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "create_category": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "create_job": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "create_live_config": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "create_mcp": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "create_model": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "create_note": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "create_paper_account": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "create_remote_source": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "create_resource_pool": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "create_skill": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "create_strategy": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "create_watchlist_group": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "dashboard": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_account": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_account_focus": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_ai_workbench_entry": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_market": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_market_brief": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_strategy": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_summary": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "dashboard_trade_history": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "delete_backtest": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "delete_environment_variable": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "delete_strategy": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "empty_backtest_analysis": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "environment_variables": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "etf_universe_choices": [
+      "src.frontend.service.etf",
+      "ETFServiceMixin"
+    ],
+    "etf_universe_snapshot": [
+      "src.frontend.service.etf",
+      "ETFServiceMixin"
+    ],
+    "execution_cost_preview": [
+      "src.frontend.service.execution_costs",
+      "ExecutionCostsMixin"
+    ],
+    "export_backtest_trades": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "export_relations": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "factor_default_universe": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "factor_job": [
+      "src.frontend.service.monitoring",
+      "MonitoringUIMixin"
+    ],
+    "factor_monitor_details": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "factor_monitor_summary": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "factor_result_values": [
+      "src.frontend.service.monitoring",
+      "MonitoringUIMixin"
+    ],
+    "factor_start_job": [
+      "src.frontend.service.monitoring",
+      "MonitoringUIMixin"
+    ],
+    "factor_ui_settings": [
+      "src.frontend.service.monitoring",
+      "MonitoringUIMixin"
+    ],
+    "factor_universe_options": [
+      "src.frontend.service.monitoring",
+      "MonitoringUIMixin"
+    ],
+    "floating_chat": [
+      "src.frontend.service.assistant",
+      "AssistantServiceMixin"
+    ],
+    "floating_cli_chat": [
+      "src.frontend.service.assistant",
+      "AssistantServiceMixin"
+    ],
+    "floating_cli_chat_stream": [
+      "src.frontend.service.assistant",
+      "AssistantServiceMixin"
+    ],
+    "home_account": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "home_market": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "home_news": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "home_operations": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "import_cli_artifact": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "import_environment": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "import_paper_to_kb": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "import_resource_pool_file": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "import_strategy_example": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "insight_history": [
+      "src.frontend.service.insights",
+      "InsightsServiceMixin"
+    ],
+    "insight_open": [
+      "src.frontend.service.insights",
+      "InsightsServiceMixin"
+    ],
+    "insight_run": [
+      "src.frontend.service.insights",
+      "InsightsServiceMixin"
+    ],
+    "job_action": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "job_histories": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "jobs": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "kb_categories": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_delete_document": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_document_detail": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_qa": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_qa_clear": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_qa_save_session": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_qa_session": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_qa_sessions": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_search": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "latest_backtest": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "latest_paper_account": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "learning_catalog": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "learning_detail": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "learning_tree": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "list_model_reports": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "live_broker_adapters": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_broker_event": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_configs": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_dry_run_plan": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_mark_error": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_monitor": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_pause": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_precheck_start": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_resume": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_risk_summary": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_runs": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_start": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_status": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_stop": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "live_validation_summary": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "load_dashboard_layout": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "market_overview": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "mcp_action": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "mcp_call": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "mcp_servers": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "model_action": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "model_form": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "model_report_detail": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "model_reports": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "models": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "models_with_stats": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "news": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "news_detail": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "paper_cancel": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "paper_detail": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "paper_favorite": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "paper_match_orders": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "paper_order": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "paper_overview": [
+      "src.frontend.service.simulation",
+      "SimulationServiceMixin"
+    ],
+    "paper_search": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "paper_search_page": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "paper_search_with_status": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "parameter_profiles": [
+      "src.frontend.service.parameters",
+      "ParameterServiceMixin"
+    ],
+    "pipeline_account_monitor": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_account_reset": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_cancel": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_components": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_edit_node": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_edit_settings": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_edit_sleeves": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_editor_state": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_graph_apply": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_graph_binding": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_graph_layout": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_graph_load": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_graph_poll": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_graph_results": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_graph_sync": [
+      "src.frontend.service.composition_graph",
+      "CompositionGraphMixin"
+    ],
+    "pipeline_history": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_load": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_move_down": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_move_up": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_node_detail": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_open": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_pool_run": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_preview": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_publish": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_run": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "pipeline_templates": [
+      "src.frontend.service.composition",
+      "CompositionServiceMixin"
+    ],
+    "preset_strategies": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "preset_strategy_detail": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "preview_strategy_parameters": [
+      "src.frontend.service.parameters",
+      "ParameterServiceMixin"
+    ],
+    "pull_remote_document": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "qlib_workflow_create_run": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "qlib_workflow_defaults": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "qlib_workflow_runs": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "qlib_workflow_status": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "quant_workflow_create_run": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "quant_workflow_runs": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "quant_workflow_snapshot": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "quant_workflow_sop_cards": [
+      "src.frontend.service.ai",
+      "AIServiceMixin"
+    ],
+    "quick_cancel": [
+      "src.frontend.service.backtest_quick",
+      "QuickBacktestMixin"
+    ],
+    "quick_capability": [
+      "src.frontend.service.backtest_quick",
+      "QuickBacktestMixin"
+    ],
+    "quick_history": [
+      "src.frontend.service.backtest_quick",
+      "QuickBacktestMixin"
+    ],
+    "quick_poll": [
+      "src.frontend.service.backtest_quick",
+      "QuickBacktestMixin"
+    ],
+    "quick_start": [
+      "src.frontend.service.backtest_quick",
+      "QuickBacktestMixin"
+    ],
+    "rag_chat": [
+      "src.frontend.service.rag_chat",
+      "RagChatMixin"
+    ],
+    "rag_index_status": [
+      "src.frontend.service.rag_chat",
+      "RagChatMixin"
+    ],
+    "rag_models": [
+      "src.frontend.service.rag_chat",
+      "RagChatMixin"
+    ],
+    "rag_restore": [
+      "src.frontend.service.rag_chat",
+      "RagChatMixin"
+    ],
+    "recommend": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_candidate_compare": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_condition_template": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_first_to_relations": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_group_compare": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_load_template": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_save_template": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_templates": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "recommend_to_backtest": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "refresh_news": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "refresh_papers": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "relation_evidence_detail": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "relation_evidence_options": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "relation_fit": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "relations": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "remote_documents": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "remote_sources": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "remove_watchlist_symbol": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "report_library_list": [
+      "src.frontend.service.report_library",
+      "ReportLibraryMixin"
+    ],
+    "report_library_open": [
+      "src.frontend.service.report_library",
+      "ReportLibraryMixin"
+    ],
+    "research_report_detail": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "research_reports": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "research_reports_page": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "research_reports_with_status": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "research_team_model_choices": [
+      "src.frontend.service.research_team",
+      "ResearchTeamServiceMixin"
+    ],
+    "research_team_review": [
+      "src.frontend.service.research_team",
+      "ResearchTeamServiceMixin"
+    ],
+    "resource_import_commit": [
+      "src.frontend.service.resource_import_ui",
+      "ResourceImportUIMixin"
+    ],
+    "resource_import_preview": [
+      "src.frontend.service.resource_import_ui",
+      "ResourceImportUIMixin"
+    ],
+    "resource_pool_items": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "resource_pool_to_universe": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "resource_pools": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "resource_template": [
+      "src.frontend.service.resource_import_ui",
+      "ResourceImportUIMixin"
+    ],
+    "save_dashboard_layout": [
+      "src.frontend.service.dashboard",
+      "DashboardServiceMixin"
+    ],
+    "save_research_report": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ],
+    "save_settings_form": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "security_master_search": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "set_strategy_status": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "settings": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "skill_action": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "skills": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "stock": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "stock_to_relations": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "strategies": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategies_with_stats": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_detail": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_example_detail": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_lifecycle": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_param_schema_add": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_param_schema_extract": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_param_schema_preview": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_quick_backtest": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "strategy_version_compare": [
+      "src.frontend.service.strategy",
+      "StrategyServiceMixin"
+    ],
+    "sync_remote_documents": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "system_runtime_status": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "test_remote_source": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "update_live_risk": [
+      "src.frontend.service.live",
+      "LiveServiceMixin"
+    ],
+    "update_model": [
+      "src.frontend.service.admin",
+      "AdminServiceMixin"
+    ],
+    "upload_kb_document": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "watchlist_groups": [
+      "src.frontend.service.market",
+      "MarketServiceMixin"
+    ],
+    "kb_libraries": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_create_library": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_library_choices": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_ingest_files": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_ingest_url": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "kb_library_documents": [
+      "src.frontend.service.knowledge",
+      "KnowledgeServiceMixin"
+    ],
+    "rag_source_preview": [
+      "src.frontend.service.rag_chat",
+      "RagChatMixin"
+    ],
+    "download_research_to_kb": [
+      "src.frontend.service.research",
+      "ResearchServiceMixin"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+# File format: YAML; encoding: UTF-8
+file_format: yaml
+title: 量化基础课程
+root: docs/principles/quant_basics
+chapters:
+  - {id: guide, title: "导读 · 从研究到验证", file: README.md}
+  - {id: research, title: "01 · 研究流程与假设", file: 01_research.md}
+  - {id: instruments, title: "02 · 股票、指数与ETF", file: 02_instruments.md}
+  - {id: data, title: "03 · 行情与历史时点", file: 03_data.md}
+  - {id: returns, title: "04 · 收益、复利与基准", file: 04_returns.md}
+  - {id: statistics, title: "05 · 统计、波动与回撤", file: 05_statistics.md}
+  - {id: factors, title: "06 · 因子与横截面评估", file: 06_factors.md}
+  - {id: signals, title: "07 · 趋势、反转与轮动", file: 07_signals.md}
+  - {id: execution, title: "08 · 回测撮合与偏差", file: 08_execution.md}
+  - {id: portfolio, title: "09 · 组合配置与风控", file: 09_portfolio.md}
+  - {id: models, title: "10 · 小模型与样本外检验", file: 10_models.md}
+  - {id: rotation, title: "11 · ETF与行业轮动", file: 11_rotation.md}
+  - {id: operations, title: "12 · 模拟、监控与复盘", file: 12_operations.md}

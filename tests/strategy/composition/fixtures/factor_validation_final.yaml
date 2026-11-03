@@ -1,0 +1,13 @@
+# 文件格式：YAML，编码：UTF-8
+base_url: http://127.0.0.1:8889
+snapshot_id: defdebef365ad8e434d5b1bda7f21aa8a877abf459337814c3a59d11f5f5cdd7
+start_date: '2026-05-04'
+end_date: '2026-10-22'
+timeout: 900
+output: docs/audit/factor_research_2026-10-24/real-final
+cases:
+  - {template: factor_equal, mode: backtest, agent_mode: 'off'}
+  - {template: factor_icir, mode: backtest, agent_mode: 'off'}
+  - {template: factor_model_groups, mode: backtest, agent_mode: 'off'}
+  - {template: rule_trend, mode: backtest, agent_mode: 'off'}
+  - {template: etf_allocation, mode: backtest, agent_mode: 'off'}

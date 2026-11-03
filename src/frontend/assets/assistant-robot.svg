@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="蓝白AI机器人">
+ <defs><linearGradient id="shell" x2=".8" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#bddfff"/></linearGradient><linearGradient id="visor" x2="1" y2="1"><stop stop-color="#183657"/><stop offset="1" stop-color="#0b1830"/></linearGradient></defs>
+ <ellipse cx="32" cy="57" rx="19" ry="4" fill="#1d66bc" opacity=".2"/>
+ <path d="M32 14V8" stroke="#76b9e8" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="7" r="4" fill="#60d9ee" stroke="#eaffff" stroke-width="2"/>
+ <rect x="6" y="27" width="7" height="16" rx="3.5" fill="#7abbed"/><rect x="51" y="27" width="7" height="16" rx="3.5" fill="#7abbed"/>
+ <rect x="11" y="15" width="42" height="38" rx="15" fill="url(#shell)" stroke="#87bde5" stroke-width="1.5"/>
+ <path d="M18 22c4-4 21-6 29 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".9"/>
+ <rect x="17" y="25" width="30" height="20" rx="9" fill="url(#visor)"/>
+ <path d="M23 34q3-5 6 0m6 0q3-5 6 0" fill="none" stroke="#72ebf5" stroke-width="2.5" stroke-linecap="round"/>
+ <path d="M29 39q3 3 6 0" fill="none" stroke="#a0f6fc" stroke-width="1.5" stroke-linecap="round"/>
+ <ellipse cx="21" cy="40" rx="2" ry="1" fill="#6bacf6" opacity=".6"/><ellipse cx="43" cy="40" rx="2" ry="1" fill="#6bacf6" opacity=".6"/>
+ <path d="M24 51v4h16v-4" fill="#b1daff" stroke="#8fbfe4"/>
+</svg>

@@ -1,0 +1,23 @@
+# 文件格式：YAML，编码：UTF-8
+schema_version: 1
+name: 标准化量价多因子
+description: 母池价量因子逐日预处理后等权合成；不使用财务代理或未来标签。
+universe:
+  symbols: ['000001', '600036', '600519', '601166', '601318', '300750']
+nodes:
+  - {id: eligible, component: eligibility, inputs: [universe], params: {}}
+  - {id: factors, component: factor_set, inputs: [eligible], params: {set_name: balanced}}
+  - {id: normalized, component: factor_preprocess, inputs: [factors], params: {}}
+  - {id: scores, component: factor_score, inputs: [normalized], params: {weighting: equal}}
+output: scores
+portfolio:
+  component: score
+  params: {top_k: 3}
+risk: {}
+execution: {}
+rebalance_sessions: 5
+variants:
+  baseline: {}
+  conservative:
+    risk: {max_exposure: 0.6, max_weight: 0.15}
+    portfolio: {params: {exposure: 0.6}}

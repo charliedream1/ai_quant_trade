@@ -1,0 +1,20 @@
+# YAML 1.2, UTF-8
+version: 1
+worker:
+  call_seconds: 60
+  startup_seconds: 30
+  memory_bytes: 4294967296
+  max_message_bytes: 8388608
+  stderr_lines: 80
+  read_directories: [src, egs/strategy_examples]
+dry_run:
+  symbol: '000001'
+  timestamp: '2026-01-01T09:30:00'
+  open: 10.0
+  high: 10.8
+  low: 9.8
+  close: 10.5
+  volume: 10000.0
+messages:
+  review: 自定义策略源码尚未复核。请核对源码SHA256并在策略管理中登记复核后运行。
+  changed: 策略源码与已复核的SHA256不一致，请重新检查源码

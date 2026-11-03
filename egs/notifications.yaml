@@ -1,0 +1,66 @@
+# 文件格式：YAML，编码：UTF-8；全局提醒与助手形象，不修改交易规则。
+enabled: true
+poll_seconds: 15
+backoff_seconds: 60
+sync_seconds: 10
+page_size: 40
+max_page_size: 100
+source_batch: 200
+retention_days: 30
+toast_limit: 3
+toast_width: 350
+toast_seconds: 6
+avatar:
+  style: robot
+  robot: assistant-robot.svg
+  icon: assistant-simple.svg
+  custom_image: ''
+  max_bytes: 262144
+severity:
+  critical: critical
+  error: warning
+  high: warning
+  warning: warning
+  info: info
+  success: success
+completed: [completed, finished, success, 成功, 完成, 已完成]
+failed: [failed, error, timeout, 失败, 超时]
+partial: [partial, 部分完成]
+source_targets:
+  factor: {module: strategy, view: factors}
+  system: {module: admin, view: settings}
+  backtest: {module: simulation, view: backtest}
+  job: {module: admin, view: jobs}
+  report: {module: knowledge, view: reports}
+sources: {backtest: 回测, job: 定时任务, alpha: Alpha研究, agent: Agent策略, report: AI报告}
+ui:
+  title: 提醒中心
+  open: 打开提醒中心
+  close: 关闭
+  detail: 查看详情
+  read: 标为已读
+  read_all: 全部标为已读
+  more: 查看更多历史
+  empty: 暂无提醒
+  loading: 正在读取提醒
+  offline: 提醒暂时无法刷新，稍后自动重试
+  truncated: 来源较多，本轮仅同步部分记录；详细状态请查看来源页面
+  critical: 严重提醒
+  warning: 重要提醒
+  info: 信息
+  success: 已完成
+  resolved: 来源已恢复或状态已变化
+  unread: 未读
+  dismissed: 已收起
+  critical_summary: 仍有严重事项待处理
+  overflow: 更多提醒已收录在提醒中心
+  appearance: AI助手外观
+  robot: 蓝白机器人
+  icon: 简洁图标
+  custom: 自定义图片
+  assistant: AI助手
+  task_done: 任务已完成
+  task_failed: 任务执行失败
+  task_partial: 任务有缺口
+  task_message: 请打开来源页面核对结果；此提醒不触发交易或重试。
+  source_error: 部分提醒来源暂不可用；其他来源仍可查看。

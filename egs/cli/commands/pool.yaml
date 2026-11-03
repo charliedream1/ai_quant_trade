@@ -1,0 +1,8 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "pool list": {"method":"GET","path":"/resource-pools","positions":{},"query":{},"fields":{},"execution":false,"market":true}
+  "pool create": {"method":"POST","path":"/resource-pools","positions":{},"query":{},"fields":{"name":"str","description":"str"},"execution":false,"market":true}
+  "pool items": {"method":"GET","path":"/resource-pools/{pool_id}/items","positions":{"pool_id":"int"},"query":{},"fields":{},"execution":false,"market":true}
+  "pool add": {"method":"POST","path":"/resource-pools/{pool_id}/symbols","positions":{"pool_id":"int"},"query":{},"fields":{"symbols":"json","weight":"float","remark":"str"},"execution":true,"market":true}
+  "pool import": {"method":"POST","path":"/resource-pools/{pool_id}/import","positions":{"pool_id":"int"},"query":{},"fields":{},"execution":false,"market":true,"upload":true}
+  "pool preview": {"method":"POST","path":"/resource-pools/{pool_id}/import/preview","positions":{"pool_id":"int"},"query":{"mode":"str"},"fields":{},"execution":false,"market":true,"upload":true}

@@ -1,0 +1,31 @@
+{
+  "downloads": {
+    "markdown": {
+      "url": "https://registry.npmjs.org/markdown-it/-/markdown-it-15.0.3.tgz",
+      "integrity": "sha512-+Az7Ojz3iRGu8KYMvJ6xVhvrxP3eE+vEtJX75Ow88XBpcQNV/0lGX5ZynIIBftREo4DC2jsveAMDaeltmm8QvQ==",
+      "target": ".tools/downloads/markdown-it-15.0.3.tgz"
+    },
+    "pdfjs": {
+      "url": "https://github.com/mozilla/pdf.js/releases/download/v6.4.299/pdfjs-6.4.299-dist.zip",
+      "sha256": "f2245eb7ef3f674c872fe568a177bfec15874f5c034613e55d8e307f93ebd86d",
+      "target": ".tools/downloads/pdfjs-6.4.299-dist.zip"
+    },
+    "libreoffice": {
+      "url": "https://download.documentfoundation.org/libreoffice/stable/26.8.1/win/x86_64/LibreOffice_26.8.1_Win_x86-64.msi",
+      "sha256": "c6298b10cfa1748bcbedad94c62ce771e240e5021bfd6d7a967cd571b04b5312",
+      "target": ".tools/downloads/LibreOffice_26.8.1_Win_x86-64.msi"
+    },
+    "lessmsi": {
+      "url": "https://github.com/activescott/lessmsi/releases/download/v2.12.9/lessmsi-v2.12.9.zip",
+      "sha256": "5b4e187e74b184ad3a63ccf06c3d17dae2b8c4b6c298a996dbd51a9f6db29d21",
+      "target": ".tools/downloads/lessmsi-v2.12.9.zip"
+    }
+  },
+  "selected": {
+    "destination": "src/frontend/assets/vendor/markdown-it",
+    "files": [
+      "package/dist/browser/markdown-it.umd.min.js",
+      "package/LICENSE"
+    ]
+  }
+}

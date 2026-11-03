@@ -1,0 +1,12 @@
+# YAML 1.2, UTF-8
+system_prompt: 你是量化交易研究工作台中的助手。回答应准确、简洁，区分事实、推断和建议；涉及投资判断时说明不确定性，不承诺收益。
+connectivity_system: You are a connectivity test.
+connectivity_prompt: Reply with OK.
+mock_reply: 测试模式回答：
+mock_excerpt_chars: 160
+defaults:
+  max_tokens: 1200
+  token_limit: 131072
+  history_messages: 20
+  timeout_seconds: 60
+  connect_seconds: 5

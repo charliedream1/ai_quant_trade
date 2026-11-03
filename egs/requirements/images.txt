@@ -1,0 +1,7 @@
+# File format: pip requirements; encoding: UTF-8
+# Independent image worker; never install this file into the Gradio environment.
+Pillow==13.0.0
+loguru==0.7.3
+PyYAML==6.0.3
+packaging==26.0
+python-dotenv==1.2.2

@@ -1,0 +1,75 @@
+# File format: YAML; encoding: UTF-8
+file_format: yaml
+version: 1
+integer_fields: [lot_size, slippage_ticks, settlement_sessions, liquidity_window, fee_precision]
+verified_at: "2026-10-25"
+defaults:
+  asset_type: stock
+  market: CN
+  buy_commission_rate: 0.0003
+  sell_commission_rate: 0.0003
+  minimum_commission: 0
+  buy_tax_rate: 0
+  sell_tax_rate: 0
+  transfer_rate: 0
+  other_fee_rate: 0
+  commission_includes_regulatory: true
+  slippage_mode: ratio
+  slippage_rate: 0
+  slippage_ticks: 0
+  tick_size: 0.01
+  round_prices: false
+  lot_size: 100
+  settlement_sessions: 0
+  max_participation: 1
+  liquidity_window: 20
+  validation_mode: research
+  session_open_time: "09:30:00"
+  timezone: Asia/Shanghai
+  fee_precision: 8
+profiles:
+  inherit:
+    label: 继承当前执行配置
+    description: 保留普通引擎或冻结图形版本的执行假设；请核对预览。
+    settings: {}
+  cn_a:
+    label: 沪深A股成本示例（核对券商费率）
+    description: 佣金与最低佣金为可编辑示例；含规费佣金不重复叠加其他规费。按成交日期匹配税费。
+    valid_from: "2022-04-29"
+    settings: {market: CN, asset_type: stock, minimum_commission: 5, settlement_sessions: 1, max_participation: 0.05, fee_precision: 2, slippage_rate: 0.0005, round_prices: true}
+    schedule:
+      - {from: "2022-04-29", sell_tax_rate: 0.001, transfer_rate: 0.00001}
+      - {from: "2023-08-28", sell_tax_rate: 0.0005, transfer_rate: 0.00001}
+    sources:
+      - https://fgk.chinatax.gov.cn/zcfgk/c102416/c5211343/content.html
+      - https://www.sse.com.cn/services/tradingservice/charge/ssecharge/
+  cn_etf:
+    label: 沪深ETF成本示例（结算与佣金需核对）
+    description: 二级市场买卖示例；不含申赎费。不同ETF的结算规则需按产品覆盖，默认按一交易日可卖。
+    valid_from: "2023-08-28"
+    settings: {market: CN, asset_type: etf, minimum_commission: 0, tick_size: 0.001, settlement_sessions: 1, max_participation: 0.05, fee_precision: 2, slippage_rate: 0.0005, round_prices: true}
+    sources:
+      - https://etf.sse.com.cn/fund/learning/knowledge/c/5704298.shtml
+  zero:
+    label: 零成本研究对照
+    description: 仅用于成本敏感性对照，不代表券商成交条件。
+    settings: {buy_commission_rate: 0, sell_commission_rate: 0, minimum_commission: 0, buy_tax_rate: 0, sell_tax_rate: 0, transfer_rate: 0, other_fee_rate: 0, slippage_rate: 0, slippage_mode: none}
+ui:
+  title: 交易成本与执行假设
+  rate_unit: 百分比输入，例如0.03表示0.03%，内部保存为0.0003
+  gaps: 日K不能还原排队成交；缺少历史交易状态和权益事件账本时，严格模式拒绝运行。
+  controls:
+    - {key: buy_commission_rate, label: 买入佣金（%）, percent: true}
+    - {key: sell_commission_rate, label: 卖出佣金（%）, percent: true}
+    - {key: minimum_commission, label: 每外部订单最低佣金（元）}
+    - {key: buy_tax_rate, label: 买入印花税/交易税（%）, percent: true}
+    - {key: sell_tax_rate, label: 卖出印花税/交易税（%）, percent: true}
+    - {key: transfer_rate, label: 双向过户费（%）, percent: true}
+    - {key: other_fee_rate, label: 其他规费（%）, percent: true}
+    - {key: slippage_rate, label: 比例滑点（%）, percent: true}
+    - {key: slippage_ticks, label: 滑点价位数（ticks）}
+    - {key: tick_size, label: 最小价格变动（元）}
+    - {key: lot_size, label: 最小成交数量（股/份）}
+    - {key: settlement_sessions, label: 买入后可卖等待交易日}
+    - {key: max_participation, label: 历史均量最大成交参与率（%）, percent: true}
+    - {key: liquidity_window, label: 历史量能观察交易日}

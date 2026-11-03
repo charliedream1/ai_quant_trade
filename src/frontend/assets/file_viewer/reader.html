@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>文件阅读</title>
+  <link rel="stylesheet" href="/static/file_viewer/reader.css">
+</head>
+<body data-file-id="__FILE_ID__" data-api="__API_PREFIX__">
+  <header class="reader-header">
+    <div><strong id="file-title">正在打开文件</strong><small id="file-meta"></small></div>
+    <nav aria-label="文件操作">
+      <button id="reload-file" type="button">重新载入</button>
+      <button id="edit-file" type="button" hidden>编辑Markdown</button>
+      <button id="save-file" type="button" hidden>保存修改</button>
+      <button id="fullscreen" type="button">全屏</button>
+      <a id="download-file" download>下载原件</a>
+    </nav>
+  </header>
+  <p id="reader-status" role="status" aria-live="polite">读取文件信息…</p>
+  <div id="pdf-toolbar" hidden>
+    <button id="page-prev" type="button">上一页</button>
+    <span id="page-position"></span>
+    <button id="page-next" type="button">下一页</button>
+    <button id="zoom-out" type="button" aria-label="缩小">−</button>
+    <button id="zoom-fit" type="button">适宽</button>
+    <button id="zoom-in" type="button" aria-label="放大">＋</button>
+    <input id="pdf-search" aria-label="搜索PDF文字" placeholder="搜索PDF文字">
+    <button id="search-pdf" type="button">查找下一处</button>
+    <span id="search-result"></span>
+  </div>
+  <main id="reader-content">
+    <section id="markdown-layout" hidden>
+      <textarea id="markdown-editor" aria-label="Markdown源码" spellcheck="false" hidden></textarea>
+      <article id="markdown-preview" class="prose"></article>
+    </section>
+    <section id="pdf-layout" hidden><canvas id="pdf-canvas"></canvas></section>
+    <iframe id="html-preview" title="HTML文件预览" sandbox="" hidden></iframe>
+    <img id="image-preview" alt="文件图片预览" hidden>
+    <pre id="text-preview" hidden></pre>
+  </main>
+  <script type="module" src="/static/file_viewer/reader.js"></script>
+</body>
+</html>

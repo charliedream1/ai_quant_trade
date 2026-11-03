@@ -1,0 +1,10 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-backtest-review
+provider:
+  backend: api
+  model_id: 1
+request:
+  backtest_id: 1
+  objective: 复核已完成回测的统计、成本、风险和证据
+  workflow: backtest_review

@@ -1,0 +1,15 @@
+# 文件格式：YAML，编码：UTF-8；所有数据仅为测试夹具
+prices:
+  AAA: [10, 12, 9, 15, 18, 12, 24, 20]
+  BBB: [20, 18, 21, 24, 22, 25, 24, 26]
+  CCC: [8, 8, 9, 10, 10, 11, 12, 11]
+return_2d_AAA: [null, null, -0.1, 0.25, 1.0, -0.2, 0.3333333333333333, 0.6666666666666666]
+holm_input: [0.01, 0.04, 0.03]
+holm_expected: [0.03, 0.06, 0.06]
+reference_factors:
+  momentum_2: {window: 2, operator: momentum, direction: 1}
+  reversal_2: {window: 2, operator: momentum, direction: -1}
+macro:
+  - {id: original, series: growth, observation_date: '2020-01-01', value: 1.0, published_at: '2020-02-01T09:00:00+00:00', vintage_at: '2020-02-01T09:00:00+00:00', available_at: '2020-02-01T09:00:00+00:00', source: test}
+  - {id: revised, series: growth, observation_date: '2020-01-01', value: -2.0, published_at: '2020-02-01T09:00:00+00:00', vintage_at: '2020-04-01T09:00:00+00:00', available_at: '2020-04-01T09:00:00+00:00', source: test}
+inference_policy: {min_test_dates: 20, block_sessions: 2, bootstrap_samples: 199, seed: 33, significance: 0.05}

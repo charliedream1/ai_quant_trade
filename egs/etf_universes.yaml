@@ -1,0 +1,25 @@
+# 文件格式：YAML，编码：UTF-8
+# ETF 元数据用于研究筛选与回测说明；规模、成交额和费用率缺失时不得补造。
+asset_type: etf
+universes:
+  cn_core:
+    label: A股核心宽基 ETF
+    market: CN
+    benchmark: 沪深300/中证500/创业板宽基组合
+    rebalance_frequency: monthly
+    symbols:
+      - {symbol: "510300", name: 沪深300ETF, benchmark: 沪深300, category: broad, expense_ratio: 0.005}
+      - {symbol: "510500", name: 中证500ETF, benchmark: 中证500, category: broad, expense_ratio: 0.005}
+      - {symbol: "159915", name: 创业板ETF, benchmark: 创业板指, category: broad, expense_ratio: 0.005}
+      - {symbol: "512100", name: 中证1000ETF, benchmark: 中证1000, category: broad, expense_ratio: 0.005}
+  cn_sector:
+    label: A股行业与主题 ETF
+    market: CN
+    benchmark: A股行业主题代表池
+    rebalance_frequency: monthly
+    symbols:
+      - {symbol: "512880", name: 券商ETF, benchmark: 证券公司, category: sector, expense_ratio: 0.006}
+      - {symbol: "512010", name: 医药ETF, benchmark: 医药卫生, category: sector, expense_ratio: 0.006}
+      - {symbol: "515030", name: 新能源车ETF, benchmark: 新能源汽车, category: theme, expense_ratio: 0.006}
+      - {symbol: "512480", name: 半导体ETF, benchmark: 半导体, category: theme, expense_ratio: 0.006}
+metadata_fields: [symbol, name, benchmark, category, expense_ratio, aum, average_amount, updated_at, data_source]

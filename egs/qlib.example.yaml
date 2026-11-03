@@ -1,0 +1,15 @@
+# file_format: yaml
+provider_uri: "D:/qlib/qlib_data/cn_data"
+region: "cn"
+market: "csi300"
+benchmark: "SH000300"
+workflow_path: "egs/qlib_workflows/alpha158_lgb.yaml"
+experiment_name: "all_in_one_qlib_research"
+artifact_dir: "data/qlib/artifacts"
+timeout_seconds: 1800
+# 可选：当前服务环境找不到 qrun 时，填写独立 pyqlib 环境的绝对路径。
+qrun_path: ""
+notes:
+  - "pyqlib 为可选能力，请在独立环境安装并准备 qlib 数据目录。"
+  - "workflow_path 指向 qlib 原生 workflow YAML；环境、workflow 和 qrun 命令均就绪后，AI 工作台会调用 qrun 并将运行记录写入 qlib_runs。"
+  - "artifact_dir 用于解析 qrun 后生成的训练指标、组合回测指标和报告文件路径，可按实际 workflow 输出目录调整。"

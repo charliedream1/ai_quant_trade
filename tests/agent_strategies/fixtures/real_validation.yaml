@@ -1,0 +1,26 @@
+# 文件格式：YAML，编码：UTF-8；单候选、两类各一轮，不调参。
+environment_file: E:/.deepseek_env
+output: .pytest_tmp/agent-strategies-20261028/real-runtime
+symbols: ['000001', '600036', '600519']
+research_symbols: ['000001']
+count: 90
+timeout_seconds: 20
+recipes: [cn_event, contest_event]
+model_calls: 12
+max_output_tokens: 1000
+enable_thinking: false
+model_timeout_seconds: 120
+model_temperature: 0.0
+max_wait_seconds: 600
+company_name: 平安银行
+company_symbol: '000001'
+news_limit: 1
+company_profile_url: https://b.pingan.com/ir/gaishu/about.shtml
+company_profile_marker: 平安银行是一家
+company_profile_excerpt_chars: 500
+macro: {timeout_seconds: 20}
+documents_archive: documents-news.json
+news_article_url: https://api3.cls.cn/share/article/2514018?app=&os=android&sv=885
+news_article_marker: 财联社10月23日讯
+news_article_published_at: '2026-10-23T21:57:00+08:00'
+news_article_excerpt_chars: 200

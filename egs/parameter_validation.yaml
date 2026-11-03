@@ -1,0 +1,21 @@
+# 文件格式：YAML，编码：UTF-8
+runtime_dir: .pytest_tmp/parameters-real-20261019
+evidence_path: docs/audit/model_market_evidence_2026-10-19.json
+report_path: docs/audit/strategy_parameters_2026-10-19.json
+preview_repeats: 10
+strategies:
+  - file: lightgbm_rank_strategy.py
+    schemes: [lightgbm_rank.yaml:baseline, lightgbm_rank.yaml:slower_fit]
+  - file: xgboost_rank_strategy.py
+    schemes: [xgboost_rank.yaml:baseline, xgboost_rank.yaml:slower_fit]
+  - file: mlp_ensemble_strategy.py
+    schemes: [mlp_ensemble.yaml:baseline, mlp_ensemble.yaml:compact]
+overrides: {quantity: 200}
+backtest:
+  initial_capital: 1000000
+  order_type: open
+  price_adjustment: qfq
+  max_position_count: 3
+  max_position_weight: 0.35
+  lot_size: 100
+  slippage_rate: 0.001

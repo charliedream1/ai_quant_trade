@@ -1,0 +1,17 @@
+{
+  "source": "src/skills",
+  "host": "codebuddy",
+  "files": {
+    "quant-market-review/SKILL.md": "71814cc2f7a47b5d0bacf14ce75b602ecc6970c6fa3aa3abc855a7810887622b",
+    "quant-stock-analysis/SKILL.md": "f4ab634ca15a2aff9335c5b7d942fc74e88fee38b005cff761edb87e285139ea",
+    "quant-backtest-review/SKILL.md": "c260156feee29ca226cb790a360e6209b82e1fdc1fd96455fe583de28b3b4322",
+    "quant-etf-review/SKILL.md": "a4a4453ea8d363b43b2e4d00e9f0d49d657472def306224ec78c9e36c05096bc",
+    "quant-strategy-composition/SKILL.md": "b3fa3fbab157566497a9bce5050cc9a73b3acb1feef2ed2430e5786db90dbd17",
+    "quant-alpha-mining/SKILL.md": "8d099d47a49e19353c445b8f774281f225157a104602f15fec683a043bf60320",
+    "quant-theme-refine/SKILL.md": "957c52fe1ef4c29fec12bbf8f39a199734e32f09f74d0a6f08c7ec0c545154cf",
+    "quant-regime-research/SKILL.md": "7e4d1e253a3d7143882a6e1dc7207c20d7fa21993acfa9a7ef51a462f3c57851",
+    "quant-cn-debate/SKILL.md": "2260a2601a7968cabc58072d1cdc6e88013244fbe612edeeb147014fbc56027e",
+    "quant-contest-trade/SKILL.md": "50969a2e09b3232c8c0cb1d4b4c11a685bfcceac316417a1851381ee43612d1a"
+  },
+  "deleted_files": []
+}

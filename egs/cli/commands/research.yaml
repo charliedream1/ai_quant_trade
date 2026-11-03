@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "research market-reports run": {"method":"POST","path":"/market-analysis-reports","positions":{},"query":{},"fields":{"report_type":"str","topic":"str","symbols":"json","model_id":"int"},"execution":true,"market":false}
+  "research market-reports list": {"method":"GET","path":"/market-analysis-reports","positions":{},"query":{"report_type":"str","status":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "research market-reports show": {"method":"GET","path":"/market-analysis-reports/{report_id}","positions":{"report_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "research papers search": {"method":"GET","path":"/papers/search","positions":{},"query":{"keyword":"str","source":"str","year_from":"int","year_to":"int","sort":"str","page":"int","page_size":"int","refresh":"bool"},"fields":{},"execution":false,"market":true,"unsupported_query":["sort"]}
+  "research papers favorite": {"method":"POST","path":"/papers/favorites","positions":{},"query":{},"fields":{"paper_id":"int","note":"str"},"execution":false,"market":true}
+  "research papers unfavorite": {"method":"DELETE","path":"/papers/favorites/{paper_id}","positions":{"paper_id":"int"},"query":{},"fields":{},"execution":false,"market":true,"confirm":true}
+  "research papers import": {"method":"POST","path":"/papers/import","positions":{},"query":{},"fields":{"paper_id":"int","category_id":"int","tags":"json"},"execution":false,"market":true}
+  "research reports list": {"method":"GET","path":"/reports","positions":{},"query":{"keyword":"str","symbol":"str","org":"str","start_date":"str","end_date":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":true,"unsupported_query":["start_date","end_date"]}
+  "research reports show": {"method":"GET","path":"/reports/{report_id}","positions":{"report_id":"int"},"query":{"include_body":"bool"},"fields":{},"execution":false,"market":true}

@@ -1,0 +1,184 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+defaults:
+  backend: api
+  timeframe: daily
+  kline_count: 120
+  news_limit: 12
+  sector_limit: 20
+  history_limit: 30
+  max_turns: 4
+  poll_seconds: 0.25
+  output_tokens: 4000
+  temperature: 0.2
+  connect_timeout: 5
+  read_timeout: 180
+  deadline_seconds: 600
+  max_prompt_chars: 110000
+  max_output_chars: 70000
+  max_event_chars: 18000
+  event_data_excerpt_chars: 1200
+  max_skill_chars: 42000
+  chart_height: 340
+  chart_colors: ['#2385c8', '#18a899', '#d9a23b', '#7c68cb']
+  positive_color: '#db526a'
+  negative_color: '#18a899'
+  annual_periods: 252
+  technical_windows: [5, 20, 60]
+  volatility_window: 20
+  rsi_window: 14
+  macd_windows: [12, 26, 9]
+  bollinger_deviation: 2
+  daily_lookback_days: 8
+  monthly_lookback_days: 32
+  max_concurrent_jobs: 2
+  preview_height: 860
+backends:
+  - {id: api, label: 模型 API}
+  - {id: codex, label: Codex CLI}
+  - {id: qoder, label: Qoder CLI}
+  - {id: trae, label: TRAE CLI}
+  - {id: codebuddy, label: CodeBuddy Code}
+registry:
+  source: WorkBuddy 本地 Skill（平台适配）
+  param_schema:
+    type: object
+    properties:
+      backend: {type: string}
+      market: {type: string}
+      symbol: {type: string}
+      model_id: {type: integer, minimum: 1}
+      model_name: {type: string}
+      reasoning_effort: {type: string}
+      timeframe: {type: string}
+      end_date: {type: string}
+tasks:
+  market_review:
+    label: Market Review · 市场复盘
+    skill_dir: market_review
+    resources: [SKILL.md, prompts/analyst.md, prompts/aggregator.md, prompts/verifier.md, refs/Report_Layout.md]
+    sections: [执行摘要, 市场总体表现, 板块与量能, 资金与情绪, 新闻与政策, 海外背景, 风险与后续观察]
+    instruction: >-
+      依照 market-review Skill 对本次实际行情与新闻证据做市场复盘。
+      日度只解释最近有证据的交易时点，月度必须有区间证据；只有最新快照时明确不能推断整月涨跌或资金趋势。
+      覆盖指数、板块、量能、情绪、新闻政策、海外和风险。没有公众号、海外、资金数据时明确缺失。
+  single_stock_analysis:
+    label: Single Stock Analysis · 个股分析
+    skill_dir: single_stock_analysis
+    resources: [SKILL.md, references/a_share_technical_skill.md]
+    sections: [执行摘要, 行情与量价, 趋势与动量, 基本面与估值, 新闻与事件, 风险与观察清单]
+    instruction: >-
+      依照 stock-analysis 的个股研究维度及 A 股技术参考分析指定证券。
+      技术读数只能引用本次程序计算结果；不得声称已执行未实现的 23 项指标、筹码或主力追踪。
+      基本面缺失时不猜测财务、评级、目标价或机构观点，报告为研究观察，不执行交易。
+prompts:
+  system: |
+    你是平台内置 Skill 报告执行器。任务是根据本次本地 Skill、已采集证据与固定任务生成中文研究报告。
+    本平台适配约定优先于上游 Skill 示例：仅生成 HTML 所需正文，不运行 shell、不安装依赖、不访问用户目录、
+    不发布社交内容、不生成 PPT/视频、不调用 function call。上游出现的示例数字、日期、评分均不是本次证据。
+    数据来源、时间、mock 与真实状态必须分开说明；缺失不是零，代理不是正式市场指标。
+    你只能使用传入证据包，不能把记忆中的行情当实时数据，不提供未经证据支持的买卖价或收益承诺。
+  protocol: |
+    工具采用普通文本 ReAct。需要观察时输出 <tool_use>{"name":"evidence_read","arguments":{"source_id":"E1"}}</tool_use>。
+    可用工具只有 skill_read 和 evidence_read；skill_read 参数为 resource，值必须是已加载资源清单中的相对路径。
+    不得输出函数调用字段或要求任意代码执行。工具结果会作为观察回填。
+    最终答案输出一个普通 JSON 对象（允许包在 JSON 代码块），结构为：
+    {"title":"报告标题","summary":"结论摘要","sections":[{"heading":"章节名","paragraphs":["文字分析"],"source_ids":["E1"]}],"risks":["风险"],"missing":["缺失证据"]}。
+    每个实质章节至少引用一个有效 source_id；事实、计算值和推断分开描述，数字只引用证据原值。
+    不写 HTML、不插入外部链接或图片。标题与章节必须满足当前任务的要求。
+  request: |
+    {system}
+
+    当前任务：{instruction}
+    必需章节：{sections}
+    实际参数：{request}
+
+    以下上游 Skill 仅作为研究方法，示例不是事实：
+    本次已加载资源索引：{resource_index}
+    {skill}
+
+    可用数据证据（可用 source_id 获取完整条目）：
+    {evidence}
+
+    {protocol}
+  observation: |
+    以下是实际执行的工具观察。继续研究，满足必需章节后输出最终 JSON：
+    {observation}
+  retry: |
+    最终对象未通过格式或引用检查，原因：{error}。
+    只能修复格式、完整章节和有效引用，不要补造数据。使用已有证据，重新输出最终 JSON 对象。
+ui:
+  missing_html: HTML文件缺失或不可读取；保留原任务状态，当前不可预览或下载
+  missing_events: 未找到过程文件；没有可展示的实际事件
+  title: Skill 洞察报告
+  intro: 选择后端，点击任务；右侧展示实际执行过程与 HTML 报告。
+  backend: 执行后端
+  api_model: 模型 API 配置
+  default_model: 系统默认模型
+  cli_model: CLI 模型名（留空使用默认）
+  effort: 思考强度
+  effort_choices: [默认, low, medium, high, xhigh]
+  timeframe: 复盘范围
+  timeframe_choices: [{label: 最近可用交易日, id: daily}, {label: 近月（按实际可得证据）, id: monthly}]
+  symbol: 个股代码或名称
+  symbol_placeholder: 输入代码或名称，如 600519
+  end_date: 数据截止日（留空为今天）
+  model_settings: 模型与任务设置
+  progress: 实际过程
+  status: 运行状态
+  ready: 尚未执行。点击左侧任务后加载本地 Skill 与实际数据。
+  report: HTML 报告
+  chart_indices: 指数涨跌幅（%）
+  chart_sectors: 板块涨跌幅（%）
+  chart_price: 日线走势与成交量
+  details: 查看原始证据
+  verification: 已核对章节与引用标识；模型论断仍需人工复核，未做逐句事实核查
+  history: 历史报告
+  refresh_history: 刷新报告
+  load_history: 打开报告
+  download: 下载 HTML
+  download_events: 下载实际过程 JSONL
+  process_empty: 尚无过程事件。
+  excerpt: …（页面节选，完整内容可下载 JSONL）
+  legacy_tab: 行情快照与问数
+  new_tab: Skill 报告
+  running: 执行中
+  completed: 已生成
+  partial: 已生成，存在证据或核对缺口
+  failed: 执行失败
+  evidence_heading: 数据与引用
+  gaps_heading: 数据缺口与核对结果
+  disclaimer: 仅供学习与研究，不构成投资建议。计算与模型推断均不等于可执行买卖指令。
+messages:
+  submitted: 任务已创建
+  duplicate: 相同请求正在执行，复用原任务
+  skill_loaded: 已加载本地 Skill
+  collecting: 正在读取实际数据
+  collected: 已保存数据证据
+  model_started: 开始调用所选后端
+  model_text: 模型实际返回
+  tool_started: 执行文本 ReAct 工具
+  tool_finished: 已得到工具观察
+  validating: 正在核查章节、引用与模型输出
+  rendering: 正在生成 HTML 和图表
+  saved: HTML 报告已保存
+  invalid_kind: 不支持的洞察任务
+  invalid_backend: 所选后端未接入洞察报告
+  invalid_symbol: 个股分析需要有效证券代码或名称
+  invalid_date: 日期必须为 YYYY-MM-DD 且不晚于今天
+  unavailable: 请先配置实际可用的模型API或已通过研究约束检查的CLI
+  mock_cli_disabled: mock 数据模式默认不运行真实 Codex；需要在服务环境显式启用
+  no_data: 没有可用于本次报告的数据
+  no_output: 后端没有返回有效正文
+  timeout: 洞察报告超过整体时间限制
+  busy: 正在执行的洞察任务已达上限，请稍后重试
+  invalid_result: 模型输出缺少有效章节、摘要或引用
+  incomplete: 运行已中断，原进程没有保存最终结果
+  unsupported_tool: 未登记的洞察工具
+  bad_resource: Skill 或报告文件路径无效
+  not_found: 洞察任务或报告尚不存在
+  demo_data: 当前包含模拟数据，仅用于演示，不代表真实市场表现
+  api_no_tokens: API 使用普通生成，阶段内容在实际返回后显示
+  market_gaps: [资金流向与融资融券明细未接入本次证据, 公众号和海外背景未接入本次证据, 最新板块快照不能证明历史板块轮动]
+  stock_gaps: [未实现全部 23 项指标与筹码/主力追踪, 机构评级和盈利预测不在本次确定性证据中]
+  monthly_gap: 当前市场服务只提供最新指数和板块快照，不能作为完整月度历史复盘

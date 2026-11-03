@@ -1,0 +1,10 @@
+.chart-explanation { margin: 6px 10px 10px; padding: 8px 10px; border-top: 1px solid var(--border-color-primary, #dce6f0); color: var(--body-text-color-subdued, #526477); font-size: 12px; line-height: 1.6; }
+.chart-explanation p { margin: 0 0 5px; }
+.chart-explanation summary { cursor: help; width: fit-content; color: var(--body-text-color, #2463a7); }
+.chart-explanation summary:focus-visible { outline: 2px solid #448bdd; outline-offset: 3px; border-radius: 4px; }
+.chart-explanation summary { position: relative; }
+.chart-explanation summary:hover::after, .chart-explanation summary:focus-visible::after { content: attr(title); position: absolute; bottom: calc(100% + 8px); left: 0; min-width: 200px; width: max-content; max-width: min(380px, 70vw); white-space: normal; padding: 8px 12px; border-radius: 8px; background: #193a5d; color: #fff; box-shadow: 0 6px 18px #102b4830; z-index: 20; }
+.chart-explanation details[open] { padding-top: 4px; }
+.relation-evidence { padding: 16px; border: 1px solid #b7cfe7; border-radius: 14px; }
+.relation-evidence dl { display: grid; grid-template-columns: minmax(90px, auto) 1fr; gap: 8px 16px; }
+.relation-evidence dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }

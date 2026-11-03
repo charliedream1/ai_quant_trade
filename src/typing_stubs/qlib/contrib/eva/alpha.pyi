@@ -1,0 +1,3 @@
+from typing import Any
+
+def calc_ic(pred: Any, label: Any, **kwargs: Any) -> tuple[Any, Any]: ...

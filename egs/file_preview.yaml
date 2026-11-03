@@ -1,0 +1,52 @@
+# File format: YAML; encoding: UTF-8
+file_format: yaml
+text_encodings: [utf-8-sig, gb18030]
+limits:
+  max_bytes: 20971520
+  max_text_bytes: 2097152
+  max_zip_bytes: 209715200
+  max_zip_entries: 5000
+  conversion_timeout_seconds: 60
+  max_pending_conversions: 4
+  max_pdf_bytes: 52428800
+  workers: 1
+  preview_height: 720
+  history_limit: 30
+  conversion_poll_ms: 500
+  max_pdf_pages: 500
+  pdf_zoom_step: 0.2
+  pdf_min_zoom: 0.4
+  pdf_max_zoom: 3
+  pdf_line_tolerance: 0.35
+project:
+  blocked_parts: [.git, .env, .llm_env, .secrets, .venv, .venv-secure, .venv-models, .venv-graph, .venv-qlib, .venv-qlib-secure, .venv-image-secure, .tools, .uvc, .pytest_tmp, __pycache__, node_modules]
+  blocked_suffixes: [.pem, .key, .pfx, .db, .sqlite, .sqlite3]
+  blocked_prefixes: [.env., .llm_env., .secrets]
+  public_exceptions: [.env.example]
+  blocked_relative_globs: [data/**, egs/config.yaml, egs/cli.yaml, .workbuddy/**]
+  editable_roots: [README.md, docs, doc, egs]
+  readonly_markdown_globs: [docs/task*.md, docs/**/task*.md, docs/audit/**, src/skills/**]
+formats:
+  markdown: [.md, .markdown]
+  html: [.html, .htm]
+  pdf: [.pdf]
+  office: [.doc, .docx, .xls, .xlsx, .ppt, .pptx, .odt, .ods, .odp]
+  image: [.png, .jpg, .jpeg, .webp]
+  text: [.txt, .csv, .json, .jsonl, .yaml, .yml, .toml, .py, .js, .css, .log, .xml, .example]
+converter:
+  windows_executable: .tools/libreoffice/LibreOffice_26.8.1_Win_x86-64/SourceDir/LibreOffice/program/soffice.com
+  linux_executable: libreoffice
+  version: 26.8.1
+  fonts_revision: system-cjk-v1
+  profile_template: egs/file_preview_profile.xcu
+  work_directory: .tools/preview_jobs
+  backend: libreoffice
+ui:
+  source_labels: {project: 项目文件, upload: 上传文件, attachment: 会话附件, knowledge: 知识库原件, knowledge_text: 历史知识正文, alpha_artifact: Alpha研究产物}
+  kind_labels: {markdown: Markdown, html: HTML, pdf: PDF, office: Office文档, image: 图片, text: 文本}
+  title: 文件阅读
+  readonly: 只读预览
+  editable: Markdown可编辑
+  legacy: 历史记录没有原件，以下为提取文本
+  unsupported: 不支持此文件格式的内部预览，可下载原文件
+  unsaved: Markdown有未保存修改，是否放弃修改？

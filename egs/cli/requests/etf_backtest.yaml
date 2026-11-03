@@ -1,0 +1,18 @@
+# 文件格式：YAML，编码：UTF-8
+# strategy_id 使用实际导入返回值覆盖，日期按已有行情调整。
+strategy_id: 1
+engine: simple
+symbols: ['510300', '510500', '159915', '512100']
+start_date: '2026-01-05'
+end_date: '2026-10-19'
+initial_capital: 1000000
+order_type: open
+price_adjustment: qfq
+max_position_count: 2
+max_position_weight: 0.6
+lot_size: 100
+commission_rate: 0.0003
+slippage_rate: 0.001
+parameter_profile: etf_momentum.yaml:baseline
+params:
+  universe: cn_core

@@ -16,10 +16,30 @@ edit_uri: edit/master/docs/
 
 docs_dir: docs
 site_dir: site
+hooks:
+  - zz_scripts/docs_language.py
 
 exclude_docs: |
-  intro.md
-  snippets/**
+  /intro.md
+  /snippets/**
+  /CHANGELOG.md
+  /.trae_work_ui/**
+  /ai_composer_enhancement_plan.md
+  /audit/**
+  /dependency_installation.md
+  /documentation_reorganization_plan.md
+  /gradio_frontend.md
+  /gradio_modularization_plan.md
+  /home_dashboard_redesign_plan.md
+  /implementation_audit.md
+  /main_page_e2e_competitor_research_2026-09-29.md
+  /page_completeness_audit.md
+  /README.md
+  /reference/**
+  /research/**
+  /storage_selection.md
+  /tasks.func.md
+  /tasks.spec.md
 
 copyright: Copyright &copy; 2026 charliedream1 · Apache-2.0 License
 
@@ -76,12 +96,16 @@ markdown_extensions:
   - footnotes
 
 extra_javascript:
+  - usage/assets/handbook-search.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra_css:
+  - usage/assets/handbook.css
   - stylesheets/site.css
 
 extra:
+  i18n_fallback_roots: ["ai_workspace.md", "cli", "configuration.md", "css", "etf_research.md", "help", "img", "js", "modules.md", "platform", "principles", "principles.md", "quick_start.md", "risk.md", "strategy_parameters.md", "troubleshooting.md", "usage", "webfonts"]
+  help_source_roots: [platform, usage, principles, help, cli]
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/charliedream1/ai_quant_trade
@@ -135,6 +159,94 @@ plugins:
 
 nav:
   - 首页: index.md
+  - 量化工作台:
+    - 平台概览: platform/index.md
+    - 新仓库入口: platform/migration.md
+    - 使用文档:
+      - 阅读路线: usage/README.md
+      - 安装与启动:
+        - 环境安装: usage/installation.md
+        - AI CLI安装与接入: usage/cli_installation.md
+        - 工作台使用路线: usage/workspace.md
+        - 快速上手: usage/quick_start.md
+        - 导航与功能入口: usage/modules.md
+        - 统一入口与独立环境: usage/navigation_and_environment.md
+        - 访问控制与源码运行: usage/access_and_execution.md
+      - 行情与资料:
+        - 总览与图表: usage/dashboard.md
+        - 行情、因子和图谱: usage/market_research.md
+        - 通用因子监控与Qlib: usage/factor_monitoring.md
+        - 资源池模板与导入: usage/resource_pools.md
+        - 研报与论文: usage/reports.md
+      - 策略与仿真:
+        - 导入和启用策略: usage/strategy_import.md
+        - 参数方案: usage/strategy_parameters.md
+        - 策略工坊与组合风控: usage/strategy_composition.md
+        - 因子研究与特征组合: usage/factor_research.md
+        - Alpha挖掘与体制实验: usage/alpha_mining.md
+        - 中文多空与双团队竞赛: usage/agent_strategies.md
+        - 回测与结果核对: usage/backtest.md
+        - 交易成本与执行设置: usage/backtest_execution.md
+        - 模型策略: usage/model_strategies.md
+        - ETF与投研复核: usage/etf_research.md
+        - 模拟账户与成交: usage/paper_trading.md
+      - AI与知识:
+        - AI工作台与附件: usage/ai_workspace.md
+        - Agent后端与原生Skills: usage/agent_cli_skills.md
+        - 文件阅读与Markdown编辑: usage/file_reader.md
+        - Skill洞察报告: usage/insight_reports.md
+        - 知识库与学习: usage/knowledge.md
+        - 工作台与量化课程入口: usage/workspace_learning.md
+      - 配置与命令:
+        - 提醒中心与助手形象: usage/notifications.md
+        - 自动化与能力配置: usage/automation.md
+        - 配置说明: usage/configuration.md
+        - 命令行上手: usage/cli.md
+        - 完整命令参考: usage/cli_reference.md
+        - 排障: usage/troubleshooting.md
+        - 使用边界: usage/risk.md
+        - 截图来源: usage/assets/screenshots/README.md
+      - 文档维护与发布: usage/documentation_publish.md
+    - 原理文档:
+      - Agent后端与Skill执行: principles/agent_cli_skills.md
+      - 阅读路线: principles/README.md
+      - 量化基础课程:
+        - 导读: principles/quant_basics/README.md
+        - 研究流程与假设: principles/quant_basics/01_research.md
+        - 股票指数与ETF: principles/quant_basics/02_instruments.md
+        - 行情与历史时点: principles/quant_basics/03_data.md
+        - 收益复利与基准: principles/quant_basics/04_returns.md
+        - 统计波动与回撤: principles/quant_basics/05_statistics.md
+        - 因子与横截面评估: principles/quant_basics/06_factors.md
+        - 趋势反转与轮动: principles/quant_basics/07_signals.md
+        - 回测撮合与偏差: principles/quant_basics/08_execution.md
+        - 组合配置与风控: principles/quant_basics/09_portfolio.md
+        - 小模型与样本外: principles/quant_basics/10_models.md
+        - ETF与行业轮动: principles/quant_basics/11_rotation.md
+        - 模拟监控与复盘: principles/quant_basics/12_operations.md
+      - 系统架构: principles/architecture.md
+      - 安全、任务与模块组织: principles/security_concurrency.md
+      - Alpha研究纪律: principles/alpha_mining.md
+      - 辩论与研究预算竞赛: principles/agent_strategies.md
+      - 数据来源与缓存: principles/data_pipeline.md
+      - 策略标准端口: principles/strategy_port_principles.md
+      - 策略编排与组合: principles/strategy_composition.md
+      - 图形工坊与计算一致性: principles/strategy_graph.md
+      - 因子面板与研究评分: principles/factor_research.md
+      - 通用因子监控: principles/factor_monitoring.md
+      - 参数与复现: principles/parameters.md
+      - 回测与指标: principles/backtest_metrics.md
+      - 执行成本与快照: principles/execution_costs.md
+      - 模型与ETF: principles/model_etf.md
+      - AI与多Agent: principles/ai_agents.md
+      - 命令行协议: principles/cli_protocol.md
+      - 存储分工: principles/storage.md
+      - 图谱建模: principles/relation_graph_principles.md
+      - 前端交互: principles/gradio_ui_principles.md
+      - 运行隔离与入口整合: principles/runtime_navigation.md
+      - 文件预览与版本保存: principles/file_preview.md
+      - 知识库文件检索: principles/knowledge_retrieval.md
+      - 验证原则: principles/testing_principles.md
   - 环境配置:
       - GPU 环境配置: 01_环境配置/01_GPU环境配置/README.md
       - GPU 配置 (Windows): 01_环境配置/01_GPU环境配置/01_Win下GPU配置.md
@@ -152,3 +264,16 @@ nav:
   - 部署运维:
       - 发布操作指南: 04_website_deployment/发布操作指南.md
       - Cloudflare Pages 部署: 04_website_deployment/Cloudflare_Pages_部署指南.md
+
+not_in_nav: |
+  /help/
+  /cli/
+  /quick_start.md
+  /ai_workspace.md
+  /modules.md
+  /strategy_parameters.md
+  /etf_research.md
+  /configuration.md
+  /troubleshooting.md
+  /risk.md
+  /principles.md

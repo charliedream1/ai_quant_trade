@@ -1,10 +1,37 @@
-# gitleaks 配置：https://github.com/gitleaks/gitleaks
-# 对已知误报（HuggingFace 模型名 Org/Repo 格式）添加 allowlist
-
-title = "gitleaks config"
+title = "AIQuant all-in-one secret scan"
 
 [extend]
 useDefault = true
+
+[[allowlists]]
+description = "Generated Python caches and the fixed archived screenshot location."
+paths = [
+    '''(^|[\\/])\.mypy_cache[\\/]''',
+    '''(^|[\\/])\.pytest_cache[\\/]''',
+    '''(^|[\\/])\.ruff_cache[\\/]''',
+    '''(^|[\\/])__pycache__[\\/]''',
+    '''(^|[\\/])docs[\\/]audit[\\/]screenshots[\\/]''',
+]
+
+[[allowlists]]
+description = "SHA-256 evidence checksums, scoped to the two fixed factor manifests."
+targetRules = ["generic-api-key"]
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|[\\/])docs[\\/]audit[\\/]factor_research_2026-10-24[\\/](evidence|evidence-optimized)[\\/]manifest\.json$''']
+regexes = ['''^[a-f0-9]{64}$''']
+
+[[allowlists]]
+description = "Public JWT vulnerability examples in archived pip-audit advisory descriptions."
+targetRules = ["jwt"]
+condition = "AND"
+regexTarget = "line"
+paths = [
+    '''(^|[\\/])docs[\\/]audit[\\/]composition_2026-10-22[\\/]dependencies\.json$''',
+    '''(^|[\\/])docs[\\/]audit[\\/]factor_research_2026-10-24[\\/](evidence|evidence-optimized)[\\/]checks[\\/]dependency-audit\.json$''',
+    '''(^|[\\/])docs[\\/]audit[\\/]insight_dependency_audit_2026-10-22\.json$''',
+]
+regexes = ['''"id"\s*:\s*"(PYSEC-2026-2528|GHSA-pxh4-856f-4h89)"''']
 
 [[allowlists]]
 targetRules = ["generic-api-key"]

@@ -1,0 +1,9 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "watchlist group list": {"method":"GET","path":"/watchlist/groups","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "watchlist group create": {"method":"POST","path":"/watchlist/groups","positions":{},"query":{},"fields":{"name":"str","sort_order":"int"},"execution":false,"market":false}
+  "watchlist group update": {"method":"PUT","path":"/watchlist/groups/{group_id}","positions":{"group_id":"int"},"query":{},"fields":{"name":"str","sort_order":"int"},"execution":false,"market":false}
+  "watchlist group delete": {"method":"DELETE","path":"/watchlist/groups/{group_id}","positions":{"group_id":"int"},"query":{"force":"bool"},"fields":{},"execution":false,"market":false,"confirm":true}
+  "watchlist quotes": {"method":"GET","path":"/watchlist/quotes","positions":{},"query":{"group_id":"str"},"fields":{},"execution":false,"market":false}
+  "watchlist symbol add": {"method":"POST","path":"/watchlist/groups/{group_id}/symbols","positions":{"group_id":"int"},"query":{},"fields":{"symbols":"json"},"execution":true,"market":false}
+  "watchlist symbol remove": {"method":"DELETE","path":"/watchlist/groups/{group_id}/symbols/{symbol}","positions":{"group_id":"int","symbol":"str"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}

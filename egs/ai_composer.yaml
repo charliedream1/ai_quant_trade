@@ -1,0 +1,59 @@
+# 文件格式：YAML，编码：UTF-8；两处对话框共用的能力与提示。
+ui:
+  placeholder: 输入消息，Enter 发送，Ctrl+Enter 换行；可拖入文件或图片
+  send_hint: 发送消息；Enter 发送，Ctrl+Enter 换行
+  permission_hint: 权限实际传给所选后端；项目编辑不等于操作系统沙箱
+permissions:
+  read-only: 只读
+  workspace-write: 项目编辑
+efforts: [['跟随后端', ''], [低, low], [中, medium], [高, high], [极高, xhigh]]
+backends:
+  generic_agent:
+    label: 模型 API
+    aliases: [generic, model, model_api, openai]
+    permissions: [read-only]
+    efforts: ['', low, medium, high, xhigh]
+  codex:
+    label: Codex CLI
+    aliases: [codex_cli]
+    permissions: [read-only, workspace-write]
+    efforts: ['', low, medium, high, xhigh]
+  qoder:
+    label: Qoder CLI
+    aliases: [qorder, qorder_cli, qoder_cli, qodercli]
+    permissions: [read-only, workspace-write]
+    efforts: ['', low, medium, high, xhigh, max]
+  trae:
+    label: TRAE CLI
+    aliases: [trae_cli]
+    permissions: [read-only]
+    efforts: ['']
+  codebuddy:
+    label: CodeBuddy Code
+    aliases: [codebuddy_cli]
+    permissions: [read-only]
+    efforts: ['']
+  workbuddy:
+    label: WorkBuddy（未接入）
+    aliases: [workbuddy_cli]
+    permissions: [read-only]
+    efforts: ['']
+qoder:
+  executable_env: ALL_IN_ONE_QODER_CLI
+  config_dir_env: ALL_IN_ONE_QODER_CONFIG_DIR
+  executables: [qoder, qodercli]
+  timeout_seconds: 180
+  metadata_timeout_seconds: 15
+  max_output_tokens: 1500
+  model_cache_seconds: 300
+  auth_cache_seconds: 30
+  permission_modes: {read-only: dont_ask, workspace-write: accept_edits}
+  tools:
+    read-only: [Read, Glob, Grep]
+    workspace-write: [Read, Glob, Grep, Write, Edit]
+  disabled_tools: [Bash, Shell, NotebookEdit, Task, Agent, WebFetch, WebSearch]
+  settings: {general: {enableAutoUpdate: false}}
+  missing: 未找到Qoder CLI，请在.env配置ALL_IN_ONE_QODER_CLI
+  no_models: Qoder已安装；模型列表需先登录，再点击刷新模型
+  login_required: Qoder尚未登录；请用同一QODER_CONFIG_DIR执行qodercli login，完成后刷新模型
+  status_failed: Qoder认证状态检查失败或超时，请检查CLI及网络后重试

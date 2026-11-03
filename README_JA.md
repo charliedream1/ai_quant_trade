@@ -9,7 +9,7 @@
 [**中文版**](README_ZH.md) | [**ENGLISH VERSION**](README.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python-Version](https://img.shields.io/badge/Python-3.8+-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
+[![Python-Version](https://img.shields.io/badge/Python-3.11%2B%20Workspace-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 [![Stars](https://img.shields.io/github/stars/charliedream1/ai_quant_trade?style=social)](https://github.com/charliedream1/ai_quant_trade)
 
 <p>
@@ -26,29 +26,34 @@
 
 ---
 
+**ナレッジ更新 · 2026-11-02：**名前付きファイルライブラリ、Markdown見出し分割、zvec-grepによる複数回キーワード検索、会話添付、出典プレビュー、レポート・論文のダウンロード取り込みに対応。[利用ガイド](docs/usage/knowledge.md)。
+
+**最新更新 · 2026-11-01：** [統合リサーチワークスペース](#integrated-workspace)で、市場、戦略、バックテスト、AI会話と知識の引用をつなぎます。[利用ガイド](docs/usage/workspace.md)から開始できます。
+
 ## 📑 目次
 
 - [1. ✨ コアハイライト](#1--コアハイライト)
 - [2. 🔥 新機能](#2--新機能)
-- [3. 📖 紹介](#3--紹介)
-- [4. 🌟 awesome_projects（重点推薦）](#4--awesome_projects重点推薦)
-- [5. 🚀 クイック_START](#5--クイック_start)
-- [6. 📊 ローカル量化戦略](#6--ローカル量化戦略)
-- [7. 💰 実取引](#7--実取引)
-- [8. 🛠️ 補助トレーディングツール](#8--補助トレーディングツール)
-- [9. ⛏️ アルファ発掘](#9--アルファ発掘)
-- [10. 💾 データ処理](#10--データ処理)
-- [11. 📝 テキスト分析](#11--テキスト分析)
-- [12. 🤖 大規模モデル応用](#12--大規模モデル応用)
-- [13. 📚 プログラミングおよびAI基礎知識](#13--プログラミングおよびai基礎知識)
-- [14. 🌐 オンライン投研プラットフォーム](#14--オンライン投研プラットフォーム)
-- [15. 📖 量化リソースコレクション](#15--量化リソースコレクション)
-- [16. 🎁 付属リソース](#16--付属リソース)
-- [17. 💖 ご支援のお願い](#17--ご支援のお願い)
-- [18. 💬 ディスカッション](#18--ディスカッション)
-- [19. 🐛 テクニカルサポート](#19--テクニカルサポート)
-- [20. ❓ よくある質問](#20--よくある質問)
-- [21. 📄 引用](#21--引用)
+- [3. 🧩 統合クオンツワークスペース（`src`）](#integrated-workspace)
+- [4. 📖 紹介](#4--紹介)
+- [5. 🌟 awesome_projects（重点推薦）](#5--awesome_projects重点推薦)
+- [6. 🚀 クイック_START](#6--クイック_start)
+- [7. 📊 ローカル量化戦略](#7--ローカル量化戦略)
+- [8. 💰 実取引](#8--実取引)
+- [9. 🛠️ 補助トレーディングツール](#9--補助トレーディングツール)
+- [10. ⛏️ アルファ発掘](#10--アルファ発掘)
+- [11. 💾 データ処理](#11--データ処理)
+- [12. 📝 テキスト分析](#12--テキスト分析)
+- [13. 🤖 大規模モデル応用](#13--大規模モデル応用)
+- [14. 📚 プログラミングおよびAI基礎知識](#14--プログラミングおよびai基礎知識)
+- [15. 🌐 オンライン投研プラットフォーム](#15--オンライン投研プラットフォーム)
+- [16. 📖 量化リソースコレクション](#16--量化リソースコレクション)
+- [17. 🎁 付属リソース](#17--付属リソース)
+- [18. 💖 ご支援のお願い](#18--ご支援のお願い)
+- [19. 💬 ディスカッション](#19--ディスカッション)
+- [20. 🐛 テクニカルサポート](#20--テクニカルサポート)
+- [21. ❓ よくある質問](#21--よくある質問)
+- [22. 📄 引用](#22--引用)
 
 ---
 
@@ -69,6 +74,11 @@
 
 | **日時** | **機能** |
 |:---|:---|
+| 2026.11.01 | 🆕 [**統合クオンツリサーチワークスペース**](docs/usage/workspace.md)：Gradioアプリ内で資産概要、市場調査、戦略グラフ、コスト付きバックテスト、AI会話と引用付き知識Q&Aを利用。 |
+| 2026.10.31 | [**実行管理と研究記録**](docs/usage/access_and_execution.md)：カスタムソースのレビュー、固定パラメーター、処理状態、RAG引用、文書閲覧とMarkdown編集。 |
+| 2026.10.29 | [**AgentのAPI/CLIバックエンドと10種類の研究Skill**](docs/usage/agent_cli_skills.md)。処理イベントと実際の利用条件を確認。 |
+| 2026.10.28 | [**強気/弱気の議論とチーム競争**](docs/usage/agent_strategies.md)、[Alpha・テーマ・レジーム研究](docs/usage/alpha_mining.md)。 |
+| 2026.10.24 | [**戦略グラフワークショップ**](docs/usage/strategy_composition.md)：段階選別、並列採点、ファクター/モデルとPortfolio/Riskの組み合わせ。 |
 | 2026.07.25 | 🆕 [**「サボり株取引」神器 V2：モジュラー板監視システム + 警報モニタリング + K線チャート + マルチソースフォールバック**](egs_aide/excel_stock_monitor/v2) |
 
 <details>
@@ -107,7 +117,68 @@
 
 ---
 
-## 3. 📖 紹介
+<a id="integrated-workspace"></a>
+
+## 3. 🧩 統合クオンツワークスペース（`src`）
+
+新しい[`src/`](src)は実行可能なリサーチアプリケーションです。モジュール化した**Gradio画面**、共通の**REST APIとCLI**で、市場調査、戦略構築、バックテスト、AI会話、ローカル知識を一つのプロジェクトにつなぎます。従来の`egs_*/`サンプルは独立して利用できます。
+
+[**ワークスペース利用ガイド**](docs/usage/workspace.md) · [**導入手順**](docs/usage/installation.md) · [**クイックスタート**](docs/usage/quick_start.md) · [**仕組みと設計原理**](docs/principles/README.md) · [**CLI**](docs/usage/cli.md)
+
+詳細ガイドは現在中国語が中心です。日本語READMEは機能の概要と各ガイドへの入口を提供します。文書サイトの英語表示では、新しい未翻訳ページに中国語のフォールバックを使用します。
+
+| 機能 | できること |
+| --- | --- |
+| 概要と市場調査 | 資産・NAV・配分・保有統計、ニュース、セクター/個別銘柄、ファクターモニタリングと関連情報の根拠を確認。 |
+| 戦略と小型モデル | ルール、ETF/業種ローテーション、LightGBM/XGBoostランキング、CPU用MLPを利用し、YAMLパラメーターを確認・固定。 |
+| グラフ構成とリスク管理 | ルール→モデル→Agentの段階選別、並列投票/採点、Portfolio配分とRisk部品を組み合わせ、ノードの前後関係を確認。 |
+| バックテストとシミュレーション | 期間、手数料・税・スリッページなどの仮定を設定し、NAV、ドローダウン、約定、寄与度と固定パラメーターを確認。 |
+| Alphaと複数Agent | 仮説→実装→評価、テーマ/市場レジーム実験、強気/弱気の議論、チーム競争を根拠・予算・レビュー条件とともに実行。 |
+| AI・CLI・Skill | プロジェクト会話、添付、Enter送信、バックエンド/権限/モデル/思考設定。API/Codex/Qoder/TRAE/CodeBuddyはインストール・認証・役割の要件に応じて利用。 |
+| 知識とファイル | 引用付きローカルRAG、HTML/Office/PDFのプレビュー、Markdown編集と過去レポートの閲覧。 |
+| 学習と運用 | 章ごとのクオンツ基礎、定期タスク、MCP/Skill管理、通知と実行状態の確認。 |
+
+### 操作を見る
+
+**一つのページで切り替え**：資産概要→市場調査→ETF→学習→ナビゲーションを折りたたむ。
+
+![ワークスペースのナビゲーションと資産概要](.README_images/workspace/en/navigation.gif)
+
+**戦略グラフとバックテスト**：プリセット読込、ノード選択/ドラッグ、バックテスト設定、結果と固定パラメーターを確認。
+
+![戦略グラフとバックテスト結果](.README_images/workspace/en/strategy-backtest.gif)
+
+**AIと知識の引用**：ファイルを添付してEnter送信、実行状態とRAGの引用を確認し、Skillレポートの操作画面へ移動。
+
+![AI会話、添付と知識の引用](.README_images/workspace/en/ai-knowledge.gif)
+
+日本語版と英語版READMEでは、英語UIの実操作画面と英語字幕を共用しています。
+
+これらは隔離環境で実際に操作した画面です。市場データと会話応答は明示的な**mock**で、Skillパネルを開くだけではレポートを実行しません。投資成果、有料モデル/CLIの実行成功を証明するものではありません。[記録の出所](.README_images/workspace/README.md)。
+
+### コードの役割と起動
+
+| ディレクトリ | 役割 |
+| --- | --- |
+| [`src/frontend`](src/frontend)、[`src/api`](src/api)、[`src/cli`](src/cli) | Gradio、REST/WebSocket、共通サービスを使うCLI。 |
+| [`src/strategy`](src/strategy)、[`src/engine`](src/engine)、[`src/portfolio`](src/portfolio)、[`src/risk`](src/risk) | 戦略ポート、グラフ構成、執行台帳、配分とリスク。 |
+| [`src/agent`](src/agent)、[`src/alpha_mining`](src/alpha_mining)、[`src/agent_strategies`](src/agent_strategies)、[`src/skills`](src/skills) | モデル/CLI提供、リサーチの編成、ネイティブSkill。 |
+| [`src/data`](src/data)、[`src/documents`](src/documents), [`src/knowledge`](src/knowledge)、[`src/integration`](src/integration) | 市場データ、文書/知識とMCP連携。 |
+| [`src/core`](src/core)、[`src/scheduler`](src/scheduler)、[`src/notifications`](src/notifications) | 設定、ストレージ、アクセス/実行の基盤、タスクと通知。 |
+| [`egs/`](egs)、[`tests/`](tests)、[`doc/`](doc)、[`docs/`](docs) | YAML/起動例、テスト、設計、利用・原理ガイド。 |
+
+ワークスペースは**Python3.11以上**とルートの固定依存関係を使用します。[環境導入](docs/usage/installation.md)後、リポジトリのルートで起動してください。
+
+```text
+.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role web
+.venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
+```
+
+`http://127.0.0.1:8000/app/`を開きます。Linuxでは環境を作成して`.venv-secure/bin/python`を使います。設定はegsのYAML、鍵はローカル.env/.llm_envに置きます。[アクセス・ソースレビュー規則](docs/usage/access_and_execution.md)も確認してください。Qlib信号分析とネイティブWorkflowは別々に設定・検証します。実取引は実際の接続先と確認が必要です。
+
+---
+
+## 4. 📖 紹介
 
 ### 対象者
 
@@ -123,7 +194,12 @@ ai_quant_trade
 │   ├── 资源 ........... Web全体から継続的に収集された優れたリソース
 │   ├── 实战 ........... 各種ツール、フレームワーク、ライブラリの使用と落とし穴の実録
 │   └── 热点 ........... 金融市場のホットトピック、技術ホットトピック、論文解説
-├── docs ............... 本リポジトリの使用説明ドキュメント
+├── src ................ 統合ワークスペースとモジュール化Gradio
+├── egs ................ YAML設定と起動例
+├── tests .............. 単体・統合・ブラウザ検証
+├── doc ................ 設計資料
+├── docs ............... 利用・原理ガイドと文書サイト
+├── start.py ........... ワークスペース起動
 ├── egs_aide ........... 補助トレーディングツール（板監視神器など）
 ├── egs_alpha .......... アルファライブラリ & アルファ発掘
 ├── egs_data ........... データ取得と処理（Wind / オープンソースツール）
@@ -135,20 +211,16 @@ ai_quant_trade
 │   ├── rl ............. 強化学習による株取引
 │   ├── ms_qlib ........ Microsoft Qlibフレームワーク
 │   └── vanilla ........ 伝統的なルールベース戦略
-├── quant_brain ........ コアアルゴリズムライブラリ
 ├── runtime ............ モデルデプロイと実使用
 ├── tools .............. 補助ツール
 └── README.md
 ```
 
-> 各 `egs_*/` サブプロジェクトは独自の **`requirements.txt`** を
-> 持つようになりました。利用したいプロジェクトのディレクトリで
-> `pip install -r requirements.txt` を実行してください。
-> リポジトリ直下に共通の依存ファイルはありません。
+> 統合ワークスペースはルートのrequirements.txt/pyproject.tomlと任意のモデル依存を使用します。従来のegsサンプルは各プロジェクトの依存ファイルを使用し、全部を同じ環境へ混在させないでください。
 
 ---
 
-## 4. 🌟 awesome_projects（重点推薦）
+## 5. 🌟 awesome_projects（重点推薦）
 
 > 📁 **ディレクトリ**: [awesome_projects](awesome_projects)
 >
@@ -197,24 +269,15 @@ ai_quant_trade
 
 ---
 
-## 5. 🚀 クイック_START
+## 6. 🚀 クイック_START
 
-本リポジトリは現時点ではPythonパッケージとして打包化されていません。プロジェクト全体をクローンした後、各`egs`ディレクトリに入って詳細な**使用方法**と**原理説明**を確認してください。
+新しい**srcワークスペース**は[環境導入](docs/usage/installation.md)と[利用ガイド](docs/usage/workspace.md)に従い、Python3.11以上のプロジェクト環境でルートのstart.pyを起動します。
 
-```bash
-# 1. リポジトリをクローン
-git clone https://github.com/charliedream1/ai_quant_trade.git
-
-# 2. 対象プロジェクトのディレクトリに入り、独自依存をインストール（ルートに requirements.txt はありません）
-cd egs_trade/vanilla/double_ma
-pip install -r requirements.txt
-
-# 3. プロジェクト自身の README に従って利用開始
-```
+従来サンプルは対象egsディレクトリ内のrequirementsとREADMEに従ってください。Pythonや任意のライブラリの要件はサンプルごとに異なります。
 
 ---
 
-## 6. 📊 ローカル量化戦略
+## 7. 📊 ローカル量化戦略
 
 > 📁 **コードディレクトリ**: [egs_trade](egs_trade)
 >
@@ -263,7 +326,7 @@ pip install -r requirements.txt
 
 ---
 
-## 7. 💰 実取引
+## 8. 💰 実取引
 
 > 📁 **コードディレクトリ**: [egs_trade](egs_trade)
 
@@ -276,7 +339,7 @@ pip install -r requirements.txt
 
 ---
 
-## 8. 🛠️ 補助トレーディングツール
+## 9. 🛠️ 補助トレーディングツール
 
 > 📁 **コードディレクトリ**: [egs_aide](egs_aide)
 
@@ -287,7 +350,7 @@ pip install -r requirements.txt
 
 2. **["サボり株取引"神器 V2：モジュラー板監視システム](egs_aide/excel_stock_monitor/v2)** 🆕
 
-   ![板監視神器V2デモ](egs_aide/excel_stock_monitor/v2/看盘神器V2演示.gif)
+   ![板監視神器V2・英語の機能紹介図](.README_images/workspace/en/legacy-monitor.gif)
 
    - 🏗️ **アーキテクチャリファクタ**：単一ファイルからモジュラー`excel_monitor`パッケージにアップグレード、Sheet Handlerパターン、各Sheetのリフレッシュが互いに分離
    - 🔔 **警報モニタリング**：カスタマイズ可能な騰落率/価格上限・下限、トリガーで行全体が赤く変わる + ポップアップ通知
@@ -304,7 +367,7 @@ pip install -r requirements.txt
 
 ---
 
-## 9. ⛏️ アルファ発掘
+## 10. ⛏️ アルファ発掘
 
 > 📁 **コードディレクトリ**: [egs_alpha](egs_alpha)
 
@@ -324,7 +387,7 @@ pip install -r requirements.txt
 
 ---
 
-## 10. 💾 データ処理
+## 11. 💾 データ処理
 
 > 📁 **コードディレクトリ**: [egs_data](egs_data)
 
@@ -335,7 +398,7 @@ pip install -r requirements.txt
 
 ---
 
-## 11. 📝 テキスト分析
+## 12. 📝 テキスト分析
 
 > 📁 **コードディレクトリ**: [egs_fin_nlp](egs_fin_nlp)
 
@@ -345,7 +408,7 @@ pip install -r requirements.txt
 
 ---
 
-## 12. 🤖 大規模モデル応用
+## 13. 🤖 大規模モデル応用
 
 > 📁 **コードディレクトリ**: [egs_llm](egs_llm)
 
@@ -356,7 +419,7 @@ pip install -r requirements.txt
 
 ---
 
-## 13. 📚 プログラミングおよびAI基礎知識
+## 14. 📚 プログラミングおよびAI基礎知識
 
 メンテナンスを容易にするため、従来の`ai_wiki`ディレクトリの内容（システム操作、プログラミング基礎、AI基礎、AI実践など）は、リポジトリ**AI大規模モデル落とし穴ガイド**に独立して同期されています。
 
@@ -369,7 +432,7 @@ pip install -r requirements.txt
 
 ---
 
-## 14. 🌐 オンライン投研プラットフォーム
+## 15. 🌐 オンライン投研プラットフォーム
 
 > 📁 **コードディレクトリ**: [egs_online_platform](egs_online_platform)
 
@@ -405,7 +468,7 @@ pip install -r requirements.txt
 
 ---
 
-## 15. 📖 量化リソースコレクション
+## 16. 📖 量化リソースコレクション
 
 > [(Zhihuで2.6万回読まれた記事) 史上最全AI株式量化取引ツールとオープンソースプロジェクト集約](https://zhuanlan.zhihu.com/p/562878605)
 
@@ -418,7 +481,7 @@ pip install -r requirements.txt
 
 ---
 
-## 16. 🎁 付属リソース
+## 17. 🎁 付属リソース
 
 本コードリポジトリは**有料と無料の並行**原則を遵守しています。
 
@@ -489,7 +552,7 @@ Web最安値の量化プラネットの一つ | 3日以内不满意無料返金
 
 ---
 
-## 17. 💖 ご支援のお願い
+## 18. 💖 ご支援のお願い
 
 ご支援は私の前進の原動力です。「0.1元」でも大変嬉しいです。ご支援ありがとうございます \(^o^)/
 
@@ -501,22 +564,22 @@ Web最安値の量化プラネットの一つ | 3日以内不满意無料返金
 
 ---
 
-## 18. 💬 ディスカッション
+## 19. 💬 ディスカッション
 
 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions)でディスカッションを開始することを歓迎します。
 
-## 19. 🐛 テクニカルサポート
+## 20. 🐛 テクニカルサポート
 
 - [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues)に問題を提出することを歓迎します
 - ナレッジプラネットに参加して、より多くのテクニカルサポートを取得
   - [AI智投星球](https://t.zsxq.com/dHt9l)：AI量化取引のナレッジ共有に焦点
   - [大規模モデル落とし穴ガイド](https://t.zsxq.com/q42Js)：プログラミング、大規模モデル、AI応用エンパワーメントに焦点
 
-## 20. ❓ よくある質問
+## 21. ❓ よくある質問
 
 ドキュメントをご覧ください → [**よくある質問**](docs/02_常见问题)
 
-## 21. 📄 引用
+## 22. 📄 引用
 
 ```bibtex
 @misc{ai_quant_trade,

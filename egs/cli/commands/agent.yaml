@@ -1,0 +1,4 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "agent review": {"method":"POST","path":"/research-team/runs","positions":{},"query":{},"fields":{"backtest_id":"int","objective":"str","model_id":"int","workflow":"str"},"execution":true,"market":false,"stream_path":"/research-team/runs/stream"}
+  "agent show": {"method":"GET","path":"/research-team/runs/{run_id}","positions":{"run_id":"str"},"query":{},"fields":{},"execution":false,"market":false}

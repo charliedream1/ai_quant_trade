@@ -1,0 +1,1 @@
+"""APScheduler trigger namespace."""

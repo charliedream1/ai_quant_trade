@@ -1,0 +1,58 @@
+# file_format: yaml
+# 文件格式: UTF-8
+#
+# Copy this file to egs/exchange_announcement_profiles.yaml, then reference it
+# from calendar_reference_refresh params:
+#
+# announcement_profiles_path: egs/exchange_announcement_profiles.yaml
+# announcement_profile: cn_stock_exchanges
+#
+# URLs below are official exchange pages as of 2026-09-30. Exchange websites may
+# change page structure, so keep this file editable and review it regularly.
+
+file_format: yaml
+profiles:
+  cn_stock_exchanges:
+    label: A股三所休市公告汇总
+    description: 从上交所、深交所和北交所公告入口按关键词发现休市安排公告。
+    announcement_index_urls:
+      - https://www.sse.com.cn/disclosure/dealinstruc/closed/list/
+      - https://investor.szse.cn/disclosure/notice/general/index.html
+      - https://www.bse.cn/disclosure/vocational.html
+    announcement_link_keywords:
+      - 休市安排
+      - 部分节假日休市安排
+      - 节假日休市安排
+      - 交易日安排
+    announcement_discovery_limit: 12
+
+  sse_closed:
+    label: 上交所休市安排
+    description: 上海证券交易所休市安排列表。
+    announcement_index_urls:
+      - https://www.sse.com.cn/disclosure/dealinstruc/closed/list/
+    announcement_link_keywords:
+      - 休市安排
+      - 部分节假日休市安排
+    announcement_discovery_limit: 5
+
+  szse_notice:
+    label: 深交所通知公告
+    description: 深圳证券交易所通知公告列表，按休市和交易日安排关键词筛选。
+    announcement_index_urls:
+      - https://investor.szse.cn/disclosure/notice/general/index.html
+    announcement_link_keywords:
+      - 休市安排
+      - 部分节假日休市安排
+      - 港股通交易日安排
+    announcement_discovery_limit: 5
+
+  bse_vocational:
+    label: 北交所公告
+    description: 北京证券交易所公告入口，按休市安排关键词筛选。
+    announcement_index_urls:
+      - https://www.bse.cn/disclosure/vocational.html
+    announcement_link_keywords:
+      - 休市安排
+      - 部分节假日休市安排
+    announcement_discovery_limit: 5

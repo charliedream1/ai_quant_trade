@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8；本轮归档与只读测量，不调用模型。
+temporary: .pytest_tmp/notifications-20261029
+archive: docs/audit/notifications_2026-10-29
+browser: browser-final-latest
+runtime: browser-runtime-final2
+base_url: http://127.0.0.1:8890
+measurements: 5
+timeout_seconds: 20
+client: 00000000-0000-4000-8000-000000000099
+screenshots: [87-global-notifications.jpg, 88-notification-center.jpg, 89-assistant-robot.jpg, 90-notification-dark.jpg]

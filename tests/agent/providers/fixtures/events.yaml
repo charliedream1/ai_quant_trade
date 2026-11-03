@@ -1,0 +1,12 @@
+# YAML 1.2, UTF-8 — explicit process protocol fixtures, not paid model responses.
+plain:
+  - {type: system, subtype: init, tools: [], mcp_servers: [], plugins: [], skills: [], model: fixture-native-model}
+  - type: assistant
+    message: {model: fixture-native-model, content: [{type: text, text: '{"verdict":"watch","summary":"证据需补充"}'}]}
+  - {type: result, subtype: success, usage: {input_tokens: 8, output_tokens: 5}}
+tool:
+  - {type: system, subtype: init, tools: [Bash]}
+unknown:
+  - {type: secret_unverified_event, text: refused}
+error:
+  - {type: result, subtype: error_during_execution, is_error: true, result: fixture-auth-error}

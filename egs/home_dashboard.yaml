@@ -1,0 +1,34 @@
+# 文件格式：UTF-8 YAML；首页展示参数，不改变交易风控规则。
+limits:
+  sectors: 12
+  contributions: 8
+  actions: 4
+  news: 8
+  alerts: 5
+  plot_height: 300
+  market_plot_height: 320
+  date_ticks: 6
+risk_reference:
+  exposure: 0.9
+  concentration: 0.35
+  label: 首页观察参考线，非自动交易规则
+colors:
+  gain: '#cf4058'
+  loss: '#138b78'
+  neutral: '#e7edf4'
+  heat_gain: '#f1b2be'
+  heat_loss: '#95d5c5'
+  blue: '#526fe0'
+  cyan: '#18a8ba'
+  amber: '#bf8421'
+  palette: ['#526fe0', '#18a8ba', '#8b6bd6', '#e79c58', '#db6e88', '#6da4bd', '#a5afbf', '#72849c', '#b9c2d2']
+  scale_min_intensity: 5
+  scale_max_intensity: 24
+labels:
+  empty_account: 先创建或选择账户，账户数据不会以零值代替缺失值。
+  empty_history: 暂无有效净值快照；生成账户快照后显示历史曲线。
+  live_basis: 实盘配置口径；尚无 broker 资产和净值回传。
+  paper_basis: 现金与持仓按当前可用行情估值；趋势图仅使用已保存快照。
+  missing_daily: 当天快照不足，暂不估算今日盈亏。
+  missing_market: 板块行情缺失或请求失败，稍后点击刷新重试。
+  floating_pnl: 持仓浮动盈亏，非今日收益贡献

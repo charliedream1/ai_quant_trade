@@ -1,0 +1,3 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "stock show": {"method":"GET","path":"/stocks/{symbol}/detail","positions":{"symbol":"str"},"query":{"sections":"str","kline_period":"str","kline_count":"int"},"fields":{},"execution":false,"market":true}

@@ -1,0 +1,19 @@
+# 文件格式：YAML，编码：UTF-8；示范配置，不是JPM专有参数
+name: 股债四体制研究
+mode: regime
+dataset_id: 1
+market_dataset_id: 2
+cutoff: '2026-10-26T23:59:59+08:00'
+asset_mapping: {equity: SPY, bond: IEF}
+market: US
+configurations:
+  - {model_id: 1, reasoning_effort: low}
+  - {model_id: 1, reasoning_effort: medium}
+  - {model_id: 1, reasoning_effort: high}
+  - {model_id: 1, reasoning_effort: xhigh}
+  - {model_id: 2, reasoning_effort: low}
+  - {model_id: 2, reasoning_effort: medium}
+  - {model_id: 2, reasoning_effort: high}
+  - {model_id: 2, reasoning_effort: xhigh}
+model_call_budget: 32
+execution_costs: {profile: inherit, lot_size: 1, settlement_sessions: 0}

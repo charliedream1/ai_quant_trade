@@ -10,6 +10,7 @@ SERVE=0
 HOST="127.0.0.1"
 PORT="8000"
 STRICT=0
+DOCS_SITE_DIR="site"
 
 usage() {
   cat <<'USAGE'
@@ -22,6 +23,7 @@ Options:
   --host HOST         Host for mkdocs serve (default: 127.0.0.1)
   --port PORT         Port for mkdocs serve (default: 8000)
   --strict            Pass --strict to mkdocs build
+  --site-dir PATH     Generated output inside this repository (default: site)
   -h, --help          Show this help
 USAGE
 }
@@ -52,6 +54,10 @@ while [[ $# -gt 0 ]]; do
       STRICT=1
       shift
       ;;
+    --site-dir)
+      DOCS_SITE_DIR="$2"
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -64,21 +70,21 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+"$PYTHON_BIN" -c 'import pathlib, sys; root = pathlib.Path.cwd().resolve(); target = pathlib.Path(sys.argv[1]).resolve(); sys.exit(0 if target != root and target.is_relative_to(root) else "site-dir must be a generated directory inside the repository")' "$DOCS_SITE_DIR"
+
 step() {
   echo
   echo "==> $*"
 }
 
 scan_generated_site() {
-  if [[ ! -d site ]]; then
-    echo "site/ not found. Run mkdocs build first." >&2
+  if [[ ! -d "$DOCS_SITE_DIR" ]]; then
+    echo "$DOCS_SITE_DIR not found. Run mkdocs build first." >&2
     exit 1
   fi
 
   local patterns=(
     "_projects"
-    "egs_"
-    "egs/"
     "gen_project_wrappers"
     "../snippets"
     "{% include"
@@ -93,15 +99,15 @@ scan_generated_site() {
       rg_args+=(-e "$pattern")
     done
     set +e
-    rg "${rg_args[@]}" site
+    rg "${rg_args[@]}" -- "$DOCS_SITE_DIR"
     local rc=$?
     set -e
     if [[ $rc -eq 0 ]]; then
-      echo "Forbidden legacy docs content found in site/." >&2
+      echo "Forbidden legacy docs content found in $DOCS_SITE_DIR." >&2
       exit 1
     fi
     if [[ $rc -ne 1 ]]; then
-      echo "rg failed while scanning site/." >&2
+      echo "rg failed while scanning $DOCS_SITE_DIR." >&2
       exit "$rc"
     fi
   else
@@ -111,15 +117,15 @@ scan_generated_site() {
       grep_args+=(-e "$pattern")
     done
     set +e
-    grep "${grep_args[@]}" site
+    grep "${grep_args[@]}" -- "$DOCS_SITE_DIR"
     local rc=$?
     set -e
     if [[ $rc -eq 0 ]]; then
-      echo "Forbidden legacy docs content found in site/." >&2
+      echo "Forbidden legacy docs content found in $DOCS_SITE_DIR." >&2
       exit 1
     fi
     if [[ $rc -ne 1 ]]; then
-      echo "grep failed while scanning site/." >&2
+      echo "grep failed while scanning $DOCS_SITE_DIR." >&2
       exit "$rc"
     fi
   fi
@@ -127,13 +133,7 @@ scan_generated_site() {
   echo "[site scan] OK - no legacy project/include references found."
 }
 
-DEPS=(
-  "mkdocs>=1.6"
-  "mkdocs-material>=9.5"
-  "mkdocs-static-i18n>=1.3"
-  "mkdocs-material-extensions>=1.3"
-  "pymdown-extensions>=10.7"
-)
+DEPS=("-r" "requirements-docs.txt")
 
 step "Python version"
 "$PYTHON_BIN" --version
@@ -153,7 +153,7 @@ step "Check MkDocs config and assets"
 "$PYTHON_BIN" zz_scripts/check_docs_build.py
 
 step "Build docs site"
-BUILD_ARGS=(-m mkdocs build --clean)
+BUILD_ARGS=(-m mkdocs build --clean --site-dir "$DOCS_SITE_DIR")
 if [[ "$STRICT" -eq 1 ]]; then
   BUILD_ARGS+=(--strict)
 fi
@@ -163,7 +163,7 @@ step "Scan generated site"
 scan_generated_site
 
 echo
-echo "==> Build complete: site/"
+echo "==> Build complete: $DOCS_SITE_DIR"
 echo "==> Local URL after serving: http://${HOST}:${PORT}/ai_quant_trade/"
 
 if [[ "$SERVE" -eq 1 ]]; then

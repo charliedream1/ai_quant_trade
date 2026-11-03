@@ -2,7 +2,7 @@
 # 当 master 分支的文档相关文件变更时，自动构建并发布
 #
 # 首次使用需在 GitHub 仓库 Settings → Pages → Source 选择 "GitHub Actions"
-# 详见：docs/发布操作指南.md
+# 详见：docs/usage/documentation_publish.md
 name: Deploy MkDocs to GitHub Pages
 
 on:
@@ -10,6 +10,9 @@ on:
     branches: [master]
     paths:
       - 'mkdocs.yml'
+      - 'requirements-docs.txt'
+      - 'zz_scripts/docs_policy.py'
+      - 'zz_scripts/docs_language.py'
       - 'docs/**'
       - 'scripts/**'
       - 'zz_scripts/check_docs_publish_scope.py'
@@ -42,15 +45,10 @@ jobs:
 
       - name: 安装 MkDocs Material 及依赖
         run: |
-          pip install --no-cache-dir \
-            "mkdocs>=1.6" \
-            "mkdocs-material>=9.5" \
-            "mkdocs-static-i18n>=1.3" \
-            "mkdocs-material-extensions>=1.3" \
-            "pymdown-extensions>=10.7"
+          pip install --no-cache-dir -r requirements-docs.txt
 
       - name: 校验并构建文档站
-        run: bash scripts/build_docs.sh --python python
+        run: bash scripts/build_docs.sh --python python --strict
 
       - name: 上传构建产物
         uses: actions/upload-pages-artifact@v5

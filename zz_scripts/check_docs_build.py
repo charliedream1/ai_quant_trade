@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Pre-flight check for the MkDocs documentation site.
 
@@ -17,16 +16,16 @@ import re
 import sys
 from pathlib import Path
 
+from docs_policy import chinese_fallback, published
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOCS = REPO_ROOT / "docs"
 MKDOCS_YML = REPO_ROOT / "mkdocs.yml"
 INDEX_MD = DOCS / "index.md"
 
 MARKER_PAIRS: list[tuple[str, str, str, str]] = [
-    ("mkdocs.yml", str(MKDOCS_YML.relative_to(REPO_ROOT)),
-     "# >>> AUTO-NAV-START", "# <<< AUTO-NAV-END"),
-    ("docs/index.md", str(INDEX_MD.relative_to(REPO_ROOT)),
-     "<!-- >>> AUTO-INDEX-START", "<!-- <<< AUTO-INDEX-END"),
+    ("mkdocs.yml", str(MKDOCS_YML.relative_to(REPO_ROOT)), "# >>> AUTO-NAV-START", "# <<< AUTO-NAV-END"),
+    ("docs/index.md", str(INDEX_MD.relative_to(REPO_ROOT)), "<!-- >>> AUTO-INDEX-START", "<!-- <<< AUTO-INDEX-END"),
 ]
 
 
@@ -45,8 +44,7 @@ def _parse_simple_yaml_nav(text: str) -> list[tuple[int, str]]:
                 continue
             for tok in path_re.findall(stripped):
                 out.append((i, tok.strip()))
-            if line and not line.startswith((" ", "\t")) and ":" in stripped \
-                    and not stripped.startswith("-"):
+            if line and not line.startswith((" ", "\t")) and ":" in stripped and not stripped.startswith("-"):
                 if re.match(r"^[a-z_]+:", stripped):
                     in_nav = False
     return out
@@ -66,9 +64,11 @@ def check_mkdocs_yml_parseable() -> list[str]:
         return [f"{MKDOCS_YML}: read failed: {e}"]
     try:
         import yaml  # noqa: F401
+
         try:
             # mkdocs.yml uses !!python/name for pymdownx emoji support.
-            yaml.load(text, Loader=yaml.BaseLoader)
+            # BaseLoader never constructs Python objects.
+            yaml.load(text, Loader=yaml.BaseLoader)  # nosec B506
         except Exception as e:
             return [f"{MKDOCS_YML}: yaml parse failed: {e}"]
     except ImportError:
@@ -88,20 +88,14 @@ def check_i18n_config() -> list[str]:
         "locale: en",
         "nav_translations:",
     ]
-    errors = [
-        f"{MKDOCS_YML}: missing i18n config entry: {item}"
-        for item in required
-        if item not in text
-    ]
+    errors = [f"{MKDOCS_YML}: missing i18n config entry: {item}" for item in required if item not in text]
     legacy = [
         "language-switch.js",
         "language-switch.css",
     ]
     for item in legacy:
         if item in text:
-            errors.append(
-                f"{MKDOCS_YML}: legacy runtime language switch still listed: {item}"
-            )
+            errors.append(f"{MKDOCS_YML}: legacy runtime language switch still listed: {item}")
     return errors
 
 
@@ -121,14 +115,14 @@ def check_english_nav_translations_exist() -> list[str]:
     text = MKDOCS_YML.read_text(encoding="utf-8")
     errors: list[str] = []
     for line_no, path in _parse_simple_yaml_nav(text):
+        if chinese_fallback(path):
+            continue
         if path.startswith(("http://", "https://", "mailto:")):
             continue
         translated = _localized_markdown_path(path, "en")
         if not translated.is_file():
             rel = translated.relative_to(REPO_ROOT).as_posix()
-            errors.append(
-                f"{MKDOCS_YML}:{line_no}: English translation missing: {rel}"
-            )
+            errors.append(f"{MKDOCS_YML}:{line_no}: English translation missing: {rel}")
     return errors
 
 
@@ -136,6 +130,8 @@ def iter_publishable_default_markdown() -> list[Path]:
     files: list[Path] = []
     for path in DOCS.rglob("*.md"):
         rel = path.relative_to(DOCS).as_posix()
+        if not published(path) or chinese_fallback(rel):
+            continue
         if rel == "intro.md" or rel.startswith("snippets/"):
             continue
         if path.stem.endswith(".en"):
@@ -165,10 +161,7 @@ def check_auto_markers() -> list[str]:
         has_start = start in text
         has_end = end in text
         if has_start != has_end:
-            errors.append(
-                f"{label}: only one of the marker pair was found "
-                f"(start={has_start}, end={has_end})"
-            )
+            errors.append(f"{label}: only one of the marker pair was found (start={has_start}, end={has_end})")
     return errors
 
 
@@ -188,8 +181,7 @@ def check_no_legacy_runtime_language_switch() -> list[str]:
         for token in ("lang-en", "lang-zh", "language-switch"):
             if token in text:
                 errors.append(
-                    f"{INDEX_MD.relative_to(REPO_ROOT).as_posix()}: "
-                    f"legacy language block token still present: {token}"
+                    f"{INDEX_MD.relative_to(REPO_ROOT).as_posix()}: legacy language block token still present: {token}"
                 )
     return errors
 
@@ -199,13 +191,21 @@ def check_no_dot_prefixed_docs_dirs() -> list[str]:
     if not DOCS.is_dir():
         return errors
     for path in DOCS.rglob("*"):
+        if not published(path):
+            continue
         if path.is_dir() and path.name.startswith("."):
             rel = path.relative_to(REPO_ROOT).as_posix()
             errors.append(f"{rel}: dot-prefixed docs directories are not publishable")
     for path in DOCS.rglob("*.md"):
+        if not published(path):
+            continue
         rel = path.relative_to(REPO_ROOT).as_posix()
         text = path.read_text(encoding="utf-8", errors="ignore")
-        if "](." in text:
+        links = re.findall(r"\]\(([^)]+)\)", text)
+        if any(
+            "://" not in link and any(part.startswith(".") and part not in {".", ".."} for part in link.split("/"))
+            for link in links
+        ):
             errors.append(f"{rel}: contains dot-prefixed relative link")
     return errors
 
@@ -227,9 +227,7 @@ def check_extra_assets_listed() -> list[str]:
         for js in js_dir.rglob("*.js"):
             rel = js.relative_to(DOCS).as_posix()
             if rel not in text:
-                errors.append(
-                    f"{MKDOCS_YML}: JS file not in extra_javascript: {rel}"
-                )
+                errors.append(f"{MKDOCS_YML}: JS file not in extra_javascript: {rel}")
     return errors
 
 

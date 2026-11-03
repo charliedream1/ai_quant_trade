@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+# 真实 K 线小样本集成验收参数；排除尚未收盘的当日。
+symbols: ['600519', '300750', '000001']
+history_bars: 180
+cutoff_date: '2026-10-16'
+timeout_seconds: 8
+reuse_evidence: true
+runtime_dir: .pytest_tmp/model-agent-runtime-20261019
+report_path: docs/audit/model_agent_validation_2026-10-19.json
+evidence_path: docs/audit/model_market_evidence_2026-10-19.json
+profiles:
+  - lightgbm_rank
+  - xgboost_rank
+  - mlp_ensemble
+backtest:
+  initial_capital: 1000000
+  order_type: open
+  price_adjustment: qfq
+  slippage_rate: 0.001
+  commission_rate: 0.0003
+  max_position_count: 3
+  max_position_weight: 0.35
+  lot_size: 100

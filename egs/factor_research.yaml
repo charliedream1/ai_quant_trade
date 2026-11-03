@@ -1,0 +1,50 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+limits:
+  max_factors: 12
+  max_window: 240
+  max_research_dates: 200
+  cache_timeout_seconds: 20
+  numerical_floor: 0.000000000001
+cache:
+  relative_path: factors/panels.sqlite
+factors:
+  momentum_20d: {label: 20日动量, operator: momentum, window: 20, direction: 1}
+  reversal_5d: {label: 5日反转, operator: momentum, window: 5, direction: -1}
+  low_vol_20d: {label: 20日低波, operator: volatility, window: 20, direction: -1}
+  volume_trend: {label: 量能趋势, operator: volume_ratio, window: 20, short: 5, direction: 1}
+  trend_distance: {label: 均线偏离, operator: mean_distance, window: 20, direction: 1}
+  close_position: {label: 区间收盘位置, operator: range_position, window: 20, direction: 1}
+  liquidity_20d: {label: 20日平均成交额, operator: amount, window: 20, direction: 1}
+  intraday_reversal: {label: 日内反转, operator: intraday, window: 1, direction: -1}
+sets:
+  monitor: {label: 全量价量监控, factors: [momentum_20d, reversal_5d, low_vol_20d, volume_trend, trend_distance, close_position, liquidity_20d, intraday_reversal]}
+  balanced: {label: 均衡量价, factors: [momentum_20d, reversal_5d, low_vol_20d, volume_trend, close_position]}
+  trend: {label: 趋势与量能, factors: [momentum_20d, trend_distance, volume_trend, close_position]}
+  defensive: {label: 反转与低波, factors: [reversal_5d, low_vol_20d, intraday_reversal]}
+preprocess:
+  method: rank
+  winsor_quantile: 0.05
+  min_assets: 3
+research:
+  horizon: 5
+  lookback: 60
+  min_dates: 15
+  min_assets: 3
+  min_coverage: 0.8
+  min_rank_ic: 0.0
+  max_correlation: 0.9
+  groups: 5
+score:
+  weighting: equal
+  shrinkage: 0.5
+  max_factor_weight: 1.0
+  minimum_factors: 1
+  min_coverage: 0.8
+messages:
+  invalid: 因子研究参数不合法
+  factor_warming: 因子历史或已到期标签不足
+  factor_missing: 当期有效因子覆盖不足
+  factor_rejected: 没有通过历史研究筛选的因子
+  factor_pass: 因子合成评分完成
+  cache_invalid: 因子缓存路径或内容不合法

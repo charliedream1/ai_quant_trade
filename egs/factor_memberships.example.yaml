@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8
+# 仅为字段示例，不是指数历史成分证据；替换为真实时点可得的成员清单。
+source: 用户提供的历史成员数据来源
+memberships:
+  - symbol: "600519"
+    valid_from: "2025-01-01"
+    valid_to: ""
+  - symbol: "000001"
+    valid_from: "2025-01-01"
+    valid_to: "2025-12-31"

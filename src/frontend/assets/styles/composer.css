@@ -1,0 +1,75 @@
+/* Gradio groups adjacent controls in .form. Keep that wrapper flat as well. */
+.route-control { display: none !important; }
+#main-navigation .flat-ai-composer,
+#ai-floating-panel .flat-ai-composer { position: relative; gap: 6px !important; border: 1px solid var(--line); border-radius: 20px; padding: 12px !important; background: var(--surface-raised); }
+.flat-ai-composer > .form { border: 0 !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
+.flat-ai-composer textarea { border: 0 !important; box-shadow: none !important; background: transparent !important; min-height: 58px !important; max-height: 100px !important; resize: none !important; }
+.flat-ai-composer .composer-toolbar,
+#main-navigation #ai-console-composer-footer { flex-wrap: nowrap !important; align-items: center !important; gap: 8px !important; min-height: 40px; }
+.flat-ai-composer .composer-options { margin-left: auto; flex: 0 1 300px !important; min-width: 0 !important; gap: 0 !important; }
+.flat-ai-composer .composer-options > .form { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; width: 100% !important; gap: 5px !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; background: transparent !important; }
+.flat-ai-composer .composer-options .block { flex: 1 1 0 !important; min-width: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+.flat-ai-composer .composer-options label,
+.flat-ai-composer > .form label > span { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%); }
+.flat-ai-composer .composer-options [data-testid="block-info"] { display: none !important; }
+.flat-ai-composer .composer-options .wrap { min-height: 36px !important; border: 0 !important; background: transparent !important; }
+.flat-ai-composer .composer-options input { font-size: 12px !important; color: var(--ink) !important; text-overflow: ellipsis; }
+.flat-ai-composer .composer-attach-slot { flex: 0 0 38px !important; min-width: 38px !important; width: 38px !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; }
+.flat-ai-composer .composer-attach-slot .html-container { padding: 0 !important; }
+.composer-attach { display: grid; place-items: center; padding: 0 !important; line-height: 1 !important; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); font-size: 24px; cursor: pointer; }
+.composer-attach:hover { color: var(--brand); border-color: var(--brand); }
+.flat-ai-composer .composer-send { width: 38px !important; min-width: 38px !important; height: 38px !important; border-radius: 50% !important; padding: 0 !important; font-size: 0 !important; }
+.flat-ai-composer .composer-send::after { content: '↑'; font-size: 23px; }
+#main-navigation #ai-console-attachments.composer-upload,
+.flat-ai-composer .composer-upload { width: 100% !important; max-width: none !important; min-width: 0 !important; flex: 0 0 auto !important; height: auto !important; max-height: 110px !important; overflow: auto !important; border: 0 !important; border-radius: 10px !important; padding: 0 !important; }
+.flat-ai-composer .composer-upload:not(:has(.file-preview)) { height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; }
+#main-navigation #ai-console-attachments.composer-upload:not(:has(.file-preview)) { height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; }
+.flat-ai-composer .composer-upload .file-preview { position: static !important; width: 100% !important; max-height: 100px !important; }
+.flat-ai-composer .composer-upload label { display: none !important; }
+.flat-ai-composer.dragging { outline: 2px dashed var(--brand); outline-offset: 3px; }
+#ai-floating-panel { max-height: min(760px, calc(100vh - 110px)) !important; }
+#ai-floating-panel #ai-chat-history { height: clamp(100px, calc(100vh - 500px), 240px) !important; min-height: 0 !important; }
+#ai-floating-panel #ai-chat-history .wrap { min-height: 0 !important; }
+#ai-floating-panel #ai-chat-status { max-height: 42px !important; overflow: auto !important; }
+#ai-floating-panel .flat-ai-composer { margin: 0 !important; width: 100% !important; box-sizing: border-box; }
+#main-navigation #rag-chat-layout { display: flex !important; flex-wrap: nowrap !important; align-items: flex-start; gap: 18px; }
+#main-navigation #rag-chat-controls { flex: 0 0 240px !important; min-width: 220px !important; max-width: 260px !important; width: auto !important; }
+#main-navigation #rag-chat-conversation { flex: 1 1 0 !important; min-width: 0 !important; max-width: none !important; width: auto !important; }
+@media (max-width: 760px) {
+  #main-navigation #rag-chat-layout { flex-wrap: wrap !important; }
+  #main-navigation #rag-chat-controls { flex-basis: 100% !important; max-width: none !important; }
+  #main-navigation #rag-chat-conversation { flex-basis: 100% !important; }
+}
+@media (max-width: 760px) {
+  .flat-ai-composer .composer-options { flex-basis: 210px !important; }
+  #main-navigation #ai-console-backend,
+  #main-navigation #ai-console-model,
+  #main-navigation #ai-console-reasoning { flex: 1 1 0 !important; width: 0 !important; min-width: 0 !important; }
+  .flat-ai-composer .composer-options input { font-size: 11px !important; }
+}
+
+/* Keep both Gradio form wrappers in one row, with backend/permission separated from model/effort. */
+.flat-ai-composer .composer-backend-options { flex: 0 1 245px !important; min-width: 0 !important; gap: 0 !important; }
+.flat-ai-composer .composer-backend-options > .form { display: flex !important; flex-wrap: nowrap !important; gap: 4px !important; border: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; min-width: 0 !important; }
+.flat-ai-composer .composer-backend-options .block { flex: 1 1 0 !important; min-width: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; border: 0 !important; }
+.flat-ai-composer .composer-backend-options label,
+.flat-ai-composer .composer-backend-options [data-testid="block-info"] { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%); }
+.flat-ai-composer .composer-backend-options .wrap { min-height: 36px !important; border: 0 !important; background: transparent !important; }
+.flat-ai-composer .composer-backend-options input { font-size: 12px !important; color: var(--ink) !important; }
+.flat-ai-composer .composer-options > .form { flex: 1 1 85px !important; min-width: 0 !important; width: auto !important; }
+.flat-ai-composer .composer-model-slot { position: relative; flex: 1.5 1 120px !important; min-width: 0 !important; padding-right: 21px !important; gap: 0 !important; }
+.flat-ai-composer .composer-model-slot > .form { display: block !important; border: 0 !important; box-shadow: none !important; background: transparent !important; min-width: 0 !important; width: 100% !important; min-height: 36px !important; }
+.flat-ai-composer .composer-model-slot .composer-refresh { position: absolute !important; right: 0; top: 2px; }
+.flat-ai-composer .composer-options { align-items: center !important; flex-wrap: nowrap !important; }
+.flat-ai-composer .composer-refresh { flex: 0 0 22px !important; min-width: 22px !important; width: 22px !important; height: 30px !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; color: var(--ink-muted); }
+.flat-ai-composer .composer-attachment-row { position: absolute !important; top: 12px; left: 10px; width: 38px !important; min-width: 38px !important; z-index: 2; }
+#main-navigation .flat-ai-composer #ai-console-input textarea,
+#ai-floating-panel .flat-ai-composer textarea { padding-left: 46px !important; }
+.flat-ai-composer .composer-backend-note { padding: 0 4px !important; font-size: 11px; color: var(--ink-muted); }
+.flat-ai-composer .composer-backend-note p { margin: 0 !important; font-size: 11px !important; color: var(--ink) !important; opacity: .75; }
+#ai-floating-panel .composer-backend-options { flex-basis: 44% !important; }
+#ai-floating-panel .composer-options { flex-basis: 48% !important; }
+#ai-floating-panel .composer-toolbar { gap: 3px !important; }
+#ai-floating-panel .composer-toolbar input { font-size: 11px !important; padding-inline: 2px !important; }
+#ai-floating-panel .composer-backend-options [id$="-backend"] { flex: 1.3 1 0 !important; }
+#main-navigation .flat-ai-composer [id$="-permission"] { max-width: 105px !important; }

@@ -1,0 +1,32 @@
+# 文件格式：UTF-8 YAML；仅用于隔离数据库中的首页验收，不作为产品默认数据。
+account:
+  name: 首页图表验收账户
+  initial_cash: 700000
+  current_cash: 400000
+  status: active
+holdings:
+  - symbol: '600519'
+    name: 贵州茅台
+    quantity: 100
+    available_qty: 100
+    avg_cost: 1000
+  - symbol: '300750'
+    name: 宁德时代
+    quantity: 500
+    available_qty: 500
+    avg_cost: 250
+  - symbol: '000001'
+    name: 平安银行
+    quantity: 5000
+    available_qty: 5000
+    avg_cost: 11
+history:
+  - {days_ago: 4, net_value: 0.96, daily_return: null}
+  - {days_ago: 3, net_value: 0.98, daily_return: 0.0208333}
+  - {days_ago: 2, net_value: 0.97, daily_return: -0.0102041}
+  - {days_ago: 1, net_value: 1.0, daily_return: 0.0309278}
+  - {days_ago: 0, net_value: 1.0115642857, daily_return: 0.0115642857}
+expected:
+  total_asset: 708095
+  total_pnl: 8095
+  holding_pnl: 28095

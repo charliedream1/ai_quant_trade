@@ -1,0 +1,27 @@
+# 文件格式：YAML，编码：UTF-8
+start: '2026-02-02'
+sessions: 160
+seed: 17
+spread: 0.004
+overnight_volatility: 0.002
+volume: 10000000
+symbols:
+  '000001': {price: 12, drift: 0.0005, volatility: 0.012, sector: 银行}
+  '600036': {price: 45, drift: 0.0002, volatility: 0.010, sector: 银行}
+  '600519': {price: 1400, drift: -0.0001, volatility: 0.011, sector: 食品}
+  '601166': {price: 20, drift: 0.0004, volatility: 0.014, sector: 银行}
+  '601318': {price: 50, drift: 0.0000, volatility: 0.013, sector: 保险}
+  '300750': {price: 250, drift: 0.0006, volatility: 0.018, sector: 电池}
+  '510300': {price: 4, drift: 0.0002, volatility: 0.011, sector: 宽基ETF}
+  '510500': {price: 6, drift: 0.0001, volatility: 0.014, sector: 宽基ETF}
+  '159915': {price: 2, drift: -0.0001, volatility: 0.017, sector: 宽基ETF}
+  '512100': {price: 2, drift: 0.0003, volatility: 0.015, sector: 宽基ETF}
+model_overrides:
+  train_window: 60
+  min_train_dates: 15
+  min_train_samples: 30
+  retrain_interval: 60
+  model_params:
+    lightgbm: {n_estimators: 10, num_leaves: 7}
+    xgboost: {n_estimators: 10, max_depth: 2}
+    mlp: {hidden_sizes: [8, 4], epochs: 3, seeds: [7], threads: 1}

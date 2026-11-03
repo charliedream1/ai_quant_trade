@@ -1,0 +1,1 @@
+"""Route module registry."""

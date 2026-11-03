@@ -1,0 +1,8 @@
+# 文件格式：YAML，编码：UTF-8；真实公开行情验收参数
+symbols: ['000001', '600036', '600519', '601166', '601318']
+count: 640
+cutoff: '2026-10-26'
+timeout_seconds: 15
+market: CN
+candidate: egs/alpha_mining_examples/manual_candidate.yaml
+output: .pytest_tmp/alpha-mining-20261027/real-isolated

@@ -1,0 +1,16 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "strategy review-source": {method: POST, path: '/strategies/{strategy_id}/source-review', positions: {strategy_id: int}, query: {}, fields: {source_sha256: str, reviewer: str}, execution: false, market: false}
+  "strategy list": {"method":"GET","path":"/strategies","positions":{},"query":{"keyword":"str","status":"str","tag":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "strategy params show": {"method":"GET","path":"/strategies/{strategy_id}/params","positions":{"strategy_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "strategy params profiles": {"method":"GET","path":"/strategies/{strategy_id}/parameter-profiles","positions":{"strategy_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "strategy params resolve": {"method":"POST","path":"/strategies/{strategy_id}/resolve-params","positions":{"strategy_id":"int"},"query":{},"fields":{"parameter_profile":"str","params":"json"},"execution":true,"market":false}
+  "strategy show": {"method":"GET","path":"/strategies/{strategy_id}","positions":{"strategy_id":"int"},"query":{"include_code":"bool"},"fields":{},"execution":false,"market":false}
+  "strategy create": {"method":"POST","path":"/strategies","positions":{},"query":{},"fields":{"name":"str","version":"str","description":"str","code":"str","default_params":"json","strategy_type":"str"},"execution":false,"market":false}
+  "strategy update": {"method":"PUT","path":"/strategies/{strategy_id}","positions":{"strategy_id":"int"},"query":{},"fields":{"name":"str","version":"str","description":"str","code":"str","default_params":"json","strategy_type":"str"},"execution":false,"market":false}
+  "strategy delete": {"method":"DELETE","path":"/strategies/{strategy_id}","positions":{"strategy_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "strategy enable": {"method":"POST","path":"/strategies/{strategy_id}/enable","positions":{"strategy_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "strategy disable": {"method":"POST","path":"/strategies/{strategy_id}/disable","positions":{"strategy_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "strategy examples list": {"method":"GET","path":"/strategy-examples","positions":{},"query":{},"fields":{},"execution":false,"market":true}
+  "strategy examples show": {"method":"GET","path":"/strategy-examples/detail","positions":{},"query":{"example":"str"},"fields":{},"execution":false,"market":true}
+  "strategy examples import": {"method":"POST","path":"/strategy-examples/import","positions":{},"query":{},"fields":{"example":"str","name":"str","version":"str","description":"str","default_params":"json"},"execution":false,"market":true}

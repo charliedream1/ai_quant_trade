@@ -1,0 +1,12 @@
+# 文件格式：YAML，编码：UTF-8
+model: composition-protocol-fixture
+as_of: '2026-01-15'
+candidates: ['000001', '600036']
+holdings: ['600519']
+tool: '<tool_use>{"name":"read_evidence","arguments":{"id":"E1"}}</tool_use>'
+result:
+  summary: 仅用于协议验证的受控决定
+  decisions:
+    - {symbol: '000001', action: select, reason: 受控评分证据通过, evidence_ids: [E1]}
+    - {symbol: '600036', action: reject, reason: 受控评分证据未通过, evidence_ids: [E1]}
+    - {symbol: '600519', action: exit, reason: 已有持仓退出, evidence_ids: [E3]}

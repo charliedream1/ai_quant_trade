@@ -1,0 +1,40 @@
+# 文件格式：YAML，编码：UTF-8
+copied_on: '2026-10-22'
+source: WorkBuddy local installed skills
+resources:
+  - path: src/skills/market_review/SKILL.md
+    source_resource: market-review/SKILL.md
+    sha256: 7df48bf0438602ca7dc814077f2793a8d29544f7c5ae54758122dd8291b8dfd9
+    source_sha256: 1cd83bf6817e0e8d0db430128a98be5fb705d815a763c294e8575884d225c513
+    adapted_on: '2026-11-01'
+    adaptation: 公开指引将个人Windows路径改为通用运行环境说明。
+  - path: src/skills/market_review/prompts/aggregator.md
+    source_resource: market-review/prompts/aggregator.md
+    sha256: 71acc38afeb00da32dbd7c99926a3abb25c3ac51e05aa02a2066762f006a8ba8
+  - path: src/skills/market_review/prompts/analyst.md
+    source_resource: market-review/prompts/analyst.md
+    sha256: 697d59fdd34ff3e9b246f6b0746d39e013bac0b85286fc79d0af2d0bb26342ff
+  - path: src/skills/market_review/prompts/collector.md
+    source_resource: market-review/prompts/collector.md
+    sha256: 9fd81cdfb16298fa8446ec42deaa7ccc36ad0d443e01233896fb1ec8a09794e8
+  - path: src/skills/market_review/prompts/orchestrator.md
+    source_resource: market-review/prompts/orchestrator.md
+    sha256: ca18a74f3bee7bcb166519982a0892fe13c985466ec9f011f1bfca6f9bfb36a0
+  - path: src/skills/market_review/prompts/searcher.md
+    source_resource: market-review/prompts/searcher.md
+    sha256: 172bdcd9332897005cad0f34d31d5d8d270beb8e50e9c630a056e5d614f35548
+  - path: src/skills/market_review/prompts/verifier.md
+    source_resource: market-review/prompts/verifier.md
+    sha256: 2564f52e66096798550128e172c37617b6059ae1a622887123cd3e72f693e13f
+  - path: src/skills/market_review/refs/Report_Layout.md
+    source_resource: market-review/refs/writing_specs/Report_Layout.md
+    sha256: 9abe35d710af49118480870593ce963bae8bca9dd32a13c4ae2df5972ef7dc4a
+  - path: src/skills/single_stock_analysis/SKILL.md
+    source_resource: stock-analysis/SKILL.md
+    sha256: e9b408660ac65b7b0882f41042dbe8af23f7a6efbfe412a75d5cd159fd760001
+  - path: src/skills/single_stock_analysis/references/a_share_technical_skill.md
+    source_resource: stock-analysis-23/SKILL.md
+    sha256: 4e8c555af9aafa95a876a3da3d2001ff24f7d3bcb495f7300dadd8e73bdacded
+  - path: src/skills/single_stock_analysis/references/technical_reference.md
+    source_resource: stock-analysis-23/references/完整技能文档.md
+    sha256: 6e8072035f5e3c570ef68a41f9e185dac96f0b86d6a628553366159797f77db1

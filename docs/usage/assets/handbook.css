@@ -1,0 +1,35 @@
+/* Keep illustrated guides readable in the embedded help and standalone site. */
+main {
+  line-height: 1.75;
+}
+
+main img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.25rem 0;
+  border: 1px solid #dce5ef;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 1rem rgb(31 54 82 / 8%);
+}
+
+main table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+main h2,
+main h3 {
+  scroll-margin-top: 5rem;
+}
+
+#mkdocs-search-results article {
+  margin-top: 1.25rem;
+}
+
+#mkdocs-search-results article p {
+  max-height: 5.25em;
+  overflow: auto;
+  line-height: 1.75;
+}

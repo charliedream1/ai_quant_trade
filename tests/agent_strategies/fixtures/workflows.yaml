@@ -1,0 +1,45 @@
+# 文件格式：YAML，编码：UTF-8；全部为明确的单元/集成夹具，不是实测行情或真实模型意见。
+market:
+  start: '2024-01-02'
+  periods: 100
+  assets:
+    AAA: {base: 10, step: 0.05, wave: 0.013}
+    BBB: {base: 20, step: 0.01, wave: 0.021}
+    CCC: {base: 30, step: -0.01, wave: 0.011}
+  wave_period: 7
+  volume: 10000000
+documents:
+  published_at: '2023-12-01T00:00:00+00:00'
+  available_at: '2023-12-02T00:00:00+00:00'
+  source: explicit-integration-fixture
+  text: '{symbol}发布测试用公司公告，包含行业与经营质量研究信息，仅用于验证引用。'
+  categories: [news, fundamental, sector]
+model:
+  name: explicit-protocol-test-double
+  summary: 仅为协议测试角色输出；真实模型验收独立记录
+  score: 0.7
+  quality: 0.8
+  direction: 1
+  horizon: 5
+  selections: {continuation: AAA, defensive: BBB, sector: CCC, chair: AAA}
+registration:
+  api_key: ''
+  purpose: explicit protocol fixture only
+  name: explicit-protocol-test-double
+  model_name: explicit-protocol-test-double
+  base_url: http://127.0.0.1:1/v1
+  level: fast
+  enabled: 1
+  is_default: 1
+  created_at: '2023-12-01T00:00:00Z'
+  updated_at: '2023-12-01T00:00:00Z'
+predict:
+  points: 180
+  amplitude: 0.003
+  offset: 0.001
+  cycle: 5
+browser:
+  model_delay_seconds: 0.12
+  port: 8898
+  runtime: .pytest_tmp/agent-strategies-20261028/browser-runtime
+  output: .pytest_tmp/agent-strategies-20261028/browser-v1

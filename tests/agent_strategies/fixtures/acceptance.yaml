@@ -1,0 +1,28 @@
+# 文件格式：YAML，编码：UTF-8；仅用于本轮证据归档，不触发模型调用。
+temporary: .pytest_tmp/agent-strategies-20261028
+archive: docs/audit/agent_strategies_2026-10-28
+browser: browser-confirmed
+base_url: http://127.0.0.1:8898
+timeout_seconds: 30
+measurements: 3
+endpoints:
+  recipes: /api/v1/agent-strategies/recipes
+  components: /api/v1/strategy-components
+screenshots:
+  - 79-agent-workshop.jpg
+  - 80-agent-process.jpg
+  - 81-agent-contest.jpg
+  - 82-agent-report.jpg
+  - 83-agent-dark.jpg
+office_jobs:
+  - 29d69814c1bd486c
+  - 37e056ed6b614b0c
+  - 573898c6cbcd40f1
+  - 6a9ed28f888745df
+  - 71433b3bd4b441cd
+  - 7e3ea94de51540cb
+  - 8117bd181c884948
+  - 972fee973ecd487e
+  - a92c75be9ed046d3
+  - aa8453e8675d4a30
+  - f266f746252144f0

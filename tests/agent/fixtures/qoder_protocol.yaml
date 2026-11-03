@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8；显式进程协议夹具，不代表真实模型。
+message: 仅为Qoder协议测试
+events:
+  - {type: system, subtype: init, session_id: explicit-fixture}
+  - type: stream_event
+    event: {delta: {type: text_delta, text: 你好}}
+  - type: assistant
+    message:
+      content: [{type: text, text: 你好，协议验证完成}]
+  - {type: result, result: 你好，协议验证完成, is_error: false}

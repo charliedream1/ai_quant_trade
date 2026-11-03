@@ -1,0 +1,70 @@
+# YAML 1.2, UTF-8
+version: 1
+access:
+  default_mode: local
+  mode_env: ALL_IN_ONE_ACCESS_MODE
+  token_env: ALL_IN_ONE_ACCESS_TOKEN
+  hosts_env: ALL_IN_ONE_ACCESS_HOSTS
+  allowed_hosts: [localhost, 127.0.0.1, '::1']
+  test_host: testserver
+  test_peer: testclient
+  minimum_token_chars: 32
+  session_seconds: 28800
+  cookie_name: aiquant_session
+  login_path: /access/login
+  logout_path: /access/logout
+  health_path: /_health
+  max_login_bytes: 4096
+  max_attempts: 8
+  attempt_window_seconds: 300
+  max_attempt_peers: 256
+  remote_require_tls: true
+uploads:
+  environment_bytes: 131072
+  default_bytes: 20971520
+  stream_chunk_bytes: 65536
+  environment_allowed_suffixes: [_API_KEY, _KEY, _TOKEN, _SECRET, _PASSWORD, _BASE_URL, _MODEL_NAME, _DIMENSIONS]
+  environment_allowed_names: [OPENAI_API_KEY, OPENAI_BASE_URL, LLM_API_KEY, LLM_BASE_URL, LLM_MODEL_NAME]
+  environment_blocked_prefixes: [ALL_IN_ONE_, PYTHON, CONDA, CODEX_, QODER_, TRAE_, CODEBUDDY_, LD_, DYLD_]
+process:
+  inherited_names: [PATH, PATHEXT, SYSTEMROOT, WINDIR, TEMP, TMP, COMSPEC, USERPROFILE, HOME, LANG, LC_ALL, TZ, SSL_CERT_FILE, SSL_CERT_DIR, HTTP_PROXY, HTTPS_PROXY, NO_PROXY, http_proxy, https_proxy, no_proxy]
+  inherited_prefixes: [SYSTEM_, PROCESSOR_]
+  provider_names:
+    codex: [CODEX_HOME, OPENAI_API_KEY, OPENAI_BASE_URL]
+    qoder: [QODER_CONFIG_DIR]
+    trae: [TRAE_HOME]
+    codebuddy: [CODEBUDDY_CONFIG_DIR]
+  model_names: [ALL_IN_ONE_QLIB_PYTHON, QLIB_PROVIDER_URI, QLIB_EXPERIMENT_NAME]
+network:
+  allowed_schemes: [http, https]
+  denied_addresses: ['169.254.169.254', '100.100.100.200', 'fd00:ec2::254']
+  deny_link_local: true
+limits:
+  io_workers: 4
+  cache_items: 1024
+  websocket_clients: 64
+  websocket_topics: 32
+  websocket_message_chars: 16384
+  websocket_send_seconds: 5
+  sse_clients: 24
+  sse_chunks: 16
+  sse_poll_seconds: 0.02
+  backtest_pending: 8
+  shutdown_seconds: 15
+tasks:
+  lease_seconds: 30
+  heartbeat_seconds: 2
+  cancel_poll_seconds: 0.25
+ui:
+  title: AIQuant访问验证
+  description: 输入管理员在项目环境中配置的访问令牌。
+  token: 访问令牌
+  submit: 进入工作台
+messages:
+  unauthorized: 需要有效的访问凭据
+  forbidden: 请求来源或访问权限不允许
+  host: 未登记的访问主机
+  too_large: 上传文件超过大小限制
+  unknown: 未知内部错误，请凭请求标识查看服务日志
+  invalid: 参数格式或取值非法
+  environment: 此环境变量不允许通过网页导入，请在项目配置中显式设置

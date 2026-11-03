@@ -1,0 +1,6 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "insight run": {method: POST, path: /insights/runs, stream_path: /insights/runs/stream, positions: {}, query: {}, fields: {kind: str, backend: str, symbol: str, market: str, model_id: int, model_name: str, reasoning_effort: str, timeframe: str, end_date: str}, global_fields: {kind: kind, market: market}, execution: true, market: false}
+  "insight list": {method: GET, path: /insights/runs, positions: {}, query: {}, fields: {}, execution: false, market: false}
+  "insight show": {method: GET, path: '/insights/runs/{run_id}', positions: {run_id: str}, query: {}, fields: {}, execution: false, market: false}
+  "insight events": {method: GET, path: '/insights/runs/{run_id}/events', positions: {run_id: str}, query: {}, fields: {}, execution: false, market: false}

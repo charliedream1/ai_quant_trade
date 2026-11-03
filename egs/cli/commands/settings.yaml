@@ -1,0 +1,4 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "settings show": {"method":"GET","path":"/settings","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "settings update": {"method":"PUT","path":"/settings","positions":{},"query":{},"fields":{"data_dir":"str","db_path":"str","document_storage_dir":"str","market_parquet_dir":"str","duckdb_path":"str","data_timeout_seconds":"float","data_http_retries":"int","data_cache_ttl_seconds":"int","trading_calendar_path":"str","scheduler_executors_path":"str"},"execution":false,"market":false}

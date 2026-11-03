@@ -1,0 +1,13 @@
+# 文件格式：YAML，编码：UTF-8
+entry: MLPEnsembleStrategy
+model_profile: mlp_ensemble
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承小型 MLP 模型配置与已保存默认值；使用次日开盘成交。
+    params: {}
+  compact:
+    label: 更小网络对照
+    description: 缩小隐藏层并增大正则，比较拟合耗时与样本外误差。
+    params:
+      model_params: {hidden_sizes: [16, 8], weight_decay: 0.003}

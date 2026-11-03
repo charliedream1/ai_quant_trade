@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+entry: generate_signal
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承阈值突破函数的已保存参数。
+    params: {}
+  threshold:
+    label: 阈值对照
+    description: 仅用于价格阈值示例；绝对价格阈值须结合所选标的核对。
+    params: {close_threshold: 11.0}

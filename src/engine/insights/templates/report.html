@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ report.title }}</title><style>{{ css | safe }}</style></head><body><main>
+<header><small>AIQUANT · SKILL INSIGHTS</small><h1>{{ report.title }}</h1>
+<p>{{ run.request.market }} · {{ run.request.end_date }} · {{ run.request.backend }} · {{ evidence.data_source }}</p>
+<p>{{ run.run_id }} · {{ run.created_at }}</p></header>
+<aside>{{ ui.verification }}{% if evidence.is_mock %}<p>{{ ui.partial }} · {{ evidence.gaps | join('；') }}</p>{% endif %}</aside>
+<section class="summary"><p>{{ report.summary }}</p></section>
+<nav class="toc">{% for section in report.sections %}<a href="#section-{{ loop.index }}">{{ section.heading }}</a>{% endfor %}</nav>
+{% for chart in charts %}<section class="chart">{{ chart | safe }}</section>{% endfor %}
+{% for section in report.sections %}<section id="section-{{ loop.index }}"><h2>{{ section.heading }}</h2>
+{% for paragraph in section.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+<nav>{% for id in section.source_ids %}<a href="#{{ id }}">{{ id }}</a> {% endfor %}</nav></section>{% endfor %}
+<section><h2>{{ ui.gaps_heading }}</h2><ul>{% for gap in evidence.gaps + report.missing + report.risks %}<li>{{ gap }}</li>{% endfor %}</ul></section>
+<section><h2>{{ ui.evidence_heading }}</h2>{% for source in sources %}<details id="{{ source.id }}">
+<summary>{{ source.id }} · {{ source.kind }} · {{ source.data_source }}</summary><pre>{{ source.formatted }}</pre>
+</details>{% endfor %}</section><footer>{{ ui.disclaimer }}</footer></main>
+<script>
+document.addEventListener('click', function(event) {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link) return;
+  const target = document.getElementById(link.getAttribute('href').slice(1));
+  if (!target) return;
+  event.preventDefault();
+  if (target.tagName === 'DETAILS') target.open = true;
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script></body></html>

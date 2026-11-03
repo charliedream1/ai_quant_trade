@@ -1,0 +1,53 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "Agent方案 / 中文事件确认",
+  "description": "独立实现公开方法；必需PIT资料不足时不配置资金。默认回测为无Agent对照，历史模型生成需显式research模式。",
+  "universe": {
+    "symbols": [
+      "000001",
+      "600036",
+      "600519",
+      "601166",
+      "601318"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "eligibility",
+      "component": "eligibility",
+      "inputs": [
+        "universe"
+      ],
+      "params": {}
+    },
+    {
+      "id": "analysis",
+      "component": "cn_analysis",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {
+        "recipe": "cn_event"
+      }
+    },
+    {
+      "id": "decision",
+      "component": "cn_debate",
+      "inputs": [
+        "analysis"
+      ],
+      "params": {
+        "recipe": "cn_event"
+      }
+    }
+  ],
+  "output": "decision",
+  "portfolio": {
+    "component": "equal"
+  },
+  "rebalance_sessions": 5,
+  "variants": {
+    "baseline": {}
+  }
+}

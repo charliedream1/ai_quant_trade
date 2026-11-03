@@ -1,0 +1,7 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ ui.title }}</title><style>{{ css | safe }}</style></head>
+<body><main><header><small>AIQUANT · STRATEGY WORKSHOP</small><h1>{{ ui.title }}</h1><p>{{ run.id }} · {{ run.request.mode }} · {{ result.source }}</p><p>{{ ui.disclaimer }}</p></header>
+<section><h2>{{ ui.status }}</h2><p>{{ ui.statuses.get(run.status, run.status) }}{% if result.is_mock %} · 模拟行情{% endif %}</p>
+{% for issue in result.warnings or result.limitations %}<p>{{ ui.limitations.get(issue, issue) }}</p>{% endfor %}{% for issue in result.decision_errors %}<p>{{ issue.error }}</p>{% endfor %}</section>
+{% for chart in plots %}<section>{{ chart | safe }}</section>{% endfor %}
+<section><h2>绩效与成本</h2><table>{% for row in metric_rows %}<tr><th title="{{ row.hint }}">{{ row.label }} ⓘ</th><td>{{ row.value }}</td><td>{{ row.hint }}</td></tr>{% endfor %}</table></section>
+<section><details><summary>阶段、组合与风险证据</summary><pre>{{ details }}</pre></details></section></main></body></html>

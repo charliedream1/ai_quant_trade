@@ -1,0 +1,741 @@
+{
+  "document": {
+    "description": "规则趋势基础；日线研究模板，真实能力由数据与依赖校验决定",
+    "execution": {},
+    "name": "规则趋势基础",
+    "nodes": [
+      {
+        "component": "eligibility",
+        "id": "eligibility",
+        "inputs": [
+          "universe"
+        ],
+        "params": {}
+      },
+      {
+        "component": "trend",
+        "id": "trend",
+        "inputs": [
+          "eligibility"
+        ],
+        "params": {}
+      },
+      {
+        "component": "donchian",
+        "id": "breakout",
+        "inputs": [
+          "eligibility"
+        ],
+        "params": {}
+      },
+      {
+        "component": "momentum_volume",
+        "id": "volume",
+        "inputs": [
+          "eligibility"
+        ],
+        "params": {}
+      },
+      {
+        "component": "merge",
+        "id": "rules",
+        "inputs": [
+          "trend",
+          "breakout",
+          "volume"
+        ],
+        "params": {
+          "method": "k_n",
+          "minimum": 2
+        }
+      }
+    ],
+    "output": "rules",
+    "portfolio": {
+      "component": "equal"
+    },
+    "rebalance_sessions": 5,
+    "risk": {},
+    "schema_version": 1,
+    "universe": {
+      "symbols": [
+        "000001",
+        "600036",
+        "600519",
+        "601166",
+        "601318",
+        "300750"
+      ]
+    },
+    "variants": {
+      "baseline": {},
+      "conservative": {
+        "portfolio": {
+          "params": {
+            "exposure": 0.6
+          }
+        },
+        "risk": {
+          "max_exposure": 0.6,
+          "max_weight": 0.15
+        }
+      }
+    }
+  },
+  "base_digest": "9f1b13cd1f0db86a0866041c0818f7c97999154ab0789409b9fbffd983f8f253",
+  "compiled_digest": "dd3e90419a28f56b59693117a415872d8870ea5062d9cc4c387466fe3b06fd0e",
+  "schema": {
+    "components": {
+      "eligibility": {
+        "kind": "filter",
+        "label": "交易资格与流动性",
+        "defaults": {
+          "min_bars": 30,
+          "min_amount": 0,
+          "require_status": false
+        }
+      },
+      "regime": {
+        "kind": "filter",
+        "label": "市场状态",
+        "defaults": {
+          "window": 20,
+          "mode": "trend",
+          "max_volatility": 0.35
+        }
+      },
+      "trend": {
+        "kind": "filter",
+        "label": "均线趋势",
+        "defaults": {
+          "short": 5,
+          "long": 20,
+          "threshold": 0.0
+        }
+      },
+      "macd": {
+        "kind": "filter",
+        "label": "MACD动量",
+        "defaults": {
+          "fast": 12,
+          "slow": 26,
+          "signal": 9
+        }
+      },
+      "rsi": {
+        "kind": "filter",
+        "label": "RSI均值回归",
+        "defaults": {
+          "window": 14,
+          "ceiling": 45
+        }
+      },
+      "bollinger": {
+        "kind": "filter",
+        "label": "布林带条件",
+        "defaults": {
+          "window": 20,
+          "deviations": 2.0,
+          "mode": "breakout"
+        }
+      },
+      "momentum_volume": {
+        "kind": "filter",
+        "label": "放量动量",
+        "defaults": {
+          "window": 20,
+          "min_return": 0.0,
+          "min_volume_ratio": 1.0
+        }
+      },
+      "donchian": {
+        "kind": "filter",
+        "label": "唐奇安突破",
+        "defaults": {
+          "window": 20,
+          "threshold": 0.0
+        }
+      },
+      "contraction": {
+        "kind": "filter",
+        "label": "波动收缩突破",
+        "defaults": {
+          "short": 5,
+          "long": 20,
+          "max_ratio": 0.8,
+          "min_volume_ratio": 1.0
+        }
+      },
+      "pullback": {
+        "kind": "filter",
+        "label": "趋势回踩恢复",
+        "defaults": {
+          "short": 5,
+          "long": 20,
+          "tolerance": 0.03
+        }
+      },
+      "double_bottom": {
+        "kind": "filter",
+        "label": "双底确认",
+        "defaults": {
+          "window": 40,
+          "confirmation": 2,
+          "min_separation": 5,
+          "tolerance": 0.05
+        }
+      },
+      "low_volatility": {
+        "kind": "filter",
+        "label": "横截面低波动",
+        "defaults": {
+          "window": 20,
+          "percentile": 0.5
+        }
+      },
+      "momentum": {
+        "kind": "scorer",
+        "label": "相对动量",
+        "defaults": {
+          "window": 20,
+          "horizon": 1
+        }
+      },
+      "industry": {
+        "kind": "filter",
+        "label": "行业相对强弱",
+        "defaults": {
+          "window": 20,
+          "top_groups": 2
+        }
+      },
+      "lightgbm": {
+        "kind": "scorer",
+        "family": "tree",
+        "label": "LightGBM评分",
+        "defaults": {
+          "lag_windows": [
+            1,
+            5,
+            10
+          ],
+          "short_window": 5,
+          "long_window": 20,
+          "volatility_window": 10,
+          "volume_window": 10,
+          "horizon": 1,
+          "train_window": 100,
+          "min_train_dates": 30,
+          "min_train_samples": 60,
+          "validation_fraction": 0.2,
+          "retrain_interval": 10,
+          "history_limit": 260,
+          "top_n": 1,
+          "min_score": 0.0,
+          "quantity": 100,
+          "demean_target": true,
+          "title": "LightGBM截面选股",
+          "backend": "lightgbm",
+          "model_params": {
+            "n_estimators": 60,
+            "max_depth": 4,
+            "num_leaves": 15,
+            "min_child_samples": 12,
+            "learning_rate": 0.05,
+            "reg_lambda": 1.0,
+            "random_state": 7,
+            "n_jobs": 1,
+            "verbosity": -1
+          }
+        }
+      },
+      "xgboost": {
+        "kind": "scorer",
+        "family": "tree",
+        "label": "XGBoost评分",
+        "defaults": {
+          "lag_windows": [
+            1,
+            5,
+            10
+          ],
+          "short_window": 5,
+          "long_window": 20,
+          "volatility_window": 10,
+          "volume_window": 10,
+          "horizon": 1,
+          "train_window": 100,
+          "min_train_dates": 30,
+          "min_train_samples": 60,
+          "validation_fraction": 0.2,
+          "retrain_interval": 10,
+          "history_limit": 260,
+          "top_n": 1,
+          "min_score": 0.0,
+          "quantity": 100,
+          "demean_target": true,
+          "title": "XGBoost截面选股",
+          "backend": "xgboost",
+          "model_params": {
+            "n_estimators": 60,
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "reg_lambda": 1.0,
+            "subsample": 1.0,
+            "colsample_bytree": 1.0,
+            "tree_method": "hist",
+            "random_state": 7,
+            "n_jobs": 1
+          }
+        }
+      },
+      "mlp": {
+        "kind": "scorer",
+        "family": "neural",
+        "label": "小型MLP评分",
+        "defaults": {
+          "lag_windows": [
+            1,
+            5,
+            10
+          ],
+          "short_window": 5,
+          "long_window": 20,
+          "volatility_window": 10,
+          "volume_window": 10,
+          "horizon": 1,
+          "train_window": 100,
+          "min_train_dates": 30,
+          "min_train_samples": 60,
+          "validation_fraction": 0.2,
+          "retrain_interval": 10,
+          "history_limit": 260,
+          "top_n": 1,
+          "min_score": 0.0,
+          "quantity": 100,
+          "demean_target": true,
+          "title": "小型MLP多因子融合",
+          "backend": "mlp",
+          "model_params": {
+            "hidden_sizes": [
+              32,
+              16
+            ],
+            "epochs": 30,
+            "learning_rate": 0.003,
+            "weight_decay": 0.001,
+            "seeds": [
+              7,
+              17
+            ],
+            "threads": 1
+          }
+        }
+      },
+      "merge": {
+        "kind": "ensemble",
+        "label": "规则合并",
+        "defaults": {
+          "method": "union",
+          "minimum": 1
+        }
+      },
+      "rank": {
+        "kind": "ensemble",
+        "label": "排名与分歧融合",
+        "defaults": {
+          "method": "rank",
+          "weights": [],
+          "minimum": 1,
+          "disagreement_penalty": 0.0,
+          "family_cap": 1.0
+        }
+      },
+      "vote": {
+        "kind": "ensemble",
+        "label": "多数与加权投票",
+        "defaults": {
+          "method": "vote",
+          "weights": [],
+          "minimum": 1,
+          "threshold": 0.5
+        }
+      },
+      "agent": {
+        "kind": "agent",
+        "label": "Agent研究终审",
+        "defaults": {
+          "workflow": "single",
+          "required": true
+        }
+      }
+    },
+    "portfolios": {
+      "equal": "等权组合",
+      "score": "非负评分组合",
+      "inverse_volatility": "逆波动率",
+      "erc": "等风险贡献",
+      "hrp": "层次风险平价",
+      "minimum_variance": "收缩协方差最小方差",
+      "fixed_budget": "固定子策略预算",
+      "strategy_risk_budget": "子策略风险预算"
+    },
+    "defaults": {
+      "portfolio": {
+        "top_k": 5,
+        "exposure": 0.9,
+        "window": 40,
+        "min_observations": 20,
+        "max_weight": 0.3,
+        "solver_tolerance": 1e-08,
+        "solver_iterations": 500,
+        "shrinkage": 0.2,
+        "fallback": "none",
+        "budget_window": 40,
+        "min_budget_observations": 20
+      },
+      "risk": {
+        "max_exposure": 0.9,
+        "max_weight": 0.25,
+        "max_positions": 10,
+        "stop_loss": 0.1,
+        "atr_multiple": 3.0,
+        "atr_window": 14,
+        "trailing_stop": 0.15,
+        "max_holding_sessions": 80,
+        "max_drawdown": 0.2,
+        "drawdown_steps": [
+          [
+            0.08,
+            0.75
+          ],
+          [
+            0.12,
+            0.5
+          ],
+          [
+            0.2,
+            0.0
+          ]
+        ],
+        "daily_loss": 0.05,
+        "cooldown_sessions": 5,
+        "target_volatility": 0.18,
+        "covariance_window": 40,
+        "min_covariance_observations": 20,
+        "max_sector_weight": 0.4,
+        "max_cluster_weight": 0.6,
+        "correlation_threshold": 0.85,
+        "require_sector": false,
+        "require_tradability": false,
+        "max_asset_class_weight": 1.0,
+        "require_asset_class": false
+      },
+      "execution": {
+        "initial_capital": 1000000,
+        "commission_rate": 0.0003,
+        "slippage_rate": 0.0005,
+        "max_participation": 0.05,
+        "turnover_limit": 1.0,
+        "rebalance_band": 0.01,
+        "lot_size": 100,
+        "settlement_sessions": 1,
+        "max_gap": 0.12,
+        "liquidity_window": 20
+      }
+    },
+    "max_nodes": 40,
+    "max_depth": 3
+  },
+  "config": {
+    "version": 1,
+    "assets_path": "/strategy-graph-assets",
+    "limits": {
+      "max_bytes": 1048576,
+      "undo_steps": 40,
+      "layout_gap_x": 260,
+      "layout_gap_y": 130,
+      "canvas_height": 680,
+      "evidence_rows": 60,
+      "render_batch_ms": 120,
+      "selected_color": "#6366f1",
+      "max_layout_depth": 3,
+      "max_layout_nodes": 44,
+      "min_zoom": 0.15,
+      "max_zoom": 2.0,
+      "evidence_poll_seconds": 1.0,
+      "event_preview_items": 8,
+      "max_text_chars": 6000
+    },
+    "groups": {
+      "filter": {
+        "label": "规则与形态",
+        "color": "#079a90"
+      },
+      "scorer": {
+        "label": "模型与评分",
+        "color": "#3b82f6"
+      },
+      "ensemble": {
+        "label": "融合与投票",
+        "color": "#9254de"
+      },
+      "agent": {
+        "label": "Agent终审",
+        "color": "#d58a16"
+      },
+      "portfolio": {
+        "label": "组合与预算",
+        "color": "#3276bd"
+      },
+      "risk": {
+        "label": "风险约束",
+        "color": "#d75d70"
+      },
+      "context": {
+        "label": "研究上下文",
+        "color": "#64748b"
+      }
+    },
+    "ui": {
+      "title": "图形策略工坊",
+      "intro": "点击节点查看参数与上下游；双击子策略进入内部。画布编辑后应用到草稿，再预览、发布和运行。",
+      "search": "搜索阶段或组件",
+      "search_placeholder": "输入名称后回车定位",
+      "fit": "查看全图",
+      "arrange": "自动布局",
+      "undo": "撤销",
+      "redo": "重做",
+      "apply": "应用到策略草稿",
+      "save_layout": "保存布局",
+      "up": "返回父图",
+      "add": "添加组件",
+      "duplicate": "复制阶段",
+      "remove": "移除阶段",
+      "output": "设为最终输出",
+      "parents": "上游",
+      "children": "下游",
+      "parameters": "参数",
+      "advanced": "完整参数（JSON）",
+      "update": "更新节点",
+      "evidence": "实际运行证据",
+      "choose": "点击节点选择",
+      "help": "说明与约束",
+      "node_id": "阶段标识",
+      "connected": "候选依赖",
+      "context": "母池历史上下文（只读）",
+      "protected": "必经配置，不可移除",
+      "empty": "当前无对应运行结果",
+      "stale": "草稿已变化，历史结果来自其他定义",
+      "valid": "草稿可编译",
+      "saved": "布局已保存；计算定义未改变",
+      "applied": "图形修改已写入草稿；请预览后发布",
+      "modified": "有未应用的图形修改",
+      "clean": "图形与草稿一致",
+      "invalid_edge": "此连线不符合依赖或类型要求",
+      "delete_edge": "移除此计算连线",
+      "enter": "展开子策略",
+      "budget": "资金预算",
+      "portfolio": "Portfolio分配",
+      "risk": "Risk约束",
+      "execution": "执行与报告",
+      "universe": "股票池",
+      "no_execute": "查看、拖动、缩放不会执行策略",
+      "date": "结果日期",
+      "select_result": "查看当前步骤",
+      "retry_unsupported": "此处只查看已存证据；重新执行请使用运行入口",
+      "min_version": "图形组件需要Gradio 6.16；当前环境保留步骤表与YAML编辑",
+      "error": "图形变更未应用",
+      "position_not_saved": "布局尚未保存",
+      "metadata_missing": "参数说明未配置，请核对生效预览",
+      "run_status": "运行状态",
+      "preview_error": "配置校验失败",
+      "security": "外部代码、未知节点及跨目录文件不允许导入",
+      "import": "导入方案",
+      "export": "导出方案",
+      "passed": "通过",
+      "unknown": "未知",
+      "milliseconds": "毫秒",
+      "statuses": "实际状态",
+      "fullscreen": "全屏画布",
+      "leave_fullscreen": "退出全屏",
+      "invalid_file": "仅支持本工坊导出的JSON方案"
+    },
+    "help": {
+      "filter": "按当期可见数据保留候选；空结果不会自动扩大股票池。",
+      "scorer": "输出连续评分；模型训练仍使用母池历史与已成熟标签，不能只用当日筛选结果训练。",
+      "ensemble": "合并规则或评分。融合权重对应有序输入，预测期与语义由后端校验。",
+      "agent": "仅终审有限候选并引用证据；历史回测默认关闭当期模型调用。",
+      "portfolio": "将最终候选或子策略转为目标权重；评分权重与资金预算含义不同。",
+      "risk": "对目标与实际持仓持续执行约束，风险削减后的余额保留现金。",
+      "universe": "合法母池与截止时点由运行请求或资源池确定；模型历史不会因前级过滤丢失。",
+      "execution": "前一收盘决策、下一可交易日开盘尝试成交，目标不等于实际持仓。"
+    },
+    "choices": {
+      "method": [
+        "union",
+        "intersection",
+        "k_n",
+        "rank",
+        "vote"
+      ],
+      "workflow": [
+        "single",
+        "committee"
+      ],
+      "fallback": [
+        "none",
+        "equal",
+        "inverse_volatility"
+      ]
+    },
+    "labels": {
+      "window": "观察窗口",
+      "short": "短窗口",
+      "long": "长窗口",
+      "threshold": "判定阈值",
+      "min_return": "最小收益",
+      "min_volume_ratio": "最小量比",
+      "min_amount": "最小成交额",
+      "tolerance": "容差",
+      "percentile": "保留分位",
+      "horizon": "预测期",
+      "train_window": "训练窗口",
+      "retrain_interval": "重训间隔",
+      "method": "合并方法",
+      "minimum": "最少有效分支",
+      "weights": "评分权重",
+      "family_cap": "同类模型权重上限",
+      "disagreement_penalty": "分歧惩罚",
+      "workflow": "终审流程",
+      "required": "必须终审",
+      "exposure": "目标投入比例",
+      "max_weight": "单证券权重上限",
+      "top_k": "最大入选数量",
+      "min_observations": "最小历史长度",
+      "shrinkage": "协方差收缩",
+      "fallback": "显式降级方案",
+      "max_exposure": "总仓位上限",
+      "max_positions": "最大持仓数",
+      "stop_loss": "固定止损比例",
+      "trailing_stop": "移动止损比例",
+      "atr_multiple": "ATR止损倍数",
+      "max_holding_sessions": "最大持有周期",
+      "max_drawdown": "回撤冻结阈值",
+      "daily_loss": "日损失冻结阈值",
+      "cooldown_sessions": "冷却周期",
+      "target_volatility": "目标年化波动",
+      "max_sector_weight": "行业权重上限",
+      "max_cluster_weight": "相关簇权重上限",
+      "require_sector": "强制行业证据",
+      "require_tradability": "强制交易状态证据",
+      "commission_rate": "手续费率",
+      "slippage_rate": "滑点比例",
+      "initial_capital": "初始资金",
+      "max_participation": "最大成交参与率",
+      "turnover_limit": "调仓换手上限",
+      "rebalance_band": "最小调仓带"
+    },
+    "ports": {
+      "filter": {
+        "input": "候选或评分集合",
+        "output": "通过规则的候选"
+      },
+      "scorer": {
+        "input": "当期候选",
+        "output": "连续评分集合"
+      },
+      "ensemble": {
+        "input": "多分支候选或评分",
+        "output": "融合结果"
+      },
+      "agent": {
+        "input": "有限候选与只读证据",
+        "output": "终审候选与理由"
+      },
+      "portfolio": {
+        "input": "最终候选或子策略预算",
+        "output": "目标权重"
+      },
+      "risk": {
+        "input": "目标权重与持仓",
+        "output": "风控后目标"
+      },
+      "context": {
+        "input": "执行上下文",
+        "output": "母池上下文"
+      }
+    },
+    "parameter_limits": {
+      "window": {
+        "min": 1,
+        "step": 1
+      },
+      "short": {
+        "min": 1,
+        "step": 1
+      },
+      "long": {
+        "min": 1,
+        "step": 1
+      },
+      "horizon": {
+        "min": 1,
+        "step": 1
+      },
+      "train_window": {
+        "min": 1,
+        "step": 1
+      },
+      "retrain_interval": {
+        "min": 1,
+        "step": 1
+      },
+      "minimum": {
+        "min": 1,
+        "step": 1
+      },
+      "max_exposure": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "max_weight": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "exposure": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "stop_loss": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "trailing_stop": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "max_drawdown": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "daily_loss": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      }
+    }
+  },
+  "layout": {},
+  "layout_key": "",
+  "layout_revision": 0,
+  "issues": [],
+  "evidence": {},
+  "read_only": false
+}

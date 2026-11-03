@@ -1,0 +1,24 @@
+# 文件格式：YAML，编码：UTF-8
+schema_version: 1
+name: 多特征组模型组合
+description: 趋势LightGBM、反转低波XGBoost、均衡MLP分别学习命名特征集，再排名融合。
+universe:
+  symbols: ['000001', '600036', '600519', '601166', '601318', '300750']
+nodes:
+  - {id: eligible, component: eligibility, inputs: [universe], params: {}}
+  - {id: trend_model, component: lightgbm, inputs: [eligible], params: {feature_set: trend}}
+  - {id: defensive_model, component: xgboost, inputs: [eligible], params: {feature_set: defensive}}
+  - {id: balanced_model, component: mlp, inputs: [eligible], params: {feature_set: balanced}}
+  - {id: consensus, component: rank, inputs: [trend_model, defensive_model, balanced_model], params: {minimum: 3, weights: [1.0, 1.0, 1.0]}}
+output: consensus
+portfolio:
+  component: equal
+  params: {top_k: 3}
+risk: {}
+execution: {}
+rebalance_sessions: 5
+variants:
+  baseline: {}
+  conservative:
+    risk: {max_exposure: 0.6, max_weight: 0.15}
+    portfolio: {params: {exposure: 0.6}}

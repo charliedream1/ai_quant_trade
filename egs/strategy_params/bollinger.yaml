@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+entry: BollingerBreakoutStrategy
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承已保存的布林带参数。
+    params: {}
+  wide:
+    label: 宽轨对照
+    description: 使用更长窗口和更宽轨道比较突破次数。
+    params: {window: 30, deviation: 2.5}

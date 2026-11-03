@@ -9,7 +9,7 @@
 [**ENGLISH VERSION**](README.md) | [**日本語版**](README_JA.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python-Version](https://img.shields.io/badge/Python-3.8+-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
+[![Python-Version](https://img.shields.io/badge/Python-3.11%2B%20Workspace-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 [![Stars](https://img.shields.io/github/stars/charliedream1/ai_quant_trade?style=social)](https://github.com/charliedream1/ai_quant_trade)
 
 <p>
@@ -26,29 +26,34 @@
 
 ---
 
+**知识库更新 · 2026-11-02：**新增按库隔离的文件入库、Markdown标题切分、zvec-grep多轮关键词问答、会话附件、引用预览与研报论文下载入库。详见[知识库指南](docs/usage/knowledge.md)。
+
+**最近更新 · 2026-11-01：** [一体化量化工作台](#integrated-workspace)串起行情、图形策略、回测、AI会话和带引用的知识问答；从[工作台使用指南](docs/usage/workspace.md)开始。
+
 ## 📑 目录
 
 - [1. ✨ 核心亮点](#1--核心亮点)
 - [2. 🔥 新特性](#2--新特性)
-- [3. 📖 简介](#3--简介)
-- [4. 🌟 awesome_projects（重点推荐）](#4--awesome_projects重点推荐)
-- [5. 🚀 快速开始](#5--快速开始)
-- [6. 📊 本地量化策略](#6--本地量化策略)
-- [7. 💰 实盘交易](#7--实盘交易)
-- [8. 🛠️ 辅助操盘工具](#8--辅助操盘工具)
-- [9. ⛏️ 因子挖掘](#9--因子挖掘)
-- [10. 💾 数据处理](#10--数据处理)
-- [11. 📝 文本分析](#11--文本分析)
-- [12. 🤖 大模型应用](#12--大模型应用)
-- [13. 📚 编程及AI基础知识](#13--编程及ai基础知识)
-- [14. 🌐 在线投研平台](#14--在线投研平台)
-- [15. 📖 量化资源集合](#15--量化资源集合)
-- [16. 🎁 配套资源](#16--配套资源)
-- [17. 💖 打赏我](#17--打赏我)
-- [18. 💬 讨论](#18--讨论)
-- [19. 🐛 技术支持](#19--技术支持)
-- [20. ❓ 常见问题](#20--常见问题)
-- [21. 📄 引用](#21--引用)
+- [3. 🧩 一体化量化工作台（`src`）](#integrated-workspace)
+- [4. 📖 简介](#4--简介)
+- [5. 🌟 awesome_projects（重点推荐）](#5--awesome_projects重点推荐)
+- [6. 🚀 快速开始](#6--快速开始)
+- [7. 📊 本地量化策略](#7--本地量化策略)
+- [8. 💰 实盘交易](#8--实盘交易)
+- [9. 🛠️ 辅助操盘工具](#9--辅助操盘工具)
+- [10. ⛏️ 因子挖掘](#10--因子挖掘)
+- [11. 💾 数据处理](#11--数据处理)
+- [12. 📝 文本分析](#12--文本分析)
+- [13. 🤖 大模型应用](#13--大模型应用)
+- [14. 📚 编程及AI基础知识](#14--编程及ai基础知识)
+- [15. 🌐 在线投研平台](#15--在线投研平台)
+- [16. 📖 量化资源集合](#16--量化资源集合)
+- [17. 🎁 配套资源](#17--配套资源)
+- [18. 💖 打赏我](#18--打赏我)
+- [19. 💬 讨论](#19--讨论)
+- [20. 🐛 技术支持](#20--技术支持)
+- [21. ❓ 常见问题](#21--常见问题)
+- [22. 📄 引用](#22--引用)
 
 ---
 
@@ -69,6 +74,11 @@
 
 | **时间** | **特性** |
 |:---|:---|
+| 2026.11.01 | 🆕 [**一体化量化研究工作台**](docs/usage/workspace.md)：在同一Gradio应用内完成账户总览、行情研究、图形策略、含成本回测、AI项目会话和带引用的知识问答。 |
+| 2026.10.31 | [**执行管理与研究证据**](docs/usage/access_and_execution.md)：自定义源码复核、冻结参数快照、后端过程状态、RAG引用及文件阅读/Markdown编辑。 |
+| 2026.10.29 | [**Agent API/CLI后端与十类原生研究Skill**](docs/usage/agent_cli_skills.md)，展示实际过程并核验可用性。 |
+| 2026.10.28 | [**多空辩论、双团队竞赛**](docs/usage/agent_strategies.md)，以及[Alpha挖掘、主题与体制研究](docs/usage/alpha_mining.md)。 |
+| 2026.10.24 | [**图形策略工坊**](docs/usage/strategy_composition.md)：级联、并行评分、因子/模型组件及Portfolio/Risk组合。 |
 | 2026.07.25 | 🆕 [**上班"摸鱼炒股"神器 V2：模块化盯盘系统 + 预警监控 + K线图 + 多源 fallback**](egs_aide/excel_stock_monitor/v2) |
 
 <details>
@@ -107,7 +117,66 @@
 
 ---
 
-## 3. 📖 简介
+<a id="integrated-workspace"></a>
+
+## 3. 🧩 一体化量化工作台（`src`）
+
+新的[`src/`](src)是一套可直接运行的研究工作台：以模块化**Gradio网页**、共用**REST API与CLI**串起行情、策略、回测、AI会话和本地知识。历史`egs_*/`示例项目继续保留，可独立使用。
+
+[**平台说明入口**](docs/platform/index.md) · [**工作台使用指南**](docs/usage/workspace.md) · [**快速上手**](docs/usage/quick_start.md) · [**原理文档**](docs/principles/README.md) · [**命令行指南**](docs/usage/cli.md)
+
+| 能力 | 可以完成的操作 |
+| --- | --- |
+| 总览与市场研究 | 查看净值、资金配置、持仓统计、新闻、板块和个股；运行因子监控，核对图谱关系证据。 |
+| 策略与小模型 | 导入规则、ETF/行业轮动、LightGBM/XGBoost排序和CPU小型MLP集成；通过YAML预览参数并冻结运行。 |
+| 图形组合与风控 | 将规则→模型→Agent级联筛选，或并行投票/评分，组合Portfolio配置与Risk组件；点击节点查看上下游。 |
+| 回测与模拟 | 设置日期、佣金/税费/滑点等执行假设，查看净值、回撤、成交、归因和参数快照。 |
+| Alpha与多Agent | 假设→实现→评估，主题/体制实验，多空辩论和团队竞赛；保留证据、预算及人工复核门槛。 |
+| AI、CLI与Skill | 项目会话、附件与Enter发送；选择后端、权限、模型及思考配置。支持API/Codex/Qoder/TRAE/CodeBuddy，实际可用性取决于安装、认证和研究资格。 |
+| 知识与文件 | 带引用的本地RAG问答，HTML/Office/PDF预览，Markdown编辑及历史报告浏览。 |
+| 学习与运行管理 | 按章节学习量化基础，配置定时任务、MCP和Skill，查看通知及运行状态。 |
+
+### GIF：看看实际操作
+
+**同一页面切换九个模块**：账户总览→市场研究→ETF研究→学习空间→收起左侧导航。
+
+![一体化工作台导航与账户总览](.README_images/workspace/zh/navigation.gif)
+
+**图形策略与回测**：载入预置、查看并拖动节点，设置回测，核对结果与冻结参数。
+
+![图形策略构建与回测证据](.README_images/workspace/zh/strategy-backtest.gif)
+
+**AI会话与知识引用**：添加附件、Enter发送并查看留档状态，提出知识问题并核对引用，再进入Skill报告面板。
+
+![AI会话附件与知识库引用](.README_images/workspace/zh/ai-knowledge.gif)
+
+本页使用中文界面与中文字幕，英文和日文README共用英文界面实录与英文字幕。
+
+三段GIF均为隔离服务中的**实际页面点击**，使用明确标注的**模拟行情/模拟回答**。进入Skill面板没有运行报告；演示不证明投资收益，也不代表调用了真实付费CLI或模型。[录制来源和边界](.README_images/workspace/README.md)。
+
+### 源码分工与启动
+
+| 目录 | 主要职责 |
+| --- | --- |
+| [`src/frontend`](src/frontend)、[`src/api`](src/api)、[`src/cli`](src/cli) | Gradio模块、REST/WebSocket和命令行入口，共用业务服务。 |
+| [`src/strategy`](src/strategy)、[`src/engine`](src/engine)、[`src/portfolio`](src/portfolio)、[`src/risk`](src/risk) | 标准策略端口、图形编排、执行账本、组合配置与风控。 |
+| [`src/agent`](src/agent)、[`src/alpha_mining`](src/alpha_mining)、[`src/agent_strategies`](src/agent_strategies)、[`src/skills`](src/skills) | 模型/CLI后端、研究编排与原生Skill。 |
+| [`src/data`](src/data)、[`src/documents`](src/documents), [`src/knowledge`](src/knowledge)、[`src/integration`](src/integration) | 行情数据、文档与知识支持、MCP等集成。 |
+| [`src/core`](src/core)、[`src/scheduler`](src/scheduler)、[`src/notifications`](src/notifications) | 配置、存储、访问/执行基础设施、任务所有权和提醒。 |
+| [`egs/`](egs)、[`tests/`](tests)、[`doc/`](doc)、[`docs/`](docs) | YAML和启动样例、回归测试、设计、使用/原理文档。 |
+
+工作台要求**Python3.11+**及根目录固定依赖。按[环境安装](docs/usage/installation.md)准备后，在仓库根目录启动：
+
+```text
+.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role web
+.venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
+```
+
+访问`http://127.0.0.1:8000/app/`。Linux按配置创建环境，使用`.venv-secure/bin/python`。业务配置在`egs/`的YAML中，密钥只放本地`.env`或`.llm_env`。远程访问与自定义源码先看[访问和复核规则](docs/usage/access_and_execution.md)。Qlib信号分析与原生Workflow分别配置、分别验证；实盘也需实际通道和检查，不能由演示推断已可实盘。
+
+---
+
+## 4. 📖 简介
 
 ### 适合人群
 
@@ -123,7 +192,12 @@ ai_quant_trade
 │   ├── 资源 ........... 持续收录全网优秀资源
 │   ├── 实战 ........... 各类工具、框架、库的使用及踩坑实录
 │   └── 热点 ........... 金融市场热点、技术热点、论文解读
-├── docs ............... 本仓库使用说明文档
+├── src ................ 一体化工作台业务服务与模块化Gradio界面
+├── egs ................ 工作台YAML配置和启动样例
+├── tests .............. 工作台单元、集成与浏览器检查
+├── doc ................ 设计文档
+├── docs ............... 使用/原理文档与整合站点
+├── start.py ........... 工作台服务入口
 ├── egs_aide ........... 辅助操盘工具（看盘神器等）
 ├── egs_alpha .......... 因子库 & 因子挖掘
 ├── egs_data ........... 数据获取及处理（Wind / 开源工具）
@@ -135,19 +209,16 @@ ai_quant_trade
 │   ├── rl ............. 强化学习炒股
 │   ├── ms_qlib ........ 微软Qlib框架
 │   └── vanilla ........ 传统规则类策略
-├── quant_brain ........ 核心算法库
 ├── runtime ............ 模型部署和实际使用
 ├── tools .............. 辅助工具
 └── README.md
 ```
 
-> 现在每个 `egs_*/` 子项目都自带独立的 **`requirements.txt`** —
-> 进入项目目录运行 `pip install -r requirements.txt` 即可。
-> 仓库根目录不再提供统一的依赖文件。
+> 一体化工作台使用根目录`requirements.txt`、`pyproject.toml`及可选模型依赖和项目环境；历史`egs_*/`示例保留自己的依赖文件，按所选项目安装，不要将全部示例混装到工作台环境。
 
 ---
 
-## 4. 🌟 awesome_projects（重点推荐）
+## 5. 🌟 awesome_projects（重点推荐）
 
 > 📁 **目录**：[awesome_projects](awesome_projects)
 >
@@ -196,24 +267,15 @@ ai_quant_trade
 
 ---
 
-## 5. 🚀 快速开始
+## 6. 🚀 快速开始
 
-本仓库暂未封装为 Python 包，请克隆整个项目后，进入各 `egs` 目录查看详细的 **使用说明** 和 **原理介绍**。
+使用新的**`src`工作台**，先按[环境安装](docs/usage/installation.md)和[快速上手](docs/usage/quick_start.md)准备Python3.11+项目环境，在仓库根目录运行`start.py`；主要能力与操作见[工作台章节](#integrated-workspace)。
 
-```bash
-# 1. 克隆仓库
-git clone https://github.com/charliedream1/ai_quant_trade.git
-
-# 2. 进入对应子项目，安装该项目的独立依赖（根目录不再有统一 requirements.txt）
-cd egs_trade/vanilla/double_ma
-pip install -r requirements.txt
-
-# 3. 按照该项目自身的 README 开始使用
-```
+使用历史示例时，克隆仓库后进入对应`egs_*/`目录，按该项目自己的requirements和README安装运行。示例的Python/可选依赖要求可能不同，不默认复用工作台环境。
 
 ---
 
-## 6. 📊 本地量化策略
+## 7. 📊 本地量化策略
 
 > 📁 **代码目录**：[egs_trade](egs_trade)
 >
@@ -262,7 +324,7 @@ pip install -r requirements.txt
 
 ---
 
-## 7. 💰 实盘交易
+## 8. 💰 实盘交易
 
 > 📁 **代码目录**：[egs_trade](egs_trade)
 
@@ -275,7 +337,7 @@ pip install -r requirements.txt
 
 ---
 
-## 8. 🛠️ 辅助操盘工具
+## 9. 🛠️ 辅助操盘工具
 
 > 📁 **代码目录**：[egs_aide](egs_aide)
 
@@ -286,7 +348,7 @@ pip install -r requirements.txt
 
 2. **[上班"摸鱼炒股"神器 V2：模块化盯盘系统](egs_aide/excel_stock_monitor/v2)** 🆕
 
-   ![看盘神器V2演示](egs_aide/excel_stock_monitor/v2/看盘神器V2演示.gif)
+   ![看盘神器V2演示](.README_images/workspace/zh/legacy-monitor.gif)
 
    - 🏗️ **架构重构**：从单文件升级为模块化 `excel_monitor` 包，Sheet Handler 模式，每个 Sheet 刷新互相隔离
    - 🔔 **预警监控**：自定义涨跌幅/价格上下限，触发后整行变红 + 弹窗提醒
@@ -303,7 +365,7 @@ pip install -r requirements.txt
 
 ---
 
-## 9. ⛏️ 因子挖掘
+## 10. ⛏️ 因子挖掘
 
 > 📁 **代码目录**：[egs_alpha](egs_alpha)
 
@@ -323,7 +385,7 @@ pip install -r requirements.txt
 
 ---
 
-## 10. 💾 数据处理
+## 11. 💾 数据处理
 
 > 📁 **代码目录**：[egs_data](egs_data)
 
@@ -334,7 +396,7 @@ pip install -r requirements.txt
 
 ---
 
-## 11. 📝 文本分析
+## 12. 📝 文本分析
 
 > 📁 **代码目录**：[egs_fin_nlp](egs_fin_nlp)
 
@@ -344,7 +406,7 @@ pip install -r requirements.txt
 
 ---
 
-## 12. 🤖 大模型应用
+## 13. 🤖 大模型应用
 
 > 📁 **代码目录**：[egs_llm](egs_llm)
 
@@ -355,7 +417,7 @@ pip install -r requirements.txt
 
 ---
 
-## 13. 📚 编程及AI基础知识
+## 14. 📚 编程及AI基础知识
 
 为了便于维护，已将原有的 `ai_wiki` 目录内容（系统操作、编程基础、AI基础、AI实践等）独立同步至仓库 **AI大模型避坑指南**。
 
@@ -368,7 +430,7 @@ pip install -r requirements.txt
 
 ---
 
-## 14. 🌐 在线投研平台
+## 15. 🌐 在线投研平台
 
 > 📁 **代码目录**：[egs_online_platform](egs_online_platform)
 
@@ -404,7 +466,7 @@ pip install -r requirements.txt
 
 ---
 
-## 15. 📖 量化资源集合
+## 16. 📖 量化资源集合
 
 > [(我们在知乎上2.6万阅读的文章) 史上最全AI股票量化交易工具和开源项目汇总](https://zhuanlan.zhihu.com/p/562878605)
 
@@ -417,7 +479,7 @@ pip install -r requirements.txt
 
 ---
 
-## 16. 🎁 配套资源
+## 17. 🎁 配套资源
 
 本代码仓秉承 **收费与免费并行** 的原则。
 
@@ -488,7 +550,7 @@ pip install -r requirements.txt
 
 ---
 
-## 17. 💖 打赏我
+## 18. 💖 打赏我
 
 您的支持是我前进的动力，即便"1毛钱"我也很开心，感谢您的打赏和支持 \(^o^)/
 
@@ -500,22 +562,22 @@ pip install -r requirements.txt
 
 ---
 
-## 18. 💬 讨论
+## 19. 💬 讨论
 
 欢迎在 [Github Discussions](https://github.com/charliedream1/ai_quant_trade/discussions) 中发起讨论。
 
-## 19. 🐛 技术支持
+## 20. 🐛 技术支持
 
 - 欢迎在 [Github Issues](https://github.com/charliedream1/ai_quant_trade/issues) 中提交问题
 - 加入知识星球，获取更多技术支持
   - [AI智投星球](https://t.zsxq.com/dHt9l)：专注AI量化交易知识分享
   - [大模型避坑指南](https://t.zsxq.com/q42Js)：专注编程、大模型、AI应用赋能
 
-## 20. ❓ 常见问题
+## 21. ❓ 常见问题
 
 请查看文档 → [**常见问题**](docs/02_常见问题)
 
-## 21. 📄 引用
+## 22. 📄 引用
 
 ```bibtex
 @misc{ai_quant_trade,

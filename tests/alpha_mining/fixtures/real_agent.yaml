@@ -1,0 +1,29 @@
+# 文件格式：YAML，编码：UTF-8；真实少调用验收，不批量调参
+environment_file: E:/.deepseek_env
+output: .pytest_tmp/alpha-mining-20261027/real-agent-low
+market_archive: .pytest_tmp/alpha-mining-20261027/real-isolated/market.json
+max_output_tokens: 1200
+enable_thinking: false
+alpha_purpose: 仅生成一个可由已登记算子精确表达的5日持有价量假设；只用历史收益、均值、波动及量比等目录内操作，不使用中位数、比较或条件分支。
+model_timeout_seconds: 120
+model_temperature: 0.0
+max_wait_seconds: 900
+alpha_call_budget: 8
+auxiliary_call_budget: 4
+theme: 银行业务
+company_name: 平安银行
+company_symbol: '000001'
+news_limit: 2
+company_profile_url: https://b.pingan.com/ir/gaishu/about.shtml
+company_profile_marker: 平安银行是一家
+company_profile_excerpt_chars: 700
+macro:
+  endpoint: https://alfred.stlouisfed.org/graph/alfredgraph.csv
+  vintage: '2026-10-20'
+  cutoff: '2026-10-26T23:59:59+00:00'
+  growth_series: A191RL1Q225SBEA
+  inflation_series: CPIAUCSL
+  start: '2024-01-01'
+  last_observations: 3
+  timeout_seconds: 20
+asset_mapping: {equity: SPY, bond: IEF}

@@ -1,0 +1,4 @@
+# File format: pip requirements; encoding: UTF-8
+pip==26.2
+setuptools==84.1.0
+wheel==0.46.2

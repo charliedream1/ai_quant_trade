@@ -1,0 +1,16 @@
+# 文件格式：UTF-8 YAML；仅用于隔离测试服务，不连接实盘。
+name_prefix: functional-audit
+symbols: ["600519", "300750"]
+start_date: "2026-01-05"
+end_date: "2026-01-16"
+capital: 1000000
+quantity: 100
+examples:
+  - egs/strategy_examples/dual_ma_strategy.py
+  - egs/strategy_examples/standard_port_strategy.py
+  - egs/strategy_examples/function_signal_strategy.py
+message: "你好"
+timeout_ms: 15000
+out_of_range_rows:
+  - {date: "2026-10-12", open: 100, high: 102, low: 99, close: 101, volume: 1000}
+  - {date: "2026-10-13", open: 101, high: 103, low: 100, close: 102, volume: 1200}

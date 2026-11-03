@@ -1,0 +1,32 @@
+# File format: YAML; encoding: UTF-8
+file_format: yaml
+reports_history_limit: 50
+route_wait_ms: 5000
+analysis_sops: {simulation: simulation_research_loop, live: live_observation_loop}
+aliases:
+  - {module: knowledge, view: sources, target: knowledge, target_view: library}
+  - {module: research, view: reports, target: knowledge, target_view: research, tab: 研报检索}
+  - {module: research, view: papers, target: knowledge, target_view: research, tab: 论文检索}
+  - {module: research, view: '', target: knowledge, target_view: research, tab: 研报检索}
+  - {module: market, view: factors, target: strategy, target_view: factors}
+context_fields:
+  task_id: route-backtest-task-id
+  strategy_id: route-backtest-strategy-id
+  account_id: route-paper-account-id
+  analysis_strategy_id: route-analysis-strategy-id
+  analysis_backtest_id: route-analysis-backtest-id
+  analysis_account_id: route-analysis-account-id
+  live_run_id: route-analysis-live-run-id
+  analysis_mode: route-analysis-mode
+context_values:
+  analysis_mode: [simulation, live]
+context_targets:
+  simulation/backtest: [task_id, strategy_id, account_id]
+  simulation/attribution: [analysis_strategy_id, analysis_backtest_id, analysis_account_id, live_run_id, analysis_mode]
+  live/attribution: [analysis_strategy_id, analysis_backtest_id, analysis_account_id, live_run_id, analysis_mode]
+pipeline_target: strategy/workshop
+report_library:
+  catalog_height: 280
+  sources: [[全部来源, all], [Skill报告, skill], [Alpha研究, alpha], [Agent策略, agent_strategy], [旧版模板报告, model]]
+  statuses: [[全部状态, all], [完成, completed], [有缺口, partial], [运行中, running], [失败, failed], [旧模板完成, finished]]
+tabs: [研报检索, 论文检索, 模型报告, 系统设置, 环境变量, 模型管理, MCP 服务, Skill 配置, 策略库, 预制策略, CLI 工作台, 回测, 模拟交易]

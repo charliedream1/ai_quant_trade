@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@zvec/zvec-grep": "0.2.2"
+  },
+  "overrides": {
+    "@huggingface/transformers": "4.3.2",
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/core": "2.4.0",
+    "@modelcontextprotocol/node": "2.1.2",
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "4.6.7",
+    "sharp": "0.35.5",
+    "@hono/node-server": "2.1.5"
+  }
+}

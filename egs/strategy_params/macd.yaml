@@ -1,0 +1,12 @@
+# 文件格式：YAML，编码：UTF-8
+entry: MACDTrendStrategy
+constraints: [{greater: slow_window, than: fast_window}]
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承已保存的 MACD 参数。
+    params: {}
+  slow:
+    label: 长窗口对照
+    description: 拉长快慢线和信号线窗口，比较趋势反应速度。
+    params: {fast_window: 18, slow_window: 39, signal_window: 12}

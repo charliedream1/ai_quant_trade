@@ -1,0 +1,17 @@
+# 文件格式：YAML，编码：UTF-8
+read: &read {method: GET, positions: {}, fields: {}, query: {}, execution: false, market: false}
+write: &write {method: POST, positions: {}, fields: {}, query: {}, execution: false, market: false}
+run: &run {run_id: int}
+commands:
+  agent-strategy recipes: {<<: *read, path: /agent-strategies/recipes}
+  agent-strategy runs: {<<: *read, path: /agent-strategies/runs}
+  agent-strategy start:
+    <<: *write
+    path: /agent-strategies/runs
+    fields: {recipe: str, market_dataset_id: int, documents_dataset_id: int, as_of: str, symbols: json, backend: str, model_id: int, model_name: str, reasoning_effort: str, scope: str, market: str, validation_mode: str, options: json, execution_costs: json, execution: json, risk: json}
+  agent-strategy show: {<<: *read, path: '/agent-strategies/runs/{run_id}', positions: *run}
+  agent-strategy cancel: {<<: *write, path: '/agent-strategies/runs/{run_id}/cancel', positions: *run}
+  agent-strategy events: {<<: *read, path: '/agent-strategies/runs/{run_id}/events', positions: *run, query: {after: int}}
+  agent-strategy watch: {<<: *read, path: '/agent-strategies/runs/{run_id}', positions: *run, query: {after: int}, stream_path: '/agent-strategies/runs/{run_id}/stream', await_terminal: true}
+  agent-strategy scores: {<<: *read, path: '/agent-strategies/runs/{run_id}/scores', positions: *run}
+  agent-strategy file: {<<: *read, path: '/agent-strategies/runs/{run_id}/file-info/{name}', positions: {run_id: int, name: str}}

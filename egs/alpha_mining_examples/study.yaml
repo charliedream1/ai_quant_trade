@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8；ID请替换为本机已登记资料和真实模型
+name: 价量Alpha研究
+mode: alpha
+dataset_id: 1
+models:
+  default: {model_id: 1, reasoning_effort: ''}
+purpose: 在真实股票母池检验有经济机制的价量关系，保留失败并控制重复试验
+batch_size: 4
+model_call_budget: 32
+execution_costs: {profile: cn_a}

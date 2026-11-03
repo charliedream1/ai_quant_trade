@@ -1,0 +1,13 @@
+# File format: YAML; encoding: UTF-8
+file_format: yaml
+environment: .venv-image-secure
+pillow_version: 13.0.0
+timeout_seconds: 8
+max_pixels: 16000000
+max_frames: 1
+max_decoded_bytes: 64000000
+formats:
+  .jpg: {format: JPEG, mime: image/jpeg}
+  .jpeg: {format: JPEG, mime: image/jpeg}
+  .png: {format: PNG, mime: image/png}
+  .webp: {format: WEBP, mime: image/webp}

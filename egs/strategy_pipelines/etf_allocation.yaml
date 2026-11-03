@@ -1,0 +1,61 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "ETF多资产配置",
+  "description": "ETF多资产配置；日线研究模板，真实能力由数据与依赖校验决定",
+  "universe": {
+    "etf_pool": "cn_core",
+    "symbols": [
+      "510300",
+      "510500",
+      "159915",
+      "512100"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "eligibility",
+      "component": "eligibility",
+      "inputs": [
+        "universe"
+      ],
+      "params": {}
+    },
+    {
+      "id": "trend",
+      "component": "trend",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "strength",
+      "component": "momentum",
+      "inputs": [
+        "trend"
+      ],
+      "params": {}
+    }
+  ],
+  "output": "strength",
+  "portfolio": {
+    "component": "hrp"
+  },
+  "risk": {},
+  "execution": {},
+  "rebalance_sessions": 5,
+  "variants": {
+    "baseline": {},
+    "equal": {
+      "portfolio": {
+        "component": "equal"
+      }
+    },
+    "erc": {
+      "portfolio": {
+        "component": "erc"
+      }
+    }
+  }
+}

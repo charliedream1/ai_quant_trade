@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8；只做安装/认证及一条消息，不调优。
+output: .pytest_tmp/qoder-composer-20261028/native
+metadata_timeout_seconds: 30
+conversation_timeout_seconds: 30
+prompt: 只回复“你好”，不要读取文件、执行命令或使用工具。
+archive: E:/Tools/QoderCLI/qodercli-1.1.80-windows-x64.zip
+archive_sha256: 73f2aaf70c17b6ff192158f709ae49889230dc0a8ed4ce71805e8e138740d76f
+manifest_url: https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/channels/manifest.json
+archive_output: docs/audit/qoder_composer_2026-10-28
+browser_output: browser-final-source

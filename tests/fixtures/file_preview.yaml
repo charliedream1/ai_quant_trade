@@ -1,0 +1,24 @@
+# File format: YAML; encoding: UTF-8
+title: 量化研究阅读样本
+disclaimer: 本文件仅为功能验收样本，不是真实投资建议或收益记录。
+body: 中文段落用于核对Office预览。风险管理需要关注回撤、流动性和集中度。
+second_page: 第二页：组合配置与风险说明
+headers: [项目, 数值, 说明]
+rows:
+  - [现金, 120, 样本数值]
+  - [股票, 80, 样本数值]
+  - [债券, 100, 样本数值]
+markdown: |
+  # Markdown阅读与编辑样本
+
+  这是明确标记的界面验收样本。
+
+  | 功能 | 范围 |
+  | --- | --- |
+  | Office | 只读 |
+  | Markdown | 可编辑保存 |
+
+  - 保存会检查版本。
+  - 未保存时关闭会提示。
+image_size: [480, 240]
+timeout_seconds: 60

@@ -1,0 +1,10 @@
+# YAML 1.2, UTF-8
+version: 1
+checks:
+  - [ruff, check, src, egs, tests, start.py]
+  - [ruff, format, --check, src, egs, tests, start.py]
+  - [mypy, src, --check-untyped-defs]
+security_tests:
+  - tests/security
+  - tests/frontend/test_service_dispatch.py
+  - tests/core/test_gitleaks_config.py

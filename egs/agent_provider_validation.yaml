@@ -1,0 +1,8 @@
+# YAML 1.2, UTF-8; optional economical acceptance, not financial effectiveness evidence.
+role: analyst
+max_tokens: 700
+max_turns: 3
+objective: 只验证证据读取与复核协议。所有指标都未提供，必须如实列出缺口，不得给出收益数字或通过投资判断。
+evidence: {status: unavailable, scope: protocol_acceptance_only, AR: null, IC: null, drawdown: null}
+native_prompt: 只回复“流程核查成功”。不要调用工具，不读文件，不联网，不运行Skill。这仅是会话协议检查，不是历史研究。
+native_skill_prompt: '$quant-backtest-review 请验证这个项目Skill的显式加载。只读取项目.agents/skills/quant-backtest-review/SKILL.md，然后用项目.venv-secure/Scripts/python.exe执行egs/skills.py preview --config egs/skills_examples/quant-backtest-review.yaml，并用中文报告实际结果。只做这一次预览，不运行研究、不访问模型API、不启动Web、不写配置、不调参。示例ID只是占位符，不要把它说成已有真实回测。'

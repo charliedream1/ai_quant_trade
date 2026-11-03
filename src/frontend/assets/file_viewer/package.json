@@ -1,0 +1,11 @@
+{
+  "name": "aiquant-file-reader-assets",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Version ledger for locally hosted read-only PDF and Markdown rendering bundles",
+  "dependencies": {
+    "markdown-it": "15.0.3",
+    "pdfjs-dist": "6.4.299"
+  }
+}

@@ -1,0 +1,7 @@
+# -*- coding: utf-8 -*-
+# 仅用于协议与接口测试，不是生产模型回复。
+objective: 核查训练、成本与日期证据
+model: local-protocol-fixture
+summary: 已读取回测指标并复核前序意见，本结果只验证工具协议。
+concerns: [本回复为本地协议测试，不是真实大模型判断]
+verdict: approve

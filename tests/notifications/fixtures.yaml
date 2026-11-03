@@ -1,0 +1,16 @@
+# 文件格式：YAML，编码：UTF-8；仅测试，不冒充真实风控事件。
+client: 00000000-0000-4000-8000-000000000001
+other_client: 00000000-0000-4000-8000-000000000002
+title: 明确测试提醒
+message: 仅验证提醒行为，不触发交易
+changed: 明确测试提醒已变化
+hostile: '<img src=x onerror="window.__notificationInjection=true">'
+target: {module: strategy, view: factors}
+strategy:
+  name: notification-test-strategy
+  file_path: tests/notification_fixture.py
+  origin: explicit-fixture
+  status: draft
+  version: '1'
+calendar:
+  - {market: cn, code: calendar_fixture, severity: critical, title: 测试日历缺失, message: 明确为隔离测试}

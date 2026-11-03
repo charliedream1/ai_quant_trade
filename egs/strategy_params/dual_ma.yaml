@@ -1,0 +1,12 @@
+# 文件格式：YAML，编码：UTF-8
+entry: DualMovingAverageStrategy
+constraints: [{greater: slow_window, than: fast_window}]
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承已保存的策略默认窗口，作为参数比较基线。
+    params: {}
+  slow:
+    label: 长窗口对照
+    description: 使用更长均线观察信号变化；不保证降低实际换手或提高收益。
+    params: {fast_window: 10, slow_window: 40}

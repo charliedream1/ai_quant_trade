@@ -1,0 +1,14 @@
+# 文件格式：YAML，编码：UTF-8
+entry: XGBoostRankStrategy
+model_profile: xgboost_rank
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承模型 YAML、源码与数据库默认值；使用次日开盘成交。
+    params: {}
+  slower_fit:
+    label: 较低重训频率对照
+    description: 降低重新训练频率并增大正则，比较耗时与验证结果。
+    params:
+      retrain_interval: 20
+      model_params: {learning_rate: 0.03, n_estimators: 80, reg_lambda: 2.0}

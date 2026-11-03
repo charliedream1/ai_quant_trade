@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8；数据/模型ID及截止时点请实际替换
+name: 云计算主题关联
+mode: theme
+dataset_id: 1
+market_dataset_id: 2
+models: {default: {model_id: 1}}
+theme: 云计算
+manual_keywords: [云计算, 数据中心, 云服务]
+cutoff: '2026-10-26T23:59:59+08:00'
+execution_costs: {profile: cn_a}

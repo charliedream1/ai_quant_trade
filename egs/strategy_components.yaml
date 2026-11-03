@@ -1,0 +1,375 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+defaults:
+  annual_periods: 252
+  history_bars: 240
+  history_limit: 240
+  min_history: 30
+  max_symbols: 200
+  max_nodes: 40
+  max_depth: 3
+  max_jobs: 2
+  max_workers: 2
+  model_limits: {max_trees: 1000, max_epochs: 500, max_hidden_layers: 4, max_hidden_width: 256, max_members: 8, max_threads: 4}
+  default_backtest_days: 180
+  history_limit_runs: 30
+  monitor_seconds: 60
+  entrypoint: egs/strategy_entrypoints/composition.py
+  default_template: rule_trend
+  cancellation_poll_seconds: 0.25
+  poll_seconds: 0.25
+  deadline_seconds: 1800
+  epsilon: 0.000000001
+  covariance_floor: 0.0000000000000001
+  rank_single: 0.5
+  model_profiles: {lightgbm: lightgbm_rank, xgboost: xgboost_rank, mlp: mlp_ensemble}
+  instruments:
+    CN: {lot_size: 100, settlement_sessions: 1, policy: 普通A股日线研究假设；特殊证券需覆盖元数据}
+    US: {lot_size: 1, settlement_sessions: 0, policy: 美股日线研究假设；不代表现金账户及真实券商结算能力}
+  execution:
+    initial_capital: 1000000
+    commission_rate: 0.0003
+    slippage_rate: 0.0005
+    max_participation: 0.05
+    turnover_limit: 1.0
+    rebalance_band: 0.01
+    lot_size: 100
+    settlement_sessions: 1
+    max_gap: 0.12
+    liquidity_window: 20
+  risk:
+    max_exposure: 0.9
+    max_weight: 0.25
+    max_positions: 10
+    stop_loss: 0.1
+    atr_multiple: 3.0
+    atr_window: 14
+    trailing_stop: 0.15
+    max_holding_sessions: 80
+    max_drawdown: 0.2
+    drawdown_steps: [[0.08, 0.75], [0.12, 0.5], [0.2, 0.0]]
+    daily_loss: 0.05
+    cooldown_sessions: 5
+    target_volatility: 0.18
+    covariance_window: 40
+    min_covariance_observations: 20
+    max_sector_weight: 0.4
+    max_cluster_weight: 0.6
+    correlation_threshold: 0.85
+    require_sector: false
+    require_tradability: false
+    max_asset_class_weight: 1.0
+    require_asset_class: false
+  portfolio:
+    top_k: 5
+    exposure: 0.9
+    window: 40
+    min_observations: 20
+    max_weight: 0.3
+    solver_tolerance: 0.00000001
+    solver_iterations: 500
+    shrinkage: 0.2
+    fallback: none
+    budget_window: 40
+    min_budget_observations: 20
+  agent:
+    backend: api
+    workflow: single
+    max_candidates: 8
+    evidence_bars: 20
+    max_turns: 3
+    validity_days: 3
+    max_output_chars: 24000
+    max_prompt_chars: 70000
+    output_tokens: 2500
+    temperature: 0.1
+    connect_timeout: 5
+    read_timeout: 180
+    deadline_seconds: 600
+    max_event_chars: 12000
+  regimes: {trend_threshold: 0.0, high_volatility: 0.35}
+components:
+  cn_analysis:
+    kind: scorer
+    label: 中文多维证据分析
+    family: agent_research
+    defaults: {recipe: cn_balanced, depth: economy, predictor: baseline, calls: 24, documents_dataset: ''}
+  cn_debate:
+    kind: scorer
+    label: 中文多空辩论裁决
+    family: agent_research
+    defaults: {recipe: cn_balanced, depth: economy, predictor: baseline, calls: 24, documents_dataset: ''}
+  contest_data:
+    kind: scorer
+    label: 数据团队信息竞赛
+    family: agent_research
+    defaults: {recipe: contest_event, depth: economy, predictor: baseline, calls: 24, documents_dataset: ''}
+  contest_research:
+    kind: scorer
+    label: 研究团队预算竞赛
+    family: agent_research
+    defaults: {recipe: contest_event, depth: economy, predictor: baseline, calls: 24, documents_dataset: ''}
+  alpha_factor:
+    kind: scorer
+    label: 已复核Alpha因子
+    family: alpha
+    defaults: {study_id: 1, candidate_id: 1, artifact_digest: ''}
+  alpha_theme:
+    kind: filter
+    label: 冻结主题股票池
+    family: theme
+    defaults: {study_id: 1, artifact_digest: ''}
+  alpha_regime:
+    kind: scorer
+    label: 冻结体制配置
+    family: regime
+    defaults: {study_id: 1, configuration: 1, artifact_digest: ''}
+  eligibility:
+    kind: filter
+    label: 交易资格与流动性
+    defaults: {min_bars: 30, min_amount: 0, require_status: false}
+  regime:
+    kind: filter
+    label: 市场状态
+    defaults: {window: 20, mode: trend, max_volatility: 0.35}
+  trend:
+    kind: filter
+    label: 均线趋势
+    defaults: {short: 5, long: 20, threshold: 0.0}
+  macd:
+    kind: filter
+    label: MACD动量
+    defaults: {fast: 12, slow: 26, signal: 9}
+  rsi:
+    kind: filter
+    label: RSI均值回归
+    defaults: {window: 14, ceiling: 45}
+  bollinger:
+    kind: filter
+    label: 布林带条件
+    defaults: {window: 20, deviations: 2.0, mode: breakout}
+  momentum_volume:
+    kind: filter
+    label: 放量动量
+    defaults: {window: 20, min_return: 0.0, min_volume_ratio: 1.0}
+  donchian:
+    kind: filter
+    label: 唐奇安突破
+    defaults: {window: 20, threshold: 0.0}
+  contraction:
+    kind: filter
+    label: 波动收缩突破
+    defaults: {short: 5, long: 20, max_ratio: 0.8, min_volume_ratio: 1.0}
+  pullback:
+    kind: filter
+    label: 趋势回踩恢复
+    defaults: {short: 5, long: 20, tolerance: 0.03}
+  double_bottom:
+    kind: filter
+    label: 双底确认
+    defaults: {window: 40, confirmation: 2, min_separation: 5, tolerance: 0.05}
+  low_volatility:
+    kind: filter
+    label: 横截面低波动
+    defaults: {window: 20, percentile: 0.5}
+  momentum:
+    kind: scorer
+    label: 相对动量
+    defaults: {window: 20, horizon: 1}
+  factor_set:
+    kind: factor
+    family: factor
+    label: 可复用因子集
+    defaults: {set_name: balanced}
+  factor_preprocess:
+    kind: factor
+    family: factor
+    label: 横截面因子预处理
+    defaults: {method: rank, winsor_quantile: 0.05, min_assets: 3}
+  factor_select:
+    kind: factor
+    family: factor
+    label: 因子有效性与去重
+    defaults: {horizon: 5, lookback: 60, min_dates: 15, min_assets: 3, min_coverage: 0.8, min_rank_ic: 0.0, max_correlation: 0.9, groups: 5}
+  factor_score:
+    kind: scorer
+    family: factor
+    label: 因子合成评分
+    defaults: {weighting: equal, shrinkage: 0.5, max_factor_weight: 1.0, minimum_factors: 1, min_coverage: 0.8}
+  industry:
+    kind: filter
+    label: 行业相对强弱
+    defaults: {window: 20, top_groups: 2}
+  lightgbm:
+    kind: scorer
+    family: tree
+    label: LightGBM评分
+    defaults: {}
+  xgboost:
+    kind: scorer
+    family: tree
+    label: XGBoost评分
+    defaults: {}
+  mlp:
+    kind: scorer
+    family: neural
+    label: 小型MLP评分
+    defaults: {}
+  merge:
+    kind: ensemble
+    label: 规则合并
+    defaults: {method: union, minimum: 1}
+  rank:
+    kind: ensemble
+    label: 排名与分歧融合
+    defaults: {method: rank, weights: [], minimum: 1, disagreement_penalty: 0.0, family_cap: 1.0}
+  vote:
+    kind: ensemble
+    label: 多数与加权投票
+    defaults: {method: vote, weights: [], minimum: 1, threshold: 0.5}
+  agent:
+    kind: agent
+    label: Agent研究终审
+    defaults: {workflow: single, required: true}
+portfolios:
+  agent_budget: 研究竞赛冻结预算（保留现金）
+  regime_fixed: 冻结体制目标权重
+  equal: 等权组合
+  score: 非负评分组合
+  inverse_volatility: 逆波动率
+  erc: 等风险贡献
+  hrp: 层次风险平价
+  minimum_variance: 收缩协方差最小方差
+  fixed_budget: 固定子策略预算
+  strategy_risk_budget: 子策略风险预算
+risk_components:
+  eligibility: {label: 资格与数据闸门, fields: [require_tradability]}
+  position_limits: {label: 仓位与持仓数, fields: [max_exposure, max_weight, max_positions]}
+  industry_limits: {label: 行业及资产类别, fields: [max_sector_weight, require_sector, max_asset_class_weight, require_asset_class]}
+  liquidity: {label: 流动性与参与率, fields: []}
+  fixed_atr_stop: {label: 固定及ATR止损, fields: [stop_loss, atr_multiple, atr_window]}
+  trailing_time_exit: {label: 移动止损与时间退出, fields: [trailing_stop, max_holding_sessions]}
+  volatility_target: {label: 组合波动率缩放, fields: [target_volatility, covariance_window]}
+  drawdown_steps: {label: 回撤阶梯降仓, fields: [drawdown_steps, max_drawdown]}
+  daily_loss: {label: 日损失冻结, fields: [daily_loss, cooldown_sessions]}
+  correlation_clusters: {label: 相关簇上限, fields: [max_cluster_weight, correlation_threshold]}
+  turnover: {label: 换手及调仓带, fields: []}
+  data_gap: {label: 跳空与陈旧行情, fields: []}
+  tail_risk: {label: 尾部情景与CVaR（C阶段未启用）, fields: [], status: unavailable}
+messages:
+  invalid: 策略方案配置不合法
+  missing: 方案或运行不存在
+  unavailable: 当前数据、依赖或执行模式不支持所需能力
+  no_history: 没有足够的有效历史行情
+  no_scores: 本阶段没有有效评分
+  model_warming: 模型样本不足，尚未完成拟合
+  model_failed: 模型训练或预测失败
+  unknown_sector: 缺少截至该时点可用的行业分类
+  unknown_status: 缺少截至该时点可用的交易状态
+  rule_pass: 满足规则
+  rule_reject: 未达到规则条件
+  unknown: 数据不足，无法判断
+  solver_failed: 组合估计或优化不可用
+  stale: 本次时点或证券行情缺失，禁止新增风险
+  busy: 活跃组合任务已达到并发上限
+  cancelled: 任务已取消
+  interrupted: 服务已重启，原运行未保存完成结果
+  immutable: 已发布版本不可原地修改
+  timeout: 任务超过时间预算
+  submitted: 组合任务已创建
+  saved: 组合结果已保存
+  lookahead: 不允许使用未来数据或已过期的决定
+  live_history: 历史回测不运行今天的Agent；请选择纯量化或有效的当时决定回放
+  no_replay: 缺少符合时点及输入摘要的Agent决定
+  duplicate_paper: 该账户的此时点已执行；重复请求返回已保存结果
+  unsupported_tool: 未登记的只读研究工具
+  invalid_agent: Agent输出缺少合法候选、决定或证据
+  invalid_backend: 后端不可用或未启用
+  invalid_result: 后端没有生成合法的研究决定
+  no_output: 后端没有返回正文
+  execution_only: 组合策略必须由composition引擎执行
+ui:
+  title: 策略工坊
+  intro: 选择方案，预览真实生效参数，再执行筛选、目标配置、回测或前向模拟。
+  template: 预置方案
+  load: 载入方案
+  definition: 方案定义（YAML）
+  validate: 校验与预览
+  publish: 保存发布版本
+  name: 方案名称
+  status: 实际运行状态
+  symbols: 股票池代码（逗号分隔；留空使用方案默认）
+  mode: 运行模式
+  modes: [[当期筛选, screen], [目标组合, targets], [纯量化回测, backtest], [Agent决定回放, replay], [前向模拟, paper]]
+  backend: Agent后端
+  backends: [[模型API, api], [Codex CLI, codex], [Qoder CLI, qoder], [TRAE CLI, trae], [CodeBuddy Code, codebuddy]]
+  model_id: API模型ID（0为默认）
+  model_name: CLI模型名（留空使用默认）
+  reasoning: 思考强度
+  start: 开始日期
+  end: 截止日期（留空为今天）
+  run: 执行当前方案
+  cancel: 取消当前运行
+  results: 结果与图表
+  history: 历史运行ID
+  refresh: 刷新历史
+  open: 打开历史
+  report: 下载HTML报告
+  events: 实际过程
+  account: 模拟账户ID（首次留空创建）
+  refresh_decision: 仅重新生成当期计划（同日不重复成交）
+  monitor: 启用独立日线风控监控
+  disable_monitor: 关闭监控
+  risk_reset: 解除模拟账户冻结（以当前净值重设高水位）
+  pipeline_id: 方案ID
+  version_id: 发布版本ID
+  no_result: 尚未执行
+  disclaimer: 研究和模拟结果；行情、公司行动及成交假设以本次证据为准。
+  overrides: 本次参数覆盖（JSON；按组件实例命名空间）
+  statuses: {running: 正在执行, cancelling: 正在取消, finished: 已完成, failed: 执行失败, cancelled: 已取消}
+  limitations:
+    daily_bar_execution_research: 日线研究撮合：前一收盘决策、下一开盘尝试成交，不代表实盘订单。
+    corporate_actions_not_included: 当前使用未复权价格，未计分红、拆并股与其他公司行动。
+    fixed_universe_survivorship_not_corrected: 固定股票池存在幸存者偏差，不能代表历史完整可投资池。
+    historical_sector_unavailable: 缺少历史行业分类，行业上限只对有当时证据的证券生效。
+    synthetic_fixture: 本报告使用明确标注的合成测试行情。
+    model_not_exercised: 部分模型没有产生预测；本次不能作为这些模型已验证通过的证据。
+  metrics:
+    total_return: [累计收益, percent, 期末净资产相对初始资金的变动，包含现金和未平仓浮盈亏。]
+    annual_return: [年化收益, percent, 按252个交易日折算；短区间年化不代表未来预期。]
+    max_drawdown: [最大回撤, percent, 净资产相对历史高点的最大跌幅，负数表示回撤。]
+    sharpe_ratio: [夏普比率, number, 日收益均值除以样本标准差后年化；无风险利率设为零。]
+    annual_volatility: [年化波动, percent, 日收益样本标准差乘以252的平方根。]
+    trade_count: [实际成交笔数, integer, 按证券净额执行的买卖成交；不含子策略内部虚拟调拨。]
+    order_count: [撮合尝试次数, integer, 含受资金、流动性和交易限制而未成交的尝试。]
+    closed_lot_count: [平仓批次数, integer, 各子策略对外卖出时匹配的FIFO批次，区别于账户总收益。]
+    win_rate: [平仓胜率, percent, 已平仓市场成交批次中盈利批次占比；没有平仓时显示零。]
+    total_pnl: [净资产损益, money, 期末净资产减初始资金，包含已实现与浮动损益。]
+    total_commission: [累计手续费, money, 仅计外部市场成交成本，内部调拨不重复扣费。]
+    tax_paid: [交易税, money, 按实际成交日期和买卖方向计算。]
+    transfer_fee_paid: [过户费, money, 按实际成交计收并分摊到子策略。]
+    other_fee_paid: [其他规费, money, 佣金已含规费时不能重复配置。]
+    slippage_cost: [滑点成本归因, money, 已进入成交价，不从净值重复扣减。]
+    total_execution_cost: [执行总成本, money, 外部成交费用与滑点归因之和。]
+    net_return: [成本后净收益, percent, 以实际成交和实际扣费形成的净资产计算。]
+    gross_return_before_costs: [加回成本收益, percent, 保持实际成交不变加回成本，并非重新执行的零成本策略。]
+    turnover_rate: [累计双边换手, percent, 累计买卖成交金额除以初始资金，不是年化换手。]
+    profit_factor: [平仓盈亏比, number, 盈利批次合计除以亏损批次绝对值；没有亏损时不计算。]
+    benchmark_return: [价格基准收益, percent, 固定池等权价格收益，不含成本与分红。]
+prompts:
+  system: >-
+    你是策略工坊的研究终审。只使用给定的当期证据，不联网、不运行shell、不访问用户目录、不执行订单。
+    输入限于价量、模型、分类及持仓；没有财务、新闻和公告证据，不得用记忆补充这些信息。
+    使用普通文本ReAct，不调用function call。可输出 <tool_use>{"name":"read_evidence","arguments":{"id":"E1"}}</tool_use> 读取已登记证据。
+    最终输出普通JSON：{"decisions":[{"symbol":"候选代码","action":"select/watch/reject/exit","reason":"依据及反证","evidence_ids":["E1"]}],"summary":"结论与缺口"}。
+    不添加候选或已有持仓之外的证券，不修改风险与资金配置。每项必须引用真实证据，不把自报confidence当概率。
+  request: |
+    {system}
+    角色：{role}；任务时点：{as_of}。
+    合法候选及已有持仓：{symbols}
+    证据：{evidence}
+    前序角色意见：{peers}
+    只输出只读工具请求或最终JSON。
+  observation: '实际工具观察：{observation}。继续并输出最终JSON。'
+  retry: 结构或引用未通过验证；只使用既有证据修复决定。必须逐一覆盖合法候选，不添加新标的。
+  roles: {single: [研究终审], committee: [研究分析, 独立反证, 投研汇总]}

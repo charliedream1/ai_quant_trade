@@ -1,0 +1,6 @@
+# Preserve original evidence bytes across Windows/Linux checkouts.
+docs/audit/** -text whitespace=cr-at-eol linguist-generated=true
+# Standalone Plotly reports contain generated third-party JavaScript whitespace.
+docs/audit/**/*.html whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof
+# JUnit records preserve captured process output, including original whitespace.
+docs/audit/**/*.xml whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof

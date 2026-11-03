@@ -1,0 +1,17 @@
+# 文件格式：YAML，编码：UTF-8
+base_url: http://127.0.0.1:8885
+snapshot_id: defdebef365ad8e434d5b1bda7f21aa8a877abf459337814c3a59d11f5f5cdd7
+start_date: '2026-05-04'
+end_date: '2026-10-22'
+timeout: 900
+output: docs/audit/composition_2026-10-22
+cases:
+  - {template: rule_trend, mode: backtest, agent_mode: 'off'}
+  - {template: cascade_pattern_ml_agent, mode: backtest, agent_mode: 'off'}
+  - {template: parallel_three_model, mode: backtest, agent_mode: 'off'}
+  - {template: mean_reversion, mode: backtest, agent_mode: 'off'}
+  - {template: etf_allocation, mode: backtest, agent_mode: 'off'}
+  - {template: multi_sleeve, mode: backtest, agent_mode: 'off'}
+  - {template: industry_rotation, mode: backtest, agent_mode: 'off', expected_error: 缺少截至该时点可用的行业分类}
+  - {template: industry_rotation, mode: targets, agent_mode: live, backend: codex}
+  - {template: cascade_pattern_ml_agent, mode: targets, agent_mode: live, backend: codex}

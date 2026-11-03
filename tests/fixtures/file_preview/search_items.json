@@ -1,0 +1,18 @@
+{
+  "description": "Actual PDF.js items from a LibreOffice-converted sample heading; fonts are emitted in separate runs.",
+  "expected": "第二页：组合配置与风险说明",
+  "items": [
+    {"str":"第二","transform":[14,0,0,14,90.1,704.2],"width":28,"height":14},
+    {"str":" ","transform":[14,0,0,14,118.1,704.2],"width":13.986,"height":0},
+    {"str":"：","transform":[14,0,0,14,132.086,704.2],"width":14,"height":14},
+    {"str":" ","transform":[14,0,0,14,146.086,704.2],"width":13.986,"height":0},
+    {"str":"合配置与","transform":[14,0,0,14,160.072,704.2],"width":56,"height":14},
+    {"str":" ","transform":[14,0,0,14,216.072,704.2],"width":41.986,"height":0},
+    {"str":"明","transform":[14,0,0,14,258.058,704.2],"width":14,"height":14},
+    {"str":"页","transform":[14,0,0,14,118.1,704.2],"width":14,"height":14},
+    {"str":" ","transform":[14,0,0,14,132.1,704.2],"width":13.986,"height":0},
+    {"str":"组","transform":[14,0,0,14,146.086,704.2],"width":14,"height":14},
+    {"str":" ","transform":[14,0,0,14,160.086,704.2],"width":55.986,"height":0},
+    {"str":"风险说","transform":[14,0,0,14,216.072,704.2],"width":42,"height":14}
+  ]
+}

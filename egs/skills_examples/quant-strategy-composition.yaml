@@ -1,0 +1,10 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-strategy-composition
+provider:
+  backend: api
+  model_id: 1
+request:
+  mode: screen
+  template: cascade_pattern_ml_agent
+  market: CN

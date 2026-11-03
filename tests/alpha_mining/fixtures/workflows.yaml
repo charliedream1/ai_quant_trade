@@ -1,0 +1,68 @@
+# 文件格式：YAML，编码：UTF-8；仅用于隔离协议与功能测试
+market: {start: '2019-01-01', periods: 50, source: explicit_test_fixture, is_mock: true}
+regime_market_start: '2019-04-02'
+regime_price_step: 0.02
+regime_price_wave: 0.03
+regime_wave_period: 5
+regime_cutoff: '2019-05-30T00:00:00+00:00'
+regime_decisions: ['2019-04-03T00:00:00+00:00', '2019-05-01T00:00:00+00:00']
+browser_model:
+  name: 协议测试替身（非真实模型）
+  model_name: explicit-unit-test-double
+  base_url: http://127.0.0.1:1/v1
+  api_key: ''
+  purpose: 仅隔离浏览器协议测试，不调用外部服务
+  enabled: 1
+  is_default: 1
+policy:
+  horizon: 1
+  embargo_sessions: 1
+  min_train_dates: 8
+  min_test_dates: 4
+  min_assets: 3
+  block_sessions: 2
+  bootstrap_samples: 99
+  require_real_data: false
+  require_verified_data: false
+  min_trades: 1
+idea:
+  ideas:
+    - title: 测试两日动量
+      mechanism: 仅用于验证流程的预先机制
+      counter_hypothesis: 短期冲击可能反转
+      direction: 1
+      horizon: 1
+      fields: [close]
+      expected_relation: 同方向的横截面关系
+      failure_condition: 扣费后失效或显著性不足
+implement:
+  expression: {op: returns, window: 2, args: [{field: close}]}
+  fields: [close]
+  direction: 1
+  horizon: 1
+  alignment: 按原假设计算两日收益，不改变方向和持有期
+  tests: [独立手算, 未来扰动, 费用账本]
+evaluate:
+  verdict: approve
+  rationale: 单元测试协议意见，不能覆盖硬门槛
+  alternative_explanations: [随机噪声]
+  citations: [hypothesis, implementation, evidence]
+theme:
+  keywords: [云计算]
+  exclusions: [否认]
+  associations:
+    - {document_id: company-report, symbol: AAA, quote: AAA提供云计算服务, relation: 原文明确说明业务关联}
+regime:
+  regime: Goldilocks
+  confidence: 0.8
+  evidence_ids: [e5, e6]
+  rationale: 所给相对期资料显示增长上升、通胀下降
+documents:
+  - {id: company-report, symbols: [AAA], text: 'AAA提供云计算服务，以上仅为测试文本。', published_at: '2019-01-01T10:00:00+00:00', available_at: '2019-01-01T11:00:00+00:00', source: explicit_test_fixture}
+macro:
+  - {id: g1, series: growth, observation_date: '2019-01-01', value: 1.0, published_at: '2019-02-01T10:00:00+00:00', vintage_at: '2019-02-01T10:00:00+00:00', available_at: '2019-02-01T10:00:00+00:00', source: explicit_test_fixture}
+  - {id: i1, series: inflation, observation_date: '2019-01-01', value: 3.0, published_at: '2019-02-01T10:00:00+00:00', vintage_at: '2019-02-01T10:00:00+00:00', available_at: '2019-02-01T10:00:00+00:00', source: explicit_test_fixture}
+  - {id: g2, series: growth, observation_date: '2019-02-01', value: 2.0, published_at: '2019-03-01T10:00:00+00:00', vintage_at: '2019-03-01T10:00:00+00:00', available_at: '2019-03-01T10:00:00+00:00', source: explicit_test_fixture}
+  - {id: i2, series: inflation, observation_date: '2019-02-01', value: 2.0, published_at: '2019-03-01T10:00:00+00:00', vintage_at: '2019-03-01T10:00:00+00:00', available_at: '2019-03-01T10:00:00+00:00', source: explicit_test_fixture}
+  - {id: g3, series: growth, observation_date: '2019-03-01', value: 3.0, published_at: '2019-04-01T10:00:00+00:00', vintage_at: '2019-04-01T10:00:00+00:00', available_at: '2019-04-01T10:00:00+00:00', source: explicit_test_fixture}
+  - {id: i3, series: inflation, observation_date: '2019-03-01', value: 1.0, published_at: '2019-04-01T10:00:00+00:00', vintage_at: '2019-04-01T10:00:00+00:00', available_at: '2019-04-01T10:00:00+00:00', source: explicit_test_fixture}
