@@ -1,0 +1,11 @@
+# File format: YAML; encoding: UTF-8
+symbol: '600519'
+name: Financial fixture
+industry: 白酒Ⅱ
+macro: {period: '2025-03-01', value: 4.2}
+periods:
+  - {period: '2024-03-31', revenue: 100, profit: 10, consolidated_profit: 12, operating_cost: 50, assets: 1000, liabilities: 400, equity: 600, short_loan: 10, long_loan: 20, bonds: 5, operating_cashflow: 12, gross_margin: 50, roe: 2}
+  - {period: '2024-06-30', revenue: 250, profit: 25, consolidated_profit: 28, operating_cost: 125, assets: 1100, liabilities: 400, equity: 700, short_loan: 12, long_loan: 20, bonds: 5, operating_cashflow: 28, gross_margin: 50, roe: 4}
+  - {period: '2024-09-30', revenue: 450, profit: 45, consolidated_profit: 48, operating_cost: 225, assets: 1200, liabilities: 450, equity: 750, short_loan: 14, long_loan: 20, bonds: 5, operating_cashflow: 48, gross_margin: 50, roe: 6}
+  - {period: '2024-12-31', revenue: 700, profit: 70, consolidated_profit: 74, operating_cost: 350, assets: 1300, liabilities: 500, equity: 800, short_loan: 16, long_loan: 20, bonds: 5, operating_cashflow: 74, gross_margin: 50, roe: 9}
+  - {period: '2025-03-31', revenue: 200, profit: 20, consolidated_profit: 22, operating_cost: 100, assets: 1400, liabilities: 500, equity: 900, short_loan: 18, long_loan: null, bonds: 5, operating_cashflow: 22, gross_margin: 50, roe: 3}

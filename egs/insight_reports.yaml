@@ -71,6 +71,35 @@ tasks:
       依照 stock-analysis 的个股研究维度及 A 股技术参考分析指定证券。
       技术读数只能引用本次程序计算结果；不得声称已执行未实现的 23 项指标、筹码或主力追踪。
       基本面缺失时不猜测财务、评级、目标价或机构观点，报告为研究观察，不执行交易。
+  macro_analysis:
+    label: 宏观经济分析
+    skill_dir: economic_analysis
+    resources: [SKILL.md]
+    shared_model_client: true
+    sections: [执行摘要, 增长与通胀, 信用与流动性, 政策与行业影响, 风险与后续观察]
+    instruction: >-
+      Analyze only the supplied Chinese macroeconomic snapshot. Preserve periods, units, frequencies,
+      source revisions and stale-data warnings. Separate observed facts from hypotheses about policy
+      and industry effects. Do not invent policy events or treat current revisions as historical PIT data.
+      Write a concise Chinese report with exact evidence references and explicit gaps.
+      Use at most two short sentences per section and avoid repeating the full input tables.
+      Follow each indicator's release frequency when proposing follow-up observations.
+      Do not call a future or unfinished reporting period a missing current release.
+  fundamental_analysis:
+    label: 公司基本面分析
+    skill_dir: economic_analysis
+    resources: [SKILL.md]
+    shared_model_client: true
+    sections: [执行摘要, 财报范围与成长, 盈利质量与现金流, 偿债与财务风险, 估值与同业, 风险与后续观察]
+    instruction: >-
+      Analyze only the supplied company financial snapshot and computed metrics. Preserve CNY versus
+      CNY_100m units, cumulative versus single-quarter versus TTM periods, and reported weighted ROE.
+      Missing inputs remain unknown. Financial institutions require specialized methods.
+      Compare only supplied peers from the same industry and period. Do not invent business segments,
+      forecasts or target prices. Write a concise Chinese report with exact evidence references and gaps.
+      Use at most two short sentences per section and avoid repeating the full input tables.
+      Do not infer low debt-service or liquidity pressure from the debt/assets ratio alone;
+      unknown debt components, maturity and liquidity evidence prevent that conclusion.
 prompts:
   system: |
     你是平台内置 Skill 报告执行器。任务是根据本次本地 Skill、已采集证据与固定任务生成中文研究报告。

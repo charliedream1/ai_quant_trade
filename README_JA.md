@@ -26,6 +26,10 @@
 
 ---
 
+**Economic research · 2026-11-03:** Chinese macroeconomic trends and A-share financial statements, accounting metrics, peer comparisons and optional evidence-backed model reports. See the [economic analysis guide](docs/usage/economic_analysis.md).
+
+**モデルAPI · 2026-11-03：**OpenAI/LiteLLM SDKと共有RPM・同時実行・再試行制御に対応。[利用ガイド](docs/usage/model_interfaces.md)。
+
 **ナレッジ更新 · 2026-11-02：**名前付きファイルライブラリ、Markdown見出し分割、zvec-grepによる複数回キーワード検索、会話添付、出典プレビュー、レポート・論文のダウンロード取り込みに対応。[利用ガイド](docs/usage/knowledge.md)。
 
 **最新更新 · 2026-11-01：** [統合リサーチワークスペース](#integrated-workspace)で、市場、戦略、バックテスト、AI会話と知識の引用をつなぎます。[利用ガイド](docs/usage/workspace.md)から開始できます。

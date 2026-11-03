@@ -45,8 +45,10 @@ class InsightReportService:
         except ValueError as exc:
             raise ValueError(messages["invalid_date"]) from exc
         result["symbol"] = str(result.get("symbol") or "").strip()
-        if result["kind"] == "single_stock_analysis" and not result["symbol"]:
+        if result["kind"] in {"single_stock_analysis", "fundamental_analysis"} and not result["symbol"]:
             raise ValueError(messages["invalid_symbol"])
+        if result["kind"] in {"macro_analysis", "fundamental_analysis"} and result["market"] != "CN":
+            raise ValueError("Economic analysis currently supports China and A-share companies")
         return result
 
     def start(self, payload: dict[str, Any], cancelled=None) -> dict[str, Any]:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gradio as gr
+from src.core.llm_config import llm_config
 from src.help_docs import help_docs_iframe_html
 
 from ..common.callbacks import safe as _safe
@@ -228,6 +229,30 @@ def render_admin(service: DomainHandler) -> None:
                                 model_timeout = gr.Slider(3, 300, value=60, step=1, label="超时（秒）")
                             model_system_prompt = gr.Textbox(label="系统提示词", lines=4)
                             with gr.Row():
+                                model_backend = gr.Dropdown(
+                                    llm_config()["interfaces"]["choices"],
+                                    value="http",
+                                    label="模型调用接口",
+                                    elem_id="model-api-backend",
+                                )
+                                model_rpm = gr.Number(
+                                    value=0, precision=0, minimum=0, label="RPM（0不限流）", elem_id="model-rpm"
+                                )
+                            with gr.Accordion("配额与请求设置", open=False):
+                                with gr.Row():
+                                    model_concurrency = gr.Number(
+                                        value=0, precision=0, minimum=0, label="最大并发（0不限）"
+                                    )
+                                    model_wait = gr.Checkbox(value=True, label="达到限额时等待")
+                                    model_group = gr.Textbox(label="共享配额组（可选）")
+                                    model_retries = gr.Number(
+                                        value=0, precision=0, minimum=0, label="可恢复错误重试次数"
+                                    )
+                                model_extra = gr.Code(value="{}", language="json", label="扩展请求参数")
+                                gr.Markdown(
+                                    "LiteLLM当前使用受控OpenAI兼容传输，模型可填openai/前缀；密钥使用上方环境变量引用。"
+                                )
+                            with gr.Row():
                                 model_create = gr.Button("新建模型", variant="primary")
                                 model_update = gr.Button("更新所选模型")
                         model_refresh.click(_safe(service.models_with_stats), outputs=[model_table, model_stat_plot])
@@ -243,6 +268,13 @@ def render_admin(service: DomainHandler) -> None:
                             model_max_tokens,
                             model_timeout,
                             model_system_prompt,
+                            model_backend,
+                            model_rpm,
+                            model_concurrency,
+                            model_wait,
+                            model_group,
+                            model_retries,
+                            model_extra,
                         ]
                         model_create.click(
                             _safe(service.create_model),

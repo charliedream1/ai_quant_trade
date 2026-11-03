@@ -26,6 +26,10 @@
 
 ---
 
+**Economic research · 2026-11-03:** Chinese macroeconomic trends and A-share financial statements, accounting metrics, peer comparisons and optional evidence-backed model reports. See the [economic analysis guide](docs/usage/economic_analysis.md).
+
+**模型接口 · 2026-11-03：**新增OpenAI/LiteLLM SDK选择与共享RPM、并发和重试控制，详见[模型接口指南](docs/usage/model_interfaces.md)。
+
 **知识库更新 · 2026-11-02：**新增按库隔离的文件入库、Markdown标题切分、zvec-grep多轮关键词问答、会话附件、引用预览与研报论文下载入库。详见[知识库指南](docs/usage/knowledge.md)。
 
 **最近更新 · 2026-11-01：** [一体化量化工作台](#integrated-workspace)串起行情、图形策略、回测、AI会话和带引用的知识问答；从[工作台使用指南](docs/usage/workspace.md)开始。

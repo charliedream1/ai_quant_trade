@@ -45,6 +45,23 @@ def validate_backend(payload: dict[str, Any], config: dict[str, Any]) -> dict[st
 
 
 def _api_text(prompt: str, payload: dict[str, Any], config: dict[str, Any]) -> Iterator[str]:
+    if config["tasks"].get(payload.get("kind", ""), {}).get("shared_model_client"):
+        client = LLMClient()
+        try:
+            check_identity(payload.get("_provider_snapshot"), provider_snapshot(payload, client=client))
+            result = client.complete(
+                prompt,
+                purpose=payload["kind"],
+                model_id=payload.get("model_id"),
+                reasoning_effort=payload.get("reasoning_effort"),
+                max_output_tokens=config["defaults"]["output_tokens"],
+                timeout_seconds=config["defaults"]["read_timeout"],
+                max_output_chars=config["defaults"]["max_output_chars"],
+            )
+            yield result["text"]
+        finally:
+            client.session.close()
+        return
     client = LLMClient()
     profile = client._select_config(payload.get("model_id"))
     check_identity(payload.get("_provider_snapshot"), provider_snapshot(payload, client=client))

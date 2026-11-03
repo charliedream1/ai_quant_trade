@@ -181,6 +181,13 @@ class AdminServiceMixin:
             int(item.get("max_tokens") or 1200),
             float(item.get("timeout_seconds") or 60),
             item.get("system_prompt") or "",
+            item.get("api_backend") or "http",
+            int(item.get("rpm") or 0),
+            int(item.get("max_concurrency") or 0),
+            bool(item.get("wait_on_limit", True)),
+            item.get("quota_group") or "",
+            int(item.get("max_retries") or 0),
+            compact_json(item.get("extra_body") or {}),
         )
 
     def create_model(
@@ -196,6 +203,13 @@ class AdminServiceMixin:
         max_tokens: Any,
         timeout_seconds: Any,
         system_prompt: str,
+        api_backend: str = "http",
+        rpm: Any = 0,
+        max_concurrency: Any = 0,
+        wait_on_limit: bool = True,
+        quota_group: str = "",
+        max_retries: Any = 0,
+        extra_body: str = "{}",
     ) -> tuple[str, pd.DataFrame]:
         item = create_model(
             {
@@ -210,6 +224,13 @@ class AdminServiceMixin:
                 "max_tokens": int(max_tokens or 1200),
                 "timeout_seconds": float(timeout_seconds or 60),
                 "system_prompt": str(system_prompt or "").strip(),
+                "api_backend": api_backend,
+                "rpm": int(rpm),
+                "max_concurrency": int(max_concurrency),
+                "wait_on_limit": wait_on_limit,
+                "quota_group": quota_group,
+                "max_retries": int(max_retries),
+                "extra_body": parse_json(extra_body, "扩展参数"),
             }
         )
         return (f"模型配置已创建，ID={item['model_id']}", self.models())
@@ -228,6 +249,13 @@ class AdminServiceMixin:
         max_tokens: Any,
         timeout_seconds: Any,
         system_prompt: str,
+        api_backend: str = "http",
+        rpm: Any = 0,
+        max_concurrency: Any = 0,
+        wait_on_limit: bool = True,
+        quota_group: str = "",
+        max_retries: Any = 0,
+        extra_body: str = "{}",
     ) -> tuple[str, pd.DataFrame]:
         payload = {
             "name": require_text(name, "配置名称"),
@@ -240,6 +268,13 @@ class AdminServiceMixin:
             "max_tokens": int(max_tokens or 1200),
             "timeout_seconds": float(timeout_seconds or 60),
             "system_prompt": str(system_prompt or "").strip(),
+            "api_backend": api_backend,
+            "rpm": int(rpm),
+            "max_concurrency": int(max_concurrency),
+            "wait_on_limit": wait_on_limit,
+            "quota_group": quota_group,
+            "max_retries": int(max_retries),
+            "extra_body": parse_json(extra_body, "扩展参数"),
         }
         if str(api_key or "").strip():
             payload["api_key"] = str(api_key).strip()

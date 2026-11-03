@@ -1,5 +1,6 @@
 # 文件格式：YAML，编码：UTF-8
 files:
+  - commands/economics.yaml
   - commands/research_skills.yaml
   - commands/agent_strategy.yaml
   - commands/alpha.yaml

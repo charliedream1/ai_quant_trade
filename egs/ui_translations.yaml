@@ -265,3 +265,12 @@ AI问答: AI Q&A
 继承策略默认: Inherit Strategy Defaults
 
 会话与检索设置: Session and Search Settings
+模型调用接口: Model API Backend
+HTTP兼容接口: Compatible HTTP
+RPM（0不限流）: RPM (0 = Unlimited)
+配额与请求设置: Quota and Request Settings
+最大并发（0不限）: Maximum Concurrency (0 = Unlimited)
+达到限额时等待: Wait When Rate Limited
+共享配额组（可选）: Shared Quota Group (Optional)
+可恢复错误重试次数: Retry Count for Recoverable Errors
+扩展请求参数: Extra Request Parameters

@@ -14,6 +14,8 @@ from src.core.redaction import redact
 from src.core.repository import Repository, json_loads
 from src.core.timeutil import utc_now_iso
 
+from .model_options import model_options
+
 
 def list_models():
     rows = Repository().list("llm_models", order_by="is_default DESC, id DESC")
@@ -25,38 +27,45 @@ def get_model(model_id: int):
 
 
 def create_model(payload: dict[str, Any]):
-    values = _validated_values(payload, creating=True)
     repo = Repository()
-    now = utc_now_iso()
-    has_default = repo.db.query_one(
-        "SELECT id FROM llm_models WHERE enabled = 1 AND is_default = 1 AND level = ?", (values["level"],)
-    )
-    row = repo.insert(
-        "llm_models",
-        {
-            **values,
-            "purpose": json.dumps(payload.get("purpose") or [], ensure_ascii=False),
-            "is_default": 0 if has_default else 1,
-            "enabled": 1,
-            "remark": str(payload.get("remark") or ""),
-            "created_at": now,
-            "updated_at": now,
-        },
-    )
-    return _shape(row)
+    with repo.db.transaction():
+        _validate_quota_group(repo, model_options(payload))
+        values = _validated_values(payload, creating=True)
+        now = utc_now_iso()
+        has_default = repo.db.query_one(
+            "SELECT id FROM llm_models WHERE enabled = 1 AND is_default = 1 AND level = ?", (values["level"],)
+        )
+        row = repo.insert(
+            "llm_models",
+            {
+                **values,
+                "purpose": json.dumps(payload.get("purpose") or [], ensure_ascii=False),
+                "is_default": 0 if has_default else 1,
+                "enabled": 1,
+                "remark": str(payload.get("remark") or ""),
+                "created_at": now,
+                "updated_at": now,
+            },
+        )
+        return _shape(row)
 
 
 def update_model(model_id: int, payload: dict[str, Any]):
-    values = _validated_values(payload, creating=False)
-    values["updated_at"] = utc_now_iso()
-    for key in ("enabled", "remark"):
-        if key in payload:
-            values[key] = payload[key]
-    if payload.get("enabled") is False:
-        values["is_default"] = 0
-    if "purpose" in payload:
-        values["purpose"] = json.dumps(payload["purpose"] or [], ensure_ascii=False)
-    return _shape(Repository().update("llm_models", model_id, values))
+    repo = Repository()
+    with repo.db.transaction():
+        _validate_quota_group(
+            repo, {**repo.get("llm_models", model_id), **model_options(payload, defaults=False)}, model_id
+        )
+        values = _validated_values(payload, creating=False)
+        values["updated_at"] = utc_now_iso()
+        for key in ("enabled", "remark"):
+            if key in payload:
+                values[key] = payload[key]
+        if payload.get("enabled") is False:
+            values["is_default"] = 0
+        if "purpose" in payload:
+            values["purpose"] = json.dumps(payload["purpose"] or [], ensure_ascii=False)
+        return _shape(Repository().update("llm_models", model_id, values))
 
 
 def delete_model(model_id: int):
@@ -99,7 +108,9 @@ def chat(payload: dict[str, Any]):
 
 
 def _validated_values(payload: dict[str, Any], creating: bool) -> dict[str, Any]:
-    values: dict[str, Any] = {}
+    values: dict[str, Any] = model_options(payload, defaults=creating)
+    if "extra_body" in values:
+        values["extra_body"] = json.dumps(values["extra_body"], ensure_ascii=False)
     text_fields = ("name", "base_url", "model_name", "api_key_env", "system_prompt", "level")
     for key in text_fields:
         if key in payload or creating:
@@ -143,6 +154,18 @@ def _validated_values(payload: dict[str, Any], creating: bool) -> dict[str, Any]
     return values
 
 
+def _validate_quota_group(repo: Repository, values: dict, model_id: int = 0) -> None:
+    group = values.get("quota_group")
+    if not group:
+        return
+    rows = repo.db.query(
+        "SELECT rpm,max_concurrency,wait_on_limit FROM llm_models WHERE quota_group=? AND id<>?", (group, model_id)
+    )
+    for row in rows:
+        if any(int(row[key]) != int(values[key]) for key in ("rpm", "max_concurrency", "wait_on_limit")):
+            raise ValueError("同一共享配额组的RPM、并发和等待策略必须一致")
+
+
 def _shape(row: dict[str, Any]) -> dict[str, Any]:
     result = dict(row)
     result["model_id"] = result["id"]
@@ -151,6 +174,8 @@ def _shape(row: dict[str, Any]) -> dict[str, Any]:
     result["enabled"] = bool(result.get("enabled"))
     result["is_default"] = bool(result.get("is_default"))
     result["provider"] = "openai-compatible"
+    result["wait_on_limit"] = bool(result.get("wait_on_limit", True))
+    result["extra_body"] = json_loads(result.get("extra_body"), {})
     call_count = int(result.get("call_count") or 0)
     result["avg_duration_ms"] = (
         round(float(result.get("total_duration_ms") or 0) / call_count, 2) if call_count else 0.0

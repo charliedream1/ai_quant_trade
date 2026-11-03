@@ -10,6 +10,7 @@
 
 | 文件 | 内容 |
 |------|------|
+| [模型接口与共享配额](model_interfaces.md) | HTTP、OpenAI/LiteLLM SDK、跨进程RPM、并发和重试 |
 | [知识库文件检索](knowledge_retrieval.md) | 命名库、标题切分、模型关键词、多轮检索与引用 |
 | [辩论与双团队竞赛](agent_strategies.md) | 角色边界、原文引用、成熟成绩、效用预测、预算与影子账本 |
 | [Alpha研究纪律](alpha_mining.md) | 试验家族、时点隔离、统计与账本、三角色和主题/体制边界 |

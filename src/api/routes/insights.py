@@ -23,6 +23,8 @@ class InsightRequest(BaseModel):
     reasoning_effort: str = Field(default="", pattern="^(|low|medium|high|xhigh)$")
     timeframe: str | None = None
     end_date: str = ""
+    research_snapshot: str = Field(default="", pattern="^([a-f0-9]{64})?$")
+    include_fundamentals: bool = False
 
 
 @router.post("/insights/runs")

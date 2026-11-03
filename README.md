@@ -26,6 +26,10 @@
 
 ---
 
+**Economic research · 2026-11-03:** Chinese macroeconomic trends and A-share financial statements, accounting metrics, peer comparisons and optional evidence-backed model reports. See the [economic analysis guide](docs/usage/economic_analysis.md).
+
+**Model APIs · 2026-11-03:** selectable OpenAI/LiteLLM SDK backends and shared RPM/concurrency controls; see the [model interface guide](docs/usage/model_interfaces.md).
+
 **Knowledge update · 2026-11-02:** named file libraries, Markdown heading chunks, recursive model-keyword retrieval with zvec-grep, session attachments, source previews, and report/paper downloads. See the [knowledge guide](docs/usage/knowledge.md).
 
 **Latest update · 2026-11-01:** one [quant research workspace](#integrated-workspace) connects market views, visual strategy construction, backtests, AI sessions and cited knowledge. Start with the [workspace guide](docs/usage/workspace.md).

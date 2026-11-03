@@ -14,6 +14,7 @@ from ..service.foundation import (
     RECOMMEND_PLAN_CHOICES,
     RELATION_TYPE_CHOICES,
 )
+from .economics import render_economics
 
 
 def render_market(service: DomainHandler, default_relation_types: list[str]) -> None:
@@ -118,7 +119,12 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 )
                 news_detail_btn.click(_safe(service.news_detail), inputs=news_detail_id, outputs=news_detail)
 
+            with gr.Tab("宏观经济"):
+                render_economics(service, "macro")
+            with gr.Tab("基本面分析"):
+                render_economics(service, "fundamentals")
             with gr.Tab("个股分析"):
+                gr.HTML(workspace_link("查看财报三表与基本面分析", "market", "fundamentals"))
                 with gr.Row():
                     stock_symbol = gr.Textbox(value="600519", label="股票代码/名称")
                     stock_period = gr.Dropdown(["daily", "weekly", "monthly"], value="daily", label="K 线周期")

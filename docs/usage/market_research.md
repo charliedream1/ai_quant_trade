@@ -1,5 +1,7 @@
 # 行情、因子与关系图谱
 
+Chinese macroeconomic series and A-share financial statements now have dedicated views under Market Research. See [Macroeconomics and corporate fundamentals](economic_analysis.md).
+
 资源池新增“组合方案级联筛选”，可选择预置或已发布方案及API/Codex后端，按当前资源池执行并查看真实过程和HTML报告。操作见[策略工坊](strategy_composition.md)；空池和缺失历史不自动扩展为全市场。
 
 ## 入口与前置条件

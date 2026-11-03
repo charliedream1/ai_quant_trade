@@ -97,6 +97,7 @@ nav:
   - 行情与资料:
     - 总览与图表: usage/dashboard.md
     - 行情、因子和图谱: usage/market_research.md
+    - Macroeconomics and fundamentals: usage/economic_analysis.md
     - 通用因子监控与Qlib: usage/factor_monitoring.md
     - 资源池模板与导入: usage/resource_pools.md
     - 研报与论文: usage/reports.md
@@ -123,6 +124,7 @@ nav:
     - 提醒中心与助手形象: usage/notifications.md
     - 自动化与能力配置: usage/automation.md
     - 配置说明: usage/configuration.md
+    - 模型接口与RPM: usage/model_interfaces.md
     - 命令行上手: usage/cli.md
     - 完整命令参考: usage/cli_reference.md
     - 排障: usage/troubleshooting.md
@@ -168,6 +170,8 @@ nav:
   - 运行隔离与入口整合: principles/runtime_navigation.md
   - 文件预览与版本保存: principles/file_preview.md
   - 知识库文件检索: principles/knowledge_retrieval.md
+  - 模型接口与共享配额: principles/model_interfaces.md
+  - Economic evidence and accounting: principles/economic_analysis.md
   - 验证原则: principles/testing_principles.md
 - 新仓库入口: platform/migration.md
 plugins:

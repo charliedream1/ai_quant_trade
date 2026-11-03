@@ -12,6 +12,7 @@ from .service.ai import AIServiceMixin
 from .service.alpha import AlphaUIMixin
 from .service.assistant import AssistantServiceMixin
 from .service.dashboard import DashboardServiceMixin
+from .service.economics import EconomicUIMixin
 from .service.etf import ETFServiceMixin
 from .service.execution_costs import ExecutionCostsMixin
 from .service.foundation import (
@@ -63,6 +64,7 @@ from .service.visuals import (
 
 
 class FrontendService(
+    EconomicUIMixin,
     AlphaUIMixin,
     ReportLibraryMixin,
     ExecutionCostsMixin,

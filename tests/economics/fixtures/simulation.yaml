@@ -1,0 +1,24 @@
+# File format: YAML; encoding: UTF-8
+financial_expectations:
+  - {period: '2024-03-31', revenue_quarter: 100, profit_quarter: 10, cashflow_quarter: 12, revenue_ttm: null, profit_ttm: null}
+  - {period: '2024-06-30', revenue_quarter: 150, profit_quarter: 15, cashflow_quarter: 16, revenue_ttm: null, profit_ttm: null}
+  - {period: '2024-09-30', revenue_quarter: 200, profit_quarter: 20, cashflow_quarter: 20, revenue_ttm: null, profit_ttm: null}
+  - {period: '2024-12-31', revenue_quarter: 250, profit_quarter: 25, cashflow_quarter: 26, revenue_ttm: 700, profit_ttm: 70}
+  - {period: '2025-03-31', revenue_quarter: 200, profit_quarter: 20, cashflow_quarter: 22, revenue_ttm: 800, profit_ttm: 80}
+macro_rows:
+  - {period: '2024-01-01', value: 0}
+  - {period: '2024-02-01', value: -2.5}
+  - {period: '2024-03-01', value: 4.2}
+  - {period: '2024-04-01', value: null}
+  - {period: '2099-01-01', value: 999}
+  - {period: invalid, value: 999}
+selected_period: '2024-06-30'
+matched_peer: '000858'
+matched_peer_alias: SZ000858
+mismatched_peer: '000001'
+source_failure: cpi
+report:
+  title: Simulated accounting acceptance
+  summary: Controlled evidence only; this is a simulated report.
+  paragraph: The report reads the selected simulated snapshot and preserves missing evidence.
+  missing: [Simulated evidence; no real provider or model was invoked.]

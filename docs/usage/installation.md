@@ -107,7 +107,7 @@ Linux将创建命令中的python换为python3，解释器路径换为`.venv-imag
 
 每次调整版本后都应运行pip check、pip-audit和对应功能回归；修改直接依赖时同时更新pyproject、requirements和锁文件。仅修改文本清单不会改变服务实际加载的版本，可用check_runtime检查解释器、版本、来源和基础包继承。
 
-`uv sync --frozen`按项目环境管理规则执行；如需指定当前验收目录，可设置UV_PROJECT_ENVIRONMENT=.venv-secure，并显式选择models/dev。此操作可能移除锁文件外的包，执行前明确目标环境；旧环境仍需按项目规范确认后才能删除。
+`uv sync --frozen`按项目环境管理规则执行；如需指定当前验收目录，可设置UV_PROJECT_ENVIRONMENT=.venv-secure，并显式选择llm/models/dev。使用LiteLLM时选择llm扩展；旧tdx扩展与llm因HTTPX约束互斥，分别使用安装环境，不执行--all-extras。字段及边界见[模型接口指南](model_interfaces.md)。同步可能移除锁文件外的包，执行前明确目标环境；旧环境仍需按项目规范确认后才能删除。
 
 ## 文档站独立环境
 

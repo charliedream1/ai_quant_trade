@@ -32,6 +32,9 @@ baostock==0.9.3
 
 # Future AI integrations
 openai==2.43.0
+litellm==1.100.5
+httpx==0.28.1
+filelock==4.2.4
 
 # Tests, linting, and dependency audit
 pytest==9.0.3

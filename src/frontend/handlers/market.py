@@ -7,6 +7,10 @@ class MarketHandler(DomainHandler):
     domain = "market"
     allowed_methods = frozenset(
         {
+            "economic_models",
+            "economic_load",
+            "economic_report",
+            "economic_open",
             "add_recommendations_to_resource_pool",
             "add_recommendations_to_watchlist",
             "add_resource_pool_symbols",

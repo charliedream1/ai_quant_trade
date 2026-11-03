@@ -1,0 +1,5 @@
+# File format: YAML; encoding: UTF-8
+commands:
+  economics macro: {method: GET, path: /economics/macro, query: {series: str, refresh: bool}, market: true}
+  economics fundamentals: {method: GET, path: '/economics/fundamentals/{symbol}', positions: {symbol: str}, query: {period: str, peers: str, refresh: bool}, market: true}
+  economics snapshot: {method: GET, path: '/economics/snapshots/{identifier}', positions: {identifier: str}, market: false}

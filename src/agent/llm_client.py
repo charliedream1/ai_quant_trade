@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import time
 from typing import Any
-from urllib.parse import urlparse
 
 import requests
 
@@ -14,8 +13,11 @@ from src.core.env_file import resolve_env_value
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.llm_config import llm_config
 from src.core.network_policy import network_session
+from src.core.redaction import redact_text
 from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
+
+from .model_calls import call_model
 
 DEFAULT_SYSTEM_PROMPT = llm_config()["system_prompt"]
 
@@ -107,6 +109,10 @@ class LLMClient:
             "duration_ms": duration_ms,
             "model": result["model"],
             "summary": result["text"][:120],
+            **{
+                name: result.get(name)
+                for name in ("api_backend", "rate_limit_wait_ms", "request_duration_ms", "retry_count")
+            },
         }
 
     def _select_config(self, model_id: int | None) -> dict[str, Any]:
@@ -131,66 +137,22 @@ class LLMClient:
         reasoning_effort: str | None = None,
         enable_thinking: bool | None = None,
     ) -> dict[str, Any]:
-        base_url = str(config.get("base_url") or "").strip().rstrip("/")
-        parsed = urlparse(base_url)
-        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-            raise BusinessError(ErrorCode.LLM_ERROR, "大模型 Base URL 无效")
-        url = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
-        api_key = self._resolve_api_key(config)
-        headers = {"Content-Type": "application/json", "Accept": "application/json"}
-        if api_key:
-            headers["Authorization"] = f"Bearer {api_key}"
-        payload = {
-            "model": str(config.get("model_name") or "").strip(),
-            "messages": messages,
-            "temperature": _bounded_float(config.get("temperature"), 0.2, 0.0, 2.0),
-            "max_tokens": _bounded_int(config.get("max_tokens"), 1200, 1, 131072),
-            "stream": False,
-        }
-        if reasoning_effort and str(reasoning_effort).strip():
-            payload["reasoning_effort"] = str(reasoning_effort).strip()
-        if enable_thinking is not None:
-            payload["enable_thinking"] = enable_thinking
-        if not payload["model"]:
-            raise BusinessError(ErrorCode.LLM_ERROR, "大模型名称不能为空")
-        timeout = _bounded_float(config.get("timeout_seconds"), 60.0, 0.001, 600.0)
-        started = time.perf_counter()
-        try:
-            response = self.session.post(url, headers=headers, json=payload, timeout=(min(5.0, timeout), timeout))
-            response.raise_for_status()
-            body = response.json()
-        except requests.HTTPError as exc:
-            status = exc.response.status_code if exc.response is not None else None
-            detail = _response_error(exc.response)
-            raise BusinessError(
-                ErrorCode.LLM_ERROR,
-                f"大模型接口返回 HTTP {status or '错误'}：{detail}",
-            ) from exc
-        except (requests.RequestException, ValueError) as exc:
-            raise BusinessError(ErrorCode.LLM_ERROR, f"无法连接大模型接口：{exc}") from exc
-
-        try:
-            content = body["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
-            raise BusinessError(ErrorCode.LLM_ERROR, "大模型响应缺少 choices[0].message.content") from exc
-        if isinstance(content, list):
-            content = "".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
-        text = str(content or "").strip()
-        if not text:
-            raise BusinessError(ErrorCode.LLM_ERROR, "大模型返回了空回答")
-        return {
-            "model": str(body.get("model") or payload["model"]),
-            "text": text,
-            "duration_ms": round((time.perf_counter() - started) * 1000),
-            "usage": body.get("usage") or {},
-        }
+        return call_model(
+            config,
+            messages,
+            self._resolve_api_key(config),
+            self.session,
+            self.repo,
+            reasoning_effort=reasoning_effort,
+            enable_thinking=enable_thinking,
+        )
 
     def _record_usage(self, config: dict[str, Any], success: bool, duration_ms: int, error: Exception | None) -> None:
         model_id = config.get("id") or config.get("model_id")
         if not model_id:
             return
         status = "success" if success else "failed"
-        error_text = "" if success else str(error or "")[:500]
+        error_text = "" if success else redact_text(str(error or ""))[:500]
         now = utc_now_iso()
         self.repo.db.execute(
             """
@@ -230,30 +192,9 @@ class LLMClient:
         return legacy_plaintext_secret(str(config.get("api_key") or ""))
 
 
-def _bounded_float(value: Any, fallback: float, minimum: float, maximum: float) -> float:
-    try:
-        number = float(value)
-    except (TypeError, ValueError):
-        number = fallback
-    return min(max(number, minimum), maximum)
-
-
 def _bounded_int(value: Any, fallback: int, minimum: int, maximum: int) -> int:
     try:
         number = int(value)
     except (TypeError, ValueError):
         number = fallback
     return min(max(number, minimum), maximum)
-
-
-def _response_error(response: requests.Response | None) -> str:
-    if response is None:
-        return "请求失败"
-    try:
-        payload = response.json()
-        error = payload.get("error") if isinstance(payload, dict) else None
-        if isinstance(error, dict):
-            return str(error.get("message") or error.get("code") or "请求失败")[:300]
-    except ValueError:
-        pass
-    return (response.text or "请求失败")[:300]

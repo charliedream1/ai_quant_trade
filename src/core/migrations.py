@@ -7,6 +7,25 @@ from src.knowledge.config import knowledge_config
 def apply_migrations(database):
     conn = database._connection()
     conn.execute("CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY,applied_at TEXT NOT NULL)")
+    if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=3").fetchone():
+        database._ensure_columns(
+            "llm_models",
+            {
+                "api_backend": "TEXT NOT NULL DEFAULT 'http'",
+                "rpm": "INTEGER NOT NULL DEFAULT 0",
+                "max_concurrency": "INTEGER NOT NULL DEFAULT 0",
+                "wait_on_limit": "INTEGER NOT NULL DEFAULT 1",
+                "quota_group": "TEXT NOT NULL DEFAULT ''",
+                "max_retries": "INTEGER NOT NULL DEFAULT 0",
+                "extra_body": "TEXT NOT NULL DEFAULT '{}'",
+            },
+        )
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS llm_request_slots(token TEXT PRIMARY KEY, scope TEXT NOT NULL, admitted_at REAL NOT NULL, lease_until REAL NOT NULL, owner_pid INTEGER NOT NULL)"
+        )
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_llm_request_scope ON llm_request_slots(scope,admitted_at)")
+        conn.execute("INSERT OR IGNORE INTO schema_migrations VALUES(?,?)", (3, utc_now_iso()))
+        conn.commit()
     if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=2").fetchone():
         default = str(knowledge_config()["default_library"]).replace("'", "''")
         database._ensure_columns(

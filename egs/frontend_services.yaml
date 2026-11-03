@@ -2,6 +2,10 @@
 {
   "version": 1,
   "methods": {
+    "economic_models": ["src.frontend.service.economics", "EconomicUIMixin"],
+    "economic_load": ["src.frontend.service.economics", "EconomicUIMixin"],
+    "economic_report": ["src.frontend.service.economics", "EconomicUIMixin"],
+    "economic_open": ["src.frontend.service.economics", "EconomicUIMixin"],
     "_ai_console_history": [
       "src.frontend.service.ai",
       "AIServiceMixin"

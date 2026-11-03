@@ -68,6 +68,11 @@ def provider_snapshot(selection: dict, *, client=None, probe: bool = False) -> d
                 model = llm._select_config(selection.get("model_id"))
                 result.update({key: model.get(key) for key in ("id", "model_name", "base_url", "api_key_env")})
                 result["model_id"] = model["id"]
+                result["api_backend"] = model.get("api_backend") or "http"
+                result["api_policy"] = {
+                    key: model.get(key)
+                    for key in ("rpm", "max_concurrency", "wait_on_limit", "quota_group", "max_retries", "extra_body")
+                }
                 result["generation_settings"] = {
                     "temperature": model.get("temperature"),
                     "max_tokens": model.get("max_tokens"),
@@ -138,6 +143,8 @@ def check_identity(expected: dict | None, current: dict) -> None:
         return
     for key in (
         "backend",
+        "api_backend",
+        "api_policy",
         "model_id",
         "generation_settings",
         "protocol",

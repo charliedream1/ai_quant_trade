@@ -9,6 +9,8 @@ import pandas as pd
 
 from src.data import DataSourceManager
 from src.data.security_master import SecurityMasterService
+from src.engine.economics.config import economics_config
+from src.engine.economics.service import EconomicAnalysis
 
 
 def technical_readings(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
@@ -99,6 +101,8 @@ class EvidenceCollector:
         return accepted
 
     def collect(self) -> dict[str, Any]:
+        if self.payload["kind"] in {"macro_analysis", "fundamental_analysis"}:
+            return self._economic()
         if self.payload["kind"] == "market_review":
             self._market()
         else:
@@ -112,7 +116,7 @@ class EvidenceCollector:
         return {
             "market": self.payload["market"],
             "data_source": self.data.source_name,
-            "is_mock": self.data.is_mock,
+            "is_mock": self.data.is_mock or any(row["is_mock"] for row in self.sources),
             "sources": self.sources,
             "gaps": self.gaps,
         }
@@ -158,3 +162,92 @@ class EvidenceCollector:
         self.add("news", self._dated_rows(detail.get("news") or []))
         self.add("reports", self._dated_rows(detail.get("reports") or []))
         self.gaps.extend(self.config["messages"]["stock_gaps"])
+        if self.payload.get("include_fundamentals"):
+            self._attach_fundamentals()
+
+    def _economic(self) -> dict[str, Any]:
+        service = EconomicAnalysis()
+        identifier = self.payload.get("research_snapshot")
+        kind = self.payload["kind"]
+        if not identifier:
+            value = (
+                service.macro(market=self.payload["market"])
+                if kind == "macro_analysis"
+                else service.fundamentals(self.payload["symbol"], market=self.payload["market"])
+            )
+            identifier = value["snapshot_id"]
+        snapshot = service.report_snapshot(identifier, kind, self.payload.get("symbol", ""), self.payload["end_date"])
+        if kind == "macro_analysis":
+            limit = economics_config()["defaults"]["report_history_rows"]
+            content = {
+                "overview": snapshot["overview"],
+                "observations": [
+                    row
+                    for series in snapshot["overview"]
+                    for row in [r for r in snapshot["observations"] if r["series"] == series["series"]][-limit:]
+                ],
+                "sources": snapshot["sources"],
+            }
+        else:
+            content = {
+                key: snapshot[key]
+                for key in (
+                    "symbol",
+                    "name",
+                    "industry",
+                    "financial_industry",
+                    "selected",
+                    "peers",
+                    "valuation",
+                    "sources",
+                )
+            }
+            content["periods"] = [
+                {"report_period": row["report_period"], "metrics": row["metrics"], "statuses": row["statuses"]}
+                for row in [
+                    period
+                    for period in snapshot["periods"]
+                    if period["report_period"] <= snapshot["selected"]["report_period"]
+                ][-economics_config()["defaults"]["report_periods"] :]
+            ]
+        content.update(snapshot_id=identifier, historical_pit_eligible=False, scope=snapshot["scope"])
+        return {
+            "market": "CN",
+            "data_source": "economic-research-snapshot",
+            "is_mock": snapshot["is_mock"],
+            "sources": [
+                {
+                    "id": "E1",
+                    "kind": kind,
+                    "data": content,
+                    "data_source": "public-dated-snapshot",
+                    "is_mock": snapshot["is_mock"],
+                }
+            ],
+            "gaps": [snapshot["scope"], *snapshot["gaps"]],
+        }
+
+    def _attach_fundamentals(self) -> None:
+        def load():
+            service = EconomicAnalysis()
+            identifier = self.payload.get("research_snapshot")
+            if not identifier:
+                if self.payload["end_date"] < date.today().isoformat():
+                    raise ValueError(economics_config()["messages"]["current_only"])
+                identifier = service.fundamentals(self.payload["symbol"], market=self.payload["market"])["snapshot_id"]
+            return service.report_snapshot(
+                identifier, "fundamental_analysis", self.payload["symbol"], self.payload["end_date"]
+            )
+
+        snapshot = self.observe(
+            "stock.fundamental_statements",
+            load,
+        )
+        if snapshot:
+            self.add(
+                "fundamental_statements",
+                {key: snapshot[key] for key in ("snapshot_id", "selected", "industry", "sources", "scope")},
+                "economic-research-snapshot",
+            )
+            self.sources[-1]["is_mock"] = snapshot["is_mock"]
+            self.gaps.extend(snapshot["gaps"])

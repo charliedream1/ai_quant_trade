@@ -5,8 +5,35 @@ connectivity_prompt: Reply with OK.
 mock_reply: 测试模式回答：
 mock_excerpt_chars: 160
 defaults:
+  temperature: 0.2
   max_tokens: 1200
   token_limit: 131072
   history_messages: 20
   timeout_seconds: 60
   connect_seconds: 5
+interfaces:
+  choices: [[HTTP兼容接口, http], [OpenAI SDK, openai], [LiteLLM SDK, litellm]]
+  api_backend: http
+  rpm: 0
+  max_concurrency: 0
+  wait_on_limit: true
+  quota_group: ''
+  max_retries: 0
+  extra_body: {}
+  unauthenticated_sdk_key: local-no-key
+  sdk_log_level: WARNING
+  maximum_rpm: 1000000
+  maximum_concurrency: 10000
+  maximum_retries: 8
+  group_chars: 80
+  protected_body_keys: [model, messages, stream, tools, tool_choice, functions, function_call, response_format, api_key, api_base, base_url, timeout, num_retries, max_retries, client, custom_llm_provider, temperature, max_tokens, reasoning_effort, enable_thinking]
+  secret_body_keys: [api_key, authorization, access_token, refresh_token, password, secret, cookie]
+rate_limit:
+  window_seconds: 60
+  poll_seconds: 0.05
+  lease_grace_seconds: 5
+  database_busy_seconds: 1
+retry:
+  base_seconds: 0.5
+  maximum_seconds: 20
+  statuses: [408, 409, 429, 500, 502, 503, 504]
