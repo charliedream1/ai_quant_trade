@@ -1,0 +1,19 @@
+# File format: YAML 1.2; encoding: UTF-8
+title: 远程接入说明
+summary: '可通过微信/飞书/企业微信聊天接入，也可使用浏览器远程打开工作台。账号凭据只在本机 .env 或 .llm_env 配置。'
+sections:
+  - title: 聊天机器人接入
+    steps:
+      - '打开系统配置 → 消息渠道，在本机配置飞书 FEISHU_APP_ID / FEISHU_APP_SECRET 或企业微信 WECOM_BOT_ID / WECOM_BOT_SECRET；微信使用扫码登录，并检查扫码结果。'
+      - '启用所选渠道，再启用消息网关。机器人长连接由平台主动建立，无需给机器人另开公网回调端口。'
+      - '私聊机器人获取短时验证码，刷新页面，核对绑定 ID、发送者和会话，将私聊验证码填回本机页面后批准。'
+      - '按需授权 query、ask、push 等权限，以及知识库、模板和推送来源；空列表不会自动获得全部权限。'
+      - '发送 /help、/status 验证连接；操作类命令先预览，再发送 /confirm 验证码。测试推送需要 push 权限，并在聊天端核对实际收件。'
+      - '平台或独立消息网关需持续运行。撤权后不执行新命令；再次私聊只能申请重新绑定，仍需本机批准。微信会话失效时需先发送新消息或重新扫码。'
+  - title: 浏览器远程接入
+    steps:
+      - '在本机设置 ALL_IN_ONE_ACCESS_MODE=token、ALL_IN_ONE_ACCESS_TOKEN（至少 32 个 ASCII 字符）和 ALL_IN_ONE_ACCESS_HOSTS（实际访问域名，不使用通配符）。'
+      - '如需从其他设备访问，可显式配置 ALL_IN_ONE_HOST；使用可信反向代理提供 HTTPS，并转发 WebSocket 和 SSE。不要通过关闭访问验证来解决连接问题。'
+      - '重启服务后，在手机或另一台电脑访问你的 HTTPS 工作台地址，输入本机配置的访问令牌；地址、令牌不要发到公共群或提交 Git。'
+      - '先检查健康状态、页面登录和消息渠道状态，再验证一个只读查询；关闭浏览器不会停止后台程序。'
+more: '[完整远程接入指南](/help-docs/usage/remote_access/)'

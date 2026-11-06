@@ -11,12 +11,14 @@ from ..common.components import plot as _plot
 from ..common.components import table as _table
 from ..constants import DEFAULT_JOB_PARAMS, JOB_TYPE_OPTIONS
 from ..handlers import DomainHandler
+from .remote_access_help import render_remote_access_help
 
 
 def render_admin(service: DomainHandler) -> None:
     with gr.Tab("帮助"):
         with gr.Tabs(elem_classes=["module-tabs"]):
             with gr.Tab("帮助文档"):
+                render_remote_access_help()
                 gr.HTML(help_docs_iframe_html(), elem_id="help-docs-panel")
 
             with gr.Tab("定时任务"):

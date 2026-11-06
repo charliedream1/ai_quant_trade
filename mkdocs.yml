@@ -200,6 +200,7 @@ nav:
         - 工作台与量化课程入口: usage/workspace_learning.md
       - 配置与命令:
         - 提醒中心与助手形象: usage/notifications.md
+        - Remote access setup: usage/remote_access.md
         - 自动化与能力配置: usage/automation.md
         - 配置说明: usage/configuration.md
         - 模型接口与RPM: usage/model_interfaces.md
