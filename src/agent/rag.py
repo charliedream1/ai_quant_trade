@@ -11,8 +11,8 @@ from src.core.config import PROJECT_ROOT
 from src.core.fts import FTSService, kb_document_source_scope, kb_remote_source_id
 from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
+from src.knowledge.answer_retrieval import AnswerRetrieval
 from src.knowledge.config import knowledge_config, library_name
-from src.knowledge.retrieval import RetrievalLoop
 
 from .llm_client import LLMClient
 
@@ -47,13 +47,23 @@ class RAGService:
             category_id = int(str(raw_category_id))
         scope = str(payload.get("scope") or "all")
         session_id = _session_id(payload.get("session_id"))
+        raw_document = payload.get("document_id")
+        document_id = (
+            int(str(raw_document)) if raw_document not in (None, "") and not isinstance(raw_document, bool) else None
+        )
+        if raw_document not in (None, "") and (document_id is None or document_id <= 0):
+            raise ValueError("Document ID must be a positive integer")
+        qa_scope = f"document:{document_id}" if document_id is not None else ""
         self._touch_session(session_id, question)
         context_turns = _context_turns(payload.get("context_turns"), reset=bool(payload.get("reset_context")))
-        history_rows = self._recent_history(context_turns, session_id=session_id, library=library)
+        history_rows = self._recent_history(context_turns, session_id=session_id, library=library, qa_scope=qa_scope)
         history_context = self._history_context(history_rows)
-        docs, trace, retrieval_status = RetrievalLoop(self.repo, self.llm).run(
+        docs, trace, retrieval_status, retrieval_meta = AnswerRetrieval(self.repo, self.llm).run(
             question,
             history_context,
+            backend=str(payload.get("retrieval_backend") or "local"),
+            strategy=str(payload.get("retrieval_strategy") or "auto"),
+            document_id=document_id,
             library=library,
             session_id=session_id,
             limit=top_k,
@@ -112,6 +122,7 @@ class RAGService:
             {
                 "session_id": session_id,
                 "library_name": library,
+                "qa_scope": qa_scope,
                 "question": question,
                 "answer": answer,
                 "cited_docs": json.dumps(refs, ensure_ascii=False),
@@ -122,7 +133,9 @@ class RAGService:
         return {
             "answer": answer,
             "references": refs,
-            "degraded": status != "answered",
+            "degraded": status != "answered" or retrieval_meta["fallback_used"],
+            **retrieval_meta,
+            "document_id": document_id,
             "status": status,
             "session_id": session_id,
             "library_name": library,
@@ -240,16 +253,16 @@ class RAGService:
             return f" / {heading}"
         return ""
 
-    def _recent_history(self, limit: int, *, session_id: str, library: str) -> list[dict[str, Any]]:
+    def _recent_history(self, limit: int, *, session_id: str, library: str, qa_scope: str = "") -> list[dict[str, Any]]:
         if limit <= 0:
             return []
         rows = self.repo.db.query(
             """SELECT question, answer, cited_docs, model_name, created_at
                  FROM kb_qa_history
-                WHERE session_id = ? AND library_name = ?
+                WHERE session_id = ? AND library_name = ? AND qa_scope = ?
                 ORDER BY id DESC
                 LIMIT ?""",
-            (session_id, library, limit),
+            (session_id, library, qa_scope, limit),
         )
         return list(reversed(rows))
 

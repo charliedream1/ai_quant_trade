@@ -83,13 +83,21 @@ class KnowledgeFiles:
         atomic_text(directory / "manifest.json", json.dumps({**metadata, "chunks": records}, ensure_ascii=False))
 
     def documents(
-        self, name: str, *, session_id: str = "", category_id: int | None = None, scope: str = "all"
+        self,
+        name: str,
+        *,
+        session_id: str = "",
+        category_id: int | None = None,
+        scope: str = "all",
+        document_id: int | None = None,
     ) -> list[dict[str, Any]]:
         rows = self.repo.db.query(
             "SELECT * FROM kb_documents WHERE library_name = ? AND status = 'ready'", (library_name(name),)
         )
         result = []
         for row in rows:
+            if document_id is not None and row["id"] != document_id:
+                continue
             if row.get("attachment_session") and row["attachment_session"] != session_id:
                 continue
             if category_id and row["category_id"] != category_id:

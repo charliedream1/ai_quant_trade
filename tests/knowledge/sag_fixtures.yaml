@@ -1,0 +1,23 @@
+# File format: YAML 1.2; encoding: UTF-8
+library: SAG verification library
+other_library: Isolated verification library
+documents:
+  - title: Alpha approval
+    content: '# Alpha approval
+
+      Alpha approval ends at 17:00. The reference is AQT-17.'
+  - title: Beta approval
+    content: '# Beta approval
+
+      Beta approval ends at 18:00. The reference is BQT-18.'
+question: When does Alpha approval end?
+answer: 'Alpha approval ends at 17:00 [1].'
+keywords: ['Alpha']
+generation_model: fixture-generation
+semantic_model: fixture-semantic
+model_completion:
+  id: fixture-completion
+  object: chat.completion
+  model: fixture-generation
+  choices: [{index: 0, message: {role: assistant, content: ''}, finish_reason: stop}]
+  usage: {prompt_tokens: 12, completion_tokens: 8, total_tokens: 20}

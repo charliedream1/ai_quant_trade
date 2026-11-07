@@ -201,6 +201,7 @@ nav:
       - 配置与命令:
         - 提醒中心与助手形象: usage/notifications.md
         - Remote access setup: usage/remote_access.md
+        - SAG knowledge and document questions: usage/sag_knowledge_qa.md
         - 自动化与能力配置: usage/automation.md
         - 配置说明: usage/configuration.md
         - 模型接口与RPM: usage/model_interfaces.md

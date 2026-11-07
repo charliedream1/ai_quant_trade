@@ -11,6 +11,7 @@ from ..common.components import chatbot, table
 
 def render_rag_chat(service) -> None:
     policy = knowledge_config()
+    ui = policy["qa_ui"]
     gr.Markdown(
         "### 知识库 AI 问答\n\n选择资料范围后提问；回答与原文引用一起显示。先在[知识库入库](/app/?module=knowledge&view=library)上传或保存资料。"
     )
@@ -20,6 +21,16 @@ def render_rag_chat(service) -> None:
                 service.kb_libraries(), value=policy["default_library"], label="问答知识库", elem_id="rag-library"
             )
             library_refresh = gr.Button("刷新库名")
+            gr.Markdown(ui["instructions"])
+            backend = gr.Dropdown(ui["backends"], value="local", label=ui["backend"], elem_id="rag-backend")
+            strategy = gr.Dropdown(ui["strategies"], value="auto", label=ui["strategy"], elem_id="rag-strategy")
+            qa_mode = gr.Dropdown(ui["modes"], value="library", label=ui["mode"], elem_id="rag-qa-mode")
+            document_id = gr.Dropdown([], value=None, label=ui["document"], elem_id="rag-document")
+            document_refresh = gr.Button(ui["refresh_documents"])
+            sag_sync = gr.Button(ui["sync"])
+            retrieval_status = gr.JSON(
+                value=service.rag_retrieval_status(), label=ui["status"], elem_id="rag-backend-status"
+            )
             rounds = gr.Slider(
                 1,
                 policy["search"]["max_rounds"],
@@ -57,12 +68,42 @@ def render_rag_chat(service) -> None:
     for event in (send.click, question.submit):
         event(
             safe(service.rag_chat),
-            inputs=[question, category, top_k, session, scope, model, library, rounds, attachments],
+            inputs=[
+                question,
+                category,
+                top_k,
+                session,
+                scope,
+                model,
+                library,
+                rounds,
+                attachments,
+                backend,
+                strategy,
+                qa_mode,
+                document_id,
+            ],
             outputs=[status, history, refs, question, attachments],
         )
-    restore.click(safe(service.rag_restore), inputs=[session, library], outputs=[history, refs], queue=False)
+    restore.click(
+        safe(service.rag_restore), inputs=[session, library, qa_mode, document_id], outputs=[history, refs], queue=False
+    )
     library_refresh.click(safe(service.kb_library_choices), outputs=library, queue=False)
-    library.change(safe(service.rag_restore), inputs=[session, library], outputs=[history, refs], queue=False)
+    library.change(
+        safe(service.rag_restore), inputs=[session, library, qa_mode, document_id], outputs=[history, refs], queue=False
+    )
+    for event in (document_refresh.click, library.change):
+        event(safe(service.rag_documents), inputs=[library, session], outputs=document_id, queue=False)
+    for event in (qa_mode.change, document_id.change):
+        event(
+            safe(service.rag_restore),
+            inputs=[session, library, qa_mode, document_id],
+            outputs=[history, refs],
+            queue=False,
+        )
+    sag_sync.click(
+        safe(service.rag_sag_sync), inputs=[library, session, qa_mode, document_id], outputs=retrieval_status
+    )
     new.click(
         lambda: (uuid4().hex, [], None, "", "新会话，尚未调用模型"),
         outputs=[session, history, refs, question, status],
@@ -73,11 +114,13 @@ def render_rag_chat(service) -> None:
     def _source(frame, evt: gr.SelectData):
         return service.rag_source_preview(frame, evt.index[0])
 
-    def _session(key, name):
+    def _session(key, name, mode, selected_document):
         if not key:
             return gr.skip(), gr.skip(), gr.skip()
-        messages, sources = service.rag_restore(key, name)
+        messages, sources = service.rag_restore(key, name, mode, selected_document)
         return key, messages, sources
 
     refs.select(safe(_source), inputs=refs, outputs=original, queue=False)
-    sessions.change(safe(_session), inputs=[sessions, library], outputs=[session, history, refs], queue=False)
+    sessions.change(
+        safe(_session), inputs=[sessions, library, qa_mode, document_id], outputs=[session, history, refs], queue=False
+    )

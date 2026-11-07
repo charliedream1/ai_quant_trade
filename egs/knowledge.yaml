@@ -47,3 +47,51 @@ search:
     同库历史：{history}
     已检索关键词：{searched}
     已有证据：{evidence}
+sag:
+  enabled: false
+  enabled_env: ALL_IN_ONE_SAG_ENABLED
+  base_url: http://127.0.0.1:8000
+  base_url_env: ALL_IN_ONE_SAG_BASE_URL
+  token_env: ALL_IN_ONE_SAG_TOKEN
+  timeout_seconds: 30
+  deadline_seconds: 45
+  max_response_bytes: 8388608
+  auto_sync: false
+  preferred_strategy: multi_jev
+  fallback_strategy: multi
+  final_fallback_strategy: vector
+  jev_enabled_env: ALL_IN_ONE_SAG_JEV_ENABLED
+  jev_api_key_env: SAG_JEV_API_KEY
+  source_prefix: AIQuant
+  max_sources: 100
+  max_text_chars: 200000
+  sync_batch: 10
+  embedding:
+    base_url_env: KB_EMBEDDING_BASE_URL
+    model_env: KB_EMBEDDING_MODEL
+    token_env: KB_EMBEDDING_API_KEY
+    max_candidates: 64
+    text_chars: 5000
+    max_dimensions: 65536
+    timeout_seconds: 20
+    max_response_bytes: 8388608
+  rerank:
+    base_url_env: KB_RERANK_BASE_URL
+    model_env: KB_RERANK_MODEL
+    token_env: KB_RERANK_API_KEY
+    max_candidates: 64
+    text_chars: 5000
+    timeout_seconds: 20
+    max_response_bytes: 8388608
+qa_ui:
+  backend: 检索后端
+  backends: [[模型递归搜索（zvec-grep）, local], [SAG（可降级）, sag]]
+  strategy: SAG检索与精排策略
+  strategies: [[自动降级, auto], [JEV精排, multi_jev], [SAG多跳检索, multi], [Embedding向量检索, vector], [标准Rerank精排, rerank]]
+  mode: 问答范围
+  modes: [[整个知识库, library], [仅所选文档, document]]
+  document: 单文档问答目标
+  refresh_documents: 刷新文档选项
+  sync: 同步所选范围到SAG / 刷新索引状态
+  status: 检索后端配置状态
+  instructions: '默认保留模型生成关键词、递归调用 zvec-grep 的原方案。SAG 为可选后端，需先在本机配置并同步。单文档问答只检索所选原文；未配置 JEV 时可用 embedding 或 rerank。回答显示实际检索方式及降级原因。'

@@ -78,6 +78,7 @@
 
 | **Date** | **Feature** |
 |:---|:---|
+| 2026.11.06 | [**SAG knowledge and document Q&A**](docs/usage/sag_knowledge_qa.md): optional SAG retrieval, isolated single-document questions, JEV/vector/standard rerank alternatives and explicit fallback traces. |
 | 2026.11.01 | 🆕 [**Integrated quant research workspace**](docs/usage/workspace.md): portfolio overview, market research, visual strategies, fee-aware backtests, AI project sessions and cited knowledge Q&A in one Gradio application. |
 | 2026.10.31 | [**Execution controls and research evidence**](docs/usage/access_and_execution.md): custom-source review, frozen parameter snapshots, backend process status, RAG citations and local document reading/Markdown editing. |
 | 2026.10.29 | [**Agent API/CLI backends and ten native research Skills**](docs/usage/agent_cli_skills.md), with recorded process events and explicit availability checks. |

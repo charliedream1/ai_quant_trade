@@ -723,3 +723,6 @@ backend支持generic_agent、codex、qoder及原别名；qorder/qodercli归一�
 
 没有提供任意网页发布告警、运行命令或解除风控的API。来源只消费既有本地记录与健康状态，模型/行情不会为通知而被调用；AI报告在终态保存后尽力发布，通知失败不使原报告保存失败。列表/增量有界，未解决严重项不被普通保留期隐藏。
 
+## Optional SAG retrieval
+
+`GET /api/v1/kb/retrieval/status` returns safe configuration readiness without contacting providers. `POST /api/v1/kb/sag/sync` indexes only the selected library or document and current attachment session, with bounded batches and same-origin write validation. Existing `POST /kb/qa` accepts optional `document_id`, `retrieval_backend` and `retrieval_strategy`; omitted values preserve local library behavior. Responses add actual backend/strategy and fallback reasons while keeping local original-source references. Foreign source IDs or evidence that does not match current originals fail closed. Single-document history has an independent scope.

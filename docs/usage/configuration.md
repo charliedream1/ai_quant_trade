@@ -51,6 +51,8 @@ AI 工作台 GenericAgent 后端可选接入 Langfuse。默认不开启，未安
 
 ## 存储模式
 
+Optional SAG REST retrieval, single-document scope and standard embedding/rerank alternatives are configured in `egs/knowledge.yaml` with credentials only in local environment files. See [SAG knowledge questions](sag_knowledge_qa.md). Local keyword retrieval stays the default.
+
 当前推荐 `SQLite 主库 + 文件系统文档存储 + Parquet 行情湖 + DuckDB 查询引擎`。
 
 | 存储 | 适合内容 |

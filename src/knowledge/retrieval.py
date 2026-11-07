@@ -1,18 +1,22 @@
 """Ordinary model generation plans each bounded keyword-search round."""
 
+from __future__ import annotations
+
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from json_repair import repair_json
 from loguru import logger
 
-from src.agent.llm_client import LLMClient
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.repository import Repository
 
 from .config import knowledge_config
 from .files import KnowledgeFiles
 from .search import KeywordSearch
+
+if TYPE_CHECKING:
+    from src.agent.llm_client import LLMClient
 
 
 class RetrievalLoop:
@@ -31,6 +35,7 @@ class RetrievalLoop:
         category_id: int | None = None,
         scope: str = "all",
         model_id: int | None = None,
+        document_id: int | None = None,
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
         policy = knowledge_config()["search"]
         try:
@@ -40,7 +45,7 @@ class RetrievalLoop:
         if not 1 <= budget <= policy["max_rounds"]:
             raise BusinessError(ErrorCode.INVALID_PARAM, "检索轮数超出配置范围")
         if not KnowledgeFiles(self.repo).documents(
-            library, session_id=session_id, category_id=category_id, scope=scope
+            library, session_id=session_id, category_id=category_id, scope=scope, document_id=document_id
         ):
             return [], [], "no_hits"
         found: dict[tuple[int, int], dict[str, Any]] = {}
@@ -74,7 +79,13 @@ class RetrievalLoop:
             if not keywords:
                 break
             hits = KeywordSearch(self.repo).search(
-                keywords, library=library, limit=limit, session_id=session_id, category_id=category_id, scope=scope
+                keywords,
+                library=library,
+                limit=limit,
+                session_id=session_id,
+                category_id=category_id,
+                scope=scope,
+                document_id=document_id,
             )
             searched.extend(keywords)
             for row in hits:

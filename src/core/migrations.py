@@ -39,6 +39,21 @@ def apply_migrations(database):
         database._ensure_columns("kb_qa_history", {"library_name": f"TEXT NOT NULL DEFAULT '{default}'"})
         conn.execute("INSERT OR IGNORE INTO schema_migrations VALUES(?,?)", (2, utc_now_iso()))
         conn.commit()
+    if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=4").fetchone():
+        database._ensure_columns(
+            "kb_documents",
+            {
+                "sag_source_id": "TEXT NOT NULL DEFAULT ''",
+                "sag_document_id": "TEXT NOT NULL DEFAULT ''",
+                "sag_sync_status": "TEXT NOT NULL DEFAULT ''",
+                "sag_content_hash": "TEXT NOT NULL DEFAULT ''",
+                "sag_endpoint_hash": "TEXT NOT NULL DEFAULT ''",
+            },
+        )
+        database._ensure_columns("kb_qa_history", {"qa_scope": "TEXT NOT NULL DEFAULT ''"})
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_kb_documents_sag_source ON kb_documents(sag_source_id)")
+        conn.execute("INSERT OR IGNORE INTO schema_migrations VALUES(?,?)", (4, utc_now_iso()))
+        conn.commit()
     if conn.execute("SELECT 1 FROM schema_migrations WHERE version=1").fetchone():
         return
     database._ensure_columns(

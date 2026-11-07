@@ -9,6 +9,7 @@ from src.core.kb_importer import parse_document_tags
 from src.core.repository import Repository, json_loads
 from src.core.timeutil import utc_now_iso
 from src.knowledge.config import chunk_length, library_name
+from src.knowledge.sag_sync import auto_sync_document
 
 
 def delete_document(doc_id: int):
@@ -59,6 +60,7 @@ def _create_doc(payload: dict[str, Any], doc_type: str) -> dict[str, Any]:
     row["doc_id"] = row["id"]
     row["tags"] = json_loads(row.get("tags"), [])
     row["chunk_count"] = refresh_document_chunks(repo, int(row["id"]), title=title, content=content)
+    auto_sync_document(repo, int(row["id"]))
     return row
 
 

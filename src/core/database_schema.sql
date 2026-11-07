@@ -461,7 +461,12 @@
         tags TEXT,
         status TEXT NOT NULL DEFAULT 'ready',
         imported_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        sag_source_id TEXT NOT NULL DEFAULT '',
+        sag_document_id TEXT NOT NULL DEFAULT '',
+        sag_sync_status TEXT NOT NULL DEFAULT '',
+        sag_content_hash TEXT NOT NULL DEFAULT '',
+        sag_endpoint_hash TEXT NOT NULL DEFAULT ''
     );
 
     CREATE TABLE IF NOT EXISTS kb_document_chunks (
@@ -483,6 +488,7 @@
         answer TEXT NOT NULL,
         cited_docs TEXT,
         model_name TEXT,
+        qa_scope TEXT NOT NULL DEFAULT '',
         created_at TEXT NOT NULL
     );
 

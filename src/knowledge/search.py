@@ -32,10 +32,13 @@ class KeywordSearch:
         session_id: str = "",
         category_id: int | None = None,
         scope: str = "all",
+        document_id: int | None = None,
     ) -> list[dict[str, Any]]:
         policy = knowledge_config()["search"]
         active: dict[str, dict[str, Any]] = {}
-        for row in self.files.documents(library, session_id=session_id, category_id=category_id, scope=scope):
+        for row in self.files.documents(
+            library, session_id=session_id, category_id=category_id, scope=scope, document_id=document_id
+        ):
             directory = self.files.directory(library) / str(row["id"])
             manifest_path = directory / "manifest.json"
             if not manifest_path.exists():

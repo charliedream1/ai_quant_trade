@@ -78,6 +78,7 @@
 
 | **时间** | **特性** |
 |:---|:---|
+| 2026.11.06 | [**SAG knowledge and document Q&A**](docs/usage/sag_knowledge_qa.md): optional SAG retrieval, isolated single-document questions, JEV/vector/standard rerank alternatives and explicit fallback traces. |
 | 2026.11.01 | 🆕 [**一体化量化研究工作台**](docs/usage/workspace.md)：在同一Gradio应用内完成账户总览、行情研究、图形策略、含成本回测、AI项目会话和带引用的知识问答。 |
 | 2026.10.31 | [**执行管理与研究证据**](docs/usage/access_and_execution.md)：自定义源码复核、冻结参数快照、后端过程状态、RAG引用及文件阅读/Markdown编辑。 |
 | 2026.10.29 | [**Agent API/CLI后端与十类原生研究Skill**](docs/usage/agent_cli_skills.md)，展示实际过程并核验可用性。 |

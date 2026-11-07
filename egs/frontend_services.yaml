@@ -1106,6 +1106,9 @@
       "src.frontend.service.rag_chat",
       "RagChatMixin"
     ],
+    "rag_documents": ["src.frontend.service.rag_chat", "RagChatMixin"],
+    "rag_retrieval_status": ["src.frontend.service.rag_chat", "RagChatMixin"],
+    "rag_sag_sync": ["src.frontend.service.rag_chat", "RagChatMixin"],
     "rag_index_status": [
       "src.frontend.service.rag_chat",
       "RagChatMixin"
