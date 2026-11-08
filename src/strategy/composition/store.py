@@ -1,4 +1,4 @@
-"""Append-only published plans, optimistic paper states and project-contained artifacts."""
+"""Append-only published plans, optimistic paper states and configured artifact storage."""
 
 import json
 from hashlib import sha256
@@ -72,8 +72,9 @@ class PipelineStore:
     def __init__(self, repo: Repository | None = None):
         self.repo = repo or Repository()
         self.repo.db.executescript(Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"))
-        self.root = (get_settings().data_dir / "reports/pipelines").resolve()
-        if not self.root.is_relative_to(PROJECT_ROOT.resolve()):
+        data_root = get_settings().data_dir.resolve()
+        self.root = (data_root / "reports/pipelines").resolve()
+        if not self.root.is_relative_to(data_root):
             raise fail("invalid", "artifact root")
         self.root.mkdir(parents=True, exist_ok=True)
 

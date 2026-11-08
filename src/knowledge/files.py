@@ -26,8 +26,8 @@ class KnowledgeFiles:
         self.repo = repo or Repository()
         settings = get_settings()
         self.root = (settings.data_dir / knowledge_config()["storage_directory"]).resolve()
-        if not self.root.is_relative_to(settings.project_root.resolve()):
-            raise BusinessError(ErrorCode.STORAGE_ERROR, "知识库文件必须保存在项目内")
+        if not self.root.is_relative_to(Path(settings.data_dir).resolve()):
+            raise BusinessError(ErrorCode.STORAGE_ERROR, "Knowledge files must stay inside the configured data directory")
 
     def directory(self, name: str) -> Path:
         key = hashlib.sha256(library_name(name).encode("utf-8")).hexdigest()[: knowledge_config()["library_hash_chars"]]

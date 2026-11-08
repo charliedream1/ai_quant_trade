@@ -17,9 +17,13 @@ edit_uri: edit/master/docs/
 docs_dir: docs
 site_dir: site
 hooks:
-  - zz_scripts/docs_language.py
+  - scripts/docs/docs_language.py
 
 exclude_docs: |
+  /archive/**
+  **/.codex/**
+  **/.trae/**
+  **/.workbuddy/**
   /intro.md
   /snippets/**
   /CHANGELOG.md
@@ -166,6 +170,7 @@ nav:
       - 阅读路线: usage/README.md
       - 安装与启动:
         - 环境安装: usage/installation.md
+        - Docker deployment: usage/docker.md
         - AI CLI安装与接入: usage/cli_installation.md
         - 工作台使用路线: usage/workspace.md
         - 快速上手: usage/quick_start.md

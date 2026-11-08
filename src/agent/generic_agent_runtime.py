@@ -1,8 +1,8 @@
 """GenericAgent-style REACT runtime for the Gradio AI workbench.
 
-The control loop is adapted from the MIT-licensed GenericAgent project at
-``E:/Git_Prj/agent/personal_assitant/GenericAgent``.  This project keeps the
-implementation local, loguru-based, and bounded to the current workspace.
+The control loop is adapted from the MIT-licensed GenericAgent project.
+This project keeps the implementation local, loguru-based, and bounded to
+the current workspace.
 """
 
 from __future__ import annotations

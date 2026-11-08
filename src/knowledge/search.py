@@ -3,7 +3,7 @@
 import hashlib
 import json
 import os
-import subprocess
+import subprocess  # nosec B404
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +13,7 @@ from src.core.kb_chunks import refresh_document_chunks
 from src.core.process_control import stop_process_tree
 from src.core.process_env import process_environment
 from src.core.repository import Repository
+from src.core.tool_paths import runtime_path
 
 from .config import knowledge_config
 from .files import KnowledgeFiles
@@ -71,7 +72,7 @@ class KeywordSearch:
                 "root": str(self.files.directory(library)),
                 "paths": paths[offset : offset + policy["path_batch_size"]],
                 "keywords": keywords,
-                "module": str(PROJECT_ROOT / policy["entrypoint"]),
+                "module": str(runtime_path(policy["entrypoint"])),
                 "limit": policy["path_batch_size"] * policy["matches_per_file"],
                 "matches_per_file": policy["matches_per_file"],
             }
@@ -100,8 +101,8 @@ class KeywordSearch:
         policy = knowledge_config()["search"]
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
         try:
-            with subprocess.Popen(
-                [policy["node"], str(PROJECT_ROOT / policy["adapter"])],
+            with subprocess.Popen(  # nosec B603
+                [policy["node"], str(runtime_path(policy["adapter"]))],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,

@@ -72,8 +72,8 @@ class PreviewStore:
     def __init__(self) -> None:
         settings = get_settings()
         self.root = (settings.data_dir / "file_previews").resolve()
-        if not self.root.is_relative_to(settings.project_root.resolve()):
-            raise BusinessError(ErrorCode.INVALID_PARAM, "文件阅读数据必须保存在项目目录内")
+        if not self.root.is_relative_to(Path(settings.data_dir).resolve()):
+            raise BusinessError(ErrorCode.INVALID_PARAM, "File preview storage must stay inside the configured data directory")
         self.root.mkdir(parents=True, exist_ok=True)
         self.root = compact_path(self.root)
 

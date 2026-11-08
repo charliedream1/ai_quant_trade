@@ -1,5 +1,18 @@
 # Documentation build scripts
 
+`setup_project.py` is the fresh-clone bootstrap. It supports both `pip` and
+`uv`, creates an E-drive runtime when available, emits activation scripts, and
+can install the locked `.tools/zvec-grep` package with `--install-zvec`. Use
+`setup_project.ps1` or `setup_project.sh` as platform wrappers. All generated
+files are outside the repository and can be removed independently.
+
+Activation files treat configured paths as literal data, including apostrophes,
+dollar signs, backticks, spaces, and non-ASCII characters. Source `activate.ps1`
+in PowerShell or `activate.sh` in a POSIX shell. The generated `runtime.env`
+contains quoted path metadata only; dotenv consumers should use
+`interpolate=False` to preserve literal dollar signs. No agent memory, login
+state, or provider credential is copied into these files.
+
 This directory contains local equivalents of the documentation CI checks.
 
 Windows PowerShell:

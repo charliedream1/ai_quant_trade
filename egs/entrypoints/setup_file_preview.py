@@ -5,7 +5,8 @@ import base64
 import hashlib
 import json
 import os
-import subprocess
+import subprocess  # nosec B404
+import sys
 import tarfile
 import zipfile
 from pathlib import Path
@@ -14,13 +15,17 @@ import requests
 import yaml
 from loguru import logger
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from src.core.config import PROJECT_ROOT  # noqa: E402
+from src.core.tool_paths import runtime_path, tools_root  # noqa: E402
 
 
 def local(name: str) -> Path:
-    path = (PROJECT_ROOT / name).resolve()
-    if not path.is_relative_to(PROJECT_ROOT):
-        raise ValueError("Runtime paths must stay in the project")
+    path = runtime_path(name)
+    if not (path.is_relative_to(PROJECT_ROOT) or path.is_relative_to(tools_root())):
+        raise ValueError("Runtime paths must stay inside the project or configured tools directory")
     return path
 
 
@@ -89,15 +94,15 @@ def office(config: dict) -> None:
     if (destination / "SourceDir/LibreOffice/program/soffice.com").is_file():
         logger.info("Existing portable Office retained: {}", destination)
         return
-    tools = local(".tools/lessmsi")
+    tools = runtime_path(".tools/lessmsi")
     copy_zip(fetch(config["downloads"]["lessmsi"]), tools)
     source = fetch(config["downloads"]["libreoffice"])
     destination.mkdir(parents=True, exist_ok=True)
-    os.environ["TEMP"] = str(local(".tools/tmp"))
+    os.environ["TEMP"] = str(runtime_path(".tools/tmp"))
     os.environ["TMP"] = os.environ["TEMP"]
-    local(".tools/tmp").mkdir(exist_ok=True)
+    runtime_path(".tools/tmp").mkdir(parents=True, exist_ok=True)
     with (destination / "extraction.log").open("wb") as stream:
-        subprocess.run(
+        subprocess.run(  # nosec B603
             [str(tools / "lessmsi.exe"), "x", str(source), str(destination) + "\\"],
             stdout=stream,
             stderr=subprocess.STDOUT,

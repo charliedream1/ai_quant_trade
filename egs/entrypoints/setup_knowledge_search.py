@@ -1,24 +1,31 @@
-"""Install the locked lexical search package entirely inside this project."""
+"""Install the locked lexical search package in the configured tools directory."""
 
 import os
 import shutil
-import subprocess
+import subprocess  # nosec B404
+import sys
+from pathlib import Path
 
 from loguru import logger
 
-from src.core.config import PROJECT_ROOT
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from src.core.config import PROJECT_ROOT  # noqa: E402
+from src.core.tool_paths import tools_root  # noqa: E402
 
 
 def main() -> None:
     source = PROJECT_ROOT / "egs/requirements/zvec-grep"
-    destination = PROJECT_ROOT / ".tools/zvec-grep"
+    destination = tools_root() / "zvec-grep"
+    cache = tools_root() / "npm-cache"
     destination.mkdir(parents=True, exist_ok=True)
     for name in ("package.json", "package-lock.json"):
         shutil.copyfile(source / name, destination / name)
     npm = shutil.which("npm.cmd" if os.name == "nt" else "npm")
     if not npm or not shutil.which("node") or not shutil.which("rg"):
         raise RuntimeError("请先安装Node.js 22+、npm及ripgrep，并加入PATH")
-    subprocess.run(
+    subprocess.run(  # nosec B603
         [
             npm,
             "ci",
@@ -27,7 +34,7 @@ def main() -> None:
             "--ignore-scripts",
             "--omit=optional",
             "--cache",
-            str(PROJECT_ROOT / ".tools/npm-cache"),
+            str(cache),
             "--no-fund",
             "--no-audit",
         ],

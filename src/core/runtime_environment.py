@@ -31,7 +31,10 @@ def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -
     errors = []
     if sys.version_info[:2] < tuple(minimum):
         errors.append("Python版本低于支持基线")
-    if prefix != (PROJECT_ROOT / cfg["directory"]).resolve():
+    expected = Path(cfg["directory"])
+    if not expected.is_absolute():
+        expected = PROJECT_ROOT / expected
+    if prefix != expected.resolve():
         errors.append("当前解释器不是此角色配置的项目环境")
     file = prefix / "pyvenv.cfg"
     inherited = not file.is_file() or "include-system-site-packages = true" in file.read_text(encoding="utf-8").lower()
@@ -66,6 +69,11 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
     if role not in config["environments"]:
         raise ValueError("未知运行环境")
     cfg = config["environments"][role]
+    if cfg.get("directory_env"):
+        local_env = dotenv_values(PROJECT_ROOT / ".env")
+        selected = os.environ.get(cfg["directory_env"]) or local_env.get(cfg["directory_env"])
+        if selected:
+            cfg = {**cfg, "directory": selected}
     prefix = Path(sys.prefix).resolve()
     errors, inherited = _environment_errors(prefix, cfg, config["minimum_python"])
     declared = []

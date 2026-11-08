@@ -1,4 +1,4 @@
-"""Project-bounded task state and append-only actual execution events."""
+"""Configured storage boundaries for task state and append-only execution events."""
 
 import json
 from pathlib import Path
@@ -19,8 +19,10 @@ STORE_LOCK = RLock()
 
 class InsightStore:
     def __init__(self, root: Path | None = None):
-        self.root = (root or get_settings().data_dir / "reports" / "insights").resolve()
-        if not self.root.is_relative_to(get_settings().project_root.resolve()):
+        settings = get_settings()
+        self.root = (root or settings.data_dir / "reports" / "insights").resolve()
+        allowed = (settings.project_root.resolve(), settings.data_dir.resolve())
+        if not any(self.root.is_relative_to(base) for base in allowed):
             raise ValueError(insight_config()["messages"]["bad_resource"])
         self.root.mkdir(parents=True, exist_ok=True)
 

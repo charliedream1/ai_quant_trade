@@ -1,5 +1,14 @@
 # 文档构建、预览与发布
 
+## Local agent privacy
+
+Both documentation configurations exclude local `.codex`, `.trae`, and
+`.workbuddy` directories at any depth. Keep memories, sessions, authentication
+state, and task transcripts local; do not copy them into public guide pages or
+assets. Git and Docker have independent exclusion rules. Shared project skills
+may be reviewed as source files, but local agent memory is never a publishing
+input. Publication regression tests use synthetic markers only.
+
 本仓库使用MkDocs。公开文档站和应用内帮助共享`docs/`正文，但使用不同配置、环境及输出目录；不能把其中一套的命令直接当作另一套。
 
 ## 1. 两套构建配置 {#configurations}

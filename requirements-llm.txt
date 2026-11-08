@@ -1,0 +1,4 @@
+# File format: pip requirements; encoding: UTF-8
+# Optional LiteLLM backend; install this profile in the same environment as requirements.txt.
+litellm==1.101.3 ; python_version < "3.11"
+litellm==1.100.5 ; python_version >= "3.11"

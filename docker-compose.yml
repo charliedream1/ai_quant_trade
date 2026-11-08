@@ -1,0 +1,26 @@
+services:
+  aiquant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-quant-trade:0.1.0
+    ports:
+      - "${AIQUANT_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ALL_IN_ONE_HOST: 0.0.0.0
+      ALL_IN_ONE_PORT: 8000
+      ALL_IN_ONE_DATA_DIR: /var/lib/aiquant/data
+      ALL_IN_ONE_WEB_ENVIRONMENT: /opt/aiquant/.venv
+      ALL_IN_ONE_TOOLS_DIR: /opt/aiquant-tools
+      ALL_IN_ONE_RUNTIME_MODE: strict
+      ALL_IN_ONE_RUNTIME_ROLE: web
+      ALL_IN_ONE_ACCESS_MODE: ${ALL_IN_ONE_ACCESS_MODE:-local}
+    volumes:
+      - aiquant-data:/var/lib/aiquant/data
+    restart: unless-stopped
+
+volumes:
+  aiquant-data:

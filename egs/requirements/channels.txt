@@ -1,0 +1,8 @@
+# File format: pip requirements; encoding: UTF-8
+# Optional messaging transports; all three channels remain disabled by default.
+lark-oapi==1.7.5
+websocket-client==1.9.2
+qrcode==8.2
+pycryptodome==4.3.0
+requests-toolbelt==1.0.0
+websockets==15.0.1
