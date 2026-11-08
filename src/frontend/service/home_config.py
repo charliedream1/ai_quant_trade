@@ -11,7 +11,7 @@ import yaml
 
 @lru_cache(maxsize=1)
 def home_config() -> dict[str, Any]:
-    path = Path(__file__).resolve().parents[3] / "egs" / "home_dashboard.yaml"
+    path = Path(__file__).resolve().parents[3] / "egs" / "config" / "ui" / "home_dashboard.yaml"
     return dict(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 

@@ -19,7 +19,7 @@ from .execution_policy import review_source, source_digest
 from .loader import PROJECT_ROOT, StrategyLoader
 from .validator import StrategyValidator
 
-EXAMPLE_STRATEGY_DIR = PROJECT_ROOT / "egs" / "strategy_examples"
+EXAMPLE_STRATEGY_DIR = PROJECT_ROOT / "egs" / "examples" / "strategy_examples"
 EXAMPLE_INTRO_FILE = EXAMPLE_STRATEGY_DIR / "strategy_intros.yaml"
 INTERFACE_LABELS = {
     "strategy_base_class": "StrategyBase 标准类",

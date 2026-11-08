@@ -199,7 +199,7 @@ class GraphBrowser:
         path = self.output / filename
         command = [
             sys.executable,
-            "egs/cli.py",
+            "egs/entrypoints/cli.py",
             "--base-url",
             self.base,
             "--format",

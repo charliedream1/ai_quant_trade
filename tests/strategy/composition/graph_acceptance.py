@@ -50,8 +50,8 @@ def source_checks():
         PROJECT_ROOT / p
         for p in (
             "README.md",
-            "egs/strategy_graph.yaml",
-            "doc/15_gradio_visual_strategy_editor_design.md",
+            "egs/config/strategies/strategy_graph.yaml",
+            "doc/strategies/gradio_visual_strategy_editor_design.md",
             "docs/usage/strategy_composition.md",
             "docs/principles/strategy_graph.md",
             "docs/usage/assets/screenshots/README.md",

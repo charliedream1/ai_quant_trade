@@ -10,7 +10,7 @@ import pytest
 from src.engine.backtest import BacktestRunner
 from src.strategy import StrategyLoader, StrategyStore, StrategyValidator
 
-EXAMPLES = sorted(Path("egs/strategy_examples").glob("*_strategy.py"))
+EXAMPLES = sorted(Path("egs/examples/strategy_examples").glob("*_strategy.py"))
 
 
 def test_all_strategy_examples_validate_and_dry_run():

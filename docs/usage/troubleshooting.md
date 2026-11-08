@@ -52,7 +52,7 @@
 
 实验登记与 qrun 适配器支持 `qrun_path`/`ALL_IN_ONE_QLIB_QRUN`，回测页 Qlib 引擎复用 Workflow 记录链路；示例 provider 与 Workflow 仍需自行准备。排查时分别记录信号分析与原生 Workflow 的环境、数据、执行入口和产物。
 
-先执行 `python egs/cli.py qlib status --format json` 查看当前服务诊断。只有原生运行成功并产生实际指标和逐日组合曲线，才能验证完整 Qlib 回测；只有指标时页面仅显示指标摘要。
+先执行 `python egs/entrypoints/cli.py qlib status --format json` 查看当前服务诊断。只有原生运行成功并产生实际指标和逐日组合曲线，才能验证完整 Qlib 回测；只有指标时页面仅显示指标摘要。
 
 ## 智能洞察空白或较慢
 

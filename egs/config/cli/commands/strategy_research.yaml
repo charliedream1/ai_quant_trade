@@ -1,0 +1,4 @@
+# File format: YAML; encoding: UTF-8
+commands:
+  pipeline research-import: {method: POST, path: /strategy-research/snapshots, fields: {bundle: json}, execution: false, market: false}
+  pipeline research-inspect: {method: GET, path: '/strategy-research/snapshots/{identifier}', positions: {identifier: str}, execution: false, market: false}

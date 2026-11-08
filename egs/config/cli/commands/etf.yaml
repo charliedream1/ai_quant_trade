@@ -1,0 +1,5 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "etf universe list": {"method":"GET","path":"/etf/universes","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "etf universe show": {"method":"GET","path":"/etf/universes/{universe}","positions":{"universe":"str"},"query":{},"fields":{},"execution":false,"market":false}
+  "etf snapshot": {"method":"GET","path":"/etf/universes/{universe}/snapshot","positions":{"universe":"str"},"query":{},"fields":{},"execution":false,"market":false}

@@ -1,0 +1,20 @@
+# 文件格式：YAML，编码：UTF-8
+default_context: local
+contexts:
+  local:
+    base_url: http://127.0.0.1:8000
+    api_prefix: /api/v1
+    allow_live_actions: false
+    authorization_env: ALL_IN_ONE_CLI_AUTHORIZATION
+timeouts:
+  connect: 5
+  read: 30
+  long_read: 600
+  deadline: 900
+limits:
+  input_bytes: 8388608
+  response_bytes: 33554432
+  max_items: 1000
+  page_size: 100
+  table_width: 80
+output: auto

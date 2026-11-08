@@ -15,7 +15,7 @@
 | Qoder CLI | 在.env配置ALL_IN_ONE_QODER_CLI、ALL_IN_ONE_QODER_CONFIG_DIR，并使用同一配置目录登录 | 官方非交互事件流；默认只读工具，项目编辑增加Write/Edit；不启用Shell/MCP或绕过确认 |
 | Trae CLI / WorkBuddy CLI | 当前尚未接入真实协议 | 返回 unavailable / 未接入，不生成模拟动作或假回复 |
 
-先在“系统管理 → 系统配置”检查模型；命令行可执行 `python egs/cli.py model list --format json`。看到 mock-llm 或“测试模式回答”表示模拟回复，不代表真实模型工作。模型 API 与本地 CLI 是不同后台，启用一个不会自动启用另一个。
+先在“系统管理 → 系统配置”检查模型；命令行可执行 `python egs/entrypoints/cli.py model list --format json`。看到 mock-llm 或“测试模式回答”表示模拟回复，不代表真实模型工作。模型 API 与本地 CLI 是不同后台，启用一个不会自动启用另一个。
 
 mock数据服务默认禁止调用真实CLI。如需在mock行情下验收真实CLI，在启动服务环境中设置`ALL_IN_ONE_ENABLE_REAL_CLI=true`后重启；real行情模式也仍需程序和认证。行情模式、模型来源与CLI是否接通分别判断。Trae/WorkBuddy仍不可用；旧策略CLI产物模拟器不属于此真实对话链。
 
@@ -58,7 +58,7 @@ $env:QODER_CONFIG_DIR='E:\Tools\QoderCLI\config'
 
 图 12：输入区左侧是附件入口，选择后可见清除图标；此处截取实际输入区，已选择项目内 question.txt。图片理解仍需实际支持视觉的后台，不能用模拟回复证明。
 
-在输入框左侧附件入口选择文件，也可以将文件或图片拖入附件区。确认文件列表后再发送。当前默认最多 8 个文件、总计 20 MiB，每个文本附件最多取 24,000 字符；这些上限由 `egs/ai_workbench_presets.yaml` 配置。
+在输入框左侧附件入口选择文件，也可以将文件或图片拖入附件区。确认文件列表后再发送。当前默认最多 8 个文件、总计 20 MiB，每个文本附件最多取 24,000 字符；这些上限由 `egs/config/platform/ai_workbench_presets.yaml` 配置。
 
 | 类型 | 当前支持 |
 | --- | --- |
@@ -98,11 +98,11 @@ PDF/DOCX 会先提取文本，不提供扫描件 OCR。图片会传给后台，�
 
 ## 从命令行使用同一工作台会话
 
-先执行 `python egs/cli.py ai session create --title ETF研究`，读取 data.id；以下 8 需替换为实际 ID。
+先执行 `python egs/entrypoints/cli.py ai session create --title ETF研究`，读取 data.id；以下 8 需替换为实际 ID。
 
 ```text
-python egs/cli.py ai ask --session-id 8 --backend codex --message-file egs/cli/prompts/question.txt --format jsonl
-python egs/cli.py ai session show 8 --format json
+python egs/entrypoints/cli.py ai ask --session-id 8 --backend codex --message-file egs/config/cli/prompts/question.txt --format jsonl
+python egs/entrypoints/cli.py ai session show 8 --format json
 ```
 
 添加文件用 `--attachment 文件路径`，可重复指定；模型 API 用 `--backend generic --model-id 实际ID`。完整说明见 [命令行](cli.md)。

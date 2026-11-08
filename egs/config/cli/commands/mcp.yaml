@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "mcp list": {"method":"GET","path":"/mcp-servers","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "mcp create": {"method":"POST","path":"/mcp-servers","positions":{},"query":{},"fields":{"name":"str","server_type":"str","command":"str","args":"json","env":"json","url":"str","enabled":"bool","timeout_seconds":"float","description":"str","headers":"json","transport":"str","params":"json","arguments":"json","tool_name":"str","service_type":"str","type":"str","remark":"str","timeout":"float","working_dir":"str","cwd":"str","base_url":"str","allowed_tools":"json","tools":"json"},"execution":false,"market":false}
+  "mcp update": {"method":"PUT","path":"/mcp-servers/{server_id}","positions":{"server_id":"int"},"query":{},"fields":{"name":"str","server_type":"str","command":"str","args":"json","env":"json","url":"str","enabled":"bool","timeout_seconds":"float","description":"str","headers":"json","transport":"str","params":"json","arguments":"json","tool_name":"str","service_type":"str","type":"str","remark":"str","timeout":"float","working_dir":"str","cwd":"str","base_url":"str","allowed_tools":"json","tools":"json"},"execution":false,"market":false}
+  "mcp delete": {"method":"DELETE","path":"/mcp-servers/{server_id}","positions":{"server_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "mcp enable": {"method":"POST","path":"/mcp-servers/{server_id}/enable","positions":{"server_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "mcp disable": {"method":"POST","path":"/mcp-servers/{server_id}/disable","positions":{"server_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "mcp test": {"method":"POST","path":"/mcp-servers/{server_id}/test","positions":{"server_id":"int"},"query":{},"fields":{},"execution":true,"market":false}
+  "mcp call": {"method":"POST","path":"/mcp-servers/{server_id}/tools/call","positions":{"server_id":"int"},"query":{},"fields":{"name":"str","tool_name":"str","arguments":"json"},"execution":true,"market":false}

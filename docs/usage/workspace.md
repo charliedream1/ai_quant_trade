@@ -15,14 +15,14 @@
 | 原生AI命令行 | 按[CLI安装](cli_installation.md)准备需要的后端并登录；不要求全部安装 |
 | 公开文档站 | 独立`.venv-docs`和`requirements-docs.txt`，不安装整套业务依赖 |
 
-业务设置位于`egs/config.yaml`等YAML，密钥位于本地`.env`/`.llm_env`。首次可参考`.env.example`，已有私有配置不要覆盖。第一次仅验证流程可在本地环境中设`ALL_IN_ONE_DATA_MODE=mock`；切换real后仍需检查各行情源、模型及CLI的实际可用性。
+业务设置位于`egs/config/platform/config.yaml`等YAML，密钥位于本地`.env`/`.env`。首次可参考`.env.example`，已有私有配置不要覆盖。第一次仅验证流程可在本地环境中设`ALL_IN_ONE_DATA_MODE=mock`；切换real后仍需检查各行情源、模型及CLI的实际可用性。
 
 ## 2. 启动、连接和停止 {#startup}
 
 Windows示例：
 
 ```text
-.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role web
+.venv-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role web
 .venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
 ```
 
@@ -80,11 +80,11 @@ ETF/行业轮动、[模型策略](model_strategies.md)、[因子研究](factor_r
 后端启动后，可在同一根目录运行：
 
 ```text
-.venv-secure/Scripts/python.exe -B egs/cli.py --base-url http://127.0.0.1:8000 system capabilities --format json
-.venv-secure/Scripts/python.exe -B egs/cli.py --base-url http://127.0.0.1:8000 strategy list --format json
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py --base-url http://127.0.0.1:8000 system capabilities --format json
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py --base-url http://127.0.0.1:8000 strategy list --format json
 ```
 
-策略导入、调参、回测、模拟盘、知识和研究任务共用网页业务规则；完整流程见[CLI指南](cli.md)。本地原生研究Skill入口`egs/skills.py`可复用研究服务且无需启动网页，但实际研究仍需对应数据和后端，不能由“CLI可启动”推断所有研究已就绪。
+策略导入、调参、回测、模拟盘、知识和研究任务共用网页业务规则；完整流程见[CLI指南](cli.md)。本地原生研究Skill入口`egs/entrypoints/skills.py`可复用研究服务且无需启动网页，但实际研究仍需对应数据和后端，不能由“CLI可启动”推断所有研究已就绪。
 
 ## 7. 出错时先检查 {#troubleshooting}
 

@@ -79,7 +79,7 @@ def cli_command(client):
         run = subprocess.run(
             [
                 sys.executable,
-                "egs/cli.py",
+                "egs/entrypoints/cli.py",
                 "--base-url",
                 address,
                 "--format",

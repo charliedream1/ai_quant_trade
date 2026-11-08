@@ -2,7 +2,7 @@
 
 2026-10-26，Codex。状态：官方资料与当前源码复核完成；仅调研，未新增查看器、安装Office/容器或修改业务源码。以下难度为结合当前项目的工程判断，不是实测工期或版式保证。
 
-2026-10-27实施进展：用户确认收敛为Office只读、Markdown可修改，其余支持格式预览，已按[22号设计](../../../doc/22_file_preview_markdown_design.md)接入。本文保留实施前调研事实；实际入口与配图见[文件阅读指南](../../usage/file_reader.md)，在线Office编辑和远程桌面仍未实施。
+2026-10-27实施进展：用户确认收敛为Office只读、Markdown可修改，其余支持格式预览，已按[22号设计](../../../doc/knowledge/file_preview_markdown_design.md)接入。本文保留实施前调研事实；实际入口与配图见[文件阅读指南](../../usage/file_reader.md)，在线Office编辑和远程桌面仍未实施。
 
 ## 可行性结论
 

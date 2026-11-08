@@ -1,0 +1,3 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "relations graph": {"method":"GET","path":"/relations/graph","positions":{},"query":{"symbol":"str","relation_types":"str","depth":"str"},"fields":{},"execution":false,"market":true}

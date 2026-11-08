@@ -15,7 +15,7 @@ from src.core.config import PROJECT_ROOT, Settings
 from src.core.logger import get_logger
 
 LOG = get_logger("system.settings")
-CONFIG_PATH = PROJECT_ROOT / "egs" / "config.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs/config/platform/config.yaml"
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,7 +101,7 @@ GLOBAL_SETTING_FIELDS: tuple[GlobalSettingField, ...] = (
         "调度与日历",
         "path",
         "ALL_IN_ONE_TRADING_CALENDAR_PATH",
-        "egs/trading_calendar.yaml",
+        "egs/config/data/trading_calendar.yaml",
         "定时任务交易日过滤使用的全局日历文件。",
     ),
     GlobalSettingField(
@@ -110,7 +110,7 @@ GLOBAL_SETTING_FIELDS: tuple[GlobalSettingField, ...] = (
         "调度与日历",
         "path",
         "ALL_IN_ONE_SCHEDULER_EXECUTORS_PATH",
-        "egs/scheduler_executors.yaml",
+        "egs/config/operations/scheduler_executors.yaml",
         "定时任务 custom executor_key 可调用函数白名单。",
     ),
 )
@@ -153,7 +153,7 @@ def global_settings_payload(config_path: Path = CONFIG_PATH) -> dict[str, Any]:
 
 
 def save_global_settings(payload: dict[str, Any], config_path: Path = CONFIG_PATH) -> dict[str, Any]:
-    """Persist editable global settings into ``egs/config.yaml``."""
+    """Persist editable global settings into ``egs/config/platform/config.yaml``."""
 
     allowed = {field.key: field for field in GLOBAL_SETTING_FIELDS}
     unknown = sorted(set(payload) - set(allowed))

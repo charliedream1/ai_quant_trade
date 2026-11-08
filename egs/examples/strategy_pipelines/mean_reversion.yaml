@@ -1,0 +1,84 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "震荡均值回归",
+  "description": "震荡均值回归；日线研究模板，真实能力由数据与依赖校验决定",
+  "universe": {
+    "symbols": [
+      "000001",
+      "600036",
+      "600519",
+      "601166",
+      "601318",
+      "300750"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "eligibility",
+      "component": "eligibility",
+      "inputs": [
+        "universe"
+      ],
+      "params": {}
+    },
+    {
+      "id": "regime",
+      "component": "regime",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {
+        "mode": "range"
+      }
+    },
+    {
+      "id": "rsi",
+      "component": "rsi",
+      "inputs": [
+        "regime"
+      ],
+      "params": {}
+    },
+    {
+      "id": "band",
+      "component": "bollinger",
+      "inputs": [
+        "regime"
+      ],
+      "params": {
+        "mode": "reversion"
+      }
+    },
+    {
+      "id": "rules",
+      "component": "merge",
+      "inputs": [
+        "rsi",
+        "band"
+      ],
+      "params": {}
+    }
+  ],
+  "output": "rules",
+  "portfolio": {
+    "component": "equal"
+  },
+  "risk": {},
+  "execution": {},
+  "rebalance_sessions": 5,
+  "variants": {
+    "baseline": {},
+    "conservative": {
+      "risk": {
+        "max_exposure": 0.6,
+        "max_weight": 0.15
+      },
+      "portfolio": {
+        "params": {
+          "exposure": 0.6
+        }
+      }
+    }
+  }
+}

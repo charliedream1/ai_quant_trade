@@ -15,7 +15,7 @@ def test_examples_pool_and_paper_account_routes(client):
     assert len(examples) >= 13
     response = client.post(
         "/api/v1/strategy-examples/import",
-        json={"example": "egs/strategy_examples/etf_momentum_rotation_strategy.py", "name": "cli-resource-import"},
+        json={"example": "egs/examples/strategy_examples/etf_momentum_rotation_strategy.py", "name": "cli-resource-import"},
     ).json()
     assert response["code"] == 0, response
     pool = client.post("/api/v1/resource-pools", json={"name": "cli-pool"}).json()["data"]

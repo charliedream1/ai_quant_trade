@@ -58,7 +58,7 @@ def main(base, output):
         [
             sys.executable,
             "-B",
-            "egs/cli.py",
+            "egs/entrypoints/cli.py",
             "--base-url",
             base,
             "--format",
@@ -75,7 +75,7 @@ def main(base, output):
         [
             sys.executable,
             "-B",
-            "egs/cli.py",
+            "egs/entrypoints/cli.py",
             "--base-url",
             base,
             "--format",
@@ -102,7 +102,7 @@ def main(base, output):
     for args in (
         ["start.py", "--host", "127.0.0.1", "--port", str(port)],
         ["-m", "src.main"],
-        ["egs/cli.py", "system", "serve", "--host", "127.0.0.1", "--port", str(port)],
+        ["egs/entrypoints/cli.py", "system", "serve", "--host", "127.0.0.1", "--port", str(port)],
     ):
         result = invoke(
             [str(old_python), "-B", *args], env={**env, "ALL_IN_ONE_HOST": "127.0.0.1", "ALL_IN_ONE_PORT": str(port)}

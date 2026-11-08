@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+# 轻量模型策略：只用已知历史训练，下一交易日执行。
+defaults:
+  feature_set: ''
+  feature_preprocess: rank
+  lag_windows: [1, 5, 10]
+  short_window: 5
+  long_window: 20
+  volatility_window: 10
+  volume_window: 10
+  horizon: 1
+  train_window: 100
+  min_train_dates: 30
+  min_train_samples: 60
+  validation_fraction: 0.2
+  retrain_interval: 10
+  history_limit: 260
+  top_n: 1
+  min_score: 0.0
+  quantity: 100
+  demean_target: true
+profiles:
+  lightgbm_rank:
+    title: LightGBM截面选股
+    backend: lightgbm
+    model_params:
+      n_estimators: 60
+      max_depth: 4
+      num_leaves: 15
+      min_child_samples: 12
+      learning_rate: 0.05
+      reg_lambda: 1.0
+      random_state: 7
+      n_jobs: 1
+      verbosity: -1
+  xgboost_rank:
+    title: XGBoost截面选股
+    backend: xgboost
+    model_params:
+      n_estimators: 60
+      max_depth: 3
+      learning_rate: 0.05
+      reg_lambda: 1.0
+      subsample: 1.0
+      colsample_bytree: 1.0
+      tree_method: hist
+      random_state: 7
+      n_jobs: 1
+  mlp_ensemble:
+    title: 小型MLP多因子融合
+    backend: mlp
+    model_params:
+      hidden_sizes: [32, 16]
+      epochs: 30
+      learning_rate: 0.003
+      weight_decay: 0.001
+      seeds: [7, 17]
+      threads: 1

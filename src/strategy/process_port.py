@@ -43,7 +43,7 @@ class ProcessStrategyPort:
             },
         )
         self.process = subprocess.Popen(
-            [sys.executable, "-B", "-u", str(PROJECT_ROOT / "egs/strategy_worker.py")],
+            [sys.executable, "-B", "-u", str(PROJECT_ROOT / "egs/entrypoints/strategy_worker.py")],
             cwd=self.work,
             env=env,
             stdin=subprocess.PIPE,

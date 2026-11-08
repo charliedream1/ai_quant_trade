@@ -1,0 +1,3 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "security search": {"method":"GET","path":"/securities/search","positions":{},"query":{"query":"str","market":"str","limit":"int"},"fields":{},"execution":false,"market":true}

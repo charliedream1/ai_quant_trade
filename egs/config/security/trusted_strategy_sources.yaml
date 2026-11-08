@@ -1,0 +1,20 @@
+# YAML 1.2, UTF-8; known owned sources before code-health formatting.
+{
+  "baseline": "72d742e5",
+  "sources": {
+    "97e5e2ccb997c0cbbe8308bbd3779934b90aee520170c3fc37b94de0f2443353": "egs/examples/strategy_examples/bollinger_breakout_strategy.py",
+    "3f036c90158fa4158b395e9dd11464816d84cd567d0b1d245404174719d82143": "egs/examples/strategy_examples/dual_ma_strategy.py",
+    "28e9ae5194a433b8501fb110ff365351ebafd2b4a8c07b4978b2f4ed9b88c51d": "egs/examples/strategy_examples/etf_momentum_rotation_strategy.py",
+    "4e78705fbbb46a251749428d439a38452358746b389b1297e5aed63e1b68d8c0": "egs/examples/strategy_examples/etf_trend_allocation_strategy.py",
+    "c9acaa4cc55680b2703e0462478682e410312fd6f7ec896962082ff84bfa7dbb": "egs/examples/strategy_examples/function_signal_strategy.py",
+    "166f2d0b62f70ff88e8f32db6424fe92b76fcf58c2bbdf1e0c4aa583dc6f1cc8": "egs/examples/strategy_examples/industry_rotation_strategy.py",
+    "c4ca80294fa2ffc9787dcda4bf2b8bdbbd45d6a4069239ab8ec76bc3419684d7": "egs/examples/strategy_examples/lightgbm_rank_strategy.py",
+    "754aaf95d9edcf54e412a239d19203a67de13a78b9f405b91a6b0c6409197da8": "egs/examples/strategy_examples/macd_trend_strategy.py",
+    "253c60d43d57528dbe3d1a82be19d14a97dfe723fcfdd6105e8df566f9f78ac3": "egs/examples/strategy_examples/mlp_ensemble_strategy.py",
+    "181d3ff485debdaa227d42f3f2961e984d9029f2d05af0a19816f58d6898844b": "egs/examples/strategy_examples/momentum_volume_breakout_strategy.py",
+    "3c25f5d032f9afd0a557ae993a91bd1f2e30f33cb74141fa97ce31636bf0373b": "egs/examples/strategy_examples/rsi_mean_reversion_strategy.py",
+    "ed24040fe573b9e3a72034b9ef98fa04d9a398f45ad9bfcfa7474a0b2fd57114": "egs/examples/strategy_examples/standard_port_strategy.py",
+    "97b010b933c2a43e6618e7874f09cd99e56d66b9b3f2bdcf6c365d30d755cf6e": "egs/examples/strategy_examples/xgboost_rank_strategy.py",
+    "76090887bca311887d93381282debd1b4fa0990c8da4268618e60974ed85ecc9": "egs/examples/strategy_entrypoints/composition.py"
+  }
+}

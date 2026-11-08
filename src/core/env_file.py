@@ -16,7 +16,7 @@ from src.core.crypto import mask_secret
 from src.core.file_lock import file_lock
 from src.core.security_config import security_config
 
-ENV_FILE = PROJECT_ROOT / ".llm_env"
+ENV_FILE = PROJECT_ROOT / ".env"
 ENV_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_ENV_FILE_BYTES = 128 * 1024
 
@@ -121,19 +121,12 @@ def env_status(name: str, target: Path | None = None) -> dict[str, Any]:
     target = target or ENV_FILE
     key = validate_env_name(name)
     file_values = read_env_values(target)
-    project_env = PROJECT_ROOT / ".env"
-    try:
-        project_values = _parse_env(project_env.read_text(encoding="utf-8-sig")) if project_env.exists() else {}
-    except ValueError:
-        project_values = {}
     locations = []
-    if key in file_values:
-        locations.append(target.name)
     if key in os.environ:
         locations.append("process")
-    if key in project_values:
-        locations.append(".env")
-    resolved = os.environ.get(key) or file_values.get(key) or project_values.get(key) or ""
+    if key in file_values:
+        locations.append(target.name)
+    resolved = os.environ[key] if key in os.environ else file_values.get(key) or ""
     return {
         "name": key,
         "configured": bool(resolved),
@@ -163,7 +156,7 @@ def resolve_env_value(name: str) -> str:
     llm_values = read_env_values()
     if key in llm_values:
         return llm_values[key]
-    return str(dotenv_values(PROJECT_ROOT / ".env").get(key) or "")
+    return ""
 
 
 def _parse_env(text: str) -> dict[str, str]:

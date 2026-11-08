@@ -1,0 +1,25 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "kb category list": {"method":"GET","path":"/kb/categories","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "kb category create": {"method":"POST","path":"/kb/categories","positions":{},"query":{},"fields":{"name":"str","parent_id":"int","sort_order":"int"},"execution":false,"market":false}
+  "kb category update": {"method":"PUT","path":"/kb/categories/{category_id}","positions":{"category_id":"int"},"query":{},"fields":{"name":"str","parent_id":"int","sort_order":"int"},"execution":false,"market":false}
+  "kb category delete": {"method":"DELETE","path":"/kb/categories/{category_id}","positions":{"category_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "kb document create": {"method":"POST","path":"/kb/documents","positions":{},"query":{},"fields":{"title":"str","content":"str","category_id":"int","tags":"json","doc_type":"str"},"execution":false,"market":false}
+  "kb note create": {"method":"POST","path":"/kb/notes","positions":{},"query":{},"fields":{"title":"str","content":"str","category_id":"int","tags":"json"},"execution":false,"market":false}
+  "kb document list": {"method":"GET","path":"/kb/documents","positions":{},"query":{"category_id":"int","keyword":"str","doc_type":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "kb document show": {"method":"GET","path":"/kb/documents/{doc_id}","positions":{"doc_id":"int"},"query":{"include_content":"bool"},"fields":{},"execution":false,"market":false}
+  "kb document delete": {"method":"DELETE","path":"/kb/documents/{doc_id}","positions":{"doc_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "kb search": {"method":"GET","path":"/kb/search","positions":{},"query":{"keyword":"str","category_id":"int","doc_type":"str","scope":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false,"unsupported_query":["page"]}
+  "kb ask": {"method":"POST","path":"/kb/qa","positions":{},"query":{},"fields":{"question":"str","top_k":"int","category_id":"int","scope":"str","session_id":"str","context_turns":"int","reset_context":"bool"},"execution":true,"market":false}
+  "kb session clear": {"method":"POST","path":"/kb/qa/clear","positions":{},"query":{},"fields":{"session_id":"str"},"execution":true,"market":false,"confirm":true}
+  "kb session list": {"method":"GET","path":"/kb/qa/sessions","positions":{},"query":{"limit":"int"},"fields":{},"execution":false,"market":false}
+  "kb session update": {"method":"PUT","path":"/kb/qa/sessions","positions":{},"query":{},"fields":{"session_id":"str","name":"str","summary":"str"},"execution":false,"market":false}
+  "kb remote list": {"method":"GET","path":"/kb/remote-sources","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "kb remote create": {"method":"POST","path":"/kb/remote-sources","positions":{},"query":{},"fields":{"name":"str","source_type":"str","type":"str","mcp_server_id":"int","config":"json","enabled":"bool"},"execution":false,"market":false}
+  "kb remote update": {"method":"PUT","path":"/kb/remote-sources/{source_id}","positions":{"source_id":"int"},"query":{},"fields":{"name":"str","source_type":"str","type":"str","mcp_server_id":"int","config":"json","enabled":"bool"},"execution":false,"market":false}
+  "kb remote delete": {"method":"DELETE","path":"/kb/remote-sources/{source_id}","positions":{"source_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "kb remote test": {"method":"POST","path":"/kb/remote-sources/{source_id}/test","positions":{"source_id":"int"},"query":{},"fields":{},"execution":true,"market":false}
+  "kb remote documents": {"method":"GET","path":"/kb/remote-sources/{source_id}/documents","positions":{"source_id":"int"},"query":{"folder":"str","keyword":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "kb remote pull": {"method":"POST","path":"/kb/remote-sources/{source_id}/pull","positions":{"source_id":"int"},"query":{},"fields":{"remote_doc_id":"str","document_id":"int","category_id":"int","tags":"json","folder":"str"},"execution":true,"market":false}
+  "kb remote sync": {"method":"POST","path":"/kb/remote-sources/{source_id}/sync","positions":{"source_id":"int"},"query":{},"fields":{"folder":"str","keyword":"str","query":"str","category_id":"int","limit":"int","page_size":"str"},"execution":true,"market":false}
+  "kb document upload": {"method":"POST","path":"/kb/documents","positions":{},"query":{},"fields":{"title":"str","category_id":"int","tags":"json"},"execution":false,"market":false,"upload":true}

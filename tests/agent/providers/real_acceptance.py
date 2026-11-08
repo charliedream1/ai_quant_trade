@@ -23,7 +23,7 @@ from src.strategy.codex_cli import CodexCliRunner
 
 def main(output: Path, credentials: str, api_only: bool = False):
     output.mkdir(parents=True, exist_ok=True)
-    config = yaml.safe_load((PROJECT_ROOT / "egs/agent_provider_validation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/agents/agent_provider_validation.yaml").read_text(encoding="utf-8"))
     summary = {"scope": "real_model_with_explicitly_missing_financial_evidence_no_performance_claim", "checks": []}
     summary["providers"] = provider_catalog(probe=not api_only)
     values = dotenv_values(credentials)

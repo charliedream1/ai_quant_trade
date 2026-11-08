@@ -19,4 +19,4 @@ CLI 在发送前还有一层请求拼装：完整请求文件、策略参数文�
 
 快照不等于完整归档数据，旧任务可能没有全部证据。稳定复现还需要对应行情文件和运行环境。调参应固定条件、限制比较次数并保留独立验证段；当前支持手动方案与比较，不提供自动参数搜索。
 
-操作见[策略调参](../usage/strategy_parameters.md)。正式参数设计保留在项目 `doc/10_strategy_parameter_design.md`。
+操作见[策略调参](../usage/strategy_parameters.md)。正式参数设计保留在项目 `doc/strategies/strategy_parameter_design.md`。

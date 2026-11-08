@@ -45,7 +45,7 @@ def test_live_actions_obey_context_and_existing_backend_validation(cli_command):
         "examples",
         "import",
         "--example",
-        "egs/strategy_examples/dual_ma_strategy.py",
+        "egs/examples/strategy_examples/dual_ma_strategy.py",
         "--name",
         "CLI-live-gate",
     )["data"]["strategy_id"]
@@ -111,7 +111,7 @@ def test_query_overhead_and_coverage_audit(cli_command, tmp_path):
         session.close()
     started = perf_counter()
     assert (
-        subprocess.run([sys.executable, "egs/cli.py", "--help"], cwd=ROOT, capture_output=True, timeout=10).returncode
+        subprocess.run([sys.executable, "egs/entrypoints/cli.py", "--help"], cwd=ROOT, capture_output=True, timeout=10).returncode
         == 0
     )
     help_ms = round((perf_counter() - started) * 1000, 2)

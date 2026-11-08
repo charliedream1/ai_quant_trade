@@ -1,0 +1,59 @@
+symbol,market,name,abbr,pinyin,aliases,exchange,asset_type,is_active
+600519,CN,贵州茅台,GZMT,guizhoumaotai,茅台|贵州茅台酒,SH,stock,1
+510300,CN,沪深300ETF,HS300ETF,hu shen 300 etf,沪深300|ETF,SH,etf,1
+510500,CN,中证500ETF,ZZ500ETF,zhong zheng 500 etf,中证500|ETF,SH,etf,1
+159915,CN,创业板ETF,CYBETF,chuangyeban etf,创业板|ETF,SZ,etf,1
+512880,CN,券商ETF,QSETF,quanshang etf,券商|ETF,SH,etf,1
+000001,CN,平安银行,PAYH,pinganyinhang,平安|平安银行,SZ,stock,1
+300750,CN,宁德时代,NDSD,ningdeshidai,宁德|CATL|宁德时代新能源,SZ,stock,1
+688981,CN,中芯国际,ZXGJ,zhongxinguoji,中芯|SMIC|中芯国际集成电路,SH,stock,1
+300124,CN,汇川技术,HCJS,huichuanjishu,汇川|工业自动化,SZ,stock,1
+000858,CN,五粮液,WLY,wuliangye,五粮液|宜宾五粮液,SZ,stock,1
+601318,CN,中国平安,ZGPA,zhongguopingan,平安保险|中国平安保险,SH,stock,1
+600036,CN,招商银行,ZSYH,zhaoshangyinhang,招行|招商银行,SH,stock,1
+600276,CN,恒瑞医药,HRYY,hengruiyiyao,恒瑞|江苏恒瑞,SH,stock,1
+000333,CN,美的集团,MDJT,meidijituan,美的|Midea,SZ,stock,1
+601888,CN,中国中免,ZGZM,zhongguozhongmian,中免|中国旅游集团中免,SH,stock,1
+600887,CN,伊利股份,YLGF,yiligufen,伊利|内蒙古伊利,SH,stock,1
+002415,CN,海康威视,HKWS,haikangweishi,海康|Hikvision,SZ,stock,1
+002594,CN,比亚迪,BYD,biyadi,BYD|比亚迪股份,SZ,stock,1
+600030,CN,中信证券,ZXZQ,zhongxinzhengquan,中信证券|券商龙头,SH,stock,1
+600900,CN,长江电力,CJDL,changjiangdianli,长电|三峡电站,SH,stock,1
+601899,CN,紫金矿业,ZJKY,zijinkuangye,紫金|紫金矿业集团,SH,stock,1
+600309,CN,万华化学,WHHX,wanhuahuaxue,万华|万华化学集团,SH,stock,1
+601012,CN,隆基绿能,LJLN,longjilvneng,隆基|隆基股份|光伏,SZ,stock,1
+300760,CN,迈瑞医疗,MRYL,mairuiyiliao,迈瑞|Mindray,SZ,stock,1
+000651,CN,格力电器,GLDQ,gelidianqi,格力|珠海格力,SZ,stock,1
+002475,CN,立讯精密,LXJM,lixunjingmi,立讯|立讯精密工业,SZ,stock,1
+603259,CN,药明康德,YMKD,yaomingkangde,药明|WuXi AppTec,SH,stock,1
+300059,CN,东方财富,DFCF,dongfangcaifu,东财|东方财富网,SZ,stock,1
+601166,CN,兴业银行,XYYH,xingyeyinhang,兴业|兴业银行,SH,stock,1
+600050,CN,中国联通,ZGLT,zhongguoliantong,联通|中国联合网络通信,SH,stock,1
+600104,CN,上汽集团,SQJT,shangqijituan,上汽|上海汽车,SH,stock,1
+000002,CN,万科A,WKA,wankea,万科|万科企业,SZ,stock,1
+002230,CN,科大讯飞,KDXF,kedaxunfei,讯飞|iFlytek,SZ,stock,1
+601398,CN,工商银行,GSYH,gongshangyinhang,工行|ICBC,SH,stock,1
+601988,CN,中国银行,ZGYH,zhongguoyinhang,中行|BOC,SH,stock,1
+601288,CN,农业银行,NYYH,nongyeyinhang,农行|ABC,SH,stock,1
+600028,CN,中国石化,ZGSH,zhongguoshihua,中石化|Sinopec,SH,stock,1
+601857,CN,中国石油,ZGSY,zhongguoshiyou,中石油|PetroChina,SH,stock,1
+600031,CN,三一重工,SYZG,sanyizhonggong,三一|工程机械,SH,stock,1
+300014,CN,亿纬锂能,YWLN,yiweilinen,亿纬|锂电池,SZ,stock,1
+002352,CN,顺丰控股,SFKG,shunfengkonggu,顺丰|SF Express,SZ,stock,1
+603501,CN,韦尔股份,WEGF,weiergufen,韦尔|Will Semiconductor,SH,stock,1
+600570,CN,恒生电子,HSDZ,hengshengdianzi,恒生|金融IT,SH,stock,1
+AAPL,US,Apple Inc.,AAPL,apple,苹果|Apple|iPhone,NASDAQ,stock,1
+MSFT,US,Microsoft Corp.,MSFT,microsoft,微软|Microsoft|Azure,NASDAQ,stock,1
+NVDA,US,NVIDIA Corp.,NVDA,nvidia,英伟达|NVIDIA|GPU,NASDAQ,stock,1
+GOOGL,US,Alphabet Inc. Class A,GOOGL,alphabet,谷歌|Google|Alphabet,NASDAQ,stock,1
+AMZN,US,Amazon.com Inc.,AMZN,amazon,亚马逊|Amazon|AWS,NASDAQ,stock,1
+TSLA,US,Tesla Inc.,TSLA,tesla,特斯拉|Tesla|EV,NASDAQ,stock,1
+META,US,Meta Platforms Inc.,META,meta,Meta|Facebook|脸书,NASDAQ,stock,1
+JPM,US,JPMorgan Chase & Co.,JPM,jpmorgan,摩根大通|JPMorgan|JP Morgan,NYSE,stock,1
+BRK.B,US,Berkshire Hathaway Inc. Class B,BRKB,berkshire,伯克希尔|Berkshire|巴菲特,NYSE,stock,1
+LLY,US,Eli Lilly and Co.,LLY,elililly,礼来|Eli Lilly,NYSE,stock,1
+AVGO,US,Broadcom Inc.,AVGO,broadcom,博通|Broadcom,NASDAQ,stock,1
+V,US,Visa Inc.,V,visa,Visa|维萨,NYSE,stock,1
+MA,US,Mastercard Inc.,MA,mastercard,万事达|Mastercard,NYSE,stock,1
+XOM,US,Exxon Mobil Corp.,XOM,exxonmobil,埃克森美孚|Exxon,NYSE,stock,1
+UNH,US,UnitedHealth Group Inc.,UNH,unitedhealth,联合健康|UnitedHealth,NYSE,stock,1

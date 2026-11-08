@@ -12,7 +12,7 @@ from .catalog import settings
 def export_skills(host: str) -> dict:
     relative = settings()["exports"].get(host)
     if not relative:
-        raise ValueError("该宿主CLI的项目Skill发现目录尚未核验；可直接使用egs/skills.py，不套用IDE目录")
+        raise ValueError("该宿主CLI的项目Skill发现目录尚未核验；可直接使用egs/entrypoints/skills.py，不套用IDE目录")
     root = (PROJECT_ROOT / relative).resolve()
     if not root.is_relative_to(PROJECT_ROOT.resolve()):
         raise ValueError("Skill导出目录越界")

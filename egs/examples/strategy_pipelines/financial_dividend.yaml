@@ -1,0 +1,37 @@
+# File format: YAML; encoding: UTF-8
+schema_version: 1
+name: 历史红利可持续性
+description: Independent project factor recipe; requires original dated financial
+  observations, not current revised snapshots.
+universe:
+  symbols:
+  - '000001'
+  - '600036'
+  - '600519'
+  - 000858
+  - '601318'
+  - '300750'
+nodes:
+- id: eligible
+  component: eligibility
+  inputs:
+  - universe
+  params: {}
+- id: financial
+  component: financial_score
+  inputs:
+  - eligible
+  params:
+    style: dividend
+output: financial
+portfolio:
+  component: score
+  params:
+    top_k: 5
+    max_weight: 0.25
+risk:
+  require_sector: true
+execution: {}
+rebalance_sessions: 20
+variants:
+  baseline: {}

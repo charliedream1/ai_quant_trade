@@ -90,14 +90,14 @@ baseline是明确的统计预测基线，未声称训练了模型；lightgbm只�
 ## 命令行
 
 ```powershell
-.venv-secure/Scripts/python.exe -B egs/cli.py agent-strategy recipes
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha import --kind documents --file documents.yaml
-.venv-secure/Scripts/python.exe -B egs/cli.py agent-strategy start --file study.yaml
-.venv-secure/Scripts/python.exe -B egs/cli.py agent-strategy watch 1 --stream
-.venv-secure/Scripts/python.exe -B egs/cli.py agent-strategy scores 1
-.venv-secure/Scripts/python.exe -B egs/cli.py agent-strategy file 1 result.json
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py agent-strategy recipes
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha import --kind documents --file documents.yaml
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py agent-strategy start --file study.yaml
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py agent-strategy watch 1 --stream
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py agent-strategy scores 1
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py agent-strategy file 1 result.json
 ```
 
-study.yaml示例位于`egs/agent_strategy_examples/study.yaml`，数据集/模型ID需替换。agent-strategy用于单时点研究；pipeline命令继续承担组合发布、历史/模拟执行和归因，可传agent_mode、agent_documents_dataset_id、agent_strategy_options。文件命令返回有界正文及下载链接；watch、events、cancel使用同一真实运行ID。
+study.yaml示例位于`egs/examples/agent_strategy_examples/study.yaml`，数据集/模型ID需替换。agent-strategy用于单时点研究；pipeline命令继续承担组合发布、历史/模拟执行和归因，可传agent_mode、agent_documents_dataset_id、agent_strategy_options。文件命令返回有界正文及下载链接；watch、events、cancel使用同一真实运行ID。
 
 原理见[辩论与竞赛](../principles/agent_strategies.md)。本轮真实模型验收的完成与受阻项单独记录在正式审计报告，不能用演示截图替代真实模型或收益证据。

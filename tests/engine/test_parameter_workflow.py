@@ -14,7 +14,7 @@ from src.strategy import StrategyStore
 @pytest.fixture
 def strategy(client):
     return StrategyStore().import_example(
-        "egs/strategy_examples/standard_port_strategy.py",
+        "egs/examples/strategy_examples/standard_port_strategy.py",
         {"name": "parameter_workflow", "default_params": {"min_change_pct": 0, "quantity": 200}},
     )
 

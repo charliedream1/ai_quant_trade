@@ -11,7 +11,7 @@ import yaml
 
 from src.core.exceptions import BusinessError, ErrorCode
 
-PROFILE_ROOT = Path(__file__).resolve().parents[2] / "egs" / "strategy_params"
+PROFILE_ROOT = Path(__file__).resolve().parents[2] / "egs" / "examples" / "strategy_params"
 RESERVED_KEYS = {"_backtest", "_experiment"}
 
 

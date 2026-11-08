@@ -19,7 +19,7 @@ from src.engine.backtest import BacktestRunner
 from src.strategy import StrategyStore
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "egs" / "model_validation.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "models" / "model_validation.yaml"
 
 
 def main() -> None:
@@ -91,7 +91,7 @@ def _validate(config):
             name = f"real_validation_{profile}"
             strategy = next((row for row in store.list(keyword=name)["items"] if row["name"] == name), None)
             if strategy is None:
-                strategy = store.import_example(f"egs/strategy_examples/{profile}_strategy.py", {"name": name})
+                strategy = store.import_example(f"egs/examples/strategy_examples/{profile}_strategy.py", {"name": name})
             StrategyStore().set_status(strategy["strategy_id"], "可用")
             runner = BacktestRunner()
             with patch("src.engine.backtest.runner.DataSourceManager", HistoricalPanel):

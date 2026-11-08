@@ -6,9 +6,9 @@ end_date: "2026-01-16"
 capital: 1000000
 quantity: 100
 examples:
-  - egs/strategy_examples/dual_ma_strategy.py
-  - egs/strategy_examples/standard_port_strategy.py
-  - egs/strategy_examples/function_signal_strategy.py
+  - egs/examples/strategy_examples/dual_ma_strategy.py
+  - egs/examples/strategy_examples/standard_port_strategy.py
+  - egs/examples/strategy_examples/function_signal_strategy.py
 message: "你好"
 timeout_ms: 15000
 out_of_range_rows:

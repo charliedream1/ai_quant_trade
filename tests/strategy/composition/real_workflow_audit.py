@@ -28,7 +28,7 @@ def main():
         label = f"{index + 1:02d}-{case['template']}-{case['mode']}"
         command = [
             sys.executable,
-            "egs/cli.py",
+            "egs/entrypoints/cli.py",
             "--base-url",
             cfg["base_url"],
             "--format",

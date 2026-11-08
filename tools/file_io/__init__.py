@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 # @Author   : liyi
 # @Time     : 2022/10/1 22:35
 # @File     : __init__.py.py
 # @Project  : ai_quant_trade
 # Copyright (c) Personal 2022 liyi
-# Function Description: 
+# Function Description:
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

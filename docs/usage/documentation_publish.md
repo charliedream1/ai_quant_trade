@@ -8,9 +8,9 @@
 | --- | --- | --- | --- |
 | 仓库公开文档站 | `mkdocs.yml` | `.venv-docs`，安装`requirements-docs.txt` | `site/` |
 | Gradio内帮助站 | `mkdocs.platform.yml` | `.venv-secure`中的MkDocs，无需Material | `data/help_site/` |
-| 仅平台帮助的独立发布样例 | `egs/mkdocs.publish.example.yaml` | 轻量MkDocs，继承`mkdocs.platform.yml` | `data/docs_publication/` |
+| 仅平台帮助的独立发布样例 | `egs/config/operations/mkdocs.publish.example.yaml` | 轻量MkDocs，继承`mkdocs.platform.yml` | `data/docs_publication/` |
 
-公开站采用Material与中英语言选择，保留原仓库的环境/FAQ/部署资料及新的量化工作台。平台使用/原理指南目前以中文为主，在英文站有明确回退；三份根README的语言版本不等于全部使用指南已经翻译成三种语言。`zz_scripts/docs_language.py`提供语言根目录地图，并让语言菜单使用i18n生成的当前页面链接，避免深层sitemap请求404或切换后退回首页；该Hook仅用于公开站，不修改环境包。
+公开站采用Material与中英语言选择，保留原仓库的环境/FAQ/部署资料及新的量化工作台。平台使用/原理指南目前以中文为主，在英文站有明确回退；三份根README的语言版本不等于全部使用指南已经翻译成三种语言。`scripts/docs/docs_language.py`提供语言根目录地图，并让语言菜单使用i18n生成的当前页面链接，避免深层sitemap请求404或切换后退回首页；该Hook仅用于公开站，不修改环境包。
 
 MkDocs负责把Markdown构建成静态文件；Read the Docs是可承载MkDocs的构建/托管服务，两者并不互斥。[MkDocs部署说明](https://www.mkdocs.org/user-guide/deploying-your-docs/)、[Read the Docs配置](https://docs.readthedocs.com/platform/stable/config-file/v2.html#mkdocs)。内置的readthedocs主题只是样式，不等于内容已上线。
 
@@ -40,8 +40,8 @@ Linux创建时用python3，解释器路径为`.venv-docs/bin/python`。固定版
 公开站：
 
 ```text
-.venv-docs/Scripts/python.exe zz_scripts/check_docs_publish_scope.py
-.venv-docs/Scripts/python.exe zz_scripts/check_docs_build.py
+.venv-docs/Scripts/python.exe scripts/docs/check_docs_publish_scope.py
+.venv-docs/Scripts/python.exe scripts/docs/check_docs_build.py
 .venv-docs/Scripts/python.exe -m mkdocs build --strict -f mkdocs.yml
 ```
 

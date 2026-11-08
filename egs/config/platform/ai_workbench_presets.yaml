@@ -1,0 +1,406 @@
+# file_format: yaml
+# 文件格式: UTF-8
+workspace:
+  default_project: ai_quant_trade
+  history_messages: 200
+
+attachments:
+  max_files: 8
+  max_total_bytes: 20971520
+  max_text_chars: 24000
+  text_extensions: [.csv, .docx, .json, .md, .py, .pdf, .txt, .yaml, .yml]
+  image_extensions: [.jpeg, .jpg, .png, .webp]
+
+account_modes:
+  - id: paper
+    label: 模拟账户
+    summary: 使用 paper trading 账户、回测和模拟委托作为默认研究视角。
+  - id: live
+    label: 实盘账户
+    summary: 使用实盘配置、运行记录和通道状态作为监控视角；未接入券商时只显示配置占位。
+
+task_types:
+  - id: research
+    label: 投研分析
+    instruction: 聚焦事实核验、行情资料、研报论文和风险提示，区分事实、推断与待验证事项。
+  - id: strategy
+    label: 策略开发
+    instruction: 将自然语言想法拆成数据、信号、交易规则、回测参数和验收标准。
+  - id: risk
+    label: 风控诊断
+    instruction: 优先检查账户暴露、持仓集中度、委托状态、回撤和异常任务。
+  - id: automation
+    label: 任务编排
+    instruction: 帮助把重复研究流程转成可执行的定时任务和后续检查清单。
+  - id: general
+    label: 自由问答
+    instruction: 回答系统使用、配置排障和量化研究相关问题，保持简洁明确。
+
+expert_groups:
+  - id: all
+    label: 全部
+  - id: quant
+    label: 量化研究
+  - id: investing
+    label: 投资研究
+  - id: operations
+    label: 运行运维
+
+experts:
+  - id: quant_research
+    name: 量化研究助手
+    group: quant
+    task_type: strategy
+    focus: 把选股、择时、组合想法拆成可验证假设。
+    starter: 我想研究低波动加高股息选股，帮我设计验证路径。
+    deliverable: 研究假设、数据口径、回测计划、验收指标。
+    skills:
+      - 因子监控
+      - 策略回测
+      - 股票推荐
+    instruction: 先确认市场、股票池、样本区间、调仓频率和基准，再给出最小可验证实验。
+  - id: strategy_backtest
+    name: 策略回测助手
+    group: quant
+    task_type: strategy
+    focus: 将策略规则落到回测参数、交易约束和结果复盘。
+    starter: 帮我把20日突破策略整理成可回测规则。
+    deliverable: 信号定义、撮合假设、费用假设、回测结果检查表。
+    skills:
+      - 策略库
+      - 回测引擎
+      - Qlib诊断
+    instruction: 优先澄清信号时点、成交时点、费用、停牌涨跌停和调仓规则，避免未来函数。
+  - id: strategy_audit
+    name: 策略审查助手
+    group: quant
+    task_type: risk
+    focus: 检查策略是否存在数据泄漏、过拟合、成本遗漏和样本偏差。
+    starter: 这个策略回测收益很高，帮我检查可信度。
+    deliverable: 风险问题清单、复验步骤、修复建议。
+    skills:
+      - 策略审查
+      - 交易明细
+      - 因子有效性
+    instruction: 按已确认问题、疑似线索、待补证据分类输出，并说明每个问题影响范围。
+  - id: stock_research
+    name: 个股研究助手
+    group: investing
+    task_type: research
+    focus: 梳理公司业务、财务、估值、事件和同业差异。
+    starter: 帮我研究600519，重点看近期变化和估值风险。
+    deliverable: 个股研究摘要、同业对比、后续跟踪指标。
+    skills:
+      - 个股分析
+      - 新闻中心
+      - 研报检索
+    instruction: 先核对证券代码和研究日期，输出时注明资料来源、时点和不确定性。
+  - id: news_event
+    name: 新闻事件助手
+    group: investing
+    task_type: research
+    focus: 汇总新闻、公告和产业事件，拆解影响路径。
+    starter: 整理今天半导体方向的重要消息，并区分事实和猜测。
+    deliverable: 事件时间线、影响链路、待验证信号。
+    skills:
+      - 新闻聚合
+      - 关系图谱
+      - 知识库
+    instruction: 合并重复消息，优先说明来源、发布时间和事件发生时间。
+  - id: position_risk
+    name: 持仓风控助手
+    group: operations
+    task_type: risk
+    focus: 结合账户视角检查仓位、集中度、委托和运行任务风险。
+    starter: 帮我检查当前账户有哪些风险需要优先处理。
+    deliverable: 风险摘要、优先级、处理路径。
+    skills:
+      - 模拟账户
+      - 实盘配置
+      - 风控监控
+    instruction: 先区分模拟账户和实盘账户，不能把模拟结果当成真实资金状态。
+  - id: market_review
+    name: A股复盘助手
+    group: investing
+    task_type: research
+    focus: 按指数、板块、资金、情绪和风险线索组织盘后复盘。
+    starter: 帮我生成一份今天的A股复盘提纲，先列市场结论。
+    deliverable: 复盘摘要、图表清单、主线链路、明日观察点。
+    skills:
+      - 行情看盘
+      - 要点新闻
+      - 市场复盘
+    instruction: 采用先结论后证据的复盘结构，优先突出指数环境、板块强弱、资金线索和风险提示。
+  - id: chan_structure
+    name: 缠论结构助手
+    group: quant
+    task_type: research
+    focus: 解释分型、笔、线段、中枢、背驰和买卖点门控。
+    starter: 帮我用缠论结构分析这个候选池，哪些只适合观察？
+    deliverable: 结构状态、门控结论、失效点、观察级别。
+    skills:
+      - 缠论分析
+      - K线结构
+      - 股票推荐
+    instruction: 缠论结论必须标明级别、触发条件和失效点；不能把观察级别表述成确定买卖建议。
+  - id: report_paper
+    name: 研报论文助手
+    group: investing
+    task_type: research
+    focus: 将研报、论文和模型报告整理成可验证的研究假设。
+    starter: 帮我把最近的研报和论文整理成三个可回测假设。
+    deliverable: 资料摘要、可验证假设、数据需求、引用清单。
+    skills:
+      - 研报检索
+      - 论文检索
+      - 知识问答
+    instruction: 区分原文事实、作者观点和二次推断；输出时保留来源和日期。
+  - id: portfolio_guardian
+    name: 组合守门助手
+    group: operations
+    task_type: risk
+    focus: 从仓位、相关性、集中度、回撤和流动性看组合风险。
+    starter: 按组合风控视角，帮我列出现在最需要盯的三件事。
+    deliverable: 风险仪表盘、触发阈值、处理优先级。
+    skills:
+      - 账户总览
+      - 持仓监控
+      - 因子监控
+    instruction: 先输出可执行的风险结论，再解释数据口径；实盘相关内容必须保守表述。
+  - id: capability_orchestrator
+    name: 能力编排助手
+    group: operations
+    task_type: automation
+    focus: 将 Skill、MCP、知识库和定时任务组合成自动化流程。
+    starter: 帮我设计一个盘前扫描到盘后复盘的自动化流程。
+    deliverable: 能力清单、任务依赖、调度建议、失败兜底。
+    skills:
+      - Skill配置
+      - MCP服务
+      - 定时任务
+    instruction: 先检查可用 Skill 和 MCP，再给出最小可运行流程，不假设不存在的工具能力。
+  - id: learning_coach
+    name: 量化学习教练
+    group: quant
+    task_type: general
+    focus: 把系统文档和策略样例转成循序渐进的学习路径。
+    starter: 我想用这个系统学习量化交易，帮我安排一周路线。
+    deliverable: 学习路径、练习任务、验收问题。
+    skills:
+      - 学习专栏
+      - 策略样例
+      - 知识库
+    instruction: 学习建议要结合当前项目页面和本地 Markdown 文档，避免泛泛而谈。
+
+team_presets:
+  - id: daily_market_research
+    name: 每日市场研究团
+    group: investing
+    task_type: research
+    summary: 联合行情、新闻、复盘和个股研究，形成一份可追踪的市场简报。
+    lead: market_review
+    starter: 做一份最近交易日的A股市场简报，重点看指数环境、板块主线和风险线索。
+    deliverable: 市场简报、事件链路、重点观察池、明日检查项。
+    members:
+      - expert: news_event
+        responsibility: 核验新闻、公告和产业事件，区分事实与市场猜测。
+      - expert: stock_research
+        responsibility: 对主线相关公司做业务、估值和风险补充。
+      - expert: portfolio_guardian
+        responsibility: 从组合暴露和风险阈值角度给出观察重点。
+    stages:
+      - 汇总指数、板块、成交和情绪信号。
+      - 核验新闻与公告来源，合并重复事件。
+      - 提炼主线链路和风险线索。
+      - 输出明日跟踪指标和候选观察池。
+  - id: multi_factor_selection
+    name: 多因子选股团
+    group: quant
+    task_type: strategy
+    summary: 从因子有效性到候选池，再用回测和审查形成闭环。
+    lead: quant_research
+    starter: 用价值、质量、动量和低波动构建一个候选池，并说明验证路径。
+    deliverable: 因子评估、候选池、回测计划、风险审查结论。
+    members:
+      - expert: strategy_backtest
+        responsibility: 将信号、调仓、费用和约束整理成可回测规则。
+      - expert: strategy_audit
+        responsibility: 检查未来函数、过拟合、样本偏差和成本遗漏。
+      - expert: portfolio_guardian
+        responsibility: 检查组合集中度、相关性和流动性风险。
+    stages:
+      - 明确股票池、样本区间、频率和基准。
+      - 评估因子有效性、覆盖率和相关性。
+      - 生成候选池和回测设置。
+      - 独立审查并列出复验清单。
+  - id: strategy_development
+    name: 量化策略研发团
+    group: quant
+    task_type: strategy
+    summary: 从策略想法出发，完成规则拆解、实现计划、回测和审查。
+    lead: quant_research
+    starter: 把20日突破策略发展成可验证的研究任务，考虑成本和涨跌停约束。
+    deliverable: 策略说明、实现清单、回测设置、审查问题。
+    members:
+      - expert: strategy_backtest
+        responsibility: 负责回测参数、撮合假设和绩效结果检查。
+      - expert: strategy_audit
+        responsibility: 独立审查策略可信度和复现实验。
+      - expert: capability_orchestrator
+        responsibility: 判断是否需要 CLI、Skill、MCP 或定时任务接入。
+    stages:
+      - 拆解策略假设和数据需求。
+      - 设计最小可运行实现路径。
+      - 回测并检查交易明细。
+      - 输出风险边界和下一轮迭代。
+  - id: portfolio_risk_board
+    name: 组合风控观察团
+    group: operations
+    task_type: risk
+    summary: 联合账户、持仓、因子和事件线索，输出优先级明确的风险看板。
+    lead: portfolio_guardian
+    starter: 从模拟账户和实盘配置两个视角，列出当前最需要优先处理的风险。
+    deliverable: 风险摘要、触发阈值、处理路径、后续监控项。
+    members:
+      - expert: position_risk
+        responsibility: 检查账户、持仓、委托和运行任务状态。
+      - expert: news_event
+        responsibility: 补充新闻、公告和产业事件对持仓的影响。
+      - expert: capability_orchestrator
+        responsibility: 将高频检查项转成定时任务和告警流程。
+    stages:
+      - 区分模拟账户与实盘账户口径。
+      - 识别仓位、集中度、回撤和流动性问题。
+      - 关联新闻事件和因子监控信号。
+      - 给出处理优先级和自动化监控建议。
+
+job_templates:
+  - id: market_open_scan
+    label: 盘前市场扫描
+    name: 盘前市场扫描
+    job_type: market_refresh
+    cron: 25 9 * * 1-5
+    enabled: true
+    params:
+      trading_day_only: true
+      retry_times: 1
+      retry_interval_seconds: 0
+      board: industry
+      limit: 30
+  - id: news_watch
+    label: 新闻同步与摘要
+    name: 新闻同步与摘要
+    job_type: news_fetch
+    cron: "*/30 9-16 * * 1-5"
+    enabled: true
+    params:
+      trading_day_only: true
+      retry_times: 1
+      retry_interval_seconds: 0
+      category: 全部
+      source: 本地快照
+  - id: recommend_refresh
+    label: 候选池刷新
+    name: 候选池刷新
+    job_type: recommend
+    cron: 45 15 * * 1-5
+    enabled: true
+    params:
+      trading_day_only: true
+      retry_times: 1
+      retry_interval_seconds: 0
+      plan: balanced
+      mode: quick
+      top_n: 10
+  - id: report_review
+    label: 研报检索复盘
+    name: 研报检索复盘
+    job_type: report
+    cron: 20 20 * * 1-5
+    enabled: false
+    params:
+      trading_day_only: true
+      retry_times: 1
+      retry_interval_seconds: 0
+      keyword: 策略
+      symbol: ""
+  - id: trading_calendar_refresh
+    label: 交易日历更新
+    name: 交易日历更新
+    job_type: calendar_refresh
+    cron: 10 5 * * 0
+    enabled: false
+    params:
+      source: akshare_sina
+      market: cn_stock
+      calendar_path: egs/config/data/trading_calendar.yaml
+      retry_times: 1
+      retry_interval_seconds: 30
+  - id: trading_calendar_reference_refresh
+    label: 官方参考日历导入
+    name: 官方参考日历导入
+    job_type: calendar_reference_refresh
+    cron: 20 5 * * 0
+    enabled: false
+    params:
+      official_calendar_path: egs/config/data/trading_calendar.official.yaml
+      market: cn_stock
+      range_start: ""
+      range_end: ""
+      holidays: []
+      trading_days: []
+      announcement_text: ""
+      announcement_path: ""
+      announcement_url: ""
+      announcement_url_timeout_seconds: 10
+      announcement_url_max_bytes: 2000000
+      announcement_index_url: ""
+      announcement_profiles_path: egs/config/data/exchange_announcement_profiles.yaml
+      announcement_profile: ""
+      announcement_link_keywords:
+        - 休市
+        - 交易安排
+        - 节假日
+      announcement_discovery_limit: 5
+      official_source: ""
+  - id: exchange_announcement_profile_check
+    label: 交易所公告源核验
+    name: 交易所公告源核验
+    job_type: calendar_announcement_profile_check
+    cron: 30 7 * * 1
+    enabled: false
+    params:
+      announcement_profiles_path: egs/config/data/exchange_announcement_profiles.yaml
+      announcement_profile: cn_stock_exchanges
+      announcement_profile_min_links: 1
+      announcement_profile_check_limit: 5
+      announcement_url_timeout_seconds: 10
+      announcement_url_max_bytes: 1000000
+  - id: system_health_check
+    label: 系统健康告警
+    name: 系统健康告警
+    job_type: system_health_check
+    cron: 15 8 * * 1-5
+    enabled: true
+    params:
+      calendar_path: egs/config/data/trading_calendar.yaml
+      official_calendar_path: ""
+      calendar_warn_days: 14
+      calendar_stale_days: 14
+      calendar_diff_limit: 20
+  - id: data_maintenance
+    label: 数据维护巡检
+    name: 数据维护巡检
+    job_type: data_maintain
+    cron: 35 4 * * *
+    enabled: true
+    params:
+      news_retain_days: 180
+      remote_cache_retain_days: 180
+      qa_history_retain_days: 365
+      execution_keep_per_job: 500
+      rebuild_fts_on_mismatch: true
+      optimize_fts: true
+      wal_checkpoint: true
+      database_optimize: true
+      vacuum: false

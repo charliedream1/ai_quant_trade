@@ -113,7 +113,7 @@ def test_model_strategy_import_fit_predict_and_backtest(client, monkeypatch, bar
             return {"kline": bars[symbol]}
 
     monkeypatch.setattr("src.engine.backtest.runner.DataSourceManager", PanelData)
-    item = StrategyStore().import_example(f"egs/strategy_examples/{filename}", {"name": profile})
+    item = StrategyStore().import_example(f"egs/examples/strategy_examples/{filename}", {"name": profile})
     enabled = client.post(f"/api/v1/strategies/{item['strategy_id']}/enable").json()
     assert enabled["code"] == 0
     all_dates = [row["timestamp"] for row in next(iter(bars.values()))]

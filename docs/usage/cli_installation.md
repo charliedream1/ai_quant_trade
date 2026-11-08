@@ -2,7 +2,7 @@
 
 2026-10-29：研究角色新增统一API/CLI选择；不用网页的十个本地研究Skill、按角色覆盖、项目级导出及严格研究可用性边界，见[Agent后端与原生Skills](agent_cli_skills.md)。程序安装与普通对话成功不等于历史研究资格已通过。
 
-2026-10-29核对。本文说明安装、登录、路径和接入检查；命令需要您在目标机器执行。本轮只更新文档，没有重新安装工具或替您登录。平台自身的 `python egs/cli.py` 用法见[平台命令行](cli.md)，不需要先安装下面所有AI工具。
+2026-10-29核对。本文说明安装、登录、路径和接入检查；命令需要您在目标机器执行。本轮只更新文档，没有重新安装工具或替您登录。平台自身的 `python egs/entrypoints/cli.py` 用法见[平台命令行](cli.md)，不需要先安装下面所有AI工具。
 
 ## 先选需要的工具
 
@@ -124,7 +124,7 @@ ALL_IN_ONE_QODER_CLI=E:/Tools/QoderCLI/1.1.80/qodercli.exe
 ALL_IN_ONE_QODER_CONFIG_DIR=E:/Tools/QoderCLI/config
 ```
 
-Qoder适配器支持从进程环境、`.llm_env`、`.env`依次读取这两个变量，已有更高优先级值会覆盖.env。登录时Qoder使用自己的QODER_CONFIG_DIR，所以要在同一目录完成认证：
+Qoder适配器支持从进程环境、`.env`、`.env`依次读取这两个变量，已有更高优先级值会覆盖.env。登录时Qoder使用自己的QODER_CONFIG_DIR，所以要在同一目录完成认证：
 
 ```powershell
 $env:QODER_CONFIG_DIR='E:\Tools\QoderCLI\config'
@@ -215,7 +215,7 @@ mock行情服务默认不启动真实CLI。确实需要这种组合时，在启�
 | 项目变量 | 当前读取方式 | 应填写内容 |
 | --- | --- | --- |
 | ALL_IN_ONE_CODEX_CLI | 进程环境，再查PATH中的codex | Windows原生exe，或Linux可直接执行的入口 |
-| ALL_IN_ONE_QODER_CLI | 进程环境→.llm_env→.env，再查qoder/qodercli | 实际Qoder原生程序路径 |
+| ALL_IN_ONE_QODER_CLI | 进程环境→.env→.env，再查qoder/qodercli | 实际Qoder原生程序路径 |
 | ALL_IN_ONE_QODER_CONFIG_DIR | 同上 | 与登录时QODER_CONFIG_DIR相同的目录 |
 | ALL_IN_ONE_ENABLE_REAL_CLI | 进程环境 | mock行情下需要真实CLI时显式开启 |
 

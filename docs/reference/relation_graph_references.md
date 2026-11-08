@@ -26,4 +26,4 @@
 | 新闻共现 | 同一新闻/事件中共同出现 | 已预留关系类型 |
 | 收益相关 | 收益率相关、联动关系 | 已预留关系类型 |
 
-更完整的方案说明见 `doc/07_relation_graph_research.md`。
+更完整的方案说明见 `doc/data/relation_graph_research.md`。

@@ -1,0 +1,6 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "builder simulate": {"method":"POST","path":"/cli-sessions","positions":{},"query":{},"fields":{},"execution":true,"market":false,"disabled":"诊断/旧模拟器操作未开放；不作为真实交易或生成能力"}
+  "builder show": {"method":"GET","path":"/cli-sessions/{session_id}","positions":{"session_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "builder logs": {"method":"GET","path":"/cli-sessions/{session_id}/logs","positions":{"session_id":"int"},"query":{"offset":"int","limit":"int"},"fields":{},"execution":false,"market":false}
+  "builder import": {"method":"POST","path":"/cli-sessions/{session_id}/import","positions":{"session_id":"int"},"query":{},"fields":{},"execution":false,"market":false}

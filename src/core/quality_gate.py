@@ -23,7 +23,7 @@ def main(argv=None) -> int:
     if not destination.is_relative_to(PROJECT_ROOT):
         raise ValueError("质量报告必须保存在项目内")
     destination.mkdir(parents=True, exist_ok=True)
-    config = yaml.safe_load((PROJECT_ROOT / "egs/quality.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/operations/quality.yaml").read_text(encoding="utf-8"))
     commands = list(config["checks"])
     if args.security_tests:
         commands.append(

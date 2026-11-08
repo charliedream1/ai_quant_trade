@@ -1,0 +1,5 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "market indices": {"method":"GET","path":"/market/indices","positions":{},"query":{"refresh":"bool"},"fields":{},"execution":false,"market":true}
+  "market sectors": {"method":"GET","path":"/market/sectors","positions":{},"query":{"board":"str","sort":"str","limit":"int"},"fields":{},"execution":false,"market":true}
+  "market heatmap": {"method":"GET","path":"/market/heatmap","positions":{},"query":{"level":"str","board":"str","threshold":"float"},"fields":{},"execution":false,"market":true}

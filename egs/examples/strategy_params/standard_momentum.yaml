@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+entry: StandardPortMomentumStrategy
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承标准端口动量策略的默认参数。
+    params: {}
+  strict:
+    label: 高涨幅门槛对照
+    description: 提高单根涨幅门槛，比较交易次数与成本。
+    params: {min_change_pct: 0.02}

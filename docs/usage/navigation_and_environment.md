@@ -105,8 +105,8 @@
 Windows在项目根目录启动：
 
 ```powershell
-.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role models
-.venv-qlib-secure/Scripts/python.exe -B egs/check_runtime.py --role qlib
+.venv-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role models
+.venv-qlib-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role qlib
 .venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
 ```
 

@@ -24,7 +24,7 @@ from src.core.logger import get_logger
 from src.core.repository import Repository
 
 LOG = get_logger("agent.generic_agent")
-DEFAULT_CONFIG_PATH = PROJECT_ROOT / "egs" / "generic_agent.yaml"
+DEFAULT_CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "agents" / "generic_agent.yaml"
 TOOL_BLOCK_PATTERN = re.compile(r"<tool_use>(.*?)</tool_use>", re.DOTALL | re.IGNORECASE)
 
 

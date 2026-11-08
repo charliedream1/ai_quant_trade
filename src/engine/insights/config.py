@@ -7,7 +7,7 @@ import yaml
 
 from src.core.config import PROJECT_ROOT
 
-CONFIG_PATH = PROJECT_ROOT / "egs" / "insight_reports.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "platform" / "insight_reports.yaml"
 SKILL_ROOT = PROJECT_ROOT / "src" / "skills"
 
 

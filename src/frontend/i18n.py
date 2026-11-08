@@ -329,7 +329,7 @@ COMMON_LABELS: dict[str, str] = {
     "模型 ID": "Model ID",
     "Base URL": "Base URL",
     "API Key 环境变量": "API Key Env Var",
-    "API Key（安全写入 .llm_env）": "API Key (written to .llm_env)",
+    "API Key（安全写入 .env）": "API Key (written to .env)",
     "Max Tokens": "Max Tokens",
     "Temperature": "Temperature",
     "使用 LLM": "Use LLM",
@@ -959,7 +959,7 @@ TRANSLATIONS: dict[str, str] = {
 }
 
 # Kept in YAML so interface copy can be maintained independently of the runtime.
-_WORKSPACE_TRANSLATIONS = Path(__file__).resolve().parents[2] / "egs/ui_translations.yaml"
+_WORKSPACE_TRANSLATIONS = Path(__file__).resolve().parents[2] / "egs/config/ui/ui_translations.yaml"
 TRANSLATIONS.update(yaml.safe_load(_WORKSPACE_TRANSLATIONS.read_text(encoding="utf-8")))
 
 

@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+entry: ETFMomentumRotationStrategy
+profiles:
+  baseline:
+    label: ETF基准轮动
+    description: 60日相对强弱、20日调仓，适用于配置池流程验证。
+    params: {}
+  slower:
+    label: ETF低换手对照
+    description: 拉长回看与调仓周期，比较换手和交易成本变化。
+    params: {lookback: 120, rebalance_days: 40, top_n: 2}

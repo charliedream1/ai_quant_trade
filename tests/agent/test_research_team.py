@@ -72,7 +72,7 @@ def protocol_provider():
 
 
 def _backtest():
-    item = StrategyStore().import_example("egs/strategy_examples/dual_ma_strategy.py")
+    item = StrategyStore().import_example("egs/examples/strategy_examples/dual_ma_strategy.py")
     task = BacktestRunner().create(
         {
             "strategy_id": item["strategy_id"],
@@ -86,7 +86,7 @@ def _backtest():
 
 
 def _etf_backtest():
-    item = StrategyStore().import_example("egs/strategy_examples/etf_momentum_rotation_strategy.py")
+    item = StrategyStore().import_example("egs/examples/strategy_examples/etf_momentum_rotation_strategy.py")
     task = BacktestRunner().create(
         {
             "strategy_id": item["strategy_id"],

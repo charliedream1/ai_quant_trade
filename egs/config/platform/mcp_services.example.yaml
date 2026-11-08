@@ -1,0 +1,37 @@
+# file_format: yaml
+# 文件格式: UTF-8
+#
+# 本文件只提供 MCP 服务配置样例，不会自动启动外部服务。
+# 可将 services 中的字段转换为“系统配置 / MCP 服务”的连接参数 JSON。
+
+file_format: yaml
+services:
+  - name: local_mcp_stdio
+    service_type: 本地工具
+    transport: stdio
+    enabled: false
+    connection:
+      command: python
+      args:
+        - -m
+        - your_mcp_server
+      env: {}
+      timeout_seconds: 10
+
+  - name: remote_mcp_http
+    service_type: 远程工具
+    transport: http
+    enabled: false
+    connection:
+      url: https://your-mcp-server.example.com/mcp
+      headers: {}
+      timeout_seconds: 10
+
+  - name: remote_mcp_sse
+    service_type: SSE 工具
+    transport: sse
+    enabled: false
+    connection:
+      url: https://your-mcp-server.example.com/sse
+      headers: {}
+      timeout_seconds: 10

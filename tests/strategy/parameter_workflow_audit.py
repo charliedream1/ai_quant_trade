@@ -19,7 +19,7 @@ from src.strategy import StrategyStore
 from src.strategy.parameters import StrategyParameters
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "egs/parameter_validation.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs/config/strategies/parameter_validation.yaml"
 
 
 def run_audit(config: dict) -> dict:
@@ -42,7 +42,7 @@ def run_audit(config: dict) -> dict:
         name = f"parameter_audit_{Path(filename).stem}"
         strategy = next((row for row in store.list(keyword=name)["items"] if row["name"] == name), None)
         if strategy is None:
-            strategy = store.import_example(f"egs/strategy_examples/{filename}", {"name": name})
+            strategy = store.import_example(f"egs/examples/strategy_examples/{filename}", {"name": name})
         for scheme in strategy_config["schemes"]:
             times = []
             for _ in range(config["preview_repeats"]):

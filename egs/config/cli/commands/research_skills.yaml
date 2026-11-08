@@ -1,0 +1,16 @@
+# YAML 1.2, UTF-8
+read: &read {method: GET, positions: {}, fields: {}, query: {}, execution: false, market: false}
+write: &write {method: POST, positions: {}, fields: {}, query: {}, execution: true, market: false}
+commands:
+  provider list: {<<: *read, path: /agent-providers, query: {probe: bool}}
+  research-skill list: {<<: *read, path: /research-skills}
+  research-skill preview: {<<: *write, path: /research-skills/preview, fields: {skill: str, request: json, provider: json}}
+  research-skill run: {<<: *write, path: /research-skills/runs, fields: {skill: str, request: json, provider: json}}
+  research-skill show: {<<: *read, path: '/research-skills/runs/{run_id}', positions: {run_id: str}}
+  research-skill events: {<<: *read, path: '/research-skills/runs/{run_id}/events', positions: {run_id: str}}
+  research-skill files: {<<: *read, path: '/research-skills/runs/{run_id}/files', positions: {run_id: str}}
+  research-skill cancel: {<<: *write, path: '/research-skills/runs/{run_id}/cancel', positions: {run_id: str}}
+  notification list: {<<: *read, path: /notifications, query: {client_id: str, after: int, before: int, initial: bool}}
+  notification config: {<<: *read, path: /notifications/config}
+  notification state: {<<: *write, path: '/notifications/{identifier}/state', positions: {identifier: int}, fields: {client_id: str, action: str}}
+  notification read-all: {<<: *write, path: /notifications/read-all, fields: {client_id: str, action: str}}

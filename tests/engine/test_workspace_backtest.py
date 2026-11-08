@@ -44,7 +44,7 @@ def test_composition_auto_binding_and_explicit_incompatibility(client):
 
 
 def test_failed_execution_has_task_and_no_success_result(client, monkeypatch):
-    strategy = StrategyStore().import_example("egs/strategy_examples/standard_port_strategy.py")
+    strategy = StrategyStore().import_example("egs/examples/strategy_examples/standard_port_strategy.py")
 
     def fail(*args, **kwargs):
         raise RuntimeError("historical source unavailable")
@@ -58,7 +58,7 @@ def test_failed_execution_has_task_and_no_success_result(client, monkeypatch):
 
 
 def test_async_duplicate_and_cancellation_keep_durable_id(client, monkeypatch):
-    strategy = StrategyStore().import_example("egs/strategy_examples/standard_port_strategy.py")
+    strategy = StrategyStore().import_example("egs/examples/strategy_examples/standard_port_strategy.py")
     entered, release, finished = Event(), Event(), Event()
     original = BacktestRunner.execute
 
@@ -104,7 +104,7 @@ def test_date_loader_uses_requested_dates_and_detects_interior_missing(client):
 
 
 def test_timeout_has_distinct_terminal_state(client):
-    strategy = StrategyStore().import_example("egs/strategy_examples/standard_port_strategy.py")
+    strategy = StrategyStore().import_example("egs/examples/strategy_examples/standard_port_strategy.py")
     task = BacktestRunner().create(request(strategy["id"]), deferred=True)
 
     def timeout():

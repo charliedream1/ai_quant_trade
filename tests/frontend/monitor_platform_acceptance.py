@@ -50,7 +50,7 @@ def resources(page, base: str, output: Path, root: Path) -> dict:
         download.value.save_as(str(output / filename))
     with page.expect_file_chooser() as chooser:
         frame.locator("#resource-pool-upload button").click()
-    chooser.value.set_files(str(root / "egs/resource_pool_templates/universe.csv"))
+    chooser.value.set_files(str(root / "egs/examples/resource_pool_templates/universe.csv"))
     expect(frame.locator("#resource-pool-upload")).to_contain_text(re.compile(r"universe\s*\.csv"))
     frame.get_by_role("button", name="校验并预览", exact=True).click()
     expect(frame.get_by_text("校验通过：", exact=False).first).to_be_visible(timeout=30000)

@@ -13,7 +13,7 @@ from src.core.exceptions import BusinessError, ErrorCode
 
 @lru_cache(maxsize=1)
 def preview_config() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/file_preview.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/file_preview.yaml").read_text(encoding="utf-8"))
 
 
 def file_kind(name: str) -> str:

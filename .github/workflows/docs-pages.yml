@@ -11,12 +11,12 @@ on:
     paths:
       - 'mkdocs.yml'
       - 'requirements-docs.txt'
-      - 'zz_scripts/docs_policy.py'
-      - 'zz_scripts/docs_language.py'
+      - 'scripts/docs/docs_policy.py'
+      - 'scripts/docs/docs_language.py'
       - 'docs/**'
       - 'scripts/**'
-      - 'zz_scripts/check_docs_publish_scope.py'
-      - 'zz_scripts/check_docs_build.py'
+      - 'scripts/docs/check_docs_publish_scope.py'
+      - 'scripts/docs/check_docs_build.py'
       - '.github/workflows/docs-pages.yml'
   # 支持手动触发
   workflow_dispatch:

@@ -17,7 +17,7 @@ class CallbackService(Protocol):
 
 @lru_cache(maxsize=1)
 def callback_registry() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/frontend_services.yaml").read_text(encoding="utf-8"))["methods"]
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/frontend_services.yaml").read_text(encoding="utf-8"))["methods"]
 
 
 def lookup_method(name: str):

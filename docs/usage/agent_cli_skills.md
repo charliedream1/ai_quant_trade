@@ -35,17 +35,17 @@ TRAE和CodeBuddy默认使用项目数据目录中的`cli_profiles/trae`和`cli_p
 在本项目根目录，使用现有项目Python环境。Windows可将下列`python`替换为`.venv-secure/Scripts/python.exe`；Linux使用已安装项目依赖的解释器，不在全局环境临时安装包。
 
 ```console
-python egs/skills.py catalog
-python egs/skills.py providers --probe
-python egs/skills.py preview --config egs/skills_examples/quant-backtest-review.yaml
-python egs/skills.py run --config <项目内研究.yaml> --format jsonl
-python egs/skills.py show <运行ID>
-python egs/skills.py events <运行ID>
-python egs/skills.py files <运行ID>
-python egs/skills.py cancel <运行ID>
+python egs/entrypoints/skills.py catalog
+python egs/entrypoints/skills.py providers --probe
+python egs/entrypoints/skills.py preview --config egs/examples/skills_examples/quant-backtest-review.yaml
+python egs/entrypoints/skills.py run --config <项目内研究.yaml> --format jsonl
+python egs/entrypoints/skills.py show <运行ID>
+python egs/entrypoints/skills.py events <运行ID>
+python egs/entrypoints/skills.py files <运行ID>
+python egs/entrypoints/skills.py cancel <运行ID>
 ```
 
-`egs/skills_examples/`中十份YAML是可编辑模板。示例ID不是已存在的数据，日期和证券也须换成研究所需的实际输入。`preview`只解析，不调用模型；`preflight`增加后端清单，带`--probe`才检查原生元数据，不做付费生成。
+`egs/examples/skills_examples/`中十份YAML是可编辑模板。示例ID不是已存在的数据，日期和证券也须换成研究所需的实际输入。`preview`只解析，不调用模型；`preflight`增加后端清单，带`--probe`才检查原生元数据，不做付费生成。
 
 ```yaml
 # YAML 1.2, UTF-8
@@ -81,16 +81,16 @@ CLI使用模型名称，API使用平台`model_id`。未登录、型号/强度不
 | `quant-cn-debate` | 行情/原文数据集、时点；综合/质量/事件预置 |
 | `quant-contest-trade` | 行情/原文数据集、时点；事件/质量/行业预置与成熟成绩 |
 
-Alpha首次执行只完成发现，不能自动宣称验证通过。后续YAML在`request`提供已有`study_id`及`action: seal`、`validate`或`holdout`；留出还要提供`candidate_id`，仍执行同一冻结家族和一次性留出限制。已有研究不会因为新命令提供不同默认模型而修改其冻结配置。经济与技术人工复核仍使用原页面或`egs/cli.py alpha`命令。
+Alpha首次执行只完成发现，不能自动宣称验证通过。后续YAML在`request`提供已有`study_id`及`action: seal`、`validate`或`holdout`；留出还要提供`candidate_id`，仍执行同一冻结家族和一次性留出限制。已有研究不会因为新命令提供不同默认模型而修改其冻结配置。经济与技术人工复核仍使用原页面或`egs/entrypoints/cli.py alpha`命令。
 
 可在配置顶层增加`imports`列表，每项指定项目内`file`、`kind`和`target`，由原有数据校验器导入。`target`支持`dataset_id/market_dataset_id/documents_dataset_id/memory_dataset_id`。导入不等于来源已核验，不自动授予历史验证资格。
 
 ## 导出并在宿主中使用
 
 ```console
-python egs/skills.py export --host codex
-python egs/skills.py export --host qoder
-python egs/skills.py export --host codebuddy
+python egs/entrypoints/skills.py export --host codex
+python egs/entrypoints/skills.py export --host qoder
+python egs/entrypoints/skills.py export --host codebuddy
 ```
 
 规范源在`src/skills/quant-*/SKILL.md`。导出为项目内可追踪副本和摘要清单，不写用户全局目录；用户修改过的同名文件会拒绝覆盖，不删除旧文件。Codex可提及`$quant-market-review`，Qoder按其Skill菜单或`/quant-market-review`调用；必要时刷新Skill菜单。CodeBuddy须先完成实际安装。TRAE旧版可让宿主显式读取对应`SKILL.md`，或直接执行上述本地命令，不把IDE目录当成已验证的CLI发现目录。
@@ -99,4 +99,4 @@ python egs/skills.py export --host codebuddy
 
 已有平台服务时，可显式加`--base-url http://127.0.0.1:端口`；远程执行仍调用相同业务逻辑，自动等待并可输出事件。远程文件须先通过平台数据导入接口上传，再用数据集ID，不让远程任务任意读取客户端路径。
 
-原`egs/cli.py`继续可用，新增`provider list`和`research-skill list/preview/run/show/events/files/cancel`。后端/原生技能约束见[原理说明](../principles/agent_cli_skills.md)；命令失败后的证据应保留，流程完成不代表收益有效。
+原`egs/entrypoints/cli.py`继续可用，新增`provider list`和`research-skill list/preview/run/show/events/files/cancel`。后端/原生技能约束见[原理说明](../principles/agent_cli_skills.md)；命令失败后的证据应保留，流程完成不代表收益有效。

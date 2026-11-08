@@ -21,7 +21,7 @@ from src.core.repository import Repository
 
 @lru_cache(maxsize=1)
 def import_config() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/resource_import.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/data/resource_import.yaml").read_text(encoding="utf-8"))
 
 
 def template_path(kind: str) -> Path:

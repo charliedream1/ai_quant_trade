@@ -1,0 +1,87 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+limits:
+  max_upload_bytes: 20971520
+  max_assets: 200
+  max_dates: 5000
+  max_candidates: 24
+  max_nodes: 32
+  max_depth: 8
+  max_window: 252
+  max_jobs: 2
+  max_model_calls: 256
+  max_tool_calls: 12
+  max_bootstrap_samples: 9999
+  max_turns: 5
+  max_prompt_chars: 40000
+  max_response_chars: 30000
+  max_documents: 1000
+  max_document_chars: 12000
+  max_regime_configurations: 8
+  max_regime_observations: 60
+  timeout_seconds: 900
+  poll_seconds: 1
+  epsilon: 0.000000000001
+  event_limit: 300
+policy:
+  version: research-v1
+  horizon: 5
+  train_fraction: 0.6
+  validation_fraction: 0.2
+  embargo_sessions: 5
+  min_train_dates: 126
+  min_test_dates: 40
+  min_assets: 5
+  min_coverage: 0.8
+  min_trades: 10
+  min_net_excess: 0.0
+  min_rank_ic: 0.0
+  significance: 0.05
+  bootstrap_samples: 999
+  block_sessions: 10
+  seed: 20261027
+  maximum_drawdown: 0.25
+  require_real_data: true
+  require_verified_data: true
+  rebalance_sessions: 5
+  top_k: 3
+  max_weight: 0.35
+study_defaults:
+  batch_size: 4
+  market: CN
+  mode: alpha
+  purpose: 研究价量关系，并提出可以证伪的经济假设
+  reasoning_effort: ''
+  model_call_budget: 32
+  reference_factor_set: monitor
+fields: [open, high, low, close, volume, amount]
+operators:
+  unary: [neg, abs, log, rank]
+  rolling: [lag, delta, returns, mean, std, min, max, ts_rank]
+  binary: [add, sub, mul, div, corr]
+regimes: [Goldilocks, Reflation, Stagflation, Risk_Off]
+regime_defaults:
+  lag_days: 1
+  min_observations: 3
+  growth_series: growth
+  inflation_series: inflation
+  min_confidence: 0.5
+  window_observations: 6
+  validity_days: 90
+  benchmark_weights: {equity: 0.6, bond: 0.4}
+  definition: 增长最近值相对前值上升且通胀下降为Goldilocks，均上升为Reflation，增长下降通胀上升为Stagflation，均下降为Risk_Off；无变化或资料不足可弃权。
+  objective: 只根据所给相对期资料判断增长与通胀变化，并按冻结定义选择体制。
+  leak_terms: [COVID, Lehman, 雷曼, 新冠, 金融危机]
+  allocations:
+    Goldilocks: {equity: 0.7, bond: 0.3}
+    Reflation: {equity: 0.6, bond: 0.2}
+    Stagflation: {equity: 0.2, bond: 0.3}
+    Risk_Off: {equity: 0.1, bond: 0.7}
+  explanation: 本项目示范权重，未复刻JPM权重；未分配部分留现金。
+ui:
+  title: Alpha研究
+  modes: [[假设挖掘, alpha], [主题精炼, theme], [体制配置, regime]]
+  stages: [假设, 实现, 验证, 复核, 产物]
+  disclaimer: 历史LLM回放可能含训练记忆；研究通过不等于可实盘，真实前向验证单独记录。
+  states: {draft: 草稿, discovering: 发现中, discovered: 待冻结候选, sealed: 候选已冻结, validating: 验证中, validated: 验证结束, testing: 留出检验中, reviewed: 待双轨复核, failed: 失败, cancelled: 已取消, completed: 已完成}
+  source_explanation: 导入数据需核对真实来源和历史版本；当前资料不能伪装历史PIT快照。

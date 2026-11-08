@@ -16,9 +16,9 @@
 
 ## 调整因子与研究口径
 
-因子集提供 balanced（均衡量价）、trend（趋势与量能）、defensive（反转与低波），定义在项目 `egs/factor_research.yaml`。登记算子包含动量、波动、量能比、均线偏离、区间位置、平均成交额和日内收益；不执行任意公式或外部 Python。
+因子集提供 balanced（均衡量价）、trend（趋势与量能）、defensive（反转与低波），定义在项目 `egs/config/strategies/factor_research.yaml`。登记算子包含动量、波动、量能比、均线偏离、区间位置、平均成交额和日内收益；不执行任意公式或外部 Python。
 
-工坊节点的默认参数在 `egs/strategy_components.yaml`，运行以节点参数和发布预览为准；`factor_research.yaml` 的研究/评分段也供独立研究调用使用。修改YAML目录后先重启服务，再预览和发布新版本。
+工坊节点的默认参数在 `egs/config/strategies/strategy_components.yaml`，运行以节点参数和发布预览为准；`factor_research.yaml` 的研究/评分段也供独立研究调用使用。修改YAML目录后先重启服务，再预览和发布新版本。
 
 “横截面因子预处理”逐日去极值后做排名或标准分。缺少窗口或成交量保留缺失；零方差为中性值。
 
@@ -48,9 +48,9 @@
 CLI 复用现有命令：
 
 ```powershell
-python egs/cli.py pipeline run --template factor_equal --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
-python egs/cli.py pipeline run --template factor_icir --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
-python egs/cli.py pipeline run --template factor_model_groups --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
+python egs/entrypoints/cli.py pipeline run --template factor_equal --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
+python egs/entrypoints/cli.py pipeline run --template factor_icir --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
+python egs/entrypoints/cli.py pipeline run --template factor_model_groups --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
 ```
 
 上述日期是验收区间，使用时按数据可得范围选择。相同发布版本、参数和行情快照可核对网页与 CLI 的净值、目标、订单、成交和费用；两个实时抓取批次不能作为严格一致性对照。

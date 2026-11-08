@@ -12,7 +12,7 @@
 | 模型策略 | [机构应用与模型选型](models/institutional_practice.md) | 树模型、神经网络的公开证据、证据边界与本项目三套策略 |
 | 模型安全 | [Torch 告警核查](models/torch_security_review_2026-10-21.md) | 当前代码触发路径、官方修复记录、2.14.1 候选扫描与未验证边界 |
 | 因子监控 | [股票池边界与通用方案](factors/universe_monitoring_review.md) | 默认小池、现有四因子原理、日期与覆盖问题，以及 Alphalens/Qlib 的通用监控方法；建议尚未实施 |
-| 平台改进 | [监控、图表、图谱与导入设计](../../doc/17_monitor_graph_resource_design.md) | 2026-10-25接入通用监控/Qlib信号分析、解释、图谱证据与导入校验；真实验收范围见报告 |
+| 平台改进 | [监控、图表、图谱与导入设计](../../doc/data/monitor_graph_resource_design.md) | 2026-10-25接入通用监控/Qlib信号分析、解释、图谱证据与导入校验；真实验收范围见报告 |
 | 多 Agent | [金融多 Agent 应用](agents/financial_multi_agent.md) | Man Group、TradingAgents 的应用层级和本项目复核流程 |
 | ETF | [ETF 研究](etf/README.md) | ETF 载体、主动/AI ETF 应用证据和项目研究边界 |
 | 策略编排 | [组合与风险组件参考](composition/framework_comparison.md) | LEAN/Qlib 分层、HRP/CVaR 与时点隔离；14号设计的A/B已接入，C独立扩展 |

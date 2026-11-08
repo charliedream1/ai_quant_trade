@@ -1,0 +1,9 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "factor definitions": {"method":"GET","path":"/factors/definitions","positions":{},"query":{},"fields":{},"execution":false,"market":true}
+  "factor monitor": {"method":"GET","path":"/factors/monitor","positions":{},"query":{"universe":"str","universe_id":"str","resource_id":"int","backend":"str","as_of":"str","membership_version":"str","force_refresh":"bool"},"fields":{},"execution":false,"market":true}
+  "factor universes": {"method":"GET","path":"/factors/universes","positions":{},"query":{},"fields":{},"execution":false,"market":true}
+  "factor memberships": {"method":"POST","path":"/factors/universes/memberships","positions":{},"query":{},"fields":{"memberships":"json","source":"str"},"execution":false,"market":true}
+  "factor start": {"method":"POST","path":"/factors/jobs","positions":{},"query":{},"fields":{"universe_text":"str","universe_id":"str","resource_id":"int","backend":"str","as_of":"str","membership_version":"str","force_refresh":"bool","compare_universes":"json"},"execution":false,"market":true}
+  "factor job": {"method":"GET","path":"/factors/jobs/{job_id}","positions":{"job_id":"str"},"query":{},"fields":{},"execution":false,"market":true}
+  "factor qlib-status": {"method":"GET","path":"/factors/qlib-status","positions":{},"query":{},"fields":{},"execution":false,"market":true}

@@ -17,7 +17,7 @@ Codex、Qoder、TRAE以及WorkBuddy/CodeBuddy的独立安装、登录、E盘路�
 | `egs/requirements/qlib.lock.txt` | 独立Qlib信号环境的传递依赖及哈希 |
 | `egs/requirements/images.lock.txt` | Pillow13图片校验环境的传递依赖及哈希，与Web分开安装 |
 | `.venv-secure`、`.venv-qlib-secure` | 本项目当前验收环境，不提交Git |
-| `egs/runtime_environments.yaml` | 角色、目录、版本和来源预检规则 |
+| `egs/config/operations/runtime_environments.yaml` | 角色、目录、版本和来源预检规则 |
 
 Qlib使用Pandas3.1，Web使用Pandas2.3.3，分别安装；不要把两套清单直接混装。模型在拟合时加载，基础启动不强制安装Torch。CPU Torch来自PyTorch官方索引，导出锁文件包含索引和包哈希。
 
@@ -35,7 +35,7 @@ New-Item -ItemType Directory -Path $env:TEMP -Force
 uv pip install --python .venv-secure/Scripts/python.exe pip==26.2 setuptools==84.1.0 wheel==0.46.2
 uv pip install --python .venv-secure/Scripts/python.exe --index-strategy unsafe-best-match --require-hashes --no-build-isolation -r egs/requirements/development.lock.txt
 .venv-secure/Scripts/python.exe -B -m pip check
-.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role models
+.venv-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role models
 .venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
 ```
 
@@ -56,7 +56,7 @@ mkdir -p "$TMPDIR"
 uv pip install --python .venv-secure/bin/python pip==26.2 setuptools==84.1.0 wheel==0.46.2
 uv pip install --python .venv-secure/bin/python --index-strategy unsafe-best-match --require-hashes --no-build-isolation -r egs/requirements/development.lock.txt
 .venv-secure/bin/python -B -m pip check
-.venv-secure/bin/python -B egs/check_runtime.py --role models
+.venv-secure/bin/python -B egs/entrypoints/check_runtime.py --role models
 .venv-secure/bin/python -B start.py --host 127.0.0.1 --port 8000
 ```
 
@@ -71,10 +71,10 @@ python -m venv .venv-qlib-secure --without-pip
 uv pip install --python .venv-qlib-secure/Scripts/python.exe pip==26.2 setuptools==84.1.0 wheel==0.46.2
 uv pip install --python .venv-qlib-secure/Scripts/python.exe --require-hashes -r egs/requirements/qlib.lock.txt
 .venv-qlib-secure/Scripts/python.exe -B -m pip check
-.venv-qlib-secure/Scripts/python.exe -B egs/check_runtime.py --role qlib
+.venv-qlib-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role qlib
 ```
 
-因子监控默认使用egs/factor_monitor.yaml中的.venv-qlib-secure。可在.env中通过ALL_IN_ONE_QLIB_PYTHON指定项目内其他解释器；环境变量优先，不要忽略旧覆盖值。此环境真实验证了Qlib信号分析；原生Workflow另需provider、Workflow YAML与qrun，不能由信号测试推断已完成模型Workflow训练。
+因子监控默认使用egs/config/strategies/factor_monitor.yaml中的.venv-qlib-secure。可在.env中通过ALL_IN_ONE_QLIB_PYTHON指定项目内其他解释器；环境变量优先，不要忽略旧覆盖值。此环境真实验证了Qlib信号分析；原生Workflow另需provider、Workflow YAML与qrun，不能由信号测试推断已完成模型Workflow训练。
 
 ## 固定版本与安全审计
 
@@ -87,17 +87,17 @@ uv pip install --python .venv-qlib-secure/Scripts/python.exe --require-hashes -r
 ```powershell
 python -m venv .venv-image-secure --without-pip
 uv pip install --python .venv-image-secure/Scripts/python.exe --require-hashes -r egs/requirements/images.lock.txt
-.venv-image-secure/Scripts/python.exe -B egs/check_runtime.py --role image
+.venv-image-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role image
 .venv-image-secure/Scripts/python.exe -B -m pip check
 ```
 
-Linux将创建命令中的python换为python3，解释器路径换为`.venv-image-secure/bin/python`。配置在`egs/image_validation.yaml`：JPEG/PNG/WebP真实格式必须与后缀一致，默认单帧、1600万像素、6400万解码字节，整批校验超时8秒；另受附件8文件/20MiB总量限制。不接受动画。校验程序每批启动一次，显式使用UTF-8。它是依赖及进程隔离，不是操作系统权限沙箱。
+Linux将创建命令中的python换为python3，解释器路径换为`.venv-image-secure/bin/python`。配置在`egs/config/models/image_validation.yaml`：JPEG/PNG/WebP真实格式必须与后缀一致，默认单帧、1600万像素、6400万解码字节，整批校验超时8秒；另受附件8文件/20MiB总量限制。不接受动画。校验程序每批启动一次，显式使用UTF-8。它是依赖及进程隔离，不是操作系统权限沙箱。
 
 不要把images.txt或images.lock.txt装入Gradio环境，也不要强制升级主环境Pillow。两套环境的审计结果分别记录；增加新格式前需要同步白名单、测试和文档。
 
 ### 启动自动预检
 
-`start.py`、`python -m src.main`及`aiquant system serve`会在打印可用地址前校验环境。默认`strict`，检查失败不启动监听；帮助及远程CLI查询不执行本地服务预检。规则在`egs/runtime_environments.yaml`，默认只检查Web角色，不因没有可选Torch而阻断规则策略。
+`start.py`、`python -m src.main`及`aiquant system serve`会在打印可用地址前校验环境。默认`strict`，检查失败不启动监听；帮助及远程CLI查询不执行本地服务预检。规则在`egs/config/operations/runtime_environments.yaml`，默认只检查Web角色，不因没有可选Torch而阻断规则策略。
 
 确需排查兼容问题，可在`.env`显式设置`ALL_IN_ONE_RUNTIME_MODE=warn`，启动仍会列出所有偏差；这不表示安全验收通过。`ALL_IN_ONE_RUNTIME_ROLE=web|models`选择启动角色，日常保持`strict`。预检不安装包、不修改Conda、不自动切换解释器；它也不会每次回调都运行漏洞扫描。
 
@@ -117,6 +117,6 @@ Linux将创建命令中的python换为python3，解释器路径换为`.venv-imag
 
 TDX与观测仍为可选组，默认不启用；不要将本轮验证扩展为对所有可选能力的生产承诺。TDX历史依赖对HTTPX有约束，统一锁文件保留兼容解，当前固定版本已进入Web测试。
 
-模型、Qlib和开发工具的环境不是用户业务数据目录。数据库、报告、模型产物和密钥分别按[配置说明](configuration.md)保存；运行服务时保留.env与.llm_env的既有优先级。Parlant继续按原项目本地源码加载，不通过pip安装。
+模型、Qlib和开发工具的环境不是用户业务数据目录。数据库、报告、模型产物和密钥分别按[配置说明](configuration.md)保存；运行服务时保留.env与.env的既有优先级。Parlant继续按原项目本地源码加载，不通过pip安装。
 
 页面入口与配图见[统一入口指南](navigation_and_environment.md)，当前系统边界见[风险说明](risk.md)。

@@ -1,0 +1,62 @@
+# Trading calendar override example.
+#
+# Copy this file to egs/config/data/trading_calendar.yaml, then set:
+# trading_calendar_path: egs/config/data/trading_calendar.yaml
+# in egs/config/platform/config.yaml, or set ALL_IN_ONE_TRADING_CALENDAR_PATH.
+#
+# Dates use ISO format YYYY-MM-DD. Keep this file as UTF-8.
+# The calendar_refresh scheduled job can regenerate egs/config/data/trading_calendar.yaml
+# from AKShare/Sina and will keep compact holidays + weekend trading days.
+#
+# To enable official announcement diff checks, maintain another YAML file from
+# exchange announcements, for example egs/config/data/trading_calendar.official.yaml, then
+# set official_calendar_path in the system_health_check scheduled job params.
+# The calendar_reference_refresh scheduled job can write that official file from
+# manually curated holidays/trading_days params, or conservatively parse pasted
+# announcement_text, a project-local announcement_path, an announcement_url,
+# or an announcement_index_url whose links can be filtered by keywords.
+
+file_format: yaml
+markets:
+  cn_stock:
+    source: local-file
+    timezone: Asia/Shanghai
+    range_start: ""
+    range_end: ""
+    holidays: []
+    trading_days: []
+
+# Official reference files use the same structure. Keep source names explicit:
+#
+# file_format: yaml
+# markets:
+#   cn_stock:
+#     source: official-announcement-manual
+#     timezone: Asia/Shanghai
+#     range_start: "2026-01-01"
+#     range_end: "2026-12-31"
+#     holidays:
+#       - "2026-10-01"
+#     trading_days:
+#       - "2026-09-26"
+#     metadata:
+#       compact: true
+
+# calendar_reference_refresh target example:
+#
+# official_calendar_path: egs/config/data/trading_calendar.official.yaml
+# range_start: "2026-01-01"
+# range_end: "2026-12-31"
+# announcement_text: "2026年10月1日至10月7日休市，10月8日起照常开市。"
+# announcement_path: ""
+# announcement_url: ""
+# announcement_url_timeout_seconds: 10
+# announcement_url_max_bytes: 2000000
+# announcement_index_url: ""
+# announcement_profiles_path: egs/config/data/exchange_announcement_profiles.yaml
+# announcement_profile: cn_stock_exchanges
+# announcement_link_keywords:
+#   - 休市
+#   - 交易安排
+#   - 节假日
+# announcement_discovery_limit: 5

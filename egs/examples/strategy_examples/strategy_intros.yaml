@@ -1,0 +1,193 @@
+# -*- coding: utf-8 -*-
+# 预制策略介绍与默认超参配置
+# key 为 egs/examples/strategy_examples 下的策略文件名
+# default_params 在界面“超参设置”页签中可按 YAML 直接修改，导入策略库时生效
+strategies:
+  lightgbm_rank_strategy.py:
+    title: LightGBM截面选股
+    tags: [模型策略, LightGBM, 截面排名]
+    intro: |
+      ## 策略逻辑
+      - 从收益滞后、动量、波动率、均线偏离与量价特征学习后续相对收益。
+      - 只用已到期标签滚动训练，按日期划分训练和验证；上一交易日特征预测，下一日开盘执行。
+      - 选择正预测分数的前 top_n 个标的；绩效中保留训练、预测、验证与耗时证据。
+    suitable: 多标的截面选股研究；至少准备三只标的和足够的训练历史。
+    risk: 须选择开盘价订单；样本不足会明确失败，小样本完成不代表长期有效。
+    default_params:
+      top_n: 1
+      quantity: 100
+  xgboost_rank_strategy.py:
+    title: XGBoost截面选股
+    tags: [模型策略, XGBoost, 截面排名]
+    intro: |
+      ## 策略逻辑
+      - 使用浅树梯度提升模型学习多因子与后续相对收益的非线性关系。
+      - 按日期隔离训练和验证标签，滚动重训；次日开盘执行上一日排名。
+      - 与 LightGBM 共用时点特征和成本口径，可比较样本外预测与组合结果。
+    suitable: 多因子选股基线与树模型对照研究。
+    risk: 须选择开盘价订单；严格核对有效样本、交易费用和股票池偏差。
+    default_params:
+      top_n: 1
+      quantity: 100
+  mlp_ensemble_strategy.py:
+    title: 小型MLP多因子融合
+    tags: [模型策略, 深度学习, 多因子融合]
+    intro: |
+      ## 策略逻辑
+      - 用两个不同种子的小型两隐藏层网络融合量价因子，平均预测后排序。
+      - 标准化只拟合训练段，验证和预测段不参与统计量计算。
+      - CPU 训练，按间隔滚动更新；上一日排名在下一日开盘执行。
+    suitable: 小型神经网络选股研究，与树模型使用一致的时间和交易契约。
+    risk: 须选择开盘价订单；神经网络对样本、种子和市场变化敏感。
+    default_params:
+      top_n: 1
+      quantity: 100
+  dual_ma_strategy.py:
+    title: 双均线趋势策略
+    tags: [趋势跟踪, 均线交叉, 入门示例]
+    intro: |
+      ## 策略逻辑
+      - 以短期均线（fast_window）与长期均线（slow_window）刻画趋势快慢。
+      - 快线上穿慢线买入，快线下穿慢线卖出；首次形成有效多头状态时允许建立首笔仓位。
+      - 窗口超参越小越灵敏、信号越多但假信号也越多；窗口越大越平滑、信号越少但反应滞后。
+    suitable: 趋势延续行情、中长周期日线级别观察，适合作为策略端口与回测流程的入门样例。
+    risk: 震荡市中均线反复交叉会产生频繁假信号；示例不含止损与仓位管理，实盘前必须补齐风控。
+    default_params:
+      fast_window: 5
+      slow_window: 20
+
+  function_signal_strategy.py:
+    title: 阈值突破函数式策略
+    tags: [函数端口, 阈值突破, 单因子]
+    intro: |
+      ## 策略逻辑
+      - 采用函数端口 generate_signal(bar, context)，无需定义类即可接入平台。
+      - 当最新收盘价达到或超过 close_threshold 时产生买入信号，下单数量由 quantity 指定。
+      - 适合演示“单条件阈值 + 固定手数”的最简化信号生成方式。
+    suitable: 事件/价格阈值触发场景，也可作为自动化 CLI 生成策略的端口模板。
+    risk: 固定阈值不随股价波动自适应，除权除息或长期上涨后阈值会失效；固定手数没有仓位控制。
+    default_params:
+      quantity: 100
+      close_threshold: 10.2
+
+  standard_port_strategy.py:
+    title: 标准端口动量突破策略
+    tags: [标准类端口, 动量突破, 日内涨幅]
+    intro: |
+      ## 策略逻辑
+      - 标准类端口（on_start / handle_bar / on_stop 生命周期），由平台注入 context 与参数。
+      - 计算当根 K 线相对开盘价的涨幅 change_pct = close / open - 1。
+      - 涨幅达到 min_change_pct 视为动量突破，按 quantity 发出买入信号。
+    suitable: 有明确开盘价的日线/分钟线动量跟踪，可扩展加入止盈止损、最大持仓等风控规则。
+    risk: 尾盘冲高信号次日可能回落；固定数量下单未考虑资金占用，参数需结合交易成本重新标定。
+    default_params:
+      min_change_pct: 0.01
+      quantity: 100
+
+  rsi_mean_reversion_strategy.py:
+    title: RSI均值回归策略
+    tags: [均值回归, RSI, 技术指标]
+    intro: |
+      ## 策略逻辑
+      - 使用 RSI 衡量近期上涨与下跌的相对强弱。
+      - RSI 低于 oversold 产生买入信号，高于 overbought 退出持仓。
+      - 该示例用于验证指标状态、卖出信号和回测闭环。
+    suitable: 震荡行情和短周期均值回归研究。
+    risk: 单边趋势中超买超卖可能持续，不能只凭 RSI 做实盘决策。
+    default_params:
+      rsi_window: 14
+      oversold: 30
+      overbought: 70
+      quantity: 100
+
+  bollinger_breakout_strategy.py:
+    title: 布林带突破策略
+    tags: [布林带, 波动率, 突破]
+    intro: |
+      ## 策略逻辑
+      - 以滚动均值和标准差构造上下轨。
+      - 收盘价突破上轨买入，跌回中轨下方退出。
+    suitable: 波动率扩张和趋势启动阶段的研究。
+    risk: 横盘期间容易出现假突破，参数需要结合交易成本验证。
+    default_params:
+      window: 20
+      deviation: 2
+      quantity: 100
+
+  macd_trend_strategy.py:
+    title: MACD趋势策略
+    tags: [MACD, 趋势跟踪, 金叉死叉]
+    intro: |
+      ## 策略逻辑
+      - 使用快慢均线差构造 DIF，再用短窗口均值构造 DEA。
+      - DIF 上穿 DEA 买入，下穿 DEA 卖出。
+    suitable: 趋势行情的方向确认和策略端口演示。
+    risk: 滞后指标在快速反转和震荡行情中可能连续产生错误信号。
+    default_params:
+      fast_window: 12
+      slow_window: 26
+      signal_window: 9
+      quantity: 100
+
+  momentum_volume_breakout_strategy.py:
+    title: 动量成交量突破策略
+    tags: [动量, 成交量, 突破]
+    intro: |
+      ## 策略逻辑
+      - 价格突破过去 lookback 个交易日高点且成交量放大时买入。
+      - 短周期价格回落时退出，验证量价联合信号。
+    suitable: 量价共振和趋势加速的研究。
+    risk: 流动性、涨跌停和冲高回落会显著影响实际成交质量。
+    default_params:
+      lookback: 20
+      volume_multiplier: 1.2
+      quantity: 100
+
+  industry_rotation_strategy.py:
+    title: 行业轮动相对强弱策略
+    tags: [行业轮动, 相对强弱, 组合]
+    intro: |
+      ## 策略逻辑
+      - 在传入股票池内计算滚动相对收益，选择排名靠前的 top_n 标的。
+      - 当前示例把股票池作为行业代表代理；真实行业轮动需要数据层提供行业映射。
+    suitable: 板块/行业代表池的轮动研究和组合调仓流程演示。
+    risk: 股票池代理不等于真实行业指数，样本选择、换手和容量会改变结果。
+    default_params:
+      lookback: 20
+      top_n: 1
+      quantity: 100
+
+  etf_momentum_rotation_strategy.py:
+    title: ETF相对强弱轮动策略
+    tags: [ETF, 动量轮动, 资产配置]
+    intro: |
+      ## 策略逻辑
+      - 在配置的 ETF 池中比较滚动相对收益，按调仓周期选择排名靠前的 ETF。
+      - 使用上一调仓期已形成的数据，在下一可交易日开盘执行，避免同日未来数据。
+      - 回测结果同时记录 ETF 资产类型、池基准、流动性摘要和换手成本。
+    suitable: 宽基、行业和主题 ETF 的月度或周度轮动研究。
+    risk: 相对强弱不等于长期超额收益；必须核对价差、规模、跟踪误差、换手和容量。
+    default_params:
+      universe: cn_core
+      lookback: 60
+      top_n: 1
+      rebalance_days: 20
+      min_score: 0.0
+      quantity: 100
+
+  etf_trend_allocation_strategy.py:
+    title: ETF趋势配置策略
+    tags: [ETF, 趋势过滤, 资产配置]
+    intro: |
+      ## 策略逻辑
+      - 使用延迟的移动均线趋势差过滤 ETF，趋势有效时持有，跌破阈值时退出。
+      - 调仓周期、趋势窗口和最小趋势差均可在参数方案中调整。
+      - 该策略用于配置研究，不代表基金管理人的真实产品复现。
+    suitable: ETF 宽基和行业池的趋势跟踪、风险预算和防守切换研究。
+    risk: 震荡期可能反复进出；需要结合成本、流动性和基准偏离评估。
+    default_params:
+      universe: cn_core
+      window: 60
+      min_trend_gap: 0.0
+      rebalance_days: 20
+      quantity: 100

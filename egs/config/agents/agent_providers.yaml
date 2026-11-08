@@ -1,0 +1,75 @@
+# YAML 1.2, UTF-8
+version: 1
+defaults:
+  backend: api
+  timeout_seconds: 180
+  probe_timeout_seconds: 12
+  max_output_chars: 100000
+  max_output_tokens: 1500
+  max_provider_depth: 1
+prompts:
+  system: 你是受控量化研究角色。只使用本次提供的证据，使用普通文本ReAct协议；不得调用宿主工具、Skill、联网或启动子进程。信息不足时明确说明，不编造指标。
+messages:
+  unknown: 未登记的生成后端
+  missing: 未找到CLI程序；请按安装指南配置项目.env中的程序路径
+  strict: 此CLI版本无法核验关闭全部原生工具、隐式Skill和用户扩展；严格研究角色模式不可用
+  native_tool: 研究角色触发了宿主工具或未知事件，结果已拒绝
+  recursive: 模型提供者不得递归启动研究Skill
+  empty: 后端没有返回有效正文
+  cancelled: 生成已取消
+  mock: 真实研究不接受mock模型
+providers:
+  api: {label: 模型API, protocol: openai-compatible, strict: true}
+  codex:
+    label: Codex CLI
+    protocol: codex-jsonl
+    executable_env: ALL_IN_ONE_CODEX_CLI
+    executables: [codex]
+    strict: false
+    strict_reason: 现有exec有只读沙箱和功能开关，但没有可核验的全部工具及隐式Skill禁用契约；普通会话仍可使用
+    skill_directory: .agents/skills
+  qoder:
+    label: Qoder CLI
+    protocol: assistant-stream-json
+    executable_env: ALL_IN_ONE_QODER_CLI
+    executables: [qoder, qodercli]
+    strict: true
+    verified_versions: ['1.1.80']
+    required_flags: [--tools, --thinking, --setting-sources, --system-prompt, --strict-mcp-config, --no-session-persistence]
+    required_init_fields: [tools, mcp_servers, plugins, skills]
+    strict_reason: 仅接受已核验版本；空工具、空配置来源、替换系统提示、空MCP；初始化事件再检查工具和扩展为空
+    skill_directory: .qoder/skills
+  trae:
+    label: TRAE CLI
+    protocol: trae-versioned
+    executable_env: ALL_IN_ONE_TRAE_CLI
+    native_config_env: TRAE_HOME
+    config_dir_env: ALL_IN_ONE_TRAE_HOME
+    executables: [traecli, trae]
+    strict: false
+    strict_reason: 本机0.120.42为旧版print协议，不能套用2.0参数，未提供可核验的全部扩展禁用方式
+    skill_directory: null
+  codebuddy:
+    label: CodeBuddy Code
+    protocol: assistant-stream-json
+    executable_env: ALL_IN_ONE_CODEBUDDY_CLI
+    native_config_env: CODEBUDDY_CONFIG_DIR
+    config_dir_env: ALL_IN_ONE_CODEBUDDY_CONFIG_DIR
+    environment: {DISABLE_AUTOUPDATER: '1'}
+    executables: [codebuddy]
+    strict: false
+    strict_reason: 须安装并核验当前程序的tools、MCP及Skill禁用契约；不自动使用WorkBuddy桌面配置
+    skill_directory: .codebuddy/skills
+protocols:
+  trae_legacy:
+    arguments: [--print, --output-format, stream-json, --include-partial-messages, --permission-mode, plan]
+    model_flag: null
+    effort_flag: null
+  trae_v2:
+    arguments: [exec, --json, --ephemeral, --ignore-user-config, --sandbox, read-only]
+    model_flag: --model
+    effort_flag: null
+  codebuddy:
+    arguments: [--print, --output-format, stream-json, --verbose, --permission-mode, plan]
+    model_flag: --model
+    effort_flag: null

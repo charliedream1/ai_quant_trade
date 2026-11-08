@@ -126,8 +126,8 @@ def main():
                 "src/engine/composition/report.py",
                 "src/engine/composition/tree.py",
                 "src/frontend/service/graph_evidence.py",
-                "egs/factor_research.yaml",
-                "doc/16_factor_research_pipeline_design.md",
+                "egs/config/strategies/factor_research.yaml",
+                "doc/strategies/factor_research_pipeline_design.md",
                 "docs/usage/factor_research.md",
                 "docs/principles/factor_research.md",
             )

@@ -1,0 +1,4 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "news list": {"method":"GET","path":"/news","positions":{},"query":{"category":"str","keyword":"str","source":"str","start_time":"str","end_time":"str","page":"int","page_size":"int","refresh":"bool"},"fields":{},"execution":false,"market":true,"unsupported_query":["start_time","end_time"]}
+  "news keywords": {"method":"GET","path":"/news/keyword-cloud","positions":{},"query":{"scope":"str","category":"str","top_n":"int"},"fields":{},"execution":false,"market":true}

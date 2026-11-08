@@ -18,7 +18,7 @@ from src.documents.store import PreviewStore
 
 from .image_validation import validate_images
 
-CONFIG_PATH = PROJECT_ROOT / "egs" / "ai_workbench_presets.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "platform" / "ai_workbench_presets.yaml"
 
 
 @dataclass(slots=True)

@@ -20,6 +20,6 @@
 
 Agent 定位为研究终审。候选来源、数据时点、可用工具和后续确定性风控均由平台控制；旧回测复核可提供方法，但其事后证据不适合作为历史当期交易输入。关于当前金融多 Agent 应用证据，继续参见[已有调研](../agents/financial_multi_agent.md)。
 
-正式设计见项目 `doc/14_strategy_composition_risk_portfolio_design.md`，帮助站点的概要见[组合原理（设计）](../../principles/strategy_composition.md)。
+正式设计见项目 `doc/strategies/strategy_composition_risk_portfolio_design.md`，帮助站点的概要见[组合原理（设计）](../../principles/strategy_composition.md)。
 
-2026-10-23补充：[PandaQuantFlow图形编排核查](panda_quantflow_review.md)提供节点式界面与Gradio组件方案，正式交互设计见项目 `doc/15_gradio_visual_strategy_editor_design.md`。该增强尚未实施，不与14号已交付编排混为一谈。
+2026-10-23补充：[PandaQuantFlow图形编排核查](panda_quantflow_review.md)提供节点式界面与Gradio组件方案，正式交互设计见项目 `doc/strategies/gradio_visual_strategy_editor_design.md`。该增强尚未实施，不与14号已交付编排混为一谈。

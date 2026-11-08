@@ -10,7 +10,7 @@ import yaml
 
 from src.strategy.factors.config import factor_set
 
-CONFIG_PATH = Path(__file__).resolve().parents[3] / "egs" / "model_strategies.yaml"
+CONFIG_PATH = Path(__file__).resolve().parents[3] / "egs" / "config" / "models" / "model_strategies.yaml"
 BACKEND_MODULES = {
     "lightgbm": "src.strategy.models.lightgbm_backend",
     "xgboost": "src.strategy.models.xgboost_backend",

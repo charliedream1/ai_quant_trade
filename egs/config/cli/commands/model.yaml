@@ -1,0 +1,10 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "model list": {"method":"GET","path":"/llm-models","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "model show": {"method":"GET","path":"/llm-models/{model_id}","positions":{"model_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "model create": {"method":"POST","path":"/llm-models","positions":{},"query":{},"fields":{"name":"str","base_url":"str","model_name":"str","api_key_env":"str","level":"str","purpose":"json","remark":"str","temperature":"float","max_tokens":"int","timeout_seconds":"float","system_prompt":"str","api_backend":"str","rpm":"int","max_concurrency":"int","wait_on_limit":"bool","quota_group":"str","max_retries":"int","extra_body":"json"},"execution":false,"market":false}
+  "model update": {"method":"PUT","path":"/llm-models/{model_id}","positions":{"model_id":"int"},"query":{},"fields":{"name":"str","base_url":"str","model_name":"str","api_key_env":"str","level":"str","purpose":"json","enabled":"bool","remark":"str","temperature":"float","max_tokens":"int","timeout_seconds":"float","system_prompt":"str","api_backend":"str","rpm":"int","max_concurrency":"int","wait_on_limit":"bool","quota_group":"str","max_retries":"int","extra_body":"json"},"execution":false,"market":false}
+  "model delete": {"method":"DELETE","path":"/llm-models/{model_id}","positions":{"model_id":"int"},"query":{},"fields":{},"execution":false,"market":false,"confirm":true}
+  "model default": {"method":"POST","path":"/llm-models/{model_id}/set-default","positions":{"model_id":"int"},"query":{},"fields":{"level":"str"},"execution":false,"market":false}
+  "model test": {"method":"POST","path":"/llm-models/{model_id}/test","positions":{"model_id":"int"},"query":{},"fields":{},"execution":true,"market":false}
+  "model chat": {"method":"POST","path":"/llm/chat","positions":{},"query":{},"fields":{"question":"str","messages":"json","model_id":"int"},"execution":true,"market":false}

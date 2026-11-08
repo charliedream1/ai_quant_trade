@@ -1,0 +1,77 @@
+# 文件格式：YAML，编码：UTF-8；本项目独立实现的研究方法，不包含上游提示词。
+version: 1
+limits:
+  max_jobs: 2
+  max_candidates: 8
+  max_calls: 32
+  max_turns: 3
+  max_tools: 12
+  max_prompt_chars: 60000
+  max_response_chars: 18000
+  max_document_chars: 5000
+  max_documents: 24
+  context_chars: 12000
+  history_bars: 60
+  model_bars: 5
+  summary_windows: [5, 20]
+  quote_fragments: 4
+  max_rounds: 2
+  event_page: 300
+  max_history_runs: 1000
+  max_score_window: 2000
+  max_trees: 200
+  min_ic_assets: 3
+  min_ic_dates: 15
+  ic_min_coverage: 0.8
+  ic_bootstrap_samples: 199
+  ic_block_sessions: 5
+  ic_significance: 0.05
+  deadline_seconds: 900
+  poll_seconds: 0.25
+defaults:
+  calls: 24
+  depth: economy
+  predictor: baseline
+  horizon: 5
+  min_history: 12
+  score_window: 40
+  shrinkage: 0.5
+  ewma_alpha: 0.3
+  volatility_floor: 0.000001
+  max_actor_budget: 0.5
+  similarity_limit: 0.8
+  prediction_horizon: 3
+  min_training: 30
+  feature_windows: [1, 3, 5]
+  seed: 20261028
+  output_tokens: 1200
+  temperature: 0.1
+  read_timeout: 180
+  connect_timeout: 5
+  validity_days: 3
+  enable_thinking: false
+  model_params: {n_estimators: 40, max_depth: 3, num_leaves: 7, n_jobs: 1, verbosity: -1}
+  role_models: {}
+depths:
+  economy: {analysts: [technical, news], debate_rounds: 1, data_roles: [events, context], beliefs: [continuation, defensive]}
+  standard: {analysts: [technical, fundamental, news], debate_rounds: 1, data_roles: [events, context, fundamentals], beliefs: [continuation, defensive, sector]}
+  deep: {analysts: [technical, fundamental, news, sentiment], debate_rounds: 2, data_roles: [events, context, fundamentals], beliefs: [continuation, defensive, sector]}
+recipes:
+  cn_balanced: {name: 中文多空综合, kind: debate, required: [news, fundamental], portfolio: score, focus: 综合价量与公司证据，核对支持与反对解释}
+  cn_quality: {name: 中文质量防御, kind: debate, required: [fundamental], portfolio: inverse_volatility, focus: 检查质量与现金流依据，优先识别不能证明的假设}
+  cn_event: {name: 中文事件确认, kind: debate, required: [news], portfolio: equal, focus: 只研究已发生且有原文的事件与价格反应}
+  contest_event: {name: 竞赛事件延续, kind: contest, required: [news], portfolio: agent_budget, focus: 比较事件延续与防御信念，观察信息是否过时}
+  contest_quality: {name: 竞赛质量防御, kind: contest, required: [fundamental], portfolio: agent_budget, focus: 不同质量与防御提案按成熟的真实影子成绩竞争}
+  contest_sector: {name: 竞赛行业传导, kind: contest, required: [news, sector], portfolio: agent_budget, focus: 核对政策行业公司链条，每个连接必须有可得证据}
+messages:
+  unavailable: 后端或真实模型不可用
+  mock_cli_disabled: 演示环境没有授权启动真实CLI
+  invalid_backend: 不支持此研究后端
+  timeout: 研究超过时间预算
+  invalid_result: 研究输出无效或超过预算
+  no_output: 后端没有返回正文
+  cancelled: 研究已取消
+  cold: 成熟成绩不足，仅记录影子研究，资金保持现金
+  partial: 必需证据缺失，保留研究过程但禁止下游选择
+  baseline: Agent关闭；当前仅为纯量化对照，不代表执行了多Agent策略
+  historical: 当前模型生成的历史研究，存在训练记忆风险，不是当时归档的决定回放

@@ -50,6 +50,6 @@ FIFO 批次记录可卖数量，先处理风险退出和卖出，再按现金、
 
 Gradio中的[图形工坊](strategy_graph.md)投影相同定义，实线、训练上下文和预算关系分别表示；布局、计算定义与运行证据独立保存。图形编辑经过相同后端编译，不增加另一套执行顺序或关闭硬风控。
 
-正式方案为项目 `doc/14_strategy_composition_risk_portfolio_design.md`，包含组件目录、七套预置、契约、API/CLI、页面、版本和验收门槛。A/B 的实际使用见[操作教程](../usage/strategy_composition.md)。归档采用内容寻址 JSON；模型为校验摘要的原生格式。历史行业缺口、日线撮合及不含公司行动的限制必须随结果保留，C 单独推进。
+正式方案为项目 `doc/strategies/strategy_composition_risk_portfolio_design.md`，包含组件目录、七套预置、契约、API/CLI、页面、版本和验收门槛。A/B 的实际使用见[操作教程](../usage/strategy_composition.md)。归档采用内容寻址 JSON；模型为校验摘要的原生格式。历史行业缺口、日线撮合及不含公司行动的限制必须随结果保留，C 单独推进。
 
 参考机制来自 [LEAN 多信号](https://www.quantconnect.com/docs/v2/writing-algorithms/algorithm-framework/alpha/key-concepts)、[组合与风险目标](https://www.quantconnect.com/docs/v2/writing-algorithms/algorithm-framework/risk-management/key-concepts)及 [Qlib 预测与组合分离](https://qlib.readthedocs.io/en/latest/component/strategy.html)；它们证明框架机制可实现，不证明本项目已经支持或某组合必然有效。

@@ -15,7 +15,7 @@ from src.core.config import PROJECT_ROOT
 
 @lru_cache(maxsize=1)
 def graph_config() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/relation_graph.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/data/relation_graph.yaml").read_text(encoding="utf-8"))
 
 
 def news_evidence(

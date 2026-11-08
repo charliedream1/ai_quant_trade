@@ -4,7 +4,7 @@
 
 ## 前置条件
 
-预制策略包含 LightGBM 截面选股、XGBoost 截面选股和 CPU 小型 MLP 集成。先安装项目 `requirements-models.txt` 中固定的可选依赖，并确认后端运行在同一个 Python 环境；默认参数位于 `egs/model_strategies.yaml`。
+预制策略包含 LightGBM 截面选股、XGBoost 截面选股和 CPU 小型 MLP 集成。先安装项目 `requirements-models.txt` 中固定的可选依赖，并确认后端运行在同一个 Python 环境；默认参数位于 `egs/config/models/model_strategies.yaml`。
 
 ![模型训练与预测证据](assets/screenshots/08-model-evidence.jpg)
 

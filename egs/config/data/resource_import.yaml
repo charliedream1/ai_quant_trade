@@ -1,0 +1,21 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+limits:
+  file_bytes: 8388608
+  expanded_bytes: 33554432
+  rows: 10000
+  columns: 20
+  text_length: 500
+  weight_max: 1000000
+formats: [.csv, .xlsx]
+encodings: [utf-8-sig, gb18030]
+fields:
+  market: [market, 市场]
+  symbol: [symbol, code, ticker, 股票代码, 证券代码, 代码, 标的]
+  name: [name, 名称, 股票名称, 证券名称]
+  weight: [weight, 权重, 候选评分权重]
+  tags: [tags, 标签, 分组]
+  remark: [remark, 备注, 说明]
+templates:
+  csv: egs/examples/resource_pool_templates/universe.csv
+  xlsx: egs/examples/resource_pool_templates/universe.xlsx

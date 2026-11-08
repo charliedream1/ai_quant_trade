@@ -8,7 +8,7 @@
 
 正文必须有指定章节和有效证据标识，程序只核验结构与引用存在性，不声称完成逐句事实验证。市场月度历史、全部 23 项技术指标及部分机构数据未接入，报告保留缺口和 `partial` 状态。受控模板转义模型文本，图表只读取程序证据，预览 iframe 使用独立来源沙箱，HTML 下载作为附件。
 
-入口与配图见 [Skill 洞察报告](../usage/insight_reports.md)，正式设计见项目 `doc/13_insight_skill_report_design.md`。
+入口与配图见 [Skill 洞察报告](../usage/insight_reports.md)，正式设计见项目 `doc/agents/insight_skill_report_design.md`。
 
 ## 三种调用链路
 

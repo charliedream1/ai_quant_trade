@@ -18,16 +18,16 @@
 先启动服务，在另一个终端查看池和快照：
 
 ```text
-python egs/cli.py etf universe list --format json
-python egs/cli.py etf snapshot cn_core --format json
-python egs/cli.py strategy examples import --example egs/strategy_examples/etf_momentum_rotation_strategy.py --name ETF轮动研究 --format json
+python egs/entrypoints/cli.py etf universe list --format json
+python egs/entrypoints/cli.py etf snapshot cn_core --format json
+python egs/entrypoints/cli.py strategy examples import --example egs/examples/strategy_examples/etf_momentum_rotation_strategy.py --name ETF轮动研究 --format json
 ```
 
 保存返回的 strategy_id，替换以下 12；回测样例的日期也应调整到当前数据源实际覆盖的区间。
 
 ```text
-python egs/cli.py strategy enable 12
-python egs/cli.py backtest run --file egs/cli/requests/etf_backtest.yaml --set strategy_id=12 --format json
+python egs/entrypoints/cli.py strategy enable 12
+python egs/entrypoints/cli.py backtest run --file egs/config/cli/requests/etf_backtest.yaml --set strategy_id=12 --format json
 ```
 
 在需要真实来源时加 `--require-real`；该选项只核对来源证据，不代表基金元数据完整或策略盈利。结果查看、导出及参数对比见 [命令行](cli.md) 和 [策略调参](strategy_parameters.md)。
@@ -38,4 +38,4 @@ python egs/cli.py backtest run --file egs/cli/requests/etf_backtest.yaml --set s
 
 模型未配置时的实际提示见 [AI 工作台复核示例](ai_workspace.md)。没有真实模型不能将 mock 回答当作复核通过。
 
-CLI 使用 `python egs/cli.py agent review --backtest-id 42 --workflow etf_review --objective 核查ETF换手与成本 --model-id 3 --format jsonl`；42、3 分别替换为已完成回测和真实模型配置 ID。没有可用模型时会失败，不用模拟结论代替真实复核。
+CLI 使用 `python egs/entrypoints/cli.py agent review --backtest-id 42 --workflow etf_review --objective 核查ETF换手与成本 --model-id 3 --format jsonl`；42、3 分别替换为已完成回测和真实模型配置 ID。没有可用模型时会失败，不用模拟结论代替真实复核。

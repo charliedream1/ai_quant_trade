@@ -1,0 +1,46 @@
+# File format: YAML; encoding: UTF-8
+version: 1
+limits:
+  max_bytes: 16000000
+  max_symbols: 100
+  max_bars: 12000
+  max_total_bars: 150000
+  max_records: 5000
+  max_source_chars: 500
+  epsilon: 0.000000001
+defaults:
+  timezone: Asia/Shanghai
+  decision_time: '15:30:00'
+  open_time: '09:30:00'
+  annual_days: 365
+  price_keys: [open, high, low, close]
+  windows: [20, 60, 120]
+  history_bars: 1500
+financial_metrics:
+  roe: {label: Return on equity, direction: 1, unit: ratio}
+  cashflow_to_assets: {label: Operating cash flow / assets, direction: 1, unit: ratio}
+  debt_to_assets: {label: Liabilities / assets, direction: -1, unit: ratio}
+  earnings_yield: {label: TTM earnings / market value, direction: 1, unit: ratio}
+  book_to_price: {label: Book equity / market value, direction: 1, unit: ratio}
+  dividend_yield: {label: Trailing cash dividends / market value, direction: 1, unit: ratio}
+  dividend_coverage: {label: Earnings / dividends, direction: 1, unit: ratio}
+styles:
+  quality: {roe: 0.4, cashflow_to_assets: 0.4, debt_to_assets: 0.2}
+  value: {earnings_yield: 0.5, book_to_price: 0.5}
+  dividend: {dividend_yield: 0.5, dividend_coverage: 0.3, debt_to_assets: 0.2}
+  balanced: {roe: 0.2, cashflow_to_assets: 0.2, debt_to_assets: 0.2, earnings_yield: 0.2, dividend_yield: 0.2}
+sources:
+  factor: https://www.msci.com/indexes/factor-indexes
+  sector: https://institutional.fidelity.com/advisors/insights/topics/portfolio-construction/the-business-cycle-approach-to-equity-sector-investing
+  risk: https://www.bridgewater.com/research-and-insights/the-all-weather-story
+  volatility: https://www.spglobal.com/spdji/en/documents/research/research-limiting-risk-exposure-with-sp-risk-control-indices.pdf
+  enhancement: https://edu.efunds.com.cn/c/27/27047.shtml
+ui:
+  title: 策略历史资料与来源
+  intro: 导入原始价量、逐期分类、财务、基准、分红拆股和现金利率；保留来源与实际可得时点。当前修订财报不能充当历史PIT数据。
+  file: 历史研究JSON文件
+  import: 校验并保存研究快照
+  inspect: 查看资料覆盖与来源
+  identifier: 行情快照ID（可用于工坊运行）
+  imported: 研究资料已校验保存
+  missing: 缺少符合截止时点的历史证据

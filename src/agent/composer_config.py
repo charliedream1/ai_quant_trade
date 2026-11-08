@@ -10,7 +10,7 @@ from src.core.exceptions import BusinessError, ErrorCode
 
 @lru_cache(maxsize=1)
 def composer_config() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/ai_composer.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/ai_composer.yaml").read_text(encoding="utf-8"))
 
 
 def normalize_backend(value: str | None) -> str:

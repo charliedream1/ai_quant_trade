@@ -16,7 +16,7 @@ from src.core.process_env import process_environment
 def validate_images(images: list[tuple[str, bytes]]) -> dict[str, str]:
     if not images:
         return {}
-    config = yaml.safe_load((PROJECT_ROOT / "egs/image_validation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/models/image_validation.yaml").read_text(encoding="utf-8"))
     root = (PROJECT_ROOT / config["environment"]).resolve()
     if not root.is_relative_to(PROJECT_ROOT):
         raise BusinessError(ErrorCode.INVALID_PARAM, "图片校验环境必须在项目目录内")

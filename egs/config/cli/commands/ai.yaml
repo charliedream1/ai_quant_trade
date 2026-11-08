@@ -1,0 +1,14 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "ai session list": {method: GET, path: /ai-workspace/sessions, positions: {}, query: {page: int, page_size: int}, fields: {}}
+  "ai session create": {method: POST, path: /ai-workspace/sessions, positions: {}, query: {}, fields: {title: str, project_name: str}}
+  "ai session show": {method: GET, path: '/ai-workspace/sessions/{session_id}', positions: {session_id: int}, query: {}, fields: {}}
+  "ai ask":
+    method: POST
+    path: '/ai-workspace/sessions/{session_id}/messages'
+    stream_path: '/ai-workspace/sessions/{session_id}/messages/stream'
+    positions: {}
+    query: {}
+    fields: {message: str, backend: str, model_id: int, model_name: str, reasoning_effort: str, access_mode: str, attachments: json}
+    execution: true
+  "ai attachment upload": {method: POST, path: /ai-workspace/attachments, positions: {}, query: {}, fields: {}, upload: true}

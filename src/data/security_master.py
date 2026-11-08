@@ -34,7 +34,7 @@ class SecurityMasterService:
 
     def __init__(self, repo: Repository | None = None, seed_path: Path | None = None) -> None:
         self.repo = repo or Repository()
-        self.seed_path = seed_path or get_settings().project_root / "egs" / SEED_FILE_NAME
+        self.seed_path = seed_path or get_settings().project_root / "egs/examples/data" / SEED_FILE_NAME
         self.ensure_seeded()
 
     def ensure_seeded(self) -> None:

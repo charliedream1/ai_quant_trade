@@ -43,7 +43,7 @@ def run(base, output):
         base,
         "/strategy-examples/import",
         {
-            "example": "egs/strategy_examples/standard_port_strategy.py",
+            "example": "egs/examples/strategy_examples/standard_port_strategy.py",
             "name": "cost-ui-" + uuid4().hex[:8],
             "default_params": {"min_change_pct": 0, "quantity": 100},
         },

@@ -1,0 +1,22 @@
+# 文件格式：YAML，编码：UTF-8
+# 从已保存的真实行情重放；排除 2026-10-20 尚未收盘的日线。
+cutoff: '2026-10-19'
+report: docs/audit/cli_real_validation_2026-10-20.json
+panels:
+  models: docs/audit/model_market_evidence_2026-10-19.json
+  etf: docs/audit/etf_market_evidence_2026-10-20.json
+strategies:
+  - {name: lightgbm_rank, panel: models}
+  - {name: xgboost_rank, panel: models}
+  - {name: mlp_ensemble, panel: models}
+  - {name: etf_momentum_rotation, panel: etf, profile: 'etf_momentum.yaml:baseline'}
+  - {name: etf_trend_allocation, panel: etf, profile: 'etf_trend.yaml:baseline'}
+backtest:
+  initial_capital: 1000000
+  order_type: open
+  price_adjustment: qfq
+  max_position_count: 3
+  max_position_weight: 0.35
+  lot_size: 100
+  slippage_rate: 0.001
+  commission_rate: 0.0003

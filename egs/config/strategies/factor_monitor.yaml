@@ -1,0 +1,85 @@
+# file_format: yaml
+default_universe:
+  - "600519"
+  - "300750"
+  - "000001"
+  - "688981"
+  - "300124"
+max_symbols: 10000
+history_bars: 252
+default_horizon_days: 5
+min_ic_samples: 20
+factor_set: monitor
+min_assets: 3
+min_group_assets: 2
+groups: 5
+load_workers: 8
+price_adjustment: qfq
+cache_seconds: 3600
+max_jobs: 32
+job_workers: 2
+ui_poll_seconds: 1
+ui_event_lines: 40
+default_universe_id: csi300
+rolling_windows: [20, 60, 120]
+holdout_dates: 20
+qlib_timeout_seconds: 300
+qlib_python: .venv-qlib-secure
+universes:
+  custom: {label: 自定义股票池, kind: custom}
+  watchlist: {label: 自选股, kind: watchlist}
+  resource: {label: 策略资源池, kind: resource}
+  holdings: {label: 当前模拟持仓, kind: holdings}
+  csi300: {label: 沪深300, kind: index, code: "000300"}
+  csi500: {label: 中证500, kind: index, code: "000905"}
+  csi1000: {label: 中证1000, kind: index, code: "000852"}
+  all: {label: A股全市场, kind: market}
+diagnostic_horizons:
+  - 1
+  - 3
+  - 5
+  - 10
+capacity:
+  turnover_rate_floor: 1.0
+  rank_turnover_ceiling: 0.75
+factors:
+  - factor_key: momentum_20d
+    name: 20日动量
+    category: price
+    expression_key: momentum_20d
+    description: 过去20个交易日收盘价收益，观察趋势延续能力。
+    direction: positive
+    horizon_days: 5
+    rebalance_frequency: daily
+    threshold_ic: 0.02
+    threshold_coverage: 0.70
+  - factor_key: reversal_5d
+    name: 5日反转
+    category: price
+    expression_key: reversal_5d
+    description: 过去5个交易日收益取反，观察短线均值回归能力。
+    direction: positive
+    horizon_days: 5
+    rebalance_frequency: daily
+    threshold_ic: 0.01
+    threshold_coverage: 0.70
+  - factor_key: low_vol_20d
+    name: 20日低波
+    category: risk
+    expression_key: low_vol_20d
+    description: 过去20个交易日收益波动率取反，观察低波动溢价。
+    direction: positive
+    horizon_days: 5
+    rebalance_frequency: daily
+    threshold_ic: 0.01
+    threshold_coverage: 0.70
+  - factor_key: volume_trend
+    name: 量能趋势
+    category: liquidity
+    expression_key: volume_trend
+    description: 近5日均量相对20日均量的变化，观察交易活跃度抬升。
+    direction: positive
+    horizon_days: 5
+    rebalance_frequency: daily
+    threshold_ic: 0.01
+    threshold_coverage: 0.70

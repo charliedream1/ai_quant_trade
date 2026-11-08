@@ -1,0 +1,24 @@
+# 文件格式：YAML，编码：UTF-8；研究假设示例，不是已验证有效策略
+hypothesis:
+  title: 成交量确认的趋势延续
+  mechanism: 历史收益与成交量扩张共同反映信息逐步进入价格
+  counter_hypothesis: 成交量扩张可能代表过度交易并触发反转
+  direction: 1
+  horizon: 5
+  fields: [close, volume]
+  expected_relation: 两项同向时相对强度较高
+  failure_condition: 费用后超额不显著、风险或覆盖不合格
+implementation:
+  expression:
+    op: mul
+    args:
+      - {op: returns, window: 20, args: [{field: close}]}
+      - op: div
+        args:
+          - {op: mean, window: 5, args: [{field: volume}]}
+          - {op: mean, window: 20, args: [{field: volume}]}
+  fields: [close, volume]
+  direction: 1
+  horizon: 5
+  alignment: 收益乘以历史短长量比，字段及方向与原假设一致；缺失和零分母保持缺失
+  tests: [未来扰动, 独立算子值, 证券排列, 费用后配对账本]

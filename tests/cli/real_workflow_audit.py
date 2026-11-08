@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_cli_real_model_and_etf_workflows(cli_command, monkeypatch, tmp_path):
-    config = yaml.safe_load((ROOT / "egs/cli/validation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((ROOT / "egs/config/cli/validation.yaml").read_text(encoding="utf-8"))
     panels = {}
     evidence = {}
     for name, filename in config["panels"].items():
@@ -50,7 +50,7 @@ def test_cli_real_model_and_etf_workflows(cli_command, monkeypatch, tmp_path):
             "examples",
             "import",
             "--example",
-            f"egs/strategy_examples/{item['name']}_strategy.py",
+            f"egs/examples/strategy_examples/{item['name']}_strategy.py",
             "--name",
             f"cli-real-{item['name']}",
         )["data"]

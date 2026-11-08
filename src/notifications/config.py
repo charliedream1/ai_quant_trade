@@ -10,7 +10,7 @@ from src.core.config import PROJECT_ROOT
 
 @lru_cache(maxsize=1)
 def _config() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/notifications.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/notifications.yaml").read_text(encoding="utf-8"))
 
 
 def config() -> dict:

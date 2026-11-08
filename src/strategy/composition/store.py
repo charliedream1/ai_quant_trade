@@ -36,19 +36,19 @@ def source_manifest() -> dict[str, str]:
         )
     ]
     files = [
-        PROJECT_ROOT / "egs/execution_costs.yaml",
-        PROJECT_ROOT / "egs/alpha_mining.yaml",
-        PROJECT_ROOT / "egs/alpha_mining_prompts.yaml",
-        PROJECT_ROOT / "egs/agent_strategies.yaml",
-        PROJECT_ROOT / "egs/agent_strategy_prompts.yaml",
+        PROJECT_ROOT / "egs/config/strategies/execution_costs.yaml",
+        PROJECT_ROOT / "egs/config/agents/alpha_mining.yaml",
+        PROJECT_ROOT / "egs/config/agents/alpha_mining_prompts.yaml",
+        PROJECT_ROOT / "egs/config/agents/agent_strategies.yaml",
+        PROJECT_ROOT / "egs/config/agents/agent_strategy_prompts.yaml",
         PROJECT_ROOT / "src/data/backtest_history.py",
-        PROJECT_ROOT / "egs/backtest.yaml",
+        PROJECT_ROOT / "egs/config/strategies/backtest.yaml",
         PROJECT_ROOT / "src/agent/decision_team.py",
         PROJECT_ROOT / "src/engine/insights/backend.py",
         PROJECT_ROOT / "src/strategy/codex_cli.py",
         PROJECT_ROOT / "src/data/eastmoney.py",
-        PROJECT_ROOT / "egs/model_strategies.yaml",
-        PROJECT_ROOT / "egs/strategy_entrypoints/composition.py",
+        PROJECT_ROOT / "egs/config/models/model_strategies.yaml",
+        PROJECT_ROOT / "egs/examples/strategy_entrypoints/composition.py",
     ]
     files.extend((PROJECT_ROOT / "src/strategy/models").glob("*.py"))
     files.extend(path for root in roots for path in root.rglob("*.py"))
@@ -58,11 +58,11 @@ def source_manifest() -> dict[str, str]:
         if path.is_file()
     }
     settings = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
-    result["egs/strategy_components.yaml:computation"] = digest(
+    result["egs/config/strategies/strategy_components.yaml:computation"] = digest(
         {key: value for key, value in settings.items() if key not in {"ui", "messages"}}
     )
-    factors = yaml.safe_load((PROJECT_ROOT / "egs/factor_research.yaml").read_text(encoding="utf-8"))
-    result["egs/factor_research.yaml:computation"] = digest(
+    factors = yaml.safe_load((PROJECT_ROOT / "egs/config/strategies/factor_research.yaml").read_text(encoding="utf-8"))
+    result["egs/config/strategies/factor_research.yaml:computation"] = digest(
         {key: value for key, value in factors.items() if key not in {"cache", "messages"}}
     )
     return result

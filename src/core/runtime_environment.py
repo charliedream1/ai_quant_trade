@@ -62,7 +62,7 @@ def _installed_requirement(line: str, prefix: Path) -> tuple[dict[str, Any] | No
 
 
 def inspect_runtime(role: str = "web") -> dict[str, Any]:
-    config = yaml.safe_load((PROJECT_ROOT / "egs/runtime_environments.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8"))
     if role not in config["environments"]:
         raise ValueError("未知运行环境")
     cfg = config["environments"][role]
@@ -98,7 +98,7 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
 def enforce_startup_runtime() -> dict[str, Any]:
     """Check once per launcher invocation, before announcing a usable service."""
     started = perf_counter()
-    config = yaml.safe_load((PROJECT_ROOT / "egs/runtime_environments.yaml").read_text(encoding="utf-8"))["startup"]
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8"))["startup"]
     env = dotenv_values(PROJECT_ROOT / ".env")
     mode = os.environ.get("ALL_IN_ONE_RUNTIME_MODE", env.get("ALL_IN_ONE_RUNTIME_MODE") or config["mode"])
     role = os.environ.get("ALL_IN_ONE_RUNTIME_ROLE", env.get("ALL_IN_ONE_RUNTIME_ROLE") or config["role"])
@@ -113,6 +113,6 @@ def enforce_startup_runtime() -> dict[str, Any]:
             "启动环境预检失败 | mode={} role={} executable={} errors={}", mode, role, sys.executable, report["errors"]
         )
         if mode == "strict":
-            raise SystemExit("环境不符合声明，已停止启动；请使用项目配置的独立环境，详情运行 egs/check_runtime.py")
+            raise SystemExit("环境不符合声明，已停止启动；请使用项目配置的独立环境，详情运行 egs/entrypoints/check_runtime.py")
         logger.warning("显式兼容调试模式：带上述环境偏差继续启动，不表示依赖安全或兼容验证通过")
     return {**report, "mode": mode, "elapsed_ms": elapsed}

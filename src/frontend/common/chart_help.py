@@ -14,7 +14,7 @@ from src.core.config import PROJECT_ROOT, get_settings
 
 @lru_cache(maxsize=1)
 def catalog() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/chart_explanations.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/chart_explanations.yaml").read_text(encoding="utf-8"))
 
 
 def help_key(label: str) -> str:

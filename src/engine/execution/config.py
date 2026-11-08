@@ -17,7 +17,7 @@ from src.core.exceptions import BusinessError, ErrorCode
 
 @lru_cache(maxsize=1)
 def cost_config() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/execution_costs.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/strategies/execution_costs.yaml").read_text(encoding="utf-8"))
 
 
 def resolve_costs(value: dict[str, Any] | None = None, legacy: dict[str, Any] | None = None) -> dict[str, Any]:

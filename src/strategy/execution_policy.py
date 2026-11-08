@@ -15,7 +15,7 @@ from src.core.timeutil import utc_now_iso
 
 @lru_cache(maxsize=1)
 def execution_config() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/strategy_execution.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/strategies/strategy_execution.yaml").read_text(encoding="utf-8"))
 
 
 def source_digest(path: Path) -> str:
@@ -25,13 +25,13 @@ def source_digest(path: Path) -> str:
 def bundled_source(path: Path, source: bytes | None = None) -> bool:
     content = (path.read_bytes() if source is None else source).decode("utf-8").replace("\r\n", "\n")
     digest = hashlib.sha256(content.encode("utf-8")).hexdigest()
-    prior = yaml.safe_load((PROJECT_ROOT / "egs/trusted_strategy_sources.yaml").read_text(encoding="utf-8"))["sources"]
+    prior = yaml.safe_load((PROJECT_ROOT / "egs/config/security/trusted_strategy_sources.yaml").read_text(encoding="utf-8"))["sources"]
     if digest in prior:
         return True
     return any(
         hashlib.sha256(item.read_text(encoding="utf-8").encode("utf-8")).hexdigest() == digest
         for folder in ("strategy_examples", "strategy_entrypoints")
-        for item in (PROJECT_ROOT / "egs" / folder).glob("*.py")
+        for item in (PROJECT_ROOT / "egs/examples" / folder).glob("*.py")
     )
 
 

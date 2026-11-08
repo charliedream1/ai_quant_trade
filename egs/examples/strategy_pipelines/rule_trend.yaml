@@ -1,0 +1,84 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "规则趋势基础",
+  "description": "规则趋势基础；日线研究模板，真实能力由数据与依赖校验决定",
+  "universe": {
+    "symbols": [
+      "000001",
+      "600036",
+      "600519",
+      "601166",
+      "601318",
+      "300750"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "eligibility",
+      "component": "eligibility",
+      "inputs": [
+        "universe"
+      ],
+      "params": {}
+    },
+    {
+      "id": "trend",
+      "component": "trend",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "breakout",
+      "component": "donchian",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "volume",
+      "component": "momentum_volume",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "rules",
+      "component": "merge",
+      "inputs": [
+        "trend",
+        "breakout",
+        "volume"
+      ],
+      "params": {
+        "method": "k_n",
+        "minimum": 2
+      }
+    }
+  ],
+  "output": "rules",
+  "portfolio": {
+    "component": "equal"
+  },
+  "risk": {},
+  "execution": {},
+  "rebalance_sessions": 5,
+  "variants": {
+    "baseline": {},
+    "conservative": {
+      "risk": {
+        "max_exposure": 0.6,
+        "max_weight": 0.15
+      },
+      "portfolio": {
+        "params": {
+          "exposure": 0.6
+        }
+      }
+    }
+  }
+}

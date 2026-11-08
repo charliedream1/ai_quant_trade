@@ -18,7 +18,7 @@ from src.core.config import PROJECT_ROOT
 
 def invoke(*args):
     result = subprocess.run(
-        [sys.executable, "-B", "egs/skills.py", *args],
+        [sys.executable, "-B", "egs/entrypoints/skills.py", *args],
         capture_output=True,
         encoding="utf-8",
         timeout=40,
@@ -32,7 +32,7 @@ def test_ten_examples_preview_and_no_server_catalog(client):
     assert result.returncode == 0 and len(value["workflows"]) == 10
     assert value["web_required"] is False
     for name in settings()["workflows"]:
-        result, value = invoke("preview", "--config", f"egs/skills_examples/{name}.yaml")
+        result, value = invoke("preview", "--config", f"egs/examples/skills_examples/{name}.yaml")
         assert result.returncode == 0, result.stderr
         assert value["model_called"] is False and value["skill"] == name
 

@@ -1,0 +1,103 @@
+# File format: YAML; encoding: UTF-8
+asset_type: etf
+universes:
+  cn_core:
+    label: A股核心宽基 ETF
+    market: CN
+    benchmark: 沪深300/中证500/创业板宽基组合
+    rebalance_frequency: monthly
+    symbols:
+    - symbol: '510300'
+      name: 沪深300ETF
+      benchmark: 沪深300
+      category: broad
+      expense_ratio: 0.005
+    - symbol: '510500'
+      name: 中证500ETF
+      benchmark: 中证500
+      category: broad
+      expense_ratio: 0.005
+    - symbol: '159915'
+      name: 创业板ETF
+      benchmark: 创业板指
+      category: broad
+      expense_ratio: 0.005
+    - symbol: '512100'
+      name: 中证1000ETF
+      benchmark: 中证1000
+      category: broad
+      expense_ratio: 0.005
+  cn_sector:
+    label: A股行业与主题 ETF
+    market: CN
+    benchmark: A股行业主题代表池
+    rebalance_frequency: monthly
+    symbols:
+    - symbol: '512880'
+      name: 券商ETF
+      benchmark: 证券公司
+      category: sector
+      expense_ratio: 0.006
+    - symbol: '512010'
+      name: 医药ETF
+      benchmark: 医药卫生
+      category: sector
+      expense_ratio: 0.006
+    - symbol: '515030'
+      name: 新能源车ETF
+      benchmark: 新能源汽车
+      category: theme
+      expense_ratio: 0.006
+    - symbol: '512480'
+      name: 半导体ETF
+      benchmark: 半导体
+      category: theme
+      expense_ratio: 0.006
+  cn_cross_asset:
+    label: 股票债券黄金与现金ETF研究池
+    market: CN
+    benchmark: Declared cross-asset ETF total-return basket
+    rebalance_frequency: monthly
+    classification_available_at: '2026-11-04T00:00:00+00:00'
+    metadata_policy: Product identities are current reviewed references; historical
+      instrument rules and classifications require dated evidence. Fees and AUM remain
+      unknown.
+    symbols:
+    - symbol: '510300'
+      name: 沪深300ETF
+      benchmark: 沪深300
+      category: broad
+      asset_class: equity
+      expense_ratio: null
+      source_url: https://www.sse.com.cn/assortment/fund/list/etfinfo/basic/index.shtml?FUNDID=510300
+    - symbol: '511010'
+      name: 国债ETF国泰
+      benchmark: 上证5年期国债
+      category: bond
+      asset_class: bond
+      expense_ratio: null
+      source_url: https://e.gtfund.com/etrade/Jijin/view/id/511010
+    - symbol: '518880'
+      name: 黄金ETF华安
+      benchmark: Gold spot exposure
+      category: gold
+      asset_class: gold
+      expense_ratio: null
+      source_url: https://www.huaan.com.cn/funds/518880/index.shtml
+    - symbol: '511880'
+      name: 银华日利ETF
+      benchmark: Money-market fund cash alternative
+      category: cash_alternative
+      asset_class: cash
+      expense_ratio: null
+      source_url: https://www.sse.com.cn/assortment/fund/list/etfinfo/basic/index.shtml?FUNDID=511880
+metadata_fields:
+- symbol
+- name
+- benchmark
+- category
+- expense_ratio
+- aum
+- average_amount
+- updated_at
+- data_source

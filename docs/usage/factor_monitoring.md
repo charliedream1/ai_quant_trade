@@ -35,12 +35,12 @@
 
 “股票池版本、对照与缓存”中可选择额外对照池、观察日期和是否跳过结果缓存。不同池分别计算，结果列明历史政策、覆盖率和样本数；资源池对照使用同一个资源池 ID。观察日期必须不晚于今天，过早日期若不在数据源返回范围内会提示数据不足。
 
-需要历史成员时，先通过 CLI/API 登记含证券代码、有效起止日期和数据来源的清单，再填写返回的版本。清单字段示例位于仓库 `egs/factor_memberships.example.yaml`，仅供填写格式参考，不是指数成分证据。
+需要历史成员时，先通过 CLI/API 登记含证券代码、有效起止日期和数据来源的清单，再填写返回的版本。清单字段示例位于仓库 `egs/config/strategies/factor_memberships.example.yaml`，仅供填写格式参考，不是指数成分证据。
 
 ```console
-python egs/cli.py factor memberships --file egs/factor_memberships.example.yaml --format json
-python egs/cli.py factor start --universe-id csi300 --backend builtin --format json
-python egs/cli.py factor job <任务ID> --format json
+python egs/entrypoints/cli.py factor memberships --file egs/config/strategies/factor_memberships.example.yaml --format json
+python egs/entrypoints/cli.py factor start --universe-id csi300 --backend builtin --format json
+python egs/entrypoints/cli.py factor job <任务ID> --format json
 ```
 
 历史成员是用户提供的数据，系统按版本和有效日期隔离，但不会替用户证明来源真实性。内置日历来自行情日期并集；缺失交易日不会用另一日期的价格顶替，日期与标签口径见原理文档。
@@ -49,7 +49,7 @@ python egs/cli.py factor job <任务ID> --format json
 
 本轮已在项目内 `.venv-qlib` 实测 pyqlib 0.9.7，依赖清单位于 `egs/requirements/qlib.txt`。主 Web 环境保持独立；Qlib 分析通过单独解释器运行，不修改 conda 包。
 
-`egs/factor_monitor.yaml` 的 `qlib_python` 可填写虚拟环境目录或解释器路径；环境变量 `ALL_IN_ONE_QLIB_PYTHON` 可覆盖。目录形式在 Windows 使用 Scripts/python.exe，在 Linux 使用 bin/python。
+`egs/config/strategies/factor_monitor.yaml` 的 `qlib_python` 可填写虚拟环境目录或解释器路径；环境变量 `ALL_IN_ONE_QLIB_PYTHON` 可覆盖。目录形式在 Windows 使用 Scripts/python.exe，在 Linux 使用 bin/python。
 
 当前服务的因子诊断会真实探测该工作进程。Qlib 缺失时，内置监控仍可用；显式选择 Qlib 后出错不会静默回退。此信号分析使用平台提供的对齐面板，不要求每次训练模型或准备完整 provider。
 

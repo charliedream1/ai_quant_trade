@@ -4,7 +4,7 @@
 
 三条接口都通过普通Chat Completions生成文本，结构化正文继续由平台解析。OpenAI SDK使用模型的原始名称；LiteLLM当前经受控OpenAI兼容传输调用服务，名称可填`openai/模型名`。不带供应商前缀的简单名称会按OpenAI兼容模型处理；模型名本身含斜杠时请显式加`openai/`。其他供应商原生协议尚未在本项目验证。
 
-Base URL填写服务的API根地址，例如本机服务的`http://127.0.0.1:8001/v1`。已有以`/chat/completions`结尾的配置仍兼容。API Key用环境变量名称引用；也可通过现有安全输入框写入本地.llm_env，数据库中不保存原始密钥。
+Base URL填写服务的API根地址，例如本机服务的`http://127.0.0.1:8001/v1`。已有以`/chat/completions`结尾的配置仍兼容。API Key用环境变量名称引用；也可通过现有安全输入框写入本地.env，数据库中不保存原始密钥。
 
 ## 安装配置
 
@@ -38,6 +38,6 @@ Base URL填写服务的API根地址，例如本机服务的`http://127.0.0.1:800
 
 普通调用结果新增api_backend、rate_limit_wait_ms、request_duration_ms和retry_count，分别表示调用接口、配额等待、请求尝试总耗时和重试次数；duration_ms包含等待及退避。日志仅记录模型ID、次数和等待信息，不记录密钥、完整请求体或回答。
 
-CLI创建和修改模型支持同样字段。`--base-url`是平台后端地址，模型服务地址请用`--set base_url=...`设置；例如在`model create`参数中提供`--api-backend openai --rpm 60 --max-concurrency 2`，并用`--api-key-env`引用本地密钥。所有默认值及保护字段见egs/llm_client.yaml。
+CLI创建和修改模型支持同样字段。`--base-url`是平台后端地址，模型服务地址请用`--set base_url=...`设置；例如在`model create`参数中提供`--api-backend openai --rpm 60 --max-concurrency 2`，并用`--api-key-env`引用本地密钥。所有默认值及保护字段见egs/config/models/llm_client.yaml。
 
 检索场景见[知识库指南](knowledge.md)，整体配置见[配置说明](configuration.md)，实现边界见[模型调用原理](../principles/model_interfaces.md)。

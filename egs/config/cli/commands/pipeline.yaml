@@ -1,0 +1,265 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "commands": {
+    "pipeline components": {
+      "method": "GET",
+      "path": "/strategy-components",
+      "positions": {},
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline templates": {
+      "method": "GET",
+      "path": "/strategy-pipeline-templates",
+      "positions": {},
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline preview": {
+      "method": "POST",
+      "path": "/strategy-pipelines/preview",
+      "positions": {},
+      "fields": {
+        "definition": "json",
+        "overrides": "json",
+        "variant": "str"
+      },
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline create": {
+      "method": "POST",
+      "path": "/strategy-pipelines",
+      "positions": {},
+      "fields": {
+        "definition": "json",
+        "overrides": "json",
+        "variant": "str"
+      },
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline list": {
+      "method": "GET",
+      "path": "/strategy-pipelines",
+      "positions": {},
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline show": {
+      "method": "GET",
+      "path": "/strategy-pipelines/{pipeline_id}",
+      "positions": {
+        "pipeline_id": "int"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline update": {
+      "method": "PUT",
+      "path": "/strategy-pipelines/{pipeline_id}",
+      "positions": {
+        "pipeline_id": "int"
+      },
+      "fields": {
+        "definition": "json",
+        "overrides": "json",
+        "variant": "str"
+      },
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline publish": {
+      "method": "POST",
+      "path": "/strategy-pipelines/{pipeline_id}/publish",
+      "positions": {
+        "pipeline_id": "int"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline versions": {
+      "method": "GET",
+      "path": "/strategy-pipelines/{pipeline_id}/versions",
+      "positions": {
+        "pipeline_id": "int"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline enabled": {
+      "method": "POST",
+      "path": "/strategy-pipelines/{pipeline_id}/enabled",
+      "positions": {"pipeline_id": "int"},
+      "fields": {},
+      "query": {"enabled": "bool"},
+      "execution": false,
+      "market": false
+    },
+    "pipeline run": {
+      "method": "POST",
+      "path": "/strategy-pipeline-runs",
+      "positions": {},
+      "fields": {
+        "version_id": "int",
+        "template": "str",
+        "definition": "json",
+        "overrides": "json",
+        "variant": "str",
+        "symbols": "json",
+        "resource_pool_id": "int",
+        "mode": "str",
+        "market": "str",
+        "start_date": "str",
+        "end_date": "str",
+        "agent_mode": "str",
+        "backend": "str",
+        "model_id": "int",
+        "model_name": "str",
+        "reasoning_effort": "str",
+        "snapshot_id": "str",
+        "execution_costs": "json",
+        "agent_documents_dataset_id": "int",
+        "agent_strategy_options": "json",
+        "agent_replay": "json",
+        "account_id": "int",
+        "refresh_decision": "bool",
+        "require_real": "bool",
+        "risk_only": "bool"
+      },
+      "query": {},
+      "execution": true,
+      "market": false,
+      "stream_path": "/strategy-pipeline-runs/stream",
+      "await_terminal": true,
+      "global_fields": {
+        "market": "market",
+        "require_real": "require_real"
+      }
+    },
+    "pipeline runs": {
+      "method": "GET",
+      "path": "/strategy-pipeline-runs",
+      "positions": {},
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline result": {
+      "method": "GET",
+      "path": "/strategy-pipeline-runs/{run_id}",
+      "positions": {
+        "run_id": "str"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline export": {
+      "method": "GET",
+      "path": "/strategy-pipeline-runs/{run_id}/result",
+      "positions": {
+        "run_id": "str"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline events": {
+      "method": "GET",
+      "path": "/strategy-pipeline-runs/{run_id}/events",
+      "positions": {
+        "run_id": "str"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline cancel": {
+      "method": "POST",
+      "path": "/strategy-pipeline-runs/{run_id}/cancel",
+      "positions": {
+        "run_id": "str"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline accounts": {
+      "method": "GET",
+      "path": "/strategy-pipeline-accounts",
+      "positions": {},
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline account": {
+      "method": "GET",
+      "path": "/strategy-pipeline-accounts/{account_id}",
+      "positions": {
+        "account_id": "int"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    },
+    "pipeline monitor": {
+      "method": "POST",
+      "path": "/strategy-pipeline-accounts/{account_id}/monitor",
+      "positions": {
+        "account_id": "int"
+      },
+      "fields": {},
+      "query": {
+        "enabled": "bool"
+      },
+      "execution": false,
+      "market": false
+    },
+    "pipeline layout show": {
+      "method":"GET", "path":"/strategy-pipelines/{pipeline_id}/layout", "positions":{"pipeline_id":"int"},
+      "fields":{}, "query":{}, "execution":false, "market":false
+    },
+    "pipeline layout save": {
+      "method":"PUT", "path":"/strategy-pipelines/{pipeline_id}/layout", "positions":{"pipeline_id":"int"},
+      "fields":{"definition_digest":"str","layout":"json","revision":"int"}, "query":{}, "execution":false, "market":false
+    },
+    "pipeline nodes": {
+      "method":"GET", "path":"/strategy-pipeline-runs/{run_id}/nodes", "positions":{"run_id":"str"},
+      "fields":{}, "query":{"after":"int"}, "execution":false, "market":false
+    },
+    "pipeline risk-reset": {
+      "method": "POST",
+      "path": "/strategy-pipeline-accounts/{account_id}/risk-reset",
+      "positions": {
+        "account_id": "int"
+      },
+      "fields": {},
+      "query": {},
+      "execution": false,
+      "market": false
+    }
+  }
+}

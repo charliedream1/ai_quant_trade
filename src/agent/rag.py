@@ -85,7 +85,7 @@ class RAGService:
             ]
         )
         prompt = self._prompt(question, context, history_context)
-        config = yaml.safe_load((PROJECT_ROOT / "egs/rag.yaml").read_text(encoding="utf-8"))
+        config = yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/rag.yaml").read_text(encoding="utf-8"))
         completion = None
         status = retrieval_status
         answer = config.get(retrieval_status, config["no_hits"])
@@ -276,7 +276,7 @@ class RAGService:
         return "\n\n".join(blocks)
 
     def _prompt(self, question: str, context: str, history_context: str) -> str:
-        config = yaml.safe_load((PROJECT_ROOT / "egs/rag.yaml").read_text(encoding="utf-8"))
+        config = yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/rag.yaml").read_text(encoding="utf-8"))
         return config["prompt"].format(question=question, context=context, history=history_context or "无")
 
 

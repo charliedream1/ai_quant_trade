@@ -36,7 +36,7 @@
 - 无真实模型配置、接口错误、无效输出都记失败；mock-llm 不得作为实际多 Agent 成功结果。
 - 单次报告记录运行标识、回测标识、角色输出、工具轨迹、时间和结果。仅生成研究复核报告，不自动交易。
 
-入口：AI工作台 → 工作流中心 → 专家团 → 多Agent回测复核。配置位于 `egs/research_team.yaml`。
+入口：AI工作台 → 工作流中心 → 专家团 → 多Agent回测复核。配置位于 `egs/config/agents/research_team.yaml`。
 
 ## 官方来源
 

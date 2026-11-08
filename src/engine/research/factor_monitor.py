@@ -24,7 +24,7 @@ from .monitor_universe import MonitorUniverses
 from .qlib_signal import signal_status
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_CONFIG_PATH = PROJECT_ROOT / "egs/factor_monitor.yaml"
+DEFAULT_CONFIG_PATH = PROJECT_ROOT / "egs/config/strategies/factor_monitor.yaml"
 
 
 class FactorMonitorService:
@@ -59,7 +59,7 @@ class FactorMonitorService:
                 "horizon_days": config["default_horizon_days"],
                 "rebalance_frequency": "daily",
                 "enabled": 1,
-                "source": "egs/factor_research.yaml",
+                "source": "egs/config/strategies/factor_research.yaml",
                 "threshold_ic": thresholds.get(key, {}).get("threshold_ic", 0.0),
                 "threshold_coverage": thresholds.get(key, {}).get("threshold_coverage", 0.7),
                 "updated_at": now,
@@ -102,7 +102,7 @@ class FactorMonitorService:
                 Path(__file__).with_name("monitor_analysis.py"),
                 PROJECT_ROOT / "src/strategy/factors/research.py",
                 PROJECT_ROOT / "src/strategy/factors/panel.py",
-                PROJECT_ROOT / "egs/factor_research.yaml",
+                PROJECT_ROOT / "egs/config/strategies/factor_research.yaml",
                 Path(__file__).with_name("monitor_data.py"),
                 Path(__file__).with_name("monitor_universe.py"),
                 Path(__file__).with_name("qlib_signal.py"),

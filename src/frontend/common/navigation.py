@@ -12,7 +12,7 @@ from src.frontend.registry import MODULES
 
 @lru_cache(maxsize=1)
 def navigation_config():
-    config = yaml.safe_load((PROJECT_ROOT / "egs/navigation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/ui/navigation.yaml").read_text(encoding="utf-8"))
     config["modules"] = {module.key: dict(module.views) for module in MODULES}
     return config
 

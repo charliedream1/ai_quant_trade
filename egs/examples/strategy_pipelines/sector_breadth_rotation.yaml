@@ -1,0 +1,33 @@
+# File format: YAML; encoding: UTF-8
+schema_version: 1
+name: 行业强度与广度轮动
+description: Ranks sectors by average trailing strength and proportion above trend;
+  uses dated sector evidence.
+universe:
+  symbols:
+  - '000001'
+  - '600036'
+  - '600519'
+  - 000858
+  - '601318'
+  - '300750'
+nodes:
+- id: eligible
+  component: eligibility
+  inputs:
+  - universe
+  params: {}
+- id: breadth
+  component: sector_breadth
+  inputs:
+  - eligible
+  params: {}
+output: breadth
+portfolio:
+  component: inverse_volatility
+risk:
+  require_sector: true
+execution: {}
+rebalance_sessions: 20
+variants:
+  baseline: {}

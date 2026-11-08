@@ -1,0 +1,40 @@
+# file_format: yaml
+# 文件格式: UTF-8
+#
+# 远程知识源通过已登记的 MCP 服务访问。
+# 将 sources[].config 对象转换为 JSON 后，粘贴到知识库 / 远程知识源 / 连接配置。
+# 工具名是 MCP 服务实际暴露的工具；若使用约定名称，可省略 tool_map。
+
+file_format: yaml
+sources:
+  - name: feishu_via_mcp
+    type: feishu
+    enabled: false
+    config:
+      mcp_server_id: 1
+      tool_map:
+        list: list_nodes
+        search: search
+        fetch: fetch_doc
+      base_arguments:
+        space_id: your-space-id
+      argument_map:
+        list:
+          folder: folder_id
+        search:
+          query: keyword
+        fetch:
+          remote_doc_id: document_id
+      token: ${FEISHU_TOKEN}
+
+  - name: ima_via_mcp
+    type: ima
+    enabled: false
+    config:
+      mcp_server_id: 2
+      tool_map:
+        list: list_documents
+        search: search_documents
+        fetch: fetch_document
+      base_arguments: {}
+      argument_map: {}

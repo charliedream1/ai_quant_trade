@@ -27,7 +27,7 @@ def test_invalid_parameters_fail_before_execution(value):
 
 def test_saved_schema_list_and_empty_override_inherit_defaults(client):
     store = StrategyStore()
-    item = store.import_example("egs/strategy_examples/dual_ma_strategy.py", {"name": "params_list"})
+    item = store.import_example("egs/examples/strategy_examples/dual_ma_strategy.py", {"name": "params_list"})
     store.repo.update("strategies", item["id"], {"param_schema": [{"name": "fast_window", "default": 9}]})
     resolver = StrategyParameters()
     assert resolver.resolve(item["id"], {})["resolved_params"] == {"fast_window": 9, "slow_window": 20}
@@ -40,7 +40,7 @@ def test_saved_schema_list_and_empty_override_inherit_defaults(client):
 def test_model_layers_and_nested_profile_overrides_need_no_training(client):
     store = StrategyStore()
     item = store.import_example(
-        "egs/strategy_examples/lightgbm_rank_strategy.py",
+        "egs/examples/strategy_examples/lightgbm_rank_strategy.py",
         {"name": "model_params", "default_params": {"top_n": 2, "model_params": {"reg_lambda": 3.0}}},
     )
     resolution = StrategyParameters().resolve(
@@ -58,7 +58,7 @@ def test_model_layers_and_nested_profile_overrides_need_no_training(client):
 
 @pytest.mark.parametrize("profile", ["../config.yaml:x", "rsi.yaml:strict", "dual_ma.yaml:missing"])
 def test_profiles_cannot_cross_strategy_or_escape_directory(client, profile):
-    item = StrategyStore().import_example("egs/strategy_examples/dual_ma_strategy.py", {"name": "profile_guard"})
+    item = StrategyStore().import_example("egs/examples/strategy_examples/dual_ma_strategy.py", {"name": "profile_guard"})
     with pytest.raises(BusinessError, match="不属于当前策略"):
         StrategyParameters().resolve(item["id"], {}, profile)
 
@@ -66,7 +66,7 @@ def test_profiles_cannot_cross_strategy_or_escape_directory(client, profile):
 def test_all_bundled_strategies_have_two_compatible_yaml_schemes(client):
     store = StrategyStore()
     resolver = StrategyParameters()
-    paths = sorted(Path("egs/strategy_examples").glob("*_strategy.py"))
+    paths = sorted(Path("egs/examples/strategy_examples").glob("*_strategy.py"))
     assert len(paths) == 13
     for path in paths:
         item = store.import_example(path.as_posix(), {"name": f"schemes_{path.stem}"})
@@ -78,7 +78,7 @@ def test_all_bundled_strategies_have_two_compatible_yaml_schemes(client):
 
 def test_custom_strategy_without_scheme_uses_its_declared_defaults(client, tmp_path):
     store = StrategyStore()
-    item = store.import_example("egs/strategy_examples/dual_ma_strategy.py", {"name": "custom_defaults"})
+    item = store.import_example("egs/examples/strategy_examples/dual_ma_strategy.py", {"name": "custom_defaults"})
     resolver = StrategyParameters(profiles=ParameterProfiles(tmp_path))
     assert resolver.options(item["id"]) == []
     assert resolver.resolve(item["id"])["resolved_params"]["slow_window"] == 20
@@ -88,6 +88,6 @@ def test_custom_strategy_without_scheme_uses_its_declared_defaults(client, tmp_p
     "params", [{"fast_window": 1}, {"fast_window": "5"}, {"fast_window": True}, {"fast_window": 30, "slow_window": 20}]
 )
 def test_invalid_declared_values_are_rejected_in_preview(client, params):
-    item = StrategyStore().import_example("egs/strategy_examples/dual_ma_strategy.py", {"name": "typed_params"})
+    item = StrategyStore().import_example("egs/examples/strategy_examples/dual_ma_strategy.py", {"name": "typed_params"})
     with pytest.raises(BusinessError):
         StrategyParameters().resolve(item["id"], params)

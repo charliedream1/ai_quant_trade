@@ -1,0 +1,73 @@
+# YAML 1.2, UTF-8
+version: 1
+limits:
+  max_config_bytes: 1048576
+  poll_seconds: 0.25
+  deadline_seconds: 3600
+  max_active_runs: 2
+  file_excerpt_chars: 100000
+  heartbeat_seconds: 2
+  stale_seconds: 30
+exports:
+  codex: .agents/skills
+  qoder: .qoder/skills
+  codebuddy: .codebuddy/skills
+  trae: null
+workflows:
+  quant-market-review:
+    label: 市场复盘
+    family: insight
+    defaults: {kind: market_review}
+    required: []
+  quant-stock-analysis:
+    label: 个股分析
+    family: insight
+    defaults: {kind: single_stock_analysis}
+    required: [symbol]
+  quant-backtest-review:
+    label: 四角色回测复核
+    family: team
+    defaults: {workflow: backtest_review}
+    required: [backtest_id, objective]
+  quant-etf-review:
+    label: ETF专用复核
+    family: team
+    defaults: {workflow: etf_review}
+    required: [backtest_id, objective]
+  quant-strategy-composition:
+    label: 级联并行策略组合
+    family: composition
+    defaults: {mode: screen}
+    required: []
+  quant-alpha-mining:
+    label: 三Agent假设挖掘
+    family: alpha
+    defaults: {mode: alpha}
+    required: [name, dataset_id]
+  quant-theme-refine:
+    label: 主题与公司关联精炼
+    family: alpha
+    defaults: {mode: theme}
+    required: [name, dataset_id, cutoff]
+  quant-regime-research:
+    label: 四体制独立配置研究
+    family: alpha
+    defaults: {mode: regime}
+    required: [name, dataset_id, cutoff, configurations, asset_mapping]
+  quant-cn-debate:
+    label: 中文多空辩论
+    family: agents
+    defaults: {recipe: cn_balanced}
+    required: [market_dataset_id, as_of]
+  quant-contest-trade:
+    label: 双团队竞赛
+    family: agents
+    defaults: {recipe: contest_event}
+    required: [market_dataset_id, as_of]
+messages:
+  unknown: 未登记的研究Skill
+  missing: 缺少必要参数
+  recursion: CLI模型提供者不得再次启动研究Skill
+  interrupted: 执行进程已结束；本地任务不承诺脱离终端继续运行
+  cancel: 已请求取消，等待底层服务停止
+  timeout: 本地执行达到总时限

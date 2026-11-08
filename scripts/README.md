@@ -26,8 +26,8 @@ Common options:
 
 The scripts run:
 
-1. `zz_scripts/check_docs_publish_scope.py`
-2. `zz_scripts/check_docs_build.py`
+1. `scripts/docs/check_docs_publish_scope.py`
+2. `scripts/docs/check_docs_build.py`
 3. `mkdocs build --clean`
 4. a generated-site scan to ensure old project wrappers and external docs
    references did not reappear.

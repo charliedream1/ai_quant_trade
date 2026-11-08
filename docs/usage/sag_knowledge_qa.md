@@ -6,13 +6,13 @@ The knowledge page offers **模型递归搜索（zvec-grep）** and **SAG with f
 
 Start SAG following its [official deployment guide](https://github.com/Zleap-AI/SAG). Choose an API port distinct from this platform. Configure the external service's generation and embedding models before expecting indexed documents to become ready.
 
-Set `ALL_IN_ONE_SAG_ENABLED=true`, `ALL_IN_ONE_SAG_BASE_URL` and `ALL_IN_ONE_SAG_TOKEN` in local `.env` or `.llm_env`. The base may include `/api/v1`; the client adds it when absent. Use an endpoint without embedded credentials, query strings or fragments. A local trusted SAG address is allowed; metadata/link-local targets are blocked by the shared network policy. Do not commit local endpoints or keys.
+Set `ALL_IN_ONE_SAG_ENABLED=true`, `ALL_IN_ONE_SAG_BASE_URL` and `ALL_IN_ONE_SAG_TOKEN` in local `.env`. The base may include `/api/v1`; the client adds it when absent. Use an endpoint without embedded credentials, query strings or fragments. A local trusted SAG address is allowed; metadata/link-local targets are blocked by the shared network policy. Do not commit local endpoints or keys.
 
 Upload files normally. On the Q&A page, select the library and choose a whole-library or single-document scope. Refresh document choices and select the document where needed, then press **同步所选范围到SAG / 刷新索引状态**. This explicitly sends normalized text to the configured service and reports the real document status. If processing is pending, press again later to refresh; the gateway does not pretend pending documents are ready.
 
 Each revision uses its own SAG source, keeping single-document retrieval isolated before recall. Already synchronized content refreshes status without another ingestion. Edited content or a different endpoint needs synchronization again. An uncertain write stops automatic resubmission and requires local review of the remote source rather than creating duplicates. No remote document or source is deleted automatically.
 
-`sag.auto_sync` in `egs/knowledge.yaml` optionally synchronizes ordinary new imports. It defaults to false and excludes private session attachments. Manual synchronization can include a current session's attachment. Large libraries must be synchronized document by document when they exceed the configured batch size. Limits are reported rather than silently truncating documents.
+`sag.auto_sync` in `egs/config/knowledge/knowledge.yaml` optionally synchronizes ordinary new imports. It defaults to false and excludes private session attachments. Manual synchronization can include a current session's attachment. Large libraries must be synchronized document by document when they exceed the configured batch size. Limits are reported rather than silently truncating documents.
 
 ## Ask a question
 

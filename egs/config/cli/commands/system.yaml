@@ -1,0 +1,6 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "system capabilities": {"method":"GET","path":"/system/capabilities","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "system health": {"method":"GET","path":"/health","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "system info": {"method":"GET","path":"/system/info","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "system serve": {"special":"serve","fields":{"host":"str","port":"int","log_level":"str"},"query":{},"positions":{}}

@@ -39,7 +39,7 @@ def test_warn_is_explicit_and_invalid_modes_rejected(monkeypatch):
         runtime.enforce_startup_runtime()
 
 
-@pytest.mark.parametrize("args", [["start.py", "--help"], ["egs/cli.py", "system", "serve", "--help"]])
+@pytest.mark.parametrize("args", [["start.py", "--help"], ["egs/entrypoints/cli.py", "system", "serve", "--help"]])
 def test_help_does_not_require_startup(args):
     result = subprocess.run([sys.executable, "-B", *args], capture_output=True, text=True, encoding="utf-8", timeout=30)
     assert result.returncode == 0 and "启动环境预检" not in result.stderr

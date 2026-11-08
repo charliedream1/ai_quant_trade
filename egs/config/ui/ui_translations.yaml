@@ -1,0 +1,276 @@
+# YAML 1.2, UTF-8
+# Additional labels for the modular workspace; research data is not rewritten.
+AIQuant智投: AIQuant
+一体化量化研究与交易工作台: Integrated Quant Research Workspace
+浅色: Light
+深色: Dark
+账户、市场与任务总览: Accounts, markets and tasks
+市场研究: Market Research
+行情、因子、个股与推荐: Quotes, factors, stocks and ideas
+策略生命周期、版本与构建: Strategy lifecycle and versions
+回测、模拟交易与归因: Backtests, paper trading and attribution
+发布、风控、运行与归因: Deploy, manage risk and review runs
+智能洞察、专家与闭环工作流: Insights, experts and workflows
+知识与资料: Knowledge & Files
+知识库问答: Knowledge Q&A
+知识库入库: Knowledge Ingestion
+问答知识库: Knowledge Library
+目标知识库: Target Library
+创建知识库: Create Library
+刷新知识库: Refresh Libraries
+刷新库名: Refresh Libraries
+最多检索轮数: Maximum Search Rounds
+问答附件（仅当前会话）: Q&A Attachments (Current Session Only)
+分块长度上限（字符，优先按Markdown标题）: Maximum Chunk Characters (Markdown Headings First)
+添加文档: Add Documents
+文件入库: Import Files
+网页或文档 URL: Webpage or Document URL
+下载并入库: Download and Import
+当前知识库文档: Library Documents
+预览原件: Preview Original
+远程知识源（高级）: Remote Sources (Advanced)
+研报目标知识库: Report Target Library
+论文目标知识库: Paper Target Library
+下载研报并入库: Download and Import Report
+下载论文并入库: Download and Import Paper
+带引用的AI问答、资料与远程知识源: Cited Q&A, files and knowledge sources
+学习空间: Learning Space
+按章节学习量化基础、回测和风控: Learn quant research, testing and risk
+系统管理: Administration
+任务、设置、模型、MCP 与 Skill: Jobs, settings, models, MCP and skills
+图形策略工坊: Visual Strategy Workshop
+策略管理: Strategy Management
+因子研究与监控: Factor Research & Monitoring
+Alpha研究: Alpha Research
+ETF研究: ETF Research
+主界面: Main Workspace
+严重提醒: Critical Notice
+交易日历不可用: Trading Calendar Unavailable
+交易日历文件不存在。: Trading calendar file is missing.
+未读: Unread
+仍有严重事项待处理: Critical items need attention
+账户与市场总览: Portfolio & Market Overview
+现金与持仓按当前可用行情估值；趋势图仅使用已保存快照。: Cash and positions use available quotes; trends use saved snapshots.
+未发现高优先级事项: No high-priority items found
+仍需核查数据来源与估值时间: Verify data sources and valuation time
+账户总资产: Total Account Assets
+当前可用行情估值: Valued using available quotes
+当天与前次快照之差: Change since the previous snapshot
+持仓市值 / 当前总资产: Position value / current assets
+快照回撤: Snapshot Drawdown
+截至: As of
+相对历史峰值: vs. historical peak
+当前持仓标的数: Number of held symbols
+盈利持仓: Profitable Positions
+亏损持仓: Losing Positions
+浮动盈亏: Unrealized PnL
+账户净值 · 已保存快照: Account NAV · Saved Snapshots
+悬停查看每日单位净值；只使用已保存快照: Hover for daily NAV; saved snapshots only
+单位净值: Unit NAV
+向上表示净值增加，回撤表示相对此前高点的跌幅。: Higher NAV indicates growth; drawdown measures decline from a prior peak.
+图表说明: Chart Guide
+对照策略与基准的日期范围、资金、费用和复权口径。回测曲线不等于实盘绩效，账户曲线只包含已保存快照。当前期间、数据源和执行费用见结果明细；没有曲线产物时不补造曲线。: Compare dates, capital, fees and price adjustments with the benchmark. Backtests do not establish live performance. Account curves use saved snapshots; missing curves are not fabricated.
+资金配置 · 现金与持仓: Allocation · Cash & Positions
+扇区越大表示金额越高；悬停查看占比: Larger sectors mean higher value; hover for weights
+扇区大小表示资金金额占比，不表示收益或预测概率。: Sector size represents allocation, not returns or prediction probabilities.
+查看现金与各项持仓市值占账户资产的比例。金额与占比以悬停提示和账户快照时间为准，缺少实盘回传时不能推断真实资产。: View cash and position weights against account assets. Check hover values and snapshot times; missing broker data cannot establish real balances.
+可观察 · 参考: Observe · Reference
+单票集中度: Single-Stock Concentration
+风险雷达 · 观察值: Risk Radar · Observations
+越靠外风险占用越高；参考线不触发交易: Further out means higher exposure; reference lines do not trigger trades
+万元: CNY 10k
+元: CNY
+贵州茅台: Kweichow Moutai
+宁德时代: CATL
+平安银行: Ping An Bank
+策略工坊: Strategy Workshop
+选择方案，预览真实生效参数，再执行筛选、目标配置、回测或前向模拟。: Select a plan, review effective parameters, then screen, allocate, backtest or paper trade.
+预置方案: Preset Plan
+载入方案: Load Plan
+查看全图: Fit Graph
+自动布局: Auto Layout
+撤销: Undo
+重做: Redo
+应用到策略草稿: Apply to Strategy Draft
+全屏画布: Fullscreen Canvas
+退出全屏: Exit Fullscreen
+导出方案: Export Plan
+导入方案: Import Plan
+规则趋势基础: Rule-Based Trend
+查看、拖动、缩放不会执行策略: Inspecting, dragging and zooming do not run the strategy
+添加组件: Add Component
+因子研究: Factor Research
+可复用因子集: Reusable Factor Set
+横截面因子预处理: Cross-Sectional Preprocessing
+因子有效性与去重: Factor Validation & Deduplication
+规则与形态: Rules & Patterns
+冻结主题股票池: Frozen Thematic Universe
+交易资格与流动性: Eligibility & Liquidity
+市场状态: Market Regime
+均线趋势: Moving-Average Trend
+MACD动量: MACD Momentum
+RSI均值回归: RSI Mean Reversion
+布林带条件: Bollinger Condition
+放量动量: Volume Momentum
+唐奇安突破: Donchian Breakout
+波动收缩突破: Volatility Squeeze Breakout
+研究上下文: Research Context
+股票池: Universe
+融合与投票: Fusion & Voting
+规则合并: Combine Rules
+组合与预算: Portfolio & Budget
+Portfolio分配: Portfolio Allocation
+等权组合: Equal-Weight Portfolio
+必经配置，不可移除: Required allocation; cannot be removed
+风险约束: Risk Constraints
+Risk约束: Risk Constraints
+执行与报告: Execution & Reports
+参数: Parameters
+点击节点选择: Select a node
+工作台: Workspace
+聊天、定时任务、MCP 和 Skill 的统一入口: Chat, jobs, MCP and skills in one workspace
+新任务: New Task
+自动化: Automations
+项目文件浏览: Project Files
+项目会话: Project Sessions
+会话列表: Session List
+项目与会话设置: Project & Session Settings
+选择左侧入口开始工作。: Choose an action on the left to begin.
+收起工作栏: Collapse Workspace Bar
+打开文件面板: Open File Panel
+清空显示: Clear Display
+模型对话: Model Chat
+输入任务: Enter a Task
+将文件拖放到此处: Drop files here
+点击上传: Click to Upload
+后台: Backend
+访问权限: Access Permissions
+元 ·: CNY ·
+"- 或 -": "- or -"
+测试模式回答：: "Mock response: "
+趋势回踩恢复: Trend Pullback Recovery
+双底确认: Double-Bottom Confirmation
+横截面低波: Cross-Sectional Low Volatility
+行业相对强弱: Sector Relative Strength
+模型与评分: Models & Scores
+中文多维证据分析: Multidimensional Evidence Review (CN)
+中文多空辩论裁决: Bull/Bear Debate Decision (CN)
+图形与草稿一致: Graph matches the draft
+查看当前步骤: Inspect Current Step
+交易成本与执行假设: Trading Costs & Execution Assumptions
+Agent策略设置（中文多空 / 双团队竞赛）: Agent Settings (CN Debate / Team Contest)
+运行模式: Run Mode
+股票池代码（逗号分隔；留空使用方案默认）: Universe Symbols (comma-separated; empty uses plan defaults)
+Agent后端: Agent Backend
+方案定义（YAML）: Plan Definition (YAML)
+日期、模型与模拟账户: Dates, Models & Paper Account
+执行当前方案: Run Current Plan
+取消当前运行: Cancel Current Run
+实际运行状态: Actual Run Status
+实际过程: Process Events
+按当期可见数据保留候选；空结果不会自动扩大股票池。: Candidates use information available at the time; empty results never expand the universe.
+短窗口: Short Window
+长窗口: Long Window
+判定阈值: Decision Threshold
+更新节点: Update Node
+完整参数（JSON）: Full Parameters (JSON)
+复制阶段: Duplicate Stage
+设为最终输出: Set as Final Output
+移除阶段: Remove Stage
+上游: Upstream
+下游: Downstream
+实际运行证据: Actual Run Evidence
+当前无对应运行结果: No matching run results
+实盘: Live Trading
+横截面低波动: Cross-Sectional Low Volatility
+回测与模拟: Backtest & Paper Trading
+参数方案与本次覆盖: Parameter Profile & Overrides
+本次覆盖 → YAML 参数方案 → 已保存默认值 → 源码 / 模型默认值。对象按字段合并，列表整体替换；空对象保留下层参数。预览保留上次点击结果，修改后请重新预览；回测完成后显示实际留档值。: Overrides take precedence over YAML profiles, saved defaults and source/model defaults. Objects merge by field, lists replace entirely. Preview again after changes; completed backtests retain effective parameters.
+参数方案: Parameter Profile
+刷新方案: Refresh Profiles
+本次参数覆盖（JSON）: Parameter Overrides (JSON)
+预览生效参数: Preview Effective Parameters
+方案已刷新，本次覆盖已重置；请预览生效参数。: Profiles refreshed and overrides reset. Preview effective parameters.
+最终生效参数: Effective Parameters
+订单与组合约束: Orders & Portfolio Constraints
+日收益均值与波动率之比再年化，当前未扣除无风险利率。: Annualized daily return divided by volatility; no risk-free-rate deduction.
+索提诺比率: Sortino Ratio
+只用下行波动计算的风险调整收益。: Risk-adjusted return based on downside volatility.
+胜率: Win Rate
+盈利交易笔数占已平仓交易笔数的比例。: Profitable trades as a share of closed trades.
+盈利笔数: Winning Trades
+亏损笔数: Losing Trades
+回测任务的执行与结果元数据。: Backtest execution and result metadata.
+盈亏比: Win/Loss Ratio
+平均盈利金额除以平均亏损绝对值，不等同于 Profit Factor。: Average win divided by absolute average loss; differs from Profit Factor.
+总盈利除以总亏损绝对值，衡量整体盈亏质量。: Total profits divided by absolute total losses.
+平均盈利: Average Win
+平均亏损: Average Loss
+单笔期望收益: Trade Expectancy
+每笔已平仓交易的平均净收益。: Average net return per closed trade.
+最大单笔盈利: Best Trade
+最大单笔亏损: Worst Trade
+平均持仓天数: Average Holding Days
+交易次数: Trade Count
+超额收益: Excess Return
+收益: Returns
+执行: Execution
+佣金支出: Commissions Paid
+新任务为全部实际外部成交佣金，包含未平仓买入；旧任务保留原统计。: New runs include all external commissions, including open buys; old records retain their original scope.
+净值与回撤: NAV & Drawdown
+策略净值: Strategy NAV
+基准净值: Benchmark NAV
+回撤: Drawdown
+策略净值与回撤: Strategy NAV & Drawdown
+累计净值: Cumulative NAV
+月度收益热力: Monthly Returns
+月度收益热力（颜色越深波动越大）: Monthly Returns (darker means larger moves)
+滚动风险指标: Rolling Risk Metrics
+年化波动率: Annualized Volatility
+夏普比率: Sharpe Ratio
+滚动风险指标（20 日窗口）: Rolling Risk Metrics (20-Day Window)
+滚动年化波动率: Rolling Annualized Volatility
+知识库 AI 问答: Knowledge AI Q&A
+选择资料范围后提问；回答与原文引用一起显示。先在: Select a scope and ask; answers include source citations. Upload or save documents in the
+上传或保存资料。: library first.
+全部资料: All Documents
+本地资料: Local Documents
+远程资料: Remote Documents
+知识范围: Knowledge Scope
+分类 ID（可选）: Category ID (optional)
+问答模型: Q&A Model
+引用数量: Reference Count
+会话 ID: Session ID
+恢复此会话: Restore Session
+新会话: New Session
+刷新索引与会话: Refresh Index & Sessions
+上传入库后可在此刷新索引状态。: Refresh the index here after importing documents.
+最近会话: Recent Sessions
+输入与资料有关的问题；Enter 发送: Ask a question about your documents; Enter to send
+引用片段（点击行查看原文）: Source Excerpts (click a row to view)
+AI问答: AI Q&A
+报告库: Report Library
+系统资料: System Guides
+模型 API: Model API
+只读: Read Only
+系统默认模型: Backend Default Model
+跟随后端: Backend Default
+输入消息，Enter 发送，Ctrl+Enter 换行；可拖入文件或图片: Type a message, Enter to send, Ctrl+Enter for a new line; drop files or images
+当天快照不足，暂不估算今日盈亏。: Insufficient snapshots today; daily PnL is not estimated.
+预置 /: Preset /
+输入名称后回车定位: Type a name and press Enter to locate
+当期筛选: Current Screening
+尚未执行: Not Executed
+跟随策略（自动）: Follow Strategy (Auto)
+继承策略默认: Inherit Strategy Defaults
+
+会话与检索设置: Session and Search Settings
+模型调用接口: Model API Backend
+HTTP兼容接口: Compatible HTTP
+RPM（0不限流）: RPM (0 = Unlimited)
+配额与请求设置: Quota and Request Settings
+最大并发（0不限）: Maximum Concurrency (0 = Unlimited)
+达到限额时等待: Wait When Rate Limited
+共享配额组（可选）: Shared Quota Group (Optional)
+可恢复错误重试次数: Retry Count for Recoverable Errors
+扩展请求参数: Extra Request Parameters

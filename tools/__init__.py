@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # @Author   : liyi
 # @Time     : 2022/7/6 8:28
 # @File     : __init__.py.py

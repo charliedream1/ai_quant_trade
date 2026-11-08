@@ -46,7 +46,7 @@ def main() -> None:
         cast(io.TextIOWrapper, stream).reconfigure(encoding="utf-8")
     # -I ensures package imports come from this interpreter, independent of the Web sys.path.
     project = Path(__file__).resolve().parents[2]
-    config = yaml.safe_load((project / "egs/image_validation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((project / "egs/config/models/image_validation.yaml").read_text(encoding="utf-8"))
     prefix = (project / config["environment"]).resolve()
     cfg = prefix / "pyvenv.cfg"
     if Path(sys.prefix).resolve() != prefix or __version__ != config["pillow_version"] or not cfg.is_file():

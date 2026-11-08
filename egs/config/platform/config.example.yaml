@@ -1,0 +1,24 @@
+# YAML 1.2, UTF-8
+host: 127.0.0.1
+port: 8000
+log_level: INFO
+ui_theme: light
+backend_slow_request_ms: 1000
+frontend_root_path: ""
+chan_analyzer_root: null
+help_docs_mount_path: /help-docs
+help_docs_site_dir: data/help_site
+help_docs_auto_build: true
+data_dir: data
+db_path: data/all_in_one.db
+document_storage_dir: data/knowledge/documents
+market_parquet_dir: data/market_lake/parquet
+duckdb_path: data/market_lake/market.duckdb
+data_mode: real
+data_timeout_seconds: 12
+data_cache_ttl_seconds: 300
+data_http_trust_env: false
+data_http_retries: 1
+data_http_backoff_seconds: 0.2
+scheduler_executors_path: egs/config/operations/scheduler_executors.yaml
+trading_calendar_path: egs/config/data/trading_calendar.yaml

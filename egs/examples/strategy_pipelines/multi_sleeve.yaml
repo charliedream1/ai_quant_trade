@@ -1,0 +1,41 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "多策略总组合",
+  "description": "趋势、回归与ETF的资金预算组合；证券净额与统一风险",
+  "universe": {
+    "symbols": []
+  },
+  "portfolio": {
+    "component": "fixed_budget"
+  },
+  "risk": {},
+  "execution": {},
+  "rebalance_sessions": 5,
+  "sleeves": [
+    {
+      "id": "trend",
+      "template": "rule_trend",
+      "budget": 0.4
+    },
+    {
+      "id": "reversion",
+      "template": "mean_reversion",
+      "budget": 0.3
+    },
+    {
+      "id": "etf",
+      "template": "etf_allocation",
+      "budget": 0.3
+    }
+  ],
+  "budget_fallback": "fixed_budget",
+  "variants": {
+    "baseline": {},
+    "risk_budget": {
+      "portfolio": {
+        "component": "strategy_risk_budget"
+      }
+    }
+  }
+}

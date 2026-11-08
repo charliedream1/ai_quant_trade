@@ -439,7 +439,7 @@ class StrategyServiceMixin(CompositionServiceMixin, QuickBacktestMixin):
     @staticmethod
     def _preset_intro_markdown(intro: dict[str, Any]) -> str:
         if not intro:
-            return "### 暂无介绍\n\n该预制策略尚未在 `egs/strategy_examples/strategy_intros.yaml` 配置介绍。"
+            return "### 暂无介绍\n\n该预制策略尚未在 `egs/examples/strategy_examples/strategy_intros.yaml` 配置介绍。"
         parts = [f"### {intro.get('title', '预制策略')}"]
         tags = intro.get("tags") or []
         if isinstance(tags, list) and tags:

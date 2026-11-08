@@ -1,0 +1,75 @@
+# file_format: yaml
+workflow_modes:
+  - id: simulation
+    label: 模拟研究闭环
+    summary: 分析、构建策略、模拟、归因和优化迭代。
+  - id: live
+    label: 真实交易观测闭环
+    summary: 交易、观测、归因和迭代建议；真实券商未接入时仅做配置与模拟通道观测。
+
+sops:
+  - id: simulation_research_loop
+    mode: simulation
+    name: 模拟研究闭环
+    description: 把研究假设转成策略版本，并通过回测、因子和模拟账户验证。
+    stages:
+      - key: analysis
+        title: 分析
+        goal: 明确市场环境、候选池、因子有效性和研究假设。
+        evidence_types:
+          - factor_metrics
+          - market_context
+      - key: strategy_build
+        title: 构建策略
+        goal: 固化策略版本、参数、交易规则和风控边界。
+        evidence_types:
+          - strategy
+      - key: simulation
+        title: 模拟
+        goal: 通过回测或模拟账户验证净值、交易明细和成本假设。
+        evidence_types:
+          - backtest
+          - paper_account
+      - key: attribution
+        title: 归因
+        goal: 拆解收益、回撤、因子、交易和成本贡献。
+        evidence_types:
+          - performance
+          - trades
+          - factors
+      - key: iteration
+        title: 优化迭代
+        goal: 输出下一轮参数、过滤器、风控或废弃建议。
+        evidence_types:
+          - advice
+
+  - id: live_observation_loop
+    mode: live
+    name: 真实交易观测闭环
+    description: 围绕实盘或模拟通道运行记录，持续观测交易、持仓、风险和迭代建议。
+    stages:
+      - key: trading
+        title: 交易
+        goal: 跟踪配置、运行记录、订单和成交状态。
+        evidence_types:
+          - live_run
+          - live_orders
+      - key: observation
+        title: 观测
+        goal: 观察账户、持仓、委托、心跳和风险暴露。
+        evidence_types:
+          - account
+          - positions
+          - risk
+      - key: attribution
+        title: 归因
+        goal: 区分策略信号、执行偏离、行情环境、成本和风控影响。
+        evidence_types:
+          - trades
+          - positions
+          - risk
+      - key: iteration
+        title: 迭代建议
+        goal: 给出保守的暂停、降仓、调参、复测或人工复核建议。
+        evidence_types:
+          - advice

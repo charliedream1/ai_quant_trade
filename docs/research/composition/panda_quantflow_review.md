@@ -47,4 +47,4 @@ Panda的 [pyproject.toml](https://github.com/PandaAI-Tech/panda_quantflow/blob/6
 
 ## 对应设计
 
-正式方案见项目 `doc/15_gradio_visual_strategy_editor_design.md`，状态为待确认。范围包括真正的连线图、节点参数与上下游跳转、子策略展开、Portfolio/Risk的明确可视化、执行证据和草稿/布局分离；训练、行情、Agent调用只由显式执行触发。
+正式方案见项目 `doc/strategies/gradio_visual_strategy_editor_design.md`，状态为待确认。范围包括真正的连线图、节点参数与上下游跳转、子策略展开、Portfolio/Risk的明确可视化、执行证据和草稿/布局分离；训练、行情、Agent调用只由显式执行触发。

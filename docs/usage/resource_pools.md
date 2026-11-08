@@ -4,7 +4,7 @@
 
 ## 下载与填写模板
 
-点击“下载CSV模板”或“下载Excel模板”。仓库对应文件位于 `egs/resource_pool_templates/universe.csv` 和 `universe.xlsx`；下载按钮与 API 读取同一份模板。
+点击“下载CSV模板”或“下载Excel模板”。仓库对应文件位于 `egs/examples/resource_pool_templates/universe.csv` 和 `universe.xlsx`；下载按钮与 API 读取同一份模板。
 
 | 字段 | 含义 |
 | --- | --- |
@@ -45,8 +45,8 @@ CSV 使用 UTF-8（模板带 BOM），解析也支持 GB18030。Excel 代码列�
 ## CLI 与接口
 
 ```console
-python egs/cli.py pool preview <资源池ID> --file egs/resource_pool_templates/universe.csv --format json
-python egs/cli.py pool import <资源池ID> --file egs/resource_pool_templates/universe.csv --format json
+python egs/entrypoints/cli.py pool preview <资源池ID> --file egs/examples/resource_pool_templates/universe.csv --format json
+python egs/entrypoints/cli.py pool import <资源池ID> --file egs/examples/resource_pool_templates/universe.csv --format json
 ```
 
-CLI 直接导入也会执行同一套校验与原子写入。REST 提供模板下载、上传预览、错误报告及提交；需要严格绑定预览时，将预览返回的 preview_hash 随提交传回。文件规范及大小限制统一位于 `egs/resource_import.yaml`。
+CLI 直接导入也会执行同一套校验与原子写入。REST 提供模板下载、上传预览、错误报告及提交；需要严格绑定预览时，将预览返回的 preview_hash 随提交传回。文件规范及大小限制统一位于 `egs/config/data/resource_import.yaml`。

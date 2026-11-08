@@ -21,8 +21,8 @@ from src.core.timeutil import utc_now_iso
 from src.engine.backtest.engines import qlib_diagnostic
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-USER_CONFIG_PATH = PROJECT_ROOT / "egs" / "qlib.yaml"
-EXAMPLE_CONFIG_PATH = PROJECT_ROOT / "egs" / "qlib.example.yaml"
+USER_CONFIG_PATH = PROJECT_ROOT / "egs/config/models/qlib.yaml"
+EXAMPLE_CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "models" / "qlib.example.yaml"
 
 DEFAULT_RUN_TYPE = "workflow"
 RUN_TYPES = {"workflow", "backtest", "factor"}

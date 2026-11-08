@@ -106,12 +106,12 @@ def attest_source(dataset_id: int, payload: AttestationRequest):
 
 @router.get("/templates/{kind}")
 def template(kind: Literal["market", "documents", "macro"]):
-    return FileResponse(PROJECT_ROOT / "egs/alpha_mining_examples" / (kind + ".csv"), filename=kind + ".csv")
+    return FileResponse(PROJECT_ROOT / "egs/examples/alpha_mining_examples" / (kind + ".csv"), filename=kind + ".csv")
 
 
 @router.get("/template-info/{kind}")
 def template_info(kind: Literal["market", "documents", "macro"]):
-    path = PROJECT_ROOT / "egs/alpha_mining_examples" / (kind + ".csv")
+    path = PROJECT_ROOT / "egs/examples/alpha_mining_examples" / (kind + ".csv")
     return ok(
         {
             "kind": kind,

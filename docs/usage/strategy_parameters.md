@@ -2,7 +2,7 @@
 
 ## 先选择策略
 
-13 套预制策略均从“策略构建 → 策略管理 → 预制策略”导入，源码位于 `egs/strategy_examples/`，共提供 26 个命名参数方案。预制策略介绍页包含逻辑、默认值、适用场景和局限；导入时使用独立名称，避免与已有策略混淆。
+13 套预制策略均从“策略构建 → 策略管理 → 预制策略”导入，源码位于 `egs/examples/strategy_examples/`，共提供 26 个命名参数方案。预制策略介绍页包含逻辑、默认值、适用场景和局限；导入时使用独立名称，避免与已有策略混淆。
 
 | 类型 | 示例 | 首次验证重点 |
 | --- | --- | --- |
@@ -31,8 +31,8 @@
 
 | 位置 | 用途 | 何时生效 |
 | --- | --- | --- |
-| egs/model_strategies.yaml | 三种模型的公共默认配置 | 下一次解析与运行，未被更高优先级覆盖的字段 |
-| egs/strategy_params 下各 YAML | 每个策略的命名参数方案和说明 | 选中该方案后的下一次运行 |
+| egs/config/models/model_strategies.yaml | 三种模型的公共默认配置 | 下一次解析与运行，未被更高优先级覆盖的字段 |
+| egs/examples/strategy_params 下各 YAML | 每个策略的命名参数方案和说明 | 选中该方案后的下一次运行 |
 | 数据库中的策略默认参数 | 导入或更新策略时保存的基础设置 | 下一次解析与运行 |
 | 页面本次覆盖 | 单次试验差异 | 仅本次回测 |
 
@@ -59,14 +59,14 @@ LightGBM 的单次覆盖示例，数值只用于说明填写方式，不代表�
 以下 12 为导入后的实际策略 ID 的占位，42、43 为回测任务 ID 的占位。
 
 ```text
-python egs/cli.py strategy params profiles 12 --format json
-python egs/cli.py strategy params resolve 12 --parameter-profile etf_momentum.yaml:baseline --params-file egs/cli/params/etf.yaml --format json
-python egs/cli.py backtest run --file egs/cli/requests/etf_backtest.yaml --set strategy_id=12 --set params.top_n=2 --dry-run --format json
+python egs/entrypoints/cli.py strategy params profiles 12 --format json
+python egs/entrypoints/cli.py strategy params resolve 12 --parameter-profile etf_momentum.yaml:baseline --params-file egs/config/cli/params/etf.yaml --format json
+python egs/entrypoints/cli.py backtest run --file egs/config/cli/requests/etf_backtest.yaml --set strategy_id=12 --set params.top_n=2 --dry-run --format json
 ```
 
 确认请求后去掉 `--dry-run` 执行；`--file` 提供完整请求，`--params-file` 只提供 params 内容，`--set` 覆盖指定字段，显式业务选项优先于文件和 set。命名方案仍由后端读取，CLI 不复制一套参数规则。
 
-运行后用 `python egs/cli.py backtest snapshot 42 --format json` 查看实际快照，用 `python egs/cli.py backtest compare --ids 42,43 --format json` 比较任务。比较结果保留日期、股票池和执行成本差异，条件不同时不能仅按收益排名选参数。
+运行后用 `python egs/entrypoints/cli.py backtest snapshot 42 --format json` 查看实际快照，用 `python egs/entrypoints/cli.py backtest compare --ids 42,43 --format json` 比较任务。比较结果保留日期、股票池和执行成本差异，条件不同时不能仅按收益排名选参数。
 
 ## 怎样判断调参有效
 

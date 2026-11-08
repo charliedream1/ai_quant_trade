@@ -13,7 +13,7 @@ from src.frontend.registry import MODULES
 def test_modular_navigation_has_english_titles():
     for module in MODULES:
         assert not re.search(r"[\u3400-\u9fff]", translate(module.title)), module.key
-    path = Path("egs/ui_translations.yaml")
+    path = Path("egs/config/ui/ui_translations.yaml")
     additions = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert all(isinstance(key, str) and isinstance(value, str) for key, value in additions.items())
     assert all(TRANSLATIONS[key] == value for key, value in additions.items())

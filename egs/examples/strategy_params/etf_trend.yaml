@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+entry: ETFTrendAllocationStrategy
+profiles:
+  baseline:
+    label: ETF趋势基准
+    description: 60日趋势过滤、20日调仓，使用延迟信号。
+    params: {}
+  defensive:
+    label: ETF防守对照
+    description: 更长趋势窗口和正趋势门槛，比较回撤与换手变化。
+    params: {window: 120, min_trend_gap: 0.02, rebalance_days: 40}

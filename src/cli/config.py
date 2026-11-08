@@ -12,8 +12,8 @@ from dotenv import dotenv_values
 from .errors import CliError
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "egs" / "cli.yaml"
-EXAMPLE_PATH = PROJECT_ROOT / "egs" / "cli.example.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs/config/platform/cli.yaml"
+EXAMPLE_PATH = PROJECT_ROOT / "egs" / "config" / "platform" / "cli.example.yaml"
 
 
 def load_config(options: Any) -> dict[str, Any]:

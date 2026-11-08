@@ -42,16 +42,16 @@ API 采用普通 OpenAI 兼容生成：支持 SSE 时显示实际正文片段，
 
 ## 配置与命令行
 
-固定提示词、资源白名单、任务和限制位于 `egs/insight_reports.yaml`；本地方法位于 `src/skills/`，来源与 SHA-256 见 `src/skills/provenance.yaml`。运行不依赖 C 盘 WorkBuddy，不执行其固定机器路径脚本，也不读取其私人 token。
+固定提示词、资源白名单、任务和限制位于 `egs/config/platform/insight_reports.yaml`；本地方法位于 `src/skills/`，来源与 SHA-256 见 `src/skills/provenance.yaml`。运行不依赖 C 盘 WorkBuddy，不执行其固定机器路径脚本，也不读取其私人 token。
 
 启动平台后可执行：
 
 ```console
-python egs/cli.py insight run --kind market_review --backend codex --format jsonl --deadline 600
-python egs/cli.py insight run --kind single_stock_analysis --symbol 600519 --backend api --format jsonl --deadline 600
-python egs/cli.py insight list --format json
-python egs/cli.py insight show <run_id> --format json
-python egs/cli.py insight events <run_id> --format json
+python egs/entrypoints/cli.py insight run --kind market_review --backend codex --format jsonl --deadline 600
+python egs/entrypoints/cli.py insight run --kind single_stock_analysis --symbol 600519 --backend api --format jsonl --deadline 600
+python egs/entrypoints/cli.py insight list --format json
+python egs/entrypoints/cli.py insight show <run_id> --format json
+python egs/entrypoints/cli.py insight events <run_id> --format json
 ```
 
 `--format jsonl` 或 `--stream` 等待实际终态；普通创建立即返回任务 ID，随后查询状态。HTTP 前缀 `/api/v1/insights/runs` 支持创建、SSE、历史、详情、过程及精确文件下载。

@@ -15,7 +15,7 @@ from src.strategy.models.config import model_config
 
 @lru_cache(maxsize=1)
 def graph_config() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/strategy_graph.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/strategies/strategy_graph.yaml").read_text(encoding="utf-8"))
 
 
 def materialize(definition: dict[str, Any], depth: int = 0) -> dict[str, Any]:

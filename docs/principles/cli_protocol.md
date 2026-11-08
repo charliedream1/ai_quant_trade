@@ -18,4 +18,4 @@ stdout 输出结果，诊断日志走 stderr；JSON 供脚本解析，JSONL 仅�
 
 分页接口的全量读取有数量上限并注明截断；检索接口不一定支持翻页。导出只写项目内，CSV 当前用于成交，已有文件需要显式覆盖。删除、重置和交易能力遵守客户端及后端共同检查，通用 API 调用不能绕过。
 
-操作及退出码见[命令行上手](../usage/cli.md)与[完整参考](../usage/cli_reference.md)。正式设计保留在项目 `doc/12_cli_interface_design.md`。
+操作及退出码见[命令行上手](../usage/cli.md)与[完整参考](../usage/cli_reference.md)。正式设计保留在项目 `doc/platform/cli_interface_design.md`。

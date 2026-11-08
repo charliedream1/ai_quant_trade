@@ -94,14 +94,14 @@ LIVE_BROKER_EVENT_CHOICES = [
     ("心跳", "heartbeat"),
     ("异常冻结", "error"),
 ]
-STRATEGY_EXAMPLE_DIR = PROJECT_ROOT / "egs" / "strategy_examples"
+STRATEGY_EXAMPLE_DIR = PROJECT_ROOT / "egs" / "examples" / "strategy_examples"
 LEARNING_FILES = [
     PROJECT_ROOT / "README.md",
     *sorted((PROJECT_ROOT / "docs" / "usage").glob("*.md")),
     *sorted((PROJECT_ROOT / "doc").glob("*.md")),
-    PROJECT_ROOT / "docs" / "gradio_frontend.md",
-    PROJECT_ROOT / "docs" / "implementation_audit.md",
-    PROJECT_ROOT / "docs" / "page_completeness_audit.md",
+    PROJECT_ROOT / "docs" / "archive" / "gradio_frontend.md",
+    PROJECT_ROOT / "docs" / "archive" / "implementation_audit.md",
+    PROJECT_ROOT / "docs" / "archive" / "page_completeness_audit.md",
     *sorted((PROJECT_ROOT / "docs" / "principles").glob("*.md")),
     *sorted((PROJECT_ROOT / "docs" / "reference").glob("*.md")),
     *sorted((PROJECT_ROOT / "docs" / "research").rglob("*.md")),
@@ -240,8 +240,8 @@ DASHBOARD_MODULES: list[tuple[str, str, str]] = [
 DASHBOARD_MODULE_KEYS = [key for key, _, _ in DASHBOARD_MODULES]
 DASHBOARD_MODULE_CHOICES = [(label, key) for key, label, _ in DASHBOARD_MODULES]
 DASHBOARD_LAYOUT_FILE = PROJECT_ROOT / "data" / "dashboard_layout.json"
-AI_WORKBENCH_PRESET_FILE = PROJECT_ROOT / "egs" / "ai_workbench_presets.yaml"
-QUANT_WORKFLOW_SOP_FILE = PROJECT_ROOT / "egs" / "quant_workflow_sops.yaml"
+AI_WORKBENCH_PRESET_FILE = PROJECT_ROOT / "egs" / "config" / "platform" / "ai_workbench_presets.yaml"
+QUANT_WORKFLOW_SOP_FILE = PROJECT_ROOT / "egs" / "config" / "platform" / "quant_workflow_sops.yaml"
 LEARNING_CATEGORY_KEY_BY_LABEL = dict(LEARNING_CATEGORY_CHOICES)
 INDEX_COLUMNS = ["code", "name", "price", "change", "change_pct", "volume", "amount", "data_source", "updated_at"]
 WATCHLIST_COLUMNS = [

@@ -1,0 +1,5 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "recommend run": {"method":"POST","path":"/recommend-tasks","positions":{},"query":{},"fields":{"path":"str","conditions":"json","universe":"json","count":"int","filters":"json","model_id":"int","plan":"str"},"execution":true,"market":true}
+  "recommend show": {"method":"GET","path":"/recommend-tasks/{task_id}","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true}
+  "recommend result": {"method":"GET","path":"/recommend-tasks/{task_id}/result","positions":{"task_id":"int"},"query":{},"fields":{},"execution":false,"market":true}

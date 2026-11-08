@@ -61,10 +61,10 @@ def main():
     ]
     encoding_files = files + [
         PROJECT_ROOT / "README.md",
-        PROJECT_ROOT / "egs/strategy_components.yaml",
+        PROJECT_ROOT / "egs/config/strategies/strategy_components.yaml",
         PROJECT_ROOT / "docs/usage/strategy_composition.md",
         PROJECT_ROOT / "docs/principles/strategy_composition.md",
-        PROJECT_ROOT / "doc/14_strategy_composition_risk_portfolio_design.md",
+        PROJECT_ROOT / "doc/strategies/strategy_composition_risk_portfolio_design.md",
     ]
     encoding_errors = []
     for path in encoding_files:

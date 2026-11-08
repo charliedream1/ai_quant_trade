@@ -1,0 +1,19 @@
+# Custom scheduler executor whitelist example.
+#
+# Copy this file to egs/config/operations/scheduler_executors.yaml and set
+# scheduler_executors_path: egs/config/operations/scheduler_executors.yaml
+# in egs/config/platform/config.yaml, or set ALL_IN_ONE_SCHEDULER_EXECUTORS_PATH.
+#
+# target format:
+#   - module.path:function_name
+#   - relative/or/absolute/file.py:function_name
+
+executors:
+  echo:
+    path: scheduler_custom_handlers.py
+    callable: echo_task
+    description: Example executor that returns a success summary.
+  sleep:
+    path: scheduler_custom_handlers.py
+    callable: sleep_task
+    description: Example executor for validating process timeout termination.

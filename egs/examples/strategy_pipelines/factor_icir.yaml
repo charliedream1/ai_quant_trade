@@ -1,0 +1,24 @@
+# 文件格式：YAML，编码：UTF-8
+schema_version: 1
+name: 滚动有效性多因子
+description: 只用已到期标签研究RankIC、去重，ICIR向等权收缩后合成；没有合格因子时不造分。
+universe:
+  symbols: ['000001', '600036', '600519', '601166', '601318', '300750']
+nodes:
+  - {id: eligible, component: eligibility, inputs: [universe], params: {}}
+  - {id: factors, component: factor_set, inputs: [eligible], params: {set_name: balanced}}
+  - {id: normalized, component: factor_preprocess, inputs: [factors], params: {}}
+  - {id: research, component: factor_select, inputs: [normalized], params: {}}
+  - {id: scores, component: factor_score, inputs: [research], params: {weighting: icir}}
+output: scores
+portfolio:
+  component: inverse_volatility
+  params: {top_k: 3}
+risk: {}
+execution: {}
+rebalance_sessions: 5
+variants:
+  baseline: {}
+  conservative:
+    risk: {max_exposure: 0.6, max_weight: 0.15}
+    portfolio: {params: {exposure: 0.6}}

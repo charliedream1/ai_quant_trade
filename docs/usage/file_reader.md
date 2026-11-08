@@ -34,7 +34,7 @@ Office文件只读，Markdown可以编辑保存；其余支持格式提供预览
 
 图66：第二个窗口持有旧版本时，保存被拒绝，原文件没有被覆盖。重新载入前先复制需要保留的修改，再人工合并；本版不自动合并两份正文。
 
-项目中的任务文档、验收档案及配置的只读区域禁止编辑。代码、HTML、PDF、图片和Office文件没有编辑按钮，直接调用保存接口同样会拒绝。可先用`egs/file_preview_examples/preview.md`练习。
+项目中的任务文档、验收档案及配置的只读区域禁止编辑。代码、HTML、PDF、图片和Office文件没有编辑按钮，直接调用保存接口同样会拒绝。可先用`egs/examples/file_preview_examples/preview.md`练习。
 
 正文支持标题、列表、表格、代码块；项目Markdown可引用受控的本地PNG/JPEG/WebP图片。上传单个Markdown不会自动带上同目录图片，外链和data图片不自动加载。输入支持UTF-8与既有GB18030文本，保存统一使用UTF-8。
 
@@ -85,14 +85,14 @@ PDF提供翻页、适宽、缩放与文字搜索。中文文字按页面位置�
 前端资源固定为PDF.js6.4.299、markdown-it15.0.3，本地提供，不依赖外部CDN。Windows在项目根目录使用已配置的独立Python执行：
 
 ```powershell
-.venv-secure/Scripts/python.exe -B egs/setup_file_preview.py --office
+.venv-secure/Scripts/python.exe -B egs/entrypoints/setup_file_preview.py --office
 ```
 
 脚本校验下载哈希，将LibreOffice26.8.1和解包工具保存在项目`.tools/`；不安装Microsoft Office，不修改系统或Conda包。源码中已经包含固定版本的阅读资源，首次部署仍需准备Office转换器；Windows脚本可以重建本地资源。
 
 Linux可以执行不带`--office`的同一脚本准备前端资源，再通过`.env`的`ALL_IN_ONE_PREVIEW_OFFICE`指向已部署的LibreOffice或项目内便携程序；默认查找`libreoffice`。中文字体需要部署机器提供。本轮Windows已实测，Linux尚未实机验收。
 
-配置位于`egs/file_preview.yaml`：默认原文件20MiB，Markdown编辑及文本预览2MiB；较大文本提供只读截取及完整下载。Office转换默认60秒、一个工作线程、最多四个未完成任务；转换PDF上限50MiB，阅读上限500页。修改转换器或字体配置后应重启服务并核对预览。
+配置位于`egs/config/knowledge/file_preview.yaml`：默认原文件20MiB，Markdown编辑及文本预览2MiB；较大文本提供只读截取及完整下载。Office转换默认60秒、一个工作线程、最多四个未完成任务；转换PDF上限50MiB，阅读上限500页。修改转换器或字体配置后应重启服务并核对预览。
 
 转换缓存、修改前版本和原件位于服务数据目录的`file_previews/`；转换工作区位于项目`.tools/preview_jobs/`。它们保留用于重开与核对，本版不自动删除历史文件。仅能读取允许的项目文件和已登记原件，密钥、数据库、环境、运行缓存等受保护；新的登记/写入接口拒绝跨站网页请求。文件ID不是登录认证，仍沿用平台现有本地部署访问模型。
 

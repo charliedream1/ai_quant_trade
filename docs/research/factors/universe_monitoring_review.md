@@ -4,7 +4,7 @@
 
 ## 当前股票池为何很小
 
-监控页面的“监控股票池”是文本框，可以输入数据源支持的其他股票代码，并非只能选择固定五只。`egs/factor_monitor.yaml` 默认填写 600519、300750、000001、688981、300124，`max_symbols` 为 12；`src/engine/research/factor_monitor.py:FactorMonitorService._resolve_universe()` 会将显式输入直接截取前 12 只，没有超限提示。
+监控页面的“监控股票池”是文本框，可以输入数据源支持的其他股票代码，并非只能选择固定五只。`egs/config/strategies/factor_monitor.yaml` 默认填写 600519、300750、000001、688981、300124，`max_symbols` 为 12；`src/engine/research/factor_monitor.py:FactorMonitorService._resolve_universe()` 会将显式输入直接截取前 12 只，没有超限提示。
 
 输入留空时，依次采用自选股、配置默认池，仍应用数量上限。页面默认预填五只，所以正常刷新通常不会进入自选股回退分支。`_load_series()` 逐只同步调用行情详情，保留至少 30 根日线的数据。这是小样本实现边界，不是 IC 算法要求股票池最多 12 只，也没有证据表明默认五只能够代表全市场。
 

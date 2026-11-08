@@ -44,7 +44,7 @@
 
 ![暗色提醒和窗口适配](assets/screenshots/90-notification-dark.jpg)
 
-显示时长、卡片上限、刷新周期、来源映射及默认形象在`egs/notifications.yaml`配置。已有浏览器选择优先于默认形象；可在外观菜单切换。custom_image必须位于项目frontend/assets目录，使用PNG/JPG/WebP，通过大小和实际内容校验；失败时回退内置机器人，不执行上传SVG脚本。
+显示时长、卡片上限、刷新周期、来源映射及默认形象在`egs/config/ui/notifications.yaml`配置。已有浏览器选择优先于默认形象；可在外观菜单切换。custom_image必须位于项目frontend/assets目录，使用PNG/JPG/WebP，通过大小和实际内容校验；失败时回退内置机器人，不执行上传SVG脚本。
 
 图87至90来自8890隔离服务的真实点击，测试提醒明确标注，行情为mock。它们说明交互和外观，不代表实际账户产生该风险或任何策略收益。来源见[截图索引](assets/screenshots/README.md)。
 

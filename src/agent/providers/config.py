@@ -9,7 +9,7 @@ from src.core.config import PROJECT_ROOT
 
 @lru_cache(maxsize=1)
 def provider_config() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/agent_providers.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/agents/agent_providers.yaml").read_text(encoding="utf-8"))
 
 
 def backend_names() -> set[str]:

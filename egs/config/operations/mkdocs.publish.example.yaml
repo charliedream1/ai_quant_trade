@@ -1,0 +1,6 @@
+# 文件格式：YAML，编码：UTF-8
+# 替换 site_url 为实际发布地址；目录只保存生成产物。
+INHERIT: ../mkdocs.platform.yml
+docs_dir: ../docs
+site_url: https://example.com/aiquant/
+site_dir: ../data/docs_publication

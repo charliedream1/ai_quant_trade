@@ -2,16 +2,16 @@
 
 from functools import lru_cache
 
+import gradio as gr
 import yaml
 
-import gradio as gr
 from src.core.config import PROJECT_ROOT, get_settings
 from src.help_docs.links import handbook_markdown
 
 
 @lru_cache(maxsize=1)
 def curriculum():
-    config = yaml.safe_load((PROJECT_ROOT / "egs/quant_curriculum.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/platform/quant_curriculum.yaml").read_text(encoding="utf-8"))
     root = (PROJECT_ROOT / config["root"]).resolve()
     if not root.is_relative_to((PROJECT_ROOT / "docs/principles").resolve()):
         raise ValueError("课程目录必须位于原理文档内")

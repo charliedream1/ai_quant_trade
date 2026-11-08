@@ -18,7 +18,7 @@
 
 可编辑组件值由浏览器持有，Python通过独立的patch属性发送更新。更新标明定义身份、本地编辑修订和请求顺序，分别处理显式载入、YAML输入、应用确认、布局回执与只读证据。证据只能合并过程数据，旧定义的回调会被拒绝；较早的应用确认也不会覆盖后来继续输入的参数。显式载入即使YAML内容相同，仍生成新定义身份并重置未应用修改。
 
-YAML输入、原步骤表的应用动作与显式载入分别绑定；普通输出变化不再重复触发整图同步。全屏适配由容器尺寸观察和连续稳定帧驱动，等待新尺寸生效后再fit；执行证据刷新不重新调整视口。配置位于 `egs/strategy_graph.yaml`，相关前端逻辑拆分在updates.ts和viewport.ts。
+YAML输入、原步骤表的应用动作与显式载入分别绑定；普通输出变化不再重复触发整图同步。全屏适配由容器尺寸观察和连续稳定帧驱动，等待新尺寸生效后再fit；执行证据刷新不重新调整视口。配置位于 `egs/config/strategies/strategy_graph.yaml`，相关前端逻辑拆分在updates.ts和viewport.ts。
 
 图资源在工坊加载时才从同源静态目录获取，构建产物随项目交付。开发目录为 `src/frontend/components/strategy_graph/frontend/`，使用锁文件安装后执行 npm 的 check、test 和 build；部署不需要 Node 或开发服务器。Python 图投影、证据索引、布局存储按职责拆在 `src/frontend/service/graph_*.py`。
 
@@ -30,8 +30,8 @@ YAML输入、原步骤表的应用动作与显式载入分别绑定；普通输�
 
 ## 过程展示为何有边界
 
-事件索引按文件偏移增量读取，并以有界缓存保留各节点近期事件；写入和读取使用相同锁，避免 UTF-8 半行。API 的 after 游标返回后续预览事件，旧节点摘要仍可保留。预览数组最近 8 项、文本 6000 字符、节点事件缓存 60 条；这些限制可在 `egs/strategy_graph.yaml` 配置。
+事件索引按文件偏移增量读取，并以有界缓存保留各节点近期事件；写入和读取使用相同锁，避免 UTF-8 半行。API 的 after 游标返回后续预览事件，旧节点摘要仍可保留。预览数组最近 8 项、文本 6000 字符、节点事件缓存 60 条；这些限制可在 `egs/config/strategies/strategy_graph.yaml` 配置。
 
 图中默认是近期日期的实际阶段，终态后轮询停止。完整长回测应读取已保存结果/事件附件；未增加任意日期的全量图查询或从任意失败节点续跑。模型训练、阻塞 API 的取消仍遵循原有执行器边界。
 
-正式设计为项目 `doc/15_gradio_visual_strategy_editor_design.md`；首次实施、独立问题复现和修复验收分别保留在项目 `docs/audit/strategy_graph_2026-10-23/`、`strategy_graph_e2e_2026-10-24/`、`strategy_graph_fix_2026-10-24/`。图形交互通过不代表策略有投资收益，行情长度和日线撮合限制继续有效。
+正式设计为项目 `doc/strategies/gradio_visual_strategy_editor_design.md`；首次实施、独立问题复现和修复验收分别保留在项目 `docs/audit/strategy_graph_2026-10-23/`、`strategy_graph_e2e_2026-10-24/`、`strategy_graph_fix_2026-10-24/`。图形交互通过不代表策略有投资收益，行情长度和日线撮合限制继续有效。

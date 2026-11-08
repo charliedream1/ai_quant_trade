@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry">
+  <item oor:path="/org.openoffice.Office.Common/Security/Scripting">
+    <prop oor:name="MacroSecurityLevel" oor:op="fuse"><value>3</value></prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.Common/Misc">
+    <prop oor:name="FirstRun" oor:op="fuse"><value>false</value></prop>
+  </item>
+</oor:items>

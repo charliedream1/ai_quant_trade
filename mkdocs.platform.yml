@@ -9,13 +9,15 @@ theme:
   highlightjs: false
   search_index_only: true
   navigation_depth: 3
-exclude_docs: '/intro.md
+exclude_docs: '/archive/**
+
+  /intro.md
 
   /snippets/**
 
   /CHANGELOG.md
 
-  /.trae_work_ui/**
+  /archive/assets/workbench/**
 
   /ai_composer_enhancement_plan.md
 

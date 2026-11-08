@@ -13,7 +13,7 @@ except ImportError:
 from .config import PROJECT_ROOT
 from .errors import CliError
 
-CATALOG_ROOT = PROJECT_ROOT / "egs" / "cli"
+CATALOG_ROOT = PROJECT_ROOT / "egs" / "config" / "cli"
 
 
 @lru_cache(maxsize=1)

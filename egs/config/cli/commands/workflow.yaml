@@ -1,0 +1,8 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "workflow modes": {"method":"GET","path":"/quant-workflows/modes","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "workflow sops": {"method":"GET","path":"/quant-workflows/sops","positions":{},"query":{"mode":"str"},"fields":{},"execution":false,"market":false}
+  "workflow snapshot": {"method":"GET","path":"/quant-workflows/snapshot","positions":{},"query":{"mode":"str","sop_id":"str","strategy_id":"int","backtest_id":"int","account_id":"int","live_run_id":"int"},"fields":{},"execution":false,"market":false}
+  "workflow run": {"method":"POST","path":"/quant-workflows/runs","positions":{},"query":{},"fields":{"mode":"str","sop_id":"str","strategy_id":"int","backtest_id":"int","account_id":"int","live_run_id":"int","title":"str"},"execution":true,"market":false}
+  "workflow list": {"method":"GET","path":"/quant-workflows/runs","positions":{},"query":{"mode":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "workflow show": {"method":"GET","path":"/quant-workflows/runs/{run_id}","positions":{"run_id":"int"},"query":{},"fields":{},"execution":false,"market":false}

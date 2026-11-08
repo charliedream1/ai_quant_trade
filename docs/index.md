@@ -8,7 +8,7 @@
   <strong>一站式 AI 量化交易平台 · 从学习、模拟到实盘</strong>
 </p>
 
-[开始使用工作台](usage/workspace.md){ .cta-pill .cta-primary } · [知识星球](03_星球使用和介绍/01_星球介绍.md){ .cta-pill } · [GitHub 仓库](https://github.com/charliedream1/ai_quant_trade){ .cta-pill }
+[开始使用工作台](usage/workspace.md){ .cta-pill .cta-primary } · [知识星球](community/01_星球介绍.md){ .cta-pill } · [GitHub 仓库](https://github.com/charliedream1/ai_quant_trade){ .cta-pill }
 
 ---
 
@@ -23,25 +23,25 @@
 
 <div class="grid cards" markdown>
 
--   :material-cog-outline: __[环境配置](01_环境配置/02_python环境配置/README.md)__
+-   :material-cog-outline: __[环境配置](environment/02_python环境配置/README.md)__
 
     ---
 
     Python、Conda、GPU 与本地开发环境准备说明。
 
--   :material-help-circle-outline: __[常见问题](02_常见问题/01_python包依赖问题/README.md)__
+-   :material-help-circle-outline: __[常见问题](faq/01_python包依赖问题/README.md)__
 
     ---
 
     依赖、GitHub、运行时版本等常见问题集中整理。
 
--   :material-account-group: __[知识星球](03_星球使用和介绍/01_星球介绍.md)__
+-   :material-account-group: __[知识星球](community/01_星球介绍.md)__
 
     ---
 
     社区入口、新人指南、资源导航和求助规则。
 
--   :material-cloud-upload-outline: __[部署运维](04_website_deployment/发布操作指南.md)__
+-   :material-cloud-upload-outline: __[部署运维](deployment/发布操作指南.md)__
 
     ---
 
@@ -55,7 +55,7 @@
 
 <div class="grid cards" markdown>
 
--   :material-account-group: __[知识星球 · AIQuant 智投](03_星球使用和介绍/01_星球介绍.md)__
+-   :material-account-group: __[知识星球 · AIQuant 智投](community/01_星球介绍.md)__
 
     ---
 
@@ -68,10 +68,10 @@
     - 策略思路、代码片段、踩坑记录
     - 研报、论文、工具与数据源一手资源
 
-    [:octicons-arrow-right-24: 查看星球介绍](03_星球使用和介绍/01_星球介绍.md){ .md-button .md-button--primary }
-    [:octicons-arrow-right-24: 新人必读指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
+    [:octicons-arrow-right-24: 查看星球介绍](community/01_星球介绍.md){ .md-button .md-button--primary }
+    [:octicons-arrow-right-24: 新人必读指南](community/02_新人使用指南.md){ .md-button }
 
--   :material-book-open-page-variant: __[新人指南](03_星球使用和介绍/02_新人使用指南.md)__
+-   :material-book-open-page-variant: __[新人指南](community/02_新人使用指南.md)__
 
     ---
 
@@ -82,7 +82,7 @@
     - 资料查找路径 & 常见问题
     - 项目跑通前的环境准备清单
 
-    [:octicons-arrow-right-24: 开始阅读新人指南](03_星球使用和介绍/02_新人使用指南.md){ .md-button }
+    [:octicons-arrow-right-24: 开始阅读新人指南](community/02_新人使用指南.md){ .md-button }
 
 </div>
 

@@ -1,0 +1,6 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "qlib status": {"method":"GET","path":"/qlib-workflows/status","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "qlib run": {"method":"POST","path":"/qlib-workflows/runs","positions":{},"query":{},"fields":{"run_type":"str","workflow_path":"str","provider_uri":"str","params":"json","server_workflow":"str","timeout_seconds":"int"},"execution":true,"market":false}
+  "qlib list": {"method":"GET","path":"/qlib-workflows/runs","positions":{},"query":{"run_type":"str","page":"int","page_size":"int"},"fields":{},"execution":false,"market":false}
+  "qlib show": {"method":"GET","path":"/qlib-workflows/runs/{run_id}","positions":{"run_id":"int"},"query":{},"fields":{},"execution":false,"market":false}

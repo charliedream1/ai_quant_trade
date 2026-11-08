@@ -29,7 +29,7 @@ def test_pool_templates_preview_commit_and_invalid_batch(client):
 
 def test_cli_preview_preserves_codes_and_monitor_uses_explicit_backend(cli_command):
     pool = cli_command("pool", "create", "--name", "preview-cli")["data"]
-    path = Path(__file__).resolve().parents[2] / "egs/resource_pool_templates/universe.csv"
+    path = Path(__file__).resolve().parents[2] / "egs/examples/resource_pool_templates/universe.csv"
     preview = cli_command("pool", "preview", pool["id"], "--file", path)["data"]
     assert preview["valid"] and preview["rows"][0]["symbol"] == "000001"
     assert not cli_command("pool", "items", pool["id"])["data"]

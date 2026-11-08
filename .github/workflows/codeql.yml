@@ -58,7 +58,7 @@ jobs:
             '**/__pycache__/**'
             '**/*.egg-info/**'
             '**/.ipynb_checkpoints/**'
-            'zz_scripts/**'
+            'scripts/docs/**'
             'a_全网优秀资源/**'
             'egs_data/**'
             'egs_skill/**'

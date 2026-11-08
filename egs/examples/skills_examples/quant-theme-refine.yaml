@@ -1,0 +1,14 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-theme-refine
+provider:
+  backend: api
+  model_id: 1
+request:
+  name: 主题原文关联核查
+  mode: theme
+  dataset_id: 1
+  cutoff: '2026-10-28T15:00:00+08:00'
+  purpose: 依据原文核对主题与公司的直接关系
+  theme: 人工智能
+  model_call_budget: 4

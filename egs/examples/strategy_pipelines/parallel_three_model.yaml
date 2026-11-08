@@ -1,0 +1,89 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "三模型共识",
+  "description": "三模型共识；日线研究模板，真实能力由数据与依赖校验决定",
+  "universe": {
+    "symbols": [
+      "000001",
+      "600036",
+      "600519",
+      "601166",
+      "601318",
+      "300750"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "eligibility",
+      "component": "eligibility",
+      "inputs": [
+        "universe"
+      ],
+      "params": {}
+    },
+    {
+      "id": "lgb",
+      "component": "lightgbm",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "xgb",
+      "component": "xgboost",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "mlp",
+      "component": "mlp",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "consensus",
+      "component": "rank",
+      "inputs": [
+        "lgb",
+        "xgb",
+        "mlp"
+      ],
+      "params": {
+        "weights": [
+          0.4,
+          0.3,
+          0.3
+        ],
+        "minimum": 3,
+        "disagreement_penalty": 0.2
+      }
+    }
+  ],
+  "output": "consensus",
+  "portfolio": {
+    "component": "minimum_variance"
+  },
+  "risk": {},
+  "execution": {},
+  "rebalance_sessions": 5,
+  "variants": {
+    "baseline": {},
+    "conservative": {
+      "risk": {
+        "max_exposure": 0.6,
+        "max_weight": 0.15
+      },
+      "portfolio": {
+        "params": {
+          "exposure": 0.6
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+# File format: YAML; encoding: UTF-8
+schema_version: 1
+universe:
+  etf_pool: cn_cross_asset
+  symbols:
+  - '510300'
+  - '511010'
+  - '518880'
+  - '511880'
+nodes:
+- id: eligible
+  component: eligibility
+  inputs:
+  - universe
+  params: {}
+- id: strength
+  component: etf_momentum
+  inputs:
+  - eligible
+  params: {}
+output: strength
+portfolio:
+  component: hrp
+  params:
+    top_k: 4
+    exposure: 1.0
+    max_weight: 0.4
+risk:
+  max_exposure: 1.0
+  max_weight: 0.5
+  max_asset_class_weight: 0.5
+  require_asset_class: true
+  target_volatility: 0.12
+execution: {}
+rebalance_sessions: 20
+variants:
+  baseline: {}
+  erc:
+    portfolio:
+      component: erc
+  minimum_variance:
+    portfolio:
+      component: minimum_variance
+name: 跨资产ETF风险配置
+description: Declared ETF eligibility with HRP/ERC alternatives; not a replica of
+  a proprietary All Weather portfolio.

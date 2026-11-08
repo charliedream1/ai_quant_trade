@@ -1,0 +1,14 @@
+# 文件格式：YAML，编码：UTF-8
+entry: LightGBMRankStrategy
+model_profile: lightgbm_rank
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承模型 YAML、源码与数据库默认值；使用次日开盘成交。
+    params: {}
+  slower_fit:
+    label: 较低重训频率对照
+    description: 每二十个交易日重新训练，比较耗时和样本外表现；不保证降低换手。
+    params:
+      retrain_interval: 20
+      model_params: {learning_rate: 0.03, n_estimators: 80}

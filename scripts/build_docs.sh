@@ -147,10 +147,10 @@ step "MkDocs version"
 "$PYTHON_BIN" -m mkdocs --version
 
 step "Check docs publish scope"
-"$PYTHON_BIN" zz_scripts/check_docs_publish_scope.py
+"$PYTHON_BIN" scripts/docs/check_docs_publish_scope.py
 
 step "Check MkDocs config and assets"
-"$PYTHON_BIN" zz_scripts/check_docs_build.py
+"$PYTHON_BIN" scripts/docs/check_docs_build.py
 
 step "Build docs site"
 BUILD_ARGS=(-m mkdocs build --clean --site-dir "$DOCS_SITE_DIR")

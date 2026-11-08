@@ -8,8 +8,8 @@ import yaml
 
 from src.core.config import PROJECT_ROOT
 
-CONFIG_PATH = PROJECT_ROOT / "egs" / "strategy_components.yaml"
-TEMPLATE_ROOT = PROJECT_ROOT / "egs" / "strategy_pipelines"
+CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "strategies" / "strategy_components.yaml"
+TEMPLATE_ROOT = PROJECT_ROOT / "egs" / "examples" / "strategy_pipelines"
 
 
 @lru_cache(maxsize=1)

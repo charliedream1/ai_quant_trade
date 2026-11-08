@@ -24,9 +24,9 @@ def main(output: Path):
     strategies = {
         name: store.import_example(path)
         for name, path in {
-            "dual_ma": "egs/strategy_examples/dual_ma_strategy.py",
-            "mlp": "egs/strategy_examples/mlp_ensemble_strategy.py",
-            "industry": "egs/strategy_examples/industry_rotation_strategy.py",
+            "dual_ma": "egs/examples/strategy_examples/dual_ma_strategy.py",
+            "mlp": "egs/examples/strategy_examples/mlp_ensemble_strategy.py",
+            "industry": "egs/examples/strategy_examples/industry_rotation_strategy.py",
         }.items()
     }
     pipeline = PipelineStore()

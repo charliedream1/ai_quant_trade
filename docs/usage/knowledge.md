@@ -21,7 +21,7 @@
 
 真实Hy3验收已验证跨文档检索、追问、附件引用和库隔离。关键词按连续文字匹配，同义词应拆成独立项；追问会重新检索原文，历史回答不能代替当前证据。模型与CLI耗时会累积，本次小样本综合问答约112秒、追问约55秒。WorkBuddy本机适配器仅用于验收，产品问答仍通过模型管理中的OpenAI兼容接口配置模型。
 
-首次使用需Node.js 22+、npm及ripgrep，执行项目环境的`python -m egs.setup_knowledge_search`安装项目内固定版本依赖。安装只启用所需词法模块，不启用向量运行库的安装脚本；完整`zg` CLI不作为本功能入口。Python解析依赖随`requirements.txt`安装。配置见`egs/knowledge.yaml`，模型提示词见`egs/rag.yaml`；[检索原理](../principles/knowledge_retrieval.md)说明隔离与预算。
+首次使用需Node.js 22+、npm及ripgrep，执行项目环境的`python -m egs.setup_knowledge_search`安装项目内固定版本依赖。安装只启用所需词法模块，不启用向量运行库的安装脚本；完整`zg` CLI不作为本功能入口。Python解析依赖随`requirements.txt`安装。配置见`egs/config/knowledge/knowledge.yaml`，模型提示词见`egs/config/knowledge/rag.yaml`；[检索原理](../principles/knowledge_retrieval.md)说明隔离与预算。
 
 远程知识源需配置实际可用的 MCP 工具，先测试连接，再列目录、拉取或同步；来源缺失时会失败，不生成虚构文档。
 

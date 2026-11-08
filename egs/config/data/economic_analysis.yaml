@@ -1,0 +1,104 @@
+# File format: YAML; encoding: UTF-8
+version: 1
+defaults:
+  cache_seconds: 21600
+  connect_seconds: 4
+  read_seconds: 12
+  fetch_seconds: 25
+  max_response_bytes: 12000000
+  source_rows: 48
+  financial_rows: 24
+  max_peers: 5
+  workers: 3
+  macro_stale_days: 80
+  quarterly_stale_days: 180
+  preview_height: 860
+  chart_height: 370
+  read_chunk_bytes: 65536
+  report_history_rows: 8
+  report_periods: 8
+  revision_lock_seconds: 3
+sources:
+  eastmoney: https://datacenter-web.eastmoney.com/api/data/v1/get
+  social_finance: https://data.mofcom.gov.cn/datamofcom/front/gnmy/shrzgmQuery
+  social_reference: https://data.mofcom.gov.cn/gnmy/shrzgm.shtml
+  macro_reference: https://data.eastmoney.com/cjsj/
+  financial_reference: https://data.eastmoney.com/bbsj/
+  params: {columns: ALL, pageNumber: 1, sortTypes: '-1', source: WEB, client: WEB}
+macro:
+  gdp: {label: GDP累计同比, report: RPT_ECONOMY_GDP, date: REPORT_DATE, field: SUM_SAME, frequency: quarterly, basis: cumulative_yoy, unit: '%', reference: gdp.html}
+  cpi: {label: CPI同比, report: RPT_ECONOMY_CPI, date: REPORT_DATE, field: NATIONAL_SAME, frequency: monthly, basis: yoy, unit: '%', reference: cpi.html}
+  ppi: {label: PPI同比, report: RPT_ECONOMY_PPI, date: REPORT_DATE, field: BASE_SAME, frequency: monthly, basis: yoy, unit: '%', reference: ppi.html}
+  pmi: {label: 制造业PMI, report: RPT_ECONOMY_PMI, date: REPORT_DATE, field: MAKE_INDEX, frequency: monthly, basis: index, unit: index, reference: pmi.html}
+  m2: {label: M2同比, report: RPT_ECONOMY_CURRENCY_SUPPLY, date: REPORT_DATE, field: BASIC_CURRENCY_SAME, frequency: monthly, basis: yoy, unit: '%', reference: hbgyl.html}
+  social_finance: {label: 社会融资规模增量, date: date, field: tiosfs, frequency: monthly, basis: monthly_flow, unit: CNY_100m}
+  lpr: {label: 一年期LPR, report: RPTA_WEB_RATE, date: TRADE_DATE, field: LPR1Y, frequency: event, basis: annual_rate, unit: '%', reference: globalRateLPR.html}
+  lpr5: {label: 五年期LPR, report: RPTA_WEB_RATE, date: TRADE_DATE, field: LPR5Y, frequency: event, basis: annual_rate, unit: '%', reference: globalRateLPR.html}
+statements:
+  income: {report: RPT_DMSK_FN_INCOME, label: 利润表, basis: year_to_date}
+  balance: {report: RPT_DMSK_FN_BALANCE, label: 资产负债表, basis: period_end}
+  cashflow: {report: RPT_DMSK_FN_CASHFLOW, label: 现金流量表, basis: year_to_date}
+  indicators: {report: RPT_F10_FINANCE_MAINFINADATA, label: 财务指标, basis: provider_reported_year_to_date}
+fields:
+  revenue: {statement: income, fields: [TOTAL_OPERATE_INCOME], unit: CNY, label: 营业总收入}
+  profit: {statement: income, fields: [PARENT_NETPROFIT], unit: CNY, label: 归母净利润}
+  consolidated_profit: {statement: income, fields: [NETPROFIT], unit: CNY, label: 合并净利润}
+  total_profit: {statement: income, fields: [TOTAL_PROFIT], unit: CNY, label: 利润总额}
+  income_tax: {statement: income, fields: [INCOME_TAX], unit: CNY, label: 所得税费用}
+  operating_cost: {statement: income, fields: [OPERATE_COST], unit: CNY, label: 营业成本}
+  assets: {statement: balance, fields: [TOTAL_ASSETS], unit: CNY, label: 总资产}
+  liabilities: {statement: balance, fields: [TOTAL_LIABILITIES], unit: CNY, label: 总负债}
+  equity: {statement: balance, fields: [TOTAL_EQUITY], unit: CNY, label: 合并股东权益}
+  short_loan: {statement: balance, fields: [SHORT_LOAN], unit: CNY, label: 短期借款}
+  long_loan: {statement: balance, fields: [LONG_LOAN], unit: CNY, label: 长期借款}
+  bonds: {statement: balance, fields: [BOND_PAYABLE], unit: CNY, label: 应付债券}
+  operating_cashflow: {statement: cashflow, fields: [NETCASH_OPERATE], unit: CNY, label: 经营活动现金流净额}
+  investing_cashflow: {statement: cashflow, fields: [NETCASH_INVEST], unit: CNY, label: 投资活动现金流净额}
+  financing_cashflow: {statement: cashflow, fields: [NETCASH_FINANCE], unit: CNY, label: 筹资活动现金流净额}
+  gross_margin: {statement: indicators, fields: [XSMLL], unit: '%', label: 销售毛利率（来源口径）}
+  roe: {statement: indicators, fields: [ROEJQ], unit: '%', label: 加权ROE（报告期累计）}
+derived:
+  revenue_yoy: {unit: '%', label: 营收累计同比}
+  profit_yoy: {unit: '%', label: 归母利润累计同比}
+  debt_asset_ratio: {unit: '%', label: 资产负债率}
+  cash_profit_ratio: {unit: ratio, label: 经营现金流/合并净利润}
+  revenue_quarter: {unit: CNY, label: 营收单季}
+  profit_quarter: {unit: CNY, label: 归母利润单季}
+  operating_cashflow_quarter: {unit: CNY, label: 经营现金流单季}
+  revenue_ttm: {unit: CNY, label: 营收TTM}
+  profit_ttm: {unit: CNY, label: 归母利润TTM}
+  operating_cashflow_ttm: {unit: CNY, label: 经营现金流TTM}
+  known_debt_components: {unit: CNY, label: 已披露借款债券小计（覆盖不全时非总有息债务）}
+financial_industries: [银行, 保险, 证券, 多元金融, 金融服务]
+messages:
+  unsupported: 首期支持中国宏观和A股公司；当前市场尚未接入。
+  empty: 来源未返回可用数据，请查看来源状态。
+  invalid_symbol: 请填写A股证券代码或名称。
+  current_only: 当前公开修订版本不具备历史PIT资格，不能用于过去时点的报告或回测。
+  financial_scope: 金融企业需要专用口径；不计算通用毛利率、ROE及债务评价。
+  revision_scope: 当前公开版本，发布时间未知时保留为空；首次观测不等于原始发布日期。
+  peer_scope: 同业比较仅使用相同报告期与行业的已选样本，不代表完整行业。
+  debt_gap: 借款和债券科目覆盖不全，无法据此评估总有息债务、期限结构或流动性压力。
+  simulated: 当前包含模拟来源，仅用于功能验证，不代表真实经济或公司财务数据。
+ui:
+  macro_title: 宏观经济
+  fundamental_title: 基本面分析
+  intro: 按需读取真实公开数据，核对观察期、单位、来源和版本；模型解读可选。
+  load: 读取数据
+  refresh: 强制更新来源
+  series: 宏观指标
+  symbol: A股代码或名称
+  peers: 同业代码（逗号分隔，最多5个）
+  period: 报告期（YYYY-MM-DD，留空为最新）
+  status: 数据状态
+  overview: 指标概览
+  history: 历史趋势
+  raw: 原始数据、计算口径与来源
+  report: 生成模型分析报告
+  model: 模型API配置
+  snapshot: 数据快照ID
+  report_status: 报告执行过程
+  previous: 历史报告运行ID
+  reopen: 重新打开报告
+  download: 下载HTML报告
+  default_model: 系统默认模型

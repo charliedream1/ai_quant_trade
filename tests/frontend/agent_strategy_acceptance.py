@@ -14,7 +14,7 @@ from workspace_revision_acceptance import navigate
 
 
 def main(base: str, runtime: Path, output: Path):
-    cfg = yaml.safe_load(Path("egs/strategy_components.yaml").read_text(encoding="utf-8"))
+    cfg = yaml.safe_load(Path("egs/config/strategies/strategy_components.yaml").read_text(encoding="utf-8"))
     seed = json.loads((runtime / "browser.json").read_text(encoding="utf-8"))
     output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as pw:

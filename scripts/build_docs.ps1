@@ -94,11 +94,11 @@ Invoke-Step "MkDocs version" {
 }
 
 Invoke-Step "Check docs publish scope" {
-    Invoke-Python zz_scripts/check_docs_publish_scope.py
+    Invoke-Python scripts/docs/check_docs_publish_scope.py
 }
 
 Invoke-Step "Check MkDocs config and assets" {
-    Invoke-Python zz_scripts/check_docs_build.py
+    Invoke-Python scripts/docs/check_docs_build.py
 }
 
 Invoke-Step "Build docs site" {

@@ -14,7 +14,7 @@ from src.core.timeutil import utc_now_iso
 from .manager import DataSourceManager
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "egs" / "etf_universes.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "strategies" / "etf_universes.yaml"
 
 
 class ETFUniverseService:

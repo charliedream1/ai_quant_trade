@@ -1,0 +1,125 @@
+# YAML configuration for the Gradio GenericAgent adapter.
+generic_agent:
+  max_turns: 3
+  max_history_messages: 12
+  max_tool_output_chars: 12000
+  max_file_read_lines: 240
+  observability:
+    langfuse:
+      enabled: false
+      capture_content: false
+      flush_on_finish: true
+      trace_name: AIQuant GenericAgent
+      environment: local
+      tags:
+        - generic-agent
+        - ai-workbench
+  ignored_names:
+    - .git
+    - .mypy_cache
+    - .pytest_cache
+    - .ruff_cache
+    - __pycache__
+    - node_modules
+    - data
+    - dist
+    - build
+  text_suffixes:
+    - .py
+    - .md
+    - .txt
+    - .yaml
+    - .yml
+    - .json
+    - .toml
+    - .csv
+    - .env
+    - .example
+  system_prompt: |
+    你是 AIQuant 智投工作台中的 GenericAgent 模式助手。你需要围绕当前项目进行投研、策略和代码上下文分析。
+    回答时区分事实、推断和建议。需要读取项目文件或目录时，使用文本 REACT 工具协议；不需要工具时直接回答。
+    不承诺投资收益，不把关系、因子或推荐结果解释成确定买卖信号。
+  tool_protocol: |
+    工具调用采用普通文本协议，不使用 function call。需要调用工具时，在回复末尾输出一个或多个 <tool_use>JSON</tool_use> 块。
+    JSON 示例：<tool_use>{"name":"file_read","arguments":{"path":"README.md","start":1,"count":80}}</tool_use>
+    工具执行后，系统会把 <tool_result> 回填给你；你再继续总结或追加工具调用。
+  prompt_template: |
+    {system_prompt}
+
+    {tool_protocol}
+
+    可用工具：
+    {tools}
+
+    项目根目录：{project_root}
+
+    最近工具结果：
+    {tool_context}
+
+    用户任务：
+    {user_content}
+  continue_prompt: |
+    以下是上一轮工具结果，请继续完成用户任务。如果信息已经足够，请给出最终回答；如果还需要项目上下文，可以继续输出 <tool_use>。
+
+    {tool_results}
+  tools:
+    - type: function
+      function:
+        name: project_tree
+        description: 浏览当前项目目录，只能访问项目根目录内文件。
+        parameters:
+          type: object
+          properties:
+            path:
+              type: string
+              description: 项目内相对目录，默认为当前项目根目录。
+            depth:
+              type: integer
+              description: 展开深度，范围 1 到 3。
+            limit:
+              type: integer
+              description: 返回项目数量上限。
+    - type: function
+      function:
+        name: file_read
+        description: 读取项目内文本文件内容，支持起始行、行数和关键词定位。
+        parameters:
+          type: object
+          properties:
+            path:
+              type: string
+              description: 项目内相对文件路径。
+            start:
+              type: integer
+              description: 起始行号。
+            count:
+              type: integer
+              description: 读取行数。
+            keyword:
+              type: string
+              description: 可选关键词，命中后返回周边内容。
+    - type: function
+      function:
+        name: ask_user
+        description: 当继续执行需要人工确认或缺少关键信息时使用。
+        parameters:
+          type: object
+          properties:
+            question:
+              type: string
+              description: 需要用户确认的问题。
+            candidates:
+              type: array
+              items:
+                type: string
+              description: 可选候选项。
+    - type: function
+      function:
+        name: finish
+        description: 已经完成任务时给出最终回答。
+        parameters:
+          type: object
+          properties:
+            answer:
+              type: string
+              description: 最终回答。

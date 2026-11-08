@@ -125,7 +125,7 @@ class _PageResources(HTMLParser):
 
 
 def test_publication_template_resolves_source_relative_to_its_config(tmp_path):
-    configuration = load_config(config_file="egs/mkdocs.publish.example.yaml", site_dir=str(tmp_path / "public"))
+    configuration = load_config(config_file="egs/config/operations/mkdocs.publish.example.yaml", site_dir=str(tmp_path / "public"))
     assert Path(configuration.docs_dir).resolve() == (Path.cwd() / "docs").resolve()
     assert configuration.site_url == "https://example.com/aiquant/"
     assert configuration.nav is not None

@@ -23,7 +23,7 @@ UPLOAD_CASES = [
     ("docs/tasks.func.md", True),
     ("docs/tasks.spec.md", True),
     ("src/data/quotes.py", False),
-    ("egs/config.example.yaml", False),
+    ("egs/config/platform/config.example.yaml", False),
     ("docs/usage/workspace.md", False),
     ("docs/usage/assets/demos/navigation.gif", False),
     (".agents/skills/quant-alpha-mining/SKILL.md", False),

@@ -1,0 +1,19 @@
+# File format: YAML; encoding: UTF-8
+version: 1
+langfuse:
+  enabled: false
+  capture_content: false
+  environment: local
+  sample_rate: 1.0
+  export_timeout_seconds: 2
+  flush_at: 64
+  flush_interval_seconds: 5
+  shutdown_timeout_seconds: 5
+  max_content_chars: 16000
+  max_metadata_chars: 200
+  max_collection_items: 32
+  max_content_depth: 8
+  tags: [aiquant]
+  metadata_fields: [purpose, workflow, role, run_id, session_id, model_id, api_backend, backend, turn, attempt, retry_count, rate_limit_wait_ms, request_duration_ms, duration_ms, history_messages, message_chars, prompt_chars, output_chars, capture_content, tool, argument_keys, status, error_type, is_mock, turns, tools, needs_user]
+  content_fields: [prompt, message, question, objective, history, messages, arguments]
+  usage_fields: {prompt_tokens: input, completion_tokens: output, total_tokens: total, input_tokens: input, output_tokens: output}

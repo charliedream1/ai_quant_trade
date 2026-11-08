@@ -14,7 +14,7 @@ from src.core.config import PROJECT_ROOT
 
 @lru_cache(maxsize=1)
 def settings() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/skill_workflows.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/agents/skill_workflows.yaml").read_text(encoding="utf-8"))
 
 
 def local_file(value: str | Path) -> Path:

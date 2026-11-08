@@ -1,0 +1,81 @@
+# 文件格式：YAML，编码：UTF-8
+{
+  "schema_version": 1,
+  "name": "行业轮动增强",
+  "description": "行业轮动增强；日线研究模板，真实能力由数据与依赖校验决定",
+  "universe": {
+    "symbols": [
+      "000001",
+      "600036",
+      "600519",
+      "601166",
+      "601318",
+      "300750"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "eligibility",
+      "component": "eligibility",
+      "inputs": [
+        "universe"
+      ],
+      "params": {}
+    },
+    {
+      "id": "industry",
+      "component": "industry",
+      "inputs": [
+        "eligibility"
+      ],
+      "params": {}
+    },
+    {
+      "id": "trend",
+      "component": "trend",
+      "inputs": [
+        "industry"
+      ],
+      "params": {}
+    },
+    {
+      "id": "model",
+      "component": "lightgbm",
+      "inputs": [
+        "trend"
+      ],
+      "params": {}
+    },
+    {
+      "id": "review",
+      "component": "agent",
+      "inputs": [
+        "model"
+      ],
+      "params": {
+        "workflow": "committee"
+      }
+    }
+  ],
+  "output": "review",
+  "portfolio": {
+    "component": "inverse_volatility"
+  },
+  "risk": {},
+  "execution": {},
+  "rebalance_sessions": 5,
+  "variants": {
+    "baseline": {},
+    "conservative": {
+      "risk": {
+        "max_exposure": 0.6,
+        "max_weight": 0.15
+      },
+      "portfolio": {
+        "params": {
+          "exposure": 0.6
+        }
+      }
+    }
+  }
+}

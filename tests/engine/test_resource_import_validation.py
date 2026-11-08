@@ -80,7 +80,7 @@ def test_excel_formulas_and_unknown_headers_are_rejected(client):
 
 
 def test_shipped_excel_template_without_declared_dimensions_imports(client):
-    path = Path(__file__).resolve().parents[2] / "egs/resource_pool_templates/universe.xlsx"
+    path = Path(__file__).resolve().parents[2] / "egs/examples/resource_pool_templates/universe.xlsx"
     service = ResourcePoolService()
     transfer = ResourceImportService(service.repo)
     report = transfer.preview(None, path.name, path.read_bytes())

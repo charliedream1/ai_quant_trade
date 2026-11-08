@@ -49,6 +49,6 @@ ContestTrade的README描述数据团队提炼文本因子、研究团队按不�
 | 图形工坊、Portfolio/Risk | 级联/并行、预算、同账本费用和风险 | 两类策略作为可配置方案及节点；旧模板与旧Agent流程不变 |
 | 资料、主题、图谱与报告库 | 来源、可得时间、原文引用、主题池、HTML展示 | 扩展为决策前的冻结证据包、角色过程与胜出/弃权原因 |
 
-推荐首批采用本项目独立实现的两类方案，维持Gradio和现有存储。整体移植Vue/FastAPI应用、MongoDB/Redis服务、专有页面以及自动外部交易不纳入此次实现。具体阶段、六套预置、数据时点、预算和验收见[24号正式设计](../../../doc/24_agent_debate_contest_strategy_design.md)。
+推荐首批采用本项目独立实现的两类方案，维持Gradio和现有存储。整体移植Vue/FastAPI应用、MongoDB/Redis服务、专有页面以及自动外部交易不纳入此次实现。具体阶段、六套预置、数据时点、预算和验收见[24号正式设计](../../../doc/agents/agent_debate_contest_strategy_design.md)。
 
 2026-10-28实施更新：已按确认A/B独立实现六套预置与四种图形节点，配套延迟影子记分、明确统计基线/本地LightGBM、现金及现有Portfolio/Risk、API/CLI和报告库。中文事件和竞赛事件已用用户指定E盘配置的实际Qwen服务完成一次小样本流程；非收益复现实验，没有额外做参数或模型效果调优。页面操作与真实/夹具证据分别登记，见[使用](../../usage/agent_strategies.md)、[原理](../../principles/agent_strategies.md)和[验收](../../audit/agent_strategies_2026-10-28/README.md)。

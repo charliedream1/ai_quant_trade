@@ -150,7 +150,7 @@ def test_source_entry_dry_run_is_valid_json_and_no_network():
     run = subprocess.run(
         [
             sys.executable,
-            "egs/cli.py",
+            "egs/entrypoints/cli.py",
             "--base-url",
             "http://127.0.0.1:1",
             "backtest",

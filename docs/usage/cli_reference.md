@@ -4,11 +4,11 @@
 
 2026-10-25追加：`backtest run`及`pipeline run`支持`--execution-costs` JSON，也可在`--file`请求中填写同名对象。支持方案、最低佣金、分方向税费及成交约束，费率使用内部小数。实际示例与快照位置见[交易成本指南](backtest_execution.md)。Qlib及前向模拟不接受通用费用覆盖。
 
-更新于 2026-10-22，A/B/C 已实现。CLI 通过 REST 复用网页的业务服务，涵盖 29 个命令组、168 个普通 REST 操作和 2 个 SSE 端点。先读[命令行上手](cli.md)和[协议原理](../principles/cli_protocol.md)。正式设计保留在项目 `doc/12_cli_interface_design.md`，实测记录保留在 `docs/audit/cli_validation_2026-10-20.md`、`docs/audit/platform_fix_2026-10-21/README.md`。
+更新于 2026-10-22，A/B/C 已实现。CLI 通过 REST 复用网页的业务服务，涵盖 29 个命令组、168 个普通 REST 操作和 2 个 SSE 端点。先读[命令行上手](cli.md)和[协议原理](../principles/cli_protocol.md)。正式设计保留在项目 `doc/platform/cli_interface_design.md`，实测记录保留在 `docs/audit/cli_validation_2026-10-20.md`、`docs/audit/platform_fix_2026-10-21/README.md`。
 
 ## 入口与常用命令
 
-在项目根目录使用 Python 3.10+ 执行 `python egs/cli.py`，也支持 `python -m src.cli`。下表用 `aiquant` 简写同一入口；安装本项目后可使用该别名，从源码运行无需安装。先启动现有后端；CLI 默认连接 `http://127.0.0.1:8000`，可用 `--base-url` 覆盖。所有示例在 Windows PowerShell 和 Linux shell 中均为单行命令。
+在项目根目录使用 Python 3.10+ 执行 `python egs/entrypoints/cli.py`，也支持 `python -m src.cli`。下表用 `aiquant` 简写同一入口；安装本项目后可使用该别名，从源码运行无需安装。先启动现有后端；CLI 默认连接 `http://127.0.0.1:8000`，可用 `--base-url` 覆盖。所有示例在 Windows PowerShell 和 Linux shell 中均为单行命令。
 
 | 目标 | 调用形式 |
 | --- | --- |
@@ -25,12 +25,12 @@
 | 因子监控 | `aiquant factor monitor --universe 510300,510500,159915` |
 | 查看已导入策略 | `aiquant strategy list --all --max-items 100` |
 | 查看预制策略 | `aiquant strategy examples list` |
-| 导入 ETF 策略 | `aiquant strategy examples import --example egs/strategy_examples/etf_momentum_rotation_strategy.py --name ETF轮动研究` |
+| 导入 ETF 策略 | `aiquant strategy examples import --example egs/examples/strategy_examples/etf_momentum_rotation_strategy.py --name ETF轮动研究` |
 | 启用策略 | `aiquant strategy enable 12` |
 | 读取方案列表 | `aiquant strategy params profiles 12` |
-| 预览参数 | `aiquant strategy params resolve 12 --parameter-profile etf_momentum.yaml:baseline --params-file egs/cli/params/etf.yaml` |
-| 从 YAML 运行回测 | `aiquant backtest run --file egs/cli/requests/etf_backtest.yaml --format json` |
-| 单次覆盖选股数 | `aiquant backtest run --file egs/cli/requests/etf_backtest.yaml --set params.top_n=2` |
+| 预览参数 | `aiquant strategy params resolve 12 --parameter-profile etf_momentum.yaml:baseline --params-file egs/config/cli/params/etf.yaml` |
+| 从 YAML 运行回测 | `aiquant backtest run --file egs/config/cli/requests/etf_backtest.yaml --format json` |
+| 单次覆盖选股数 | `aiquant backtest run --file egs/config/cli/requests/etf_backtest.yaml --set params.top_n=2` |
 | 查看绩效和净值 | `aiquant backtest metrics 42`；`aiquant backtest curve 42 --format json` |
 | 查看运行快照 | `aiquant backtest snapshot 42 --format json` |
 | 比较多个任务 | `aiquant backtest compare --ids 41,42` |
@@ -43,32 +43,32 @@
 | 查看实盘配置验证 | `aiquant live validation 3` |
 | Qlib 环境诊断 | `aiquant qlib status --format json` |
 | Qlib Workflow | `aiquant qlib run --server-workflow egs/qlib_workflows/alpha158_lgb.yaml --provider-uri data/qlib` |
-| 知识库文档上传 | `aiquant kb document upload --file doc/11_etf_strategy_design.md --category-id 2` |
+| 知识库文档上传 | `aiquant kb document upload --file doc/strategies/etf_strategy_design.md --category-id 2` |
 | 知识检索 | `aiquant kb search --keyword ETF轮动` |
 | 知识问答 | `aiquant kb ask --question ETF轮动的回测限制是什么` |
 | 定时任务 | `aiquant job list`；`aiquant job trigger 5`；`aiquant job history 5` |
 | 模型配置诊断 | `aiquant model list`；`aiquant model test 3` |
-| 普通模型问答 | `aiquant model chat --model-id 3 --question-file egs/cli/prompts/question.txt` |
-| 工作台真实后台消息 | `aiquant ai ask --session-id 8 --backend codex --message-file egs/cli/prompts/question.txt --format jsonl` |
+| 普通模型问答 | `aiquant model chat --model-id 3 --question-file egs/config/cli/prompts/question.txt` |
+| 工作台真实后台消息 | `aiquant ai ask --session-id 8 --backend codex --message-file egs/config/cli/prompts/question.txt --format jsonl` |
 | 环境变量状态 | `aiquant env check --name OPENAI_API_KEY`，只返回状态，不输出密钥 |
 
-表中的资源 ID 和运行标识需要替换为实际创建结果。`egs/cli/requests/etf_backtest.yaml`、`params/etf.yaml`、`prompts/question.txt` 已提供；回测样例的 strategy_id 也需替换。Qlib 的 workflow/provider 路径属于服务端，示例不附带原生训练数据或 workflow 文件。
+表中的资源 ID 和运行标识需要替换为实际创建结果。`egs/config/cli/requests/etf_backtest.yaml`、`params/etf.yaml`、`prompts/question.txt` 已提供；回测样例的 strategy_id 也需替换。Qlib 的 workflow/provider 路径属于服务端，示例不附带原生训练数据或 workflow 文件。
 
 ## 第一次跑通策略与回测
 
 先在一个终端执行 `python start.py --host 127.0.0.1 --port 8000`，在另一个终端从项目根目录执行下面命令。前两步可直接执行；后续 12、42 只是占位 ID，必须先读取实际返回值再替换，不要把整组命令不加修改连续执行。
 
 ```text
-python egs/cli.py system health --format json
-python egs/cli.py strategy examples import --example egs/strategy_examples/etf_momentum_rotation_strategy.py --name ETF首次验证 --format json
-python egs/cli.py strategy enable 12
-python egs/cli.py strategy params resolve 12 --parameter-profile etf_momentum.yaml:baseline --format json
-python egs/cli.py backtest run --file egs/cli/requests/etf_backtest.yaml --set strategy_id=12 --dry-run --format json
-python egs/cli.py backtest run --file egs/cli/requests/etf_backtest.yaml --set strategy_id=12 --format json
-python egs/cli.py backtest metrics 42 --format json
-python egs/cli.py backtest snapshot 42 --format json
-python egs/cli.py backtest curve 42 --format json
-python egs/cli.py backtest trades 42 --format json
+python egs/entrypoints/cli.py system health --format json
+python egs/entrypoints/cli.py strategy examples import --example egs/examples/strategy_examples/etf_momentum_rotation_strategy.py --name ETF首次验证 --format json
+python egs/entrypoints/cli.py strategy enable 12
+python egs/entrypoints/cli.py strategy params resolve 12 --parameter-profile etf_momentum.yaml:baseline --format json
+python egs/entrypoints/cli.py backtest run --file egs/config/cli/requests/etf_backtest.yaml --set strategy_id=12 --dry-run --format json
+python egs/entrypoints/cli.py backtest run --file egs/config/cli/requests/etf_backtest.yaml --set strategy_id=12 --format json
+python egs/entrypoints/cli.py backtest metrics 42 --format json
+python egs/entrypoints/cli.py backtest snapshot 42 --format json
+python egs/entrypoints/cli.py backtest curve 42 --format json
+python egs/entrypoints/cli.py backtest trades 42 --format json
 ```
 
 运行前核对请求 YAML 的日期与可得行情；真实行情无区间内数据会明确失败。完成后对照曲线日期、成交、费用、持仓及来源，不能把零成交、HTTP 200 或 mock 回测当作真实策略表现。需要强制来源检查时，可在支持来源证据的运行或指标接口加 --require-real；曲线等不含来源证据的结果也会被该选项拒绝。
@@ -87,7 +87,7 @@ python egs/cli.py backtest trades 42 --format json
 
 策略工坊新增 `pipeline` 命令族：components、templates、preview、create、list、show、update、publish、versions、enabled、run、runs、result、export、events、cancel、accounts、account、monitor、risk-reset。运行示例见[策略工坊](strategy_composition.md)。`pipeline run` 等待真实终态，`--format jsonl` 或 `--stream` 显示实际事件；JSON配合 `--output` 只保存一次最终结果。参数请求使用 `--file`，不是CLI连接用的 `--config`。
 
-可以将 `egs/cli.example.yaml` 复制为项目内的 `egs/cli.yaml`，分别保存多个 context；不提供配置时读取样例默认值。优先级为命令行、`ALL_IN_ONE_CLI_*` 环境、context 和样例配置。代理凭证通过 context 的 `authorization_env` 引用 `.env`，不写在 YAML 中。
+可以将 `egs/config/platform/cli.example.yaml` 复制为项目内的 `egs/config/platform/cli.yaml`，分别保存多个 context；不提供配置时读取样例默认值。优先级为命令行、`ALL_IN_ONE_CLI_*` 环境、context 和样例配置。代理凭证通过 context 的 `authorization_env` 引用 `.env`，不写在 YAML 中。
 
 使用 `aiquant api operations --format json` 查看完整契约；`aiquant api describe "backtest run"` 查看一个命令；业务参数以该命令的 `--help` 为准。模型地址用 `--model-base-url`，JSON 配置对象用 `--request-config`，避免与客户端的 `--base-url`、`--config` 混淆。
 
@@ -126,7 +126,7 @@ CLI 本地覆盖顺序为 --file → --params-file → --set → 显式业务字
 
 ## AI 会话、附件与事件
 
-先执行 `aiquant ai session create --title ETF研究`，取得 data.id，然后使用 `aiquant ai ask --session-id 8 --backend codex --message-file egs/cli/prompts/question.txt --attachment doc/11_etf_strategy_design.md --format jsonl`。附件可重复指定；文件先经 multipart 上传，后端只接受返回的附件标识。图片会传给实际支持图片的后台。
+先执行 `aiquant ai session create --title ETF研究`，取得 data.id，然后使用 `aiquant ai ask --session-id 8 --backend codex --message-file egs/config/cli/prompts/question.txt --attachment doc/strategies/etf_strategy_design.md --format jsonl`。附件可重复指定；文件先经 multipart 上传，后端只接受返回的附件标识。图片会传给实际支持图片的后台。
 
 `aiquant ai session show 8` 读取持久消息；`aiquant ai session list` 查看会话。后台的模型参数为 `--model-name`，模型 API 配置 ID 为 `--model-id`，思考强度为 `--reasoning-effort`。Codex 的状态、消息和动作来源于本地真实进程；GenericAgent 当前仅提供已完成阶段和最终消息，不承诺逐 token。多 Agent 复核同样可以加 `--format jsonl`。
 

@@ -18,7 +18,7 @@ from src.engine.backtest import BacktestRunner
 from src.strategy import StrategyStore
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "egs/etf_validation.yaml"
+CONFIG_PATH = PROJECT_ROOT / "egs/config/strategies/etf_validation.yaml"
 
 
 def run_validation(config: dict) -> dict:
@@ -62,7 +62,7 @@ def run_validation(config: dict) -> dict:
         started = perf_counter()
         store = StrategyStore()
         strategy = store.import_example(
-            f"egs/strategy_examples/{item['file']}", {"name": f"real_etf_{Path(item['file']).stem}"}
+            f"egs/examples/strategy_examples/{item['file']}", {"name": f"real_etf_{Path(item['file']).stem}"}
         )
         runner = BacktestRunner()
         with patch("src.engine.backtest.runner.DataSourceManager", HistoricalETFData):

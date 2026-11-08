@@ -44,10 +44,10 @@ For an individual-stock report, `research_snapshot` can also select a compatible
 The REST endpoints are `GET /api/v1/economics/macro`, `GET /api/v1/economics/fundamentals/{symbol}` and `GET /api/v1/economics/snapshots/{identifier}`. Macro queries accept `series` and `refresh`; fundamental queries also accept `period` and `peers`. Unsupported markets use the platform's existing business-error envelope.
 
 ```bash
-python egs/cli.py economics macro --series cpi,pmi
-python egs/cli.py economics fundamentals 600519 --period 2025-12-31 --peers 000858
-python egs/cli.py economics snapshot SNAPSHOT_SHA256
-python egs/cli.py insight run --kind fundamental_analysis --symbol 600519 --research-snapshot SNAPSHOT_SHA256 --model-id 1 --stream
+python egs/entrypoints/cli.py economics macro --series cpi,pmi
+python egs/entrypoints/cli.py economics fundamentals 600519 --period 2025-12-31 --peers 000858
+python egs/entrypoints/cli.py economics snapshot SNAPSHOT_SHA256
+python egs/entrypoints/cli.py insight run --kind fundamental_analysis --symbol 600519 --research-snapshot SNAPSHOT_SHA256 --model-id 1 --stream
 ```
 
 Replace the snapshot placeholder and model identifier with actual saved values. CLI calls use the same backend service and data contract as the page.
@@ -58,6 +58,6 @@ Private raw revisions, source caches and derived snapshots live under the config
 
 Current public revisions are marked `historical_pit_eligible: false`. A historic announcement date does not prove that today's revised values were known at that date. Past-date report requests that precede the snapshot are rejected. For historical experiments, continue using separately verified data in [Alpha research](alpha_mining.md).
 
-All source mappings, units, cache settings and limits are in `egs/economic_analysis.yaml`; prompts remain in YAML and the project-local economic analysis method document. No paid feed or new Python dependency is required. Source availability and freshness can change independently of the application.
+All source mappings, units, cache settings and limits are in `egs/config/data/economic_analysis.yaml`; prompts remain in YAML and the project-local economic analysis method document. No paid feed or new Python dependency is required. Source availability and freshness can change independently of the application.
 
 See [Economic research principles](../principles/economic_analysis.md) for accounting and provenance details.

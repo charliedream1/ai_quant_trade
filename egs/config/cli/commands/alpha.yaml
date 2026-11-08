@@ -1,0 +1,77 @@
+# 文件格式：YAML，编码：UTF-8
+read: &read {method: GET, positions: {}, fields: {}, query: {}, execution: false, market: false}
+write: &write {method: POST, positions: {}, fields: {}, query: {}, execution: false, market: false}
+study: &study {study_id: int}
+commands:
+  alpha config: {<<: *read, path: /alpha/config}
+  alpha datasets: {<<: *read, path: /alpha/datasets}
+  alpha register:
+    <<: *write
+    path: /alpha/datasets
+    fields: {name: str, kind: str, payload: json}
+    global_fields: {kind: kind}
+  alpha import:
+    <<: *write
+    path: /alpha/datasets/upload
+    query: {kind: str}
+    global_fields: {kind: kind}
+    upload: true
+  alpha snapshot:
+    <<: *write
+    path: /alpha/datasets/snapshot
+    fields: {snapshot_id: str}
+  alpha attest:
+    <<: *write
+    path: /alpha/datasets/{dataset_id}/attest
+    positions: {dataset_id: int}
+    fields: {reviewer: str, evidence: json}
+  alpha template:
+    <<: *read
+    path: /alpha/template-info/{kind}
+    positions: {kind: str}
+  alpha list: {<<: *read, path: /alpha/studies}
+  alpha create:
+    <<: *write
+    path: /alpha/studies
+    fields: {name: str, mode: str, dataset_id: int, purpose: str, market: str, policy: json, batch_size: int, models: json, model_call_budget: int, execution: json, execution_costs: json, cutoff: str, theme: str, manual_keywords: json, market_dataset_id: int, memory_dataset_id: int, configurations: json, asset_mapping: json, decision_dates: json, regime: json}
+  alpha show: {<<: *read, path: '/alpha/studies/{study_id}', positions: *study}
+  alpha candidate:
+    <<: *write
+    path: /alpha/studies/{study_id}/candidates
+    positions: *study
+    fields: {hypothesis: json, implementation: json}
+  alpha seal: {<<: *write, path: '/alpha/studies/{study_id}/seal', positions: *study}
+  alpha run:
+    <<: *write
+    path: /alpha/studies/{study_id}/actions
+    positions: *study
+    fields: {action: str, candidate_id: int}
+    execution: true
+    stream_path: /alpha/studies/{study_id}/run-stream
+  alpha watch:
+    <<: *read
+    path: /alpha/studies/{study_id}
+    positions: *study
+    stream_path: /alpha/studies/{study_id}/stream
+    await_terminal: true
+  alpha events:
+    <<: *read
+    path: /alpha/studies/{study_id}/events
+    positions: *study
+    query: {after: int}
+  alpha cancel: {<<: *write, path: '/alpha/studies/{study_id}/cancel', positions: *study}
+  alpha review:
+    <<: *write
+    path: /alpha/studies/{study_id}/reviews
+    positions: *study
+    fields: {candidate_id: int, track: str, decision: str, reviewer: str, evidence: json}
+  alpha export:
+    <<: *write
+    path: /alpha/studies/{study_id}/export
+    positions: *study
+    fields: {candidate_id: int, configuration: int}
+  alpha files: {<<: *read, path: '/alpha/studies/{study_id}/artifacts', positions: *study}
+  alpha file:
+    <<: *read
+    path: /alpha/studies/{study_id}/artifact-text/{name}
+    positions: {study_id: int, name: str}

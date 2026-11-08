@@ -43,7 +43,7 @@ def experiment_snapshot(
     resolution: dict[str, Any], payload: dict[str, Any], symbols: list[str], execution: dict[str, Any]
 ) -> dict[str, Any]:
     files = [
-        "egs/execution_costs.yaml",
+        "egs/config/strategies/execution_costs.yaml",
         "src/engine/backtest/engines.py",
         "src/engine/backtest/runner.py",
         "src/engine/backtest/experiments.py",
@@ -56,11 +56,11 @@ def experiment_snapshot(
         files.extend(
             path.relative_to(PROJECT_ROOT).as_posix() for path in (PROJECT_ROOT / "src/strategy/models").glob("*.py")
         )
-        files.append("egs/model_strategies.yaml")
+        files.append("egs/config/models/model_strategies.yaml")
     files.extend(
         path.relative_to(PROJECT_ROOT).as_posix() for path in (PROJECT_ROOT / "src/engine/execution").glob("*.py")
     )
-    files.extend(["src/data/backtest_history.py", "egs/backtest.yaml", "src/engine/backtest/capabilities.py"])
+    files.extend(["src/data/backtest_history.py", "egs/config/strategies/backtest.yaml", "src/engine/backtest/capabilities.py"])
     return deepcopy(
         {
             "schema_version": 1,

@@ -2,7 +2,7 @@
 
 ## 前置条件
 
-先以普通规则策略验证流程。预制源码在 `egs/strategy_examples/`，共有 13 套；模型策略额外需要可选依赖。接口检查验证能否接入，不能证明策略盈利。
+先以普通规则策略验证流程。预制源码在 `egs/examples/strategy_examples/`，共有 13 套；模型策略额外需要可选依赖。接口检查验证能否接入，不能证明策略盈利。
 
 ![预制策略列表与导入入口](assets/screenshots/04-strategy-import.jpg)
 

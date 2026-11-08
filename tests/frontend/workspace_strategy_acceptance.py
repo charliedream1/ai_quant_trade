@@ -25,7 +25,7 @@ def main(base, output):
     ordinary = api(
         base,
         "/strategy-examples/import",
-        {"example": "egs/strategy_examples/dual_ma_strategy.py", "name": "workspace-ui-" + suffix},
+        {"example": "egs/examples/strategy_examples/dual_ma_strategy.py", "name": "workspace-ui-" + suffix},
     )
     definition = template("rule_trend")
     definition["name"] += "-" + suffix

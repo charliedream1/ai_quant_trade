@@ -19,7 +19,7 @@ MASK = "<configured>"
 @lru_cache(maxsize=8)
 def _file_secrets(stamp: tuple) -> tuple[str, ...]:
     values = {}
-    for name in (".env", ".llm_env"):
+    for name in (".env",):
         values.update(dotenv_values(PROJECT_ROOT / name))
     return tuple(str(value) for key, value in values.items() if value and len(value) >= 6 and SENSITIVE.search(key))
 
@@ -27,7 +27,7 @@ def _file_secrets(stamp: tuple) -> tuple[str, ...]:
 def secret_values() -> tuple[str, ...]:
     stamps = tuple(
         (PROJECT_ROOT / name).stat().st_mtime_ns if (PROJECT_ROOT / name).exists() else 0
-        for name in (".env", ".llm_env")
+        for name in (".env",)
     )
     environment = tuple(value for key, value in os.environ.items() if len(value) >= 6 and SENSITIVE.search(key))
     values = {*_file_secrets(stamps), *environment}
@@ -35,9 +35,9 @@ def secret_values() -> tuple[str, ...]:
     return tuple(sorted(values, key=len, reverse=True))
 
 
-def redact_text(value: str) -> str:
+def redact_text(value: str, *, secrets: tuple[str, ...] | None = None) -> str:
     text = str(value)
-    for secret in secret_values():
+    for secret in secret_values() if secrets is None else secrets:
         text = text.replace(secret, MASK)
     text = re.sub(r"(?i)(bearer\s+)[\w.\-~+/=]+", r"\1<configured>", text)
     text = re.sub(r"(?i)((?:api[_-]?key|token|password|secret)=)[^\s&\"']+", r"\1<configured>", text)

@@ -91,7 +91,7 @@ def test_process_timeout_terminates_custom_executor(client, tmp_path, monkeypatc
 
 
 def _write_executor_config(tmp_path: Path, project_root: Path) -> Path:
-    handler_path = project_root / "egs" / "scheduler_custom_handlers.py"
+    handler_path = project_root / "egs" / "entrypoints" / "scheduler_custom_handlers.py"
     config_path = tmp_path / "scheduler_executors.yaml"
     config_path.write_text(
         "\n".join(

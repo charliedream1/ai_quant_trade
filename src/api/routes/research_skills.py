@@ -27,7 +27,7 @@ def providers(probe: bool = False):
 
 @router.get("/research-skills")
 def catalog():
-    return ok({"workflows": settings()["workflows"], "local_entrypoint": "egs/skills.py"})
+    return ok({"workflows": settings()["workflows"], "local_entrypoint": "egs/entrypoints/skills.py"})
 
 
 @router.post("/research-skills/preview")

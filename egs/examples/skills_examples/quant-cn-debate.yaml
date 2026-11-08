@@ -1,0 +1,12 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-cn-debate
+provider:
+  backend: api
+  model_id: 1
+request:
+  recipe: cn_balanced
+  market_dataset_id: 1
+  as_of: '2026-10-28'
+  validation_mode: historical_research
+  options: {depth: economy, calls: 16}

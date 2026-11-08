@@ -21,7 +21,7 @@
 
 图95来自本地隔离令牌服务，截图未输入令牌。本轮实际验证登录、退出、未认证拒绝及CLI访问；未对外发布站点。
 
-平台CLI继续使用`egs/cli.example.yaml`的`authorization_env`配置，默认变量为`ALL_IN_ONE_CLI_AUTHORIZATION`，值需包含`Bearer `前缀及同一访问令牌。令牌只保存在项目`.env`或进程环境。401表示缺少/无效认证，403表示Host、来源或访问范围不符；关闭认证不能解决跨站来源问题。
+平台CLI继续使用`egs/config/platform/cli.example.yaml`的`authorization_env`配置，默认变量为`ALL_IN_ONE_CLI_AUTHORIZATION`，值需包含`Bearer `前缀及同一访问令牌。令牌只保存在项目`.env`或进程环境。401表示缺少/无效认证，403表示Host、来源或访问范围不符；关闭认证不能解决跨站来源问题。
 
 这是个人或共用管理令牌的部署模式，尚不提供多用户隔离、角色权限和按用户数据空间。获得访问令牌的人可以管理模型、程序和研究资料，应按管理员对待。
 

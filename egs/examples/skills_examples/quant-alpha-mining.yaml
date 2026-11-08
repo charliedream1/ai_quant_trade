@@ -1,0 +1,12 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-alpha-mining
+provider:
+  backend: api
+  model_id: 1
+request:
+  name: 小样本Alpha流程核查
+  mode: alpha
+  dataset_id: 1
+  batch_size: 1
+  model_call_budget: 6

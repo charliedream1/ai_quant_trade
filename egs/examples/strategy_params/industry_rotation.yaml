@@ -1,0 +1,11 @@
+# 文件格式：YAML，编码：UTF-8
+entry: IndustryRotationStrategy
+profiles:
+  baseline:
+    label: 基准方案
+    description: 继承行业代表代理池的现有参数。
+    params: {}
+  diversified:
+    label: 长窗口分散对照
+    description: 以更长回看期选前两名；需至少三个标的，仍为行业代理池研究。
+    params: {lookback: 40, top_n: 2}

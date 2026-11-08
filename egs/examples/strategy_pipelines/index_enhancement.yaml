@@ -1,0 +1,46 @@
+# File format: YAML; encoding: UTF-8
+schema_version: 1
+name: 基准约束财务指数增强
+description: Long-only full-investment benchmark-relative scoring with active risk
+  and turnover constraints.
+universe:
+  symbols:
+  - '000001'
+  - '600036'
+  - '600519'
+  - 000858
+  - '601318'
+  - '300750'
+nodes:
+- id: eligible
+  component: eligibility
+  inputs:
+  - universe
+  params: {}
+- id: financial
+  component: financial_score
+  inputs:
+  - eligible
+  params:
+    style: quality
+output: financial
+portfolio:
+  component: index_enhancement
+  params:
+    benchmark_id: user_declared_index
+    exposure: 1.0
+    max_weight: 0.5
+    max_active_weight: 0.1
+    tracking_error_limit: 0.04
+risk:
+  require_sector: true
+  max_exposure: 1.0
+  max_weight: 0.5
+  max_positions: 100
+  max_sector_weight: 1.0
+  max_cluster_weight: 1.0
+  target_volatility: 0.0
+execution: {}
+rebalance_sessions: 20
+variants:
+  baseline: {}

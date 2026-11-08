@@ -178,7 +178,7 @@ def test_mcp_tool_call_route_validates_arguments_and_returns_result(client):
 
 
 def test_strategy_and_backtest_flow(client):
-    code = Path("egs/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
+    code = Path("egs/examples/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
     strategy = client.post(
         "/api/v1/strategies",
         json={"name": "dual_ma_test", "description": "smoke", "code": code, "default_params": {"fast_window": 5}},
@@ -616,7 +616,7 @@ def test_knowledge_qa_and_scheduler(client, tmp_path, keyword_model):
     assert missing_paper_result["data"]["status"] == "跳过"
     assert "不存在" in missing_paper_result["data"]["result_summary"]
 
-    code = Path("egs/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
+    code = Path("egs/examples/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
     strategy = client.post(
         "/api/v1/strategies",
         json={"name": "scheduler_dual_ma", "description": "scheduler", "code": code, "default_params": {}},

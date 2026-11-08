@@ -57,7 +57,7 @@ site/
 # Documentation build/check scripts are source files and should be tracked.
 !scripts/build_docs.ps1
 !scripts/build_docs.sh
-!zz_scripts/check_docs_build.py
+!scripts/docs/check_docs_build.py
 
 # private config files (avoid leaking API keys / credentials)
 .env
@@ -102,7 +102,10 @@ __pycache__/
 .llm_env.*
 .secrets
 egs/config.yaml
-egs/cli.yaml
+egs/config/cli.yaml
+egs/config/platform/config.yaml
+egs/config/platform/cli.yaml
+egs/config/models/qlib.yaml
 data/all_in_one.db
 data/*.db
 data/*.db-*

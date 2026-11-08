@@ -1,0 +1,273 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+assets_path: /strategy-graph-assets
+limits:
+  max_bytes: 1048576
+  undo_steps: 40
+  layout_gap_x: 260
+  layout_gap_y: 130
+  canvas_height: 680
+  canvas_min_height: 340
+  canvas_viewport_offset: 280
+  evidence_rows: 60
+  render_batch_ms: 120
+  selected_color: '#6366f1'
+  max_layout_depth: 3
+  max_layout_nodes: 44
+  min_zoom: 0.15
+  max_zoom: 2.0
+  evidence_poll_seconds: 1.0
+  event_preview_items: 8
+  max_text_chars: 6000
+  performance_samples: 40
+  fit_stable_frames: 2
+  fit_padding: 0.15
+groups:
+  factor: {label: 因子研究, color: '#0891b2'}
+  filter: {label: 规则与形态, color: '#079a90'}
+  scorer: {label: 模型与评分, color: '#3b82f6'}
+  ensemble: {label: 融合与投票, color: '#9254de'}
+  agent: {label: Agent终审, color: '#d58a16'}
+  portfolio: {label: 组合与预算, color: '#3276bd'}
+  risk: {label: 风险约束, color: '#d75d70'}
+  context: {label: 研究上下文, color: '#64748b'}
+ui:
+  title: 图形策略工坊
+  intro: 点击节点查看参数与上下游；双击子策略进入内部。画布编辑后应用到草稿，再预览、发布和运行。
+  search: 搜索阶段或组件
+  search_placeholder: 输入名称后回车定位
+  fit: 查看全图
+  arrange: 自动布局
+  undo: 撤销
+  redo: 重做
+  apply: 应用到策略草稿
+  save_layout: 保存布局
+  up: 返回父图
+  add: 添加组件
+  duplicate: 复制阶段
+  remove: 移除阶段
+  output: 设为最终输出
+  parents: 上游
+  children: 下游
+  parameters: 参数
+  advanced: 完整参数（JSON）
+  update: 更新节点
+  evidence: 实际运行证据
+  choose: 点击节点选择
+  help: 说明与约束
+  node_id: 阶段标识
+  connected: 候选依赖
+  context: 母池历史上下文（只读）
+  protected: 必经配置，不可移除
+  empty: 当前无对应运行结果
+  stale: 草稿已变化，历史结果来自其他定义
+  valid: 草稿可编译
+  saved: 布局已保存；计算定义未改变
+  applied: 图形修改已写入草稿；请预览后发布
+  modified: 有未应用的图形修改
+  clean: 图形与草稿一致
+  invalid_edge: 此连线不符合依赖或类型要求
+  delete_edge: 移除此计算连线
+  enter: 展开子策略
+  budget: 资金预算
+  portfolio: Portfolio分配
+  risk: Risk约束
+  execution: 执行与报告
+  universe: 股票池
+  no_execute: 查看、拖动、缩放不会执行策略
+  date: 结果日期
+  select_result: 查看当前步骤
+  retry_unsupported: 此处只查看已存证据；重新执行请使用运行入口
+  min_version: 图形组件需要Gradio 6.16；当前环境保留步骤表与YAML编辑
+  error: 图形变更未应用
+  position_not_saved: 布局尚未保存
+  metadata_missing: 参数说明未配置，请核对生效预览
+  run_status: 运行状态
+  preview_error: 配置校验失败
+  security: 外部代码、未知节点及跨目录文件不允许导入
+  import: 导入方案
+  export: 导出方案
+  passed: 通过
+  unknown: 未知
+  milliseconds: 毫秒
+  statuses: 实际状态
+  fullscreen: 全屏画布
+  leave_fullscreen: 退出全屏
+  invalid_file: 仅支持本工坊导出的JSON方案
+help:
+  cn_analysis: 读取时点内真实证据形成多维分析；不生成资金权重。
+  cn_debate: 读取前级分析并进行多空交锋；缺必需资料不允许选择。评分不是收益概率。
+  contest_data: 用已成熟成绩预测信息效用，在长度和去重约束下选择证据；冷启动明确标识。
+  contest_research: 研究者预算由成熟影子成绩决定；所有效用非正或资料不足时留现金。只连接研究预算Portfolio。
+  factor_score: 将当期有效因子转为同向排名并按等权或已到期历史ICIR合成；因子权重不是资金仓位。缺失不补零，权重上限不可行会明确阻断。
+  factor: 因子面板按日期与证券对齐；依次预处理、使用已到期收益研究和去重，再合成为证券评分。中间面板不能直接用于资金分配。
+  filter: 按当期可见数据保留候选；空结果不会自动扩大股票池。
+  scorer: 输出连续评分；模型训练仍使用母池历史与已成熟标签，不能只用当日筛选结果训练。
+  ensemble: 合并规则或评分。融合权重对应有序输入，预测期与语义由后端校验。
+  agent: 仅终审有限候选并引用证据；历史回测默认关闭当期模型调用。
+  portfolio: 将最终候选或子策略转为目标权重；评分权重与资金预算含义不同。
+  risk: 对目标与实际持仓持续执行约束，风险削减后的余额保留现金。
+  universe: 合法母池与截止时点由运行请求或资源池确定；模型历史不会因前级过滤丢失。
+  execution: 前一收盘决策、下一可交易日开盘尝试成交，目标不等于实际持仓。
+choices:
+  depth: [economy, standard, deep]
+  predictor: [baseline, lightgbm]
+  recipe: [cn_balanced, cn_quality, cn_event, contest_event, contest_quality, contest_sector]
+  method: [union, intersection, k_n, rank, vote, zscore]
+  set_name: [balanced, trend, defensive]
+  feature_set: ['', balanced, trend, defensive]
+  feature_preprocess: [rank, zscore]
+  weighting: [equal, icir]
+  workflow: [single, committee]
+  fallback: [none, equal, inverse_volatility]
+labels:
+  recipe: 研究方案
+  depth: 研究深度
+  predictor: 效用预测器
+  calls: 实际模型请求上限
+  documents_dataset: 带可得时点的资料数据集ID
+  factor_preprocess.method: 横截面处理方式
+  factor_score.shrinkage: 向等权收缩比例
+  factor_evidence: 因子研究摘要
+  factor_name: 因子
+  factor_selected: 已通过研究筛选
+  cache_computed: 本批计算
+  cache_hits: 磁盘命中
+  memory_hits: 内存复用
+  label_end: 已使用标签截止
+  samples: 日期数
+  matured_hint: 只使用截至决策日已到期的历史收益标签，不包含未来收益。
+  rank_ic_hint: 各日因子排名与未来收益排名的相关性均值；不代表策略收益率。
+  icir_hint: 日RankIC均值除以总体标准差；未年化，常数或不足样本不计算。
+  factor_weights: 合成因子权重
+  factor_weights_hint: 此权重合成研究评分，与模型分支权重及Portfolio资金权重不同。
+  insufficient_matured_dates: 已到期的有效研究日期不足
+  rank_ic_below_threshold: 历史RankIC低于门槛
+  momentum_20d: 20日动量
+  reversal_5d: 5日反转
+  low_vol_20d: 20日低波
+  volume_trend: 量能趋势
+  trend_distance: 均线偏离
+  close_position: 区间收盘位置
+  liquidity_20d: 平均成交额
+  intraday_reversal: 日内反转
+  set_name: 因子集
+  study_id: 冻结研究ID
+  candidate_id: 已复核候选ID
+  artifact_digest: 冻结研究产物SHA256
+  configuration: 独立体制配置序号
+  alpha_factor: 已复核Alpha因子
+  alpha_theme: 冻结主题股票池
+  alpha_regime: 冻结体制配置
+  regime_fixed: 保留现金的体制目标权重
+  feature_set: 模型特征集（空值沿用原特征）
+  feature_preprocess: 特征横截面处理
+  winsor_quantile: 两端去极值比例
+  min_assets: 最少横截面证券数
+  lookback: 研究交易日窗口
+  min_dates: 最少有效研究日期
+  min_coverage: 最低有效覆盖率
+  min_rank_ic: 最低平均RankIC
+  max_correlation: 因子相关性去重阈值
+  groups: 研究分组数
+  weighting: 因子权重方式
+  max_factor_weight: 单因子权重上限
+  minimum_factors: 最少有效因子数
+  window: 观察窗口
+  short: 短窗口
+  long: 长窗口
+  short_window: 短期特征窗口
+  long_window: 长期特征窗口
+  volatility_window: 波动特征窗口
+  volume_window: 成交量特征窗口
+  min_train_dates: 最少训练日期数
+  min_train_samples: 最少训练样本数
+  learning_rate: 学习率
+  n_estimators: 树的数量
+  max_depth: 模型最大深度
+  hidden_size: 隐藏层宽度
+  epochs: 训练轮数
+  batch_size: 训练批大小
+  threshold: 判定阈值
+  min_return: 最小收益
+  min_volume_ratio: 最小量比
+  min_amount: 最小成交额
+  tolerance: 容差
+  percentile: 保留分位
+  horizon: 预测期
+  train_window: 训练窗口
+  retrain_interval: 重训间隔
+  method: 合并方法
+  minimum: 最少有效分支
+  weights: 评分权重
+  family_cap: 同类模型权重上限
+  disagreement_penalty: 分歧惩罚
+  workflow: 终审流程
+  required: 必须终审
+  exposure: 目标投入比例
+  max_weight: 单证券权重上限
+  top_k: 最大入选数量
+  min_observations: 最小历史长度
+  shrinkage: 协方差收缩
+  fallback: 显式降级方案
+  max_exposure: 总仓位上限
+  max_positions: 最大持仓数
+  stop_loss: 固定止损比例
+  trailing_stop: 移动止损比例
+  atr_multiple: ATR止损倍数
+  max_holding_sessions: 最大持有周期
+  max_drawdown: 回撤冻结阈值
+  daily_loss: 日损失冻结阈值
+  cooldown_sessions: 冷却周期
+  target_volatility: 目标年化波动
+  max_sector_weight: 行业权重上限
+  max_cluster_weight: 相关簇权重上限
+  require_sector: 强制行业证据
+  require_tradability: 强制交易状态证据
+  commission_rate: 手续费率
+  slippage_rate: 滑点比例
+  initial_capital: 初始资金
+  max_participation: 最大成交参与率
+  turnover_limit: 调仓换手上限
+  rebalance_band: 最小调仓带
+ports:
+  factor: {input: 候选上下文或因子面板, output: 按日期对齐的因子面板}
+  filter: {input: 候选或评分集合, output: 通过规则的候选}
+  scorer: {input: 当期候选, output: 连续评分集合}
+  ensemble: {input: 多分支候选或评分, output: 融合结果}
+  agent: {input: 有限候选与只读证据, output: 终审候选与理由}
+  portfolio: {input: 最终候选或子策略预算, output: 目标权重}
+  risk: {input: 目标权重与持仓, output: 风控后目标}
+  context: {input: 执行上下文, output: 母池上下文}
+parameter_limits:
+  min_assets: {min: 2, step: 1}
+  lookback: {min: 2, max: 200, step: 1}
+  min_dates: {min: 2, step: 1}
+  groups: {min: 2, step: 1}
+  winsor_quantile: {min: 0, max: 0.49, step: 0.01}
+  min_coverage: {min: 0, max: 1, step: 0.05}
+  min_rank_ic: {min: 0, max: 1, step: 0.01}
+  max_correlation: {min: 0.01, max: 1, step: 0.01}
+  max_factor_weight: {min: 0.01, max: 1, step: 0.01}
+  window: {min: 1, step: 1}
+  short: {min: 1, step: 1}
+  long: {min: 1, step: 1}
+  horizon: {min: 1, step: 1}
+  train_window: {min: 1, step: 1}
+  retrain_interval: {min: 1, step: 1}
+  minimum: {min: 1, step: 1}
+  max_exposure: {min: 0, max: 1, step: 0.01}
+  max_weight: {min: 0, max: 1, step: 0.01}
+  exposure: {min: 0, max: 1, step: 0.01}
+  stop_loss: {min: 0, max: 1, step: 0.01}
+  trailing_stop: {min: 0, max: 1, step: 0.01}
+  max_drawdown: {min: 0, max: 1, step: 0.01}
+  daily_loss: {min: 0, max: 1, step: 0.01}
+status_labels:
+  started: 执行中
+  completed: 已完成
+  running: 执行中
+  finished: 已完成
+  failed: 失败
+  cancelling: 取消中
+  cancelled: 已取消

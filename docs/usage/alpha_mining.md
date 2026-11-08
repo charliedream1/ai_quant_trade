@@ -10,7 +10,7 @@
 
 ![研究入口与配置](assets/screenshots/74-alpha-main.jpg)
 
-展开“数据与来源”，可以导入UTF-8 CSV、JSON或YAML，也可以填写现有组合行情归档SHA256。页面提供三份空模板下载；源码模板位于`egs/alpha_mining_examples/`，不包含伪装成真实行情的示例行。
+展开“数据与来源”，可以导入UTF-8 CSV、JSON或YAML，也可以填写现有组合行情归档SHA256。页面提供三份空模板下载；源码模板位于`egs/examples/alpha_mining_examples/`，不包含伪装成真实行情的示例行。
 
 | 类型 | 用途 | 必需内容 |
 | --- | --- | --- |
@@ -72,7 +72,7 @@ JSON/YAML根对象中分别使用`history`、`documents`、`observations`。行�
 
 ![匿名宏观与体制配置](assets/screenshots/77-alpha-regime.jpg)
 
-选择macro资料，设置增长/通胀序列、asset_mapping及configuration模型列表。高级配置和完整样例见`egs/alpha_mining_examples/regime_study.yaml`。最多八个配置独立运行；同模型/强度重复配置会被拒绝，模型未配置不静默补齐。
+选择macro资料，设置增长/通胀序列、asset_mapping及configuration模型列表。高级配置和完整样例见`egs/examples/alpha_mining_examples/regime_study.yaml`。最多八个配置独立运行；同模型/强度重复配置会被拒绝，模型未配置不静默补齐。
 
 Goldilocks、Reflation、Stagflation、Risk_Off的定义、权重和现金余量在运行前冻结；资料不足或低置信度允许unknown。模型只分类、引用和说明，不能直接改权重。系统提供规则体制及同资产静态股债基准，对照遵守相同费用与风险；实际资金可能因风控及未成交偏离目标。
 
@@ -91,13 +91,13 @@ Goldilocks、Reflation、Stagflation、Risk_Off的定义、权重和现金余量
 CLI提供alpha命令组：
 
 ```powershell
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha --help
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha import --kind market --file market.csv
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha create --file egs/alpha_mining_examples/study.yaml
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha run 1 --action discover --stream
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha seal 1
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha run 1 --action validate --stream
-.venv-secure/Scripts/python.exe -B egs/cli.py alpha events 1
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha --help
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha import --kind market --file market.csv
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha create --file egs/examples/alpha_mining_examples/study.yaml
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha run 1 --action discover --stream
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha seal 1
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha run 1 --action validate --stream
+.venv-secure/Scripts/python.exe -B egs/entrypoints/cli.py alpha events 1
 ```
 
 示例ID需替换。alpha watch恢复读取真实事件，alpha files列产物，alpha file读取有界文本及完整下载链接；alpha review、export与页面遵守同一门槛。配置/查看/导入模板不会调用模型，执行流程才计入预算。

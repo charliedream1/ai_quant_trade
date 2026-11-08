@@ -11,7 +11,7 @@ from src.core.exceptions import BusinessError, ErrorCode
 
 @lru_cache(maxsize=1)
 def knowledge_config() -> dict[str, Any]:
-    return dict(yaml.safe_load((PROJECT_ROOT / "egs/knowledge.yaml").read_text(encoding="utf-8")))
+    return dict(yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/knowledge.yaml").read_text(encoding="utf-8")))
 
 
 def library_name(value: Any = None) -> str:

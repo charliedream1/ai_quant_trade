@@ -19,12 +19,12 @@ def invalid(reason: str) -> BusinessError:
 
 @lru_cache(maxsize=1)
 def config() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/alpha_mining.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/agents/alpha_mining.yaml").read_text(encoding="utf-8"))
 
 
 @lru_cache(maxsize=1)
 def prompts() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/alpha_mining_prompts.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/agents/alpha_mining_prompts.yaml").read_text(encoding="utf-8"))
 
 
 def digest(value: Any) -> str:
@@ -93,12 +93,12 @@ def source_manifest() -> dict[str, str]:
     files = [path for root in roots for path in root.glob("*.py")]
     files.extend(
         [
-            PROJECT_ROOT / "egs/execution_costs.yaml",
-            PROJECT_ROOT / "egs/alpha_mining.yaml",
-            PROJECT_ROOT / "egs/alpha_mining_prompts.yaml",
+            PROJECT_ROOT / "egs/config/strategies/execution_costs.yaml",
+            PROJECT_ROOT / "egs/config/agents/alpha_mining.yaml",
+            PROJECT_ROOT / "egs/config/agents/alpha_mining_prompts.yaml",
             PROJECT_ROOT / "src/agent/llm_client.py",
-            PROJECT_ROOT / "egs/factor_research.yaml",
-            PROJECT_ROOT / "egs/agent_providers.yaml",
+            PROJECT_ROOT / "egs/config/strategies/factor_research.yaml",
+            PROJECT_ROOT / "egs/config/agents/agent_providers.yaml",
         ]
     )
     return {

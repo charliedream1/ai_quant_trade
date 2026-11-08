@@ -1,0 +1,16 @@
+# 文件格式：YAML，编码：UTF-8
+version: 1
+branches:
+  peers: 6
+  second_hop: 3
+  bars: 60
+  concepts: 3
+  deadline_seconds: 8.0
+minimum_correlation_samples: 20
+evidence_excerpt_chars: 160
+name_min_chars: 2
+layout:
+  height: 620
+  padding_fraction: 0.18
+  minimum_span: 1.0
+  label_limit: 40

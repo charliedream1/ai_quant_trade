@@ -1,0 +1,8 @@
+# 文件格式：YAML，编码：UTF-8
+commands:
+  "skill list": {"method":"GET","path":"/skills","positions":{},"query":{},"fields":{},"execution":false,"market":false}
+  "skill create": {"method":"POST","path":"/skills","positions":{},"query":{},"fields":{"name":"str","description":"str","source":"str","param_schema":"json","params":"json"},"execution":false,"market":false}
+  "skill enable": {"method":"POST","path":"/skills/{skill_id}/enable","positions":{"skill_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "skill disable": {"method":"POST","path":"/skills/{skill_id}/disable","positions":{"skill_id":"int"},"query":{},"fields":{},"execution":false,"market":false}
+  "skill params": {"method":"PUT","path":"/skills/{skill_id}/params","positions":{"skill_id":"int"},"query":{},"fields":{"params":"json"},"execution":true,"market":false}
+  "skill run": {"method":"POST","path":"/skills/{skill_id}/run","positions":{"skill_id":"int"},"query":{},"fields":{"params":"json"},"execution":true,"market":false}

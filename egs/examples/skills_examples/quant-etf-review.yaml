@@ -1,0 +1,10 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-etf-review
+provider:
+  backend: api
+  model_id: 1
+request:
+  backtest_id: 1
+  objective: 复核ETF回测的敞口、跟踪误差、流动性和费用
+  workflow: etf_review

@@ -20,7 +20,7 @@ def run(output):
     logger.add(output / "real.log", encoding="utf-8", colorize=False)
     assert not DataSourceManager().is_mock
     FileStorage().ensure_dirs()
-    ordinary = StrategyStore().import_example("egs/strategy_examples/dual_ma_strategy.py")
+    ordinary = StrategyStore().import_example("egs/examples/strategy_examples/dual_ma_strategy.py")
     plan = template("rule_trend")
     plan.update(nodes=[], output="universe", name="真实成本组合")
     plan["universe"]["symbols"] = ["000001", "600036"]

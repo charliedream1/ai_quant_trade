@@ -1,0 +1,3 @@
+- 国内Github访问不稳定，可以考虑使用代理，或者使用本仓库的国内镜像吧。
+- 目前更新会优先更新Github，Gitee的更新会有延迟，但是会保证同步更新。
+  - Gitee（国内镜像）: https://gitee.com/charlie1/ai_quant_trade.git

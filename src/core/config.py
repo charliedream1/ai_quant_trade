@@ -55,7 +55,7 @@ class Settings:
             return os.environ.get(name, dotenv.get(name, fallback))
 
         if config_file is None:
-            config_file = PROJECT_ROOT / "egs" / "config.yaml"
+            config_file = PROJECT_ROOT / "egs/config/platform/config.yaml"
         if config_file.exists():
             loaded = yaml.safe_load(config_file.read_text(encoding="utf-8")) or {}
             if isinstance(loaded, dict):

@@ -22,7 +22,7 @@
 | ETF配置 | 动量、低波动和 HRP；可切换等权/ERC | ETF范围、协方差、实际现金比例 |
 | 多策略总组合 | 趋势、回归和ETF独立子账户预算后净额 | 子策略资金流、同证券对冲、只扣一次市场费用 |
 
-这些是研究起点，不是收益推荐。默认模板、组件参数及固定提示词位于 `egs/strategy_pipelines/` 与 `egs/strategy_components.yaml`。模型需要额外的 `requirements-models.txt` 依赖；缺失时明确失败，不生成替代评分。
+这些是研究起点，不是收益推荐。默认模板、组件参数及固定提示词位于 `egs/examples/strategy_pipelines/` 与 `egs/config/strategies/strategy_components.yaml`。模型需要额外的 `requirements-models.txt` 依赖；缺失时明确失败，不生成替代评分。
 
 1. 选择预置或已发布版本，点击“载入方案”。股票池留空使用方案默认；填写代码时覆盖单层方案母池，多子策略仍保留各自范围。
 2. 在画布点击阶段，在右侧编辑参数并点击“更新节点”，再点“应用到策略草稿”。也可展开“步骤、组合与风控编辑”使用原有表单。应用计算修改后，发布版本ID会清空；未应用的图形变更会阻止运行旧 YAML。
@@ -93,16 +93,16 @@ Portfolio 参数控制分配方法、总投入、单证券上限及估计窗口�
 在项目根目录使用当前 Python 环境运行：
 
 ```powershell
-python egs/cli.py pipeline templates
-python egs/cli.py pipeline components
-python egs/cli.py --format json pipeline run --template rule_trend --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
-python egs/cli.py --format jsonl --require-real pipeline run --template parallel_three_model --mode targets --agent-mode off
-python egs/cli.py pipeline runs
-python egs/cli.py pipeline result <运行ID>
-python egs/cli.py pipeline events <运行ID>
-python egs/cli.py pipeline nodes <运行ID> --after 0
-python egs/cli.py pipeline layout show <方案ID>
-python egs/cli.py pipeline enabled <方案ID> --enabled false
+python egs/entrypoints/cli.py pipeline templates
+python egs/entrypoints/cli.py pipeline components
+python egs/entrypoints/cli.py --format json pipeline run --template rule_trend --mode backtest --agent-mode off --start-date 2026-05-04 --end-date 2026-10-22
+python egs/entrypoints/cli.py --format jsonl --require-real pipeline run --template parallel_three_model --mode targets --agent-mode off
+python egs/entrypoints/cli.py pipeline runs
+python egs/entrypoints/cli.py pipeline result <运行ID>
+python egs/entrypoints/cli.py pipeline events <运行ID>
+python egs/entrypoints/cli.py pipeline nodes <运行ID> --after 0
+python egs/entrypoints/cli.py pipeline layout show <方案ID>
+python egs/entrypoints/cli.py pipeline enabled <方案ID> --enabled false
 ```
 
 `pipeline run` 等待终态；JSON只输出最终结果，JSONL/`--stream`逐条输出实际事件。`--require-real`同时传入服务端检查并校验最终来源。长任务可显式调整 `--deadline` 和 `--read-timeout`。CLI 的 create/preview/update 可用 `--file` 传入含 definition、variant、overrides 的 YAML/JSON；`pipeline publish`、versions、export、cancel、accounts、account、monitor 和 risk-reset 见 [完整命令参考](cli_reference.md)。停用方案阻止新研究/建仓，已有持仓的 risk-only 监控继续可用。

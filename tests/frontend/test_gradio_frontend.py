@@ -831,7 +831,7 @@ def test_frontend_core_workflows(client, keyword_model):
     assert not papers.empty
     assert "已导入知识库" in frontend.import_paper_to_kb(int(papers.iloc[0]["id"]))
 
-    source = Path("egs/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
+    source = Path("egs/examples/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
     extract_status, extracted_params, extracted_rows = frontend.strategy_param_schema_extract(source, None)
     assert "已从源码提取" in extract_status
     assert json.loads(extracted_params)["fast_window"] == 5
@@ -1277,7 +1277,7 @@ def test_learning_tree_preset_detail_and_dashboard_layout():
     first_chapter_id = int(first_group["chapters"][0][1])
     assert "最后刷新" in frontend.learning_detail(first_chapter_id)
 
-    example_path = "egs/strategy_examples/dual_ma_strategy.py"
+    example_path = "egs/examples/strategy_examples/dual_ma_strategy.py"
     intro, code, params_yaml, meta = frontend.preset_strategy_detail(example_path)
     assert "双均线趋势策略" in intro
     assert "fast_window" in params_yaml

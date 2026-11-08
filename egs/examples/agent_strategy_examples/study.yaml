@@ -1,0 +1,16 @@
+# 文件格式：YAML，编码：UTF-8；将ID和日期替换为实际已导入资料。
+recipe: cn_event
+market_dataset_id: 1
+documents_dataset_id: 2
+as_of: '2026-10-28'
+backend: api
+model_id: 1
+market: CN
+validation_mode: current_research
+scope: first-small-research
+options:
+  depth: economy
+  predictor: baseline
+  calls: 12
+execution_costs:
+  profile: cn_a

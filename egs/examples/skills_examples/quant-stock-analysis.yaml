@@ -1,0 +1,10 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-stock-analysis
+provider:
+  backend: api
+  model_id: 1
+request:
+  kind: single_stock_analysis
+  symbol: '600519'
+  market: CN

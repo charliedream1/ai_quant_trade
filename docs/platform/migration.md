@@ -7,13 +7,13 @@
 在仓库根目录执行，Linux将Scripts/python.exe替换为bin/python并按固定版本重建环境：
 
 ```text
-.venv-secure/Scripts/python.exe -B egs/check_runtime.py --role web
+.venv-secure/Scripts/python.exe -B egs/entrypoints/check_runtime.py --role web
 .venv-secure/Scripts/python.exe -B start.py --host 127.0.0.1 --port 8000
 ```
 
-默认使用当前根目录的egs配置和本地.env/.llm_env。迁移保留私有设置与正式数据，不把它们提交到Git。模型、图片和Qlib环境的说明见[环境安装](../usage/installation.md)；已知依赖公告不会因复制仓库消失。
+默认使用当前根目录的egs配置和本地.env。迁移保留私有设置与正式数据，不把它们提交到Git。模型、图片和Qlib环境的说明见[环境安装](../usage/installation.md)；已知依赖公告不会因复制仓库消失。
 
-复核补充：AI新会话默认项目名由`egs/ai_workbench_presets.yaml`的`workspace.default_project`统一提供，当前为`ai_quant_trade`；侧栏、自动会话和项目输入框共享此值，已有会话或用户显式项目名不重写。外部缠论适配为可选能力，`chan_analyzer_root`示例默认留空，需要时登记实际路径，不再隐式指向旧仓库。
+复核补充：AI新会话默认项目名由`egs/config/platform/ai_workbench_presets.yaml`的`workspace.default_project`统一提供，当前为`ai_quant_trade`；侧栏、自动会话和项目输入框共享此值，已有会话或用户显式项目名不重写。外部缠论适配为可选能力，`chan_analyzer_root`示例默认留空，需要时登记实际路径，不再隐式指向旧仓库。
 
 ## 文档位置
 
@@ -26,7 +26,7 @@
 | 原仓库文档 | 环境配置、常见问题、社区和部署目录继续保留 |
 | 历史报告 | docs/audit，仅本地核查，不发布到站点 |
 
-根README保持原仓库内容，没有被平台README覆盖。原docs/index.md作为整合首页，新增量化工作台入口；源平台首页归入platform。周日志重名时保留目标文件，源同名日志在changelog/platform归档。
+根README保持原仓库内容，没有被平台README覆盖。原docs/index.md作为整合首页，新增量化工作台入口；源平台首页归入platform。周日志重名时保留目标文件，源同名日志在changelog归档。
 
 后续按用户要求，新仓库的中英文根README增加近期日志、src能力独立章节和实际操作GIF，保留原资源目录介绍；它们提供概览和文档导航，完整安装、使用及原理仍维护在docs中，没有重新复制旧all_in_one的README。
 
@@ -36,8 +36,8 @@
 
 ```text
 .venv-docs/Scripts/python.exe -m pip install -r requirements-docs.txt
-.venv-docs/Scripts/python.exe zz_scripts/check_docs_publish_scope.py
-.venv-docs/Scripts/python.exe zz_scripts/check_docs_build.py
+.venv-docs/Scripts/python.exe scripts/docs/check_docs_publish_scope.py
+.venv-docs/Scripts/python.exe scripts/docs/check_docs_build.py
 .venv-docs/Scripts/python.exe -m mkdocs build --strict
 ```
 

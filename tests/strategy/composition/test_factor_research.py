@@ -255,7 +255,7 @@ def test_compiled_factor_definitions_are_frozen_against_catalog_changes():
     manifest = source_manifest()
     assert "src/strategy/factors/panel.py" in manifest
     assert "src/strategy/factors/scoring.py" in manifest
-    assert "egs/factor_research.yaml:computation" in manifest
+    assert "egs/config/strategies/factor_research.yaml:computation" in manifest
 
 
 def test_cache_integrity_and_project_boundary(tmp_path):

@@ -10,7 +10,7 @@ def command(cli_command):
 
 def test_strategy_backtest_paper_and_resource_loop(command, tmp_path):
     strategy = command(
-        "strategy", "examples", "import", "--example", "egs/strategy_examples/dual_ma_strategy.py", "--name", "cli-loop"
+        "strategy", "examples", "import", "--example", "egs/examples/strategy_examples/dual_ma_strategy.py", "--name", "cli-loop"
     )["data"]
     strategy_id = strategy["strategy_id"]
     command("strategy", "enable", strategy_id)

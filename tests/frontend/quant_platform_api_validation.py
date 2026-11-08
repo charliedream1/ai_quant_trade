@@ -13,7 +13,7 @@ from loguru import logger
 def run(base_url: str) -> dict:
     base = base_url.rstrip("/") + "/api/v1"
     session = requests.Session()
-    code = Path("egs/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
+    code = Path("egs/examples/strategy_examples/dual_ma_strategy.py").read_text(encoding="utf-8")
     strategy = session.post(
         f"{base}/strategies",
         json={

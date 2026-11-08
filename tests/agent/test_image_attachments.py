@@ -75,7 +75,7 @@ def test_one_subprocess_per_batch_and_no_worker_for_text(tmp_path, monkeypatch):
 
 
 def test_actual_worker_timeout_fails_closed(monkeypatch):
-    config = yaml.safe_load((PROJECT_ROOT / "egs/image_validation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/models/image_validation.yaml").read_text(encoding="utf-8"))
     monkeypatch.setattr(image_validation.yaml, "safe_load", lambda text: {**config, "timeout_seconds": 0.001})
     with pytest.raises(BusinessError, match="失败或超时") as failure:
         image_validation.validate_images([("a.png", picture())])
@@ -83,7 +83,7 @@ def test_actual_worker_timeout_fails_closed(monkeypatch):
 
 
 def test_missing_image_environment_fails_closed(monkeypatch):
-    config = yaml.safe_load((PROJECT_ROOT / "egs/image_validation.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((PROJECT_ROOT / "egs/config/models/image_validation.yaml").read_text(encoding="utf-8"))
     monkeypatch.setattr(
         image_validation.yaml,
         "safe_load",

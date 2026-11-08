@@ -1,0 +1,41 @@
+# File format: YAML; encoding: UTF-8
+schema_version: 1
+universe:
+  etf_pool: cn_cross_asset
+  symbols:
+  - '510300'
+  - '511010'
+  - '518880'
+  - '511880'
+nodes:
+- id: eligible
+  component: eligibility
+  inputs:
+  - universe
+  params: {}
+- id: strength
+  component: etf_momentum
+  inputs:
+  - eligible
+  params: {}
+output: strength
+portfolio:
+  component: equal
+  params:
+    top_k: 2
+    exposure: 1.0
+    max_weight: 0.5
+    rank_buffer: 1
+risk:
+  max_exposure: 1.0
+  max_weight: 0.5
+  max_asset_class_weight: 0.5
+  require_asset_class: true
+  target_volatility: 0.12
+execution: {}
+rebalance_sessions: 20
+variants:
+  baseline: {}
+name: 跨资产ETF多周期轮动
+description: Declared multi-horizon momentum, trend eligibility, target weights, rank
+  buffer and unlevered cash reserve.

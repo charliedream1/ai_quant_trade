@@ -1,6 +1,6 @@
 # 因子面板、研究与评分原理
 
-2026-10-24。操作与截图见[使用指南](../usage/factor_research.md)，正式设计为项目 `doc/16_factor_research_pipeline_design.md`。
+2026-10-24。操作与截图见[使用指南](../usage/factor_research.md)，正式设计为项目 `doc/strategies/factor_research_pipeline_design.md`。
 
 ## 面板与时间
 

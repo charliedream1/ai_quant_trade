@@ -30,7 +30,7 @@ def test_configured_etf_universes_have_metadata_and_symbols():
 @pytest.mark.parametrize("filename,profile", ETF_EXAMPLES)
 def test_etf_examples_use_parameter_profiles_and_complete_backtest(client, filename, profile):
     store = StrategyStore()
-    item = store.import_example(f"egs/strategy_examples/{filename}", {"name": f"etf_{Path(filename).stem}"})
+    item = store.import_example(f"egs/examples/strategy_examples/{filename}", {"name": f"etf_{Path(filename).stem}"})
     resolved = StrategyParameters().resolve(item["id"], {"universe": "cn_core"}, profile)
     assert resolved["resolved_params"]["universe"] == "cn_core"
     task = BacktestRunner().create(

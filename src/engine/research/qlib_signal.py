@@ -24,7 +24,7 @@ _LOCK = RLock()
 
 
 def configuration() -> dict[str, Any]:
-    return yaml.safe_load((PROJECT_ROOT / "egs/factor_monitor.yaml").read_text(encoding="utf-8"))
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/strategies/factor_monitor.yaml").read_text(encoding="utf-8"))
 
 
 def interpreter(config: dict[str, Any] | None = None) -> Path:

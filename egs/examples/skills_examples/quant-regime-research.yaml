@@ -1,0 +1,15 @@
+# YAML 1.2, UTF-8
+# Replace example IDs, dates and symbols with actual project inputs before running.
+skill: quant-regime-research
+provider:
+  backend: api
+  model_id: 1
+request:
+  name: 四体制流程核查
+  mode: regime
+  dataset_id: 1
+  cutoff: '2026-10-28T15:00:00+08:00'
+  configurations:
+    - {backend: api, model_id: 1, enable_thinking: false}
+  asset_mapping: {equity: '510300', bond: '511010'}
+  model_call_budget: 4
