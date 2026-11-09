@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import gradio as gr
+
 from src.core.config import get_settings
 from src.notifications.config import config as notification_config
 
@@ -637,15 +638,14 @@ _SHELL_JS_TEMPLATE = r"""
     const languageButton = shell.querySelector("#app-language-toggle");
     if (languageButton) {
       languageButton.addEventListener("click", () => {
+        requestAnimationFrame(() => {
         const market = localStorage.getItem(marketStorageKey) || "cn";
         shell.querySelectorAll("[data-workspace-market]").forEach((item) => {
           item.classList.toggle("active", item.dataset.workspaceMarket === market);
         });
-        const frame = frames.get(activeKey);
-        if (frame) {
-          setStatus("正在切换界面语言...");
-          frame.contentWindow.location.reload();
-        }
+        const language = document.documentElement.dataset.uiLang || localStorage.getItem("all-in-one-ui-lang") || "zh";
+        frames.forEach((frame) => frame.contentWindow.postMessage({type: "aiquant:language", language}, location.origin));
+        });
       });
     }
     window.addEventListener("message", (event) => {

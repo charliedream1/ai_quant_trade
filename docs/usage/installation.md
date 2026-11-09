@@ -1,5 +1,10 @@
 # 依赖安装与环境复现
 
+Dedicated non-base Conda environments support direct PyCharm startup. Application
+versions and package origins remain mandatory; build-tool versions alone no
+longer block startup. See [runtime and workspace](runtime_and_workspace.md).
+
+
 Codex、Qoder、TRAE以及WorkBuddy/CodeBuddy的独立安装、登录、E盘路径和项目接入区别，见[AI CLI安装与接入](cli_installation.md)。这些工具不属于Python requirements，也不要求全部安装。
 
 2026-10-26更新。推荐Python3.11+；本轮在Windows/Python3.11.14验证。Web与CPU模型使用项目内独立环境，Qlib信号分析使用另一套环境，均不继承Conda基础包。旧环境保留用于复现，不能将环境名或安装成功等同于安全验收。

@@ -26,7 +26,8 @@
     const sidebar = document.getElementById("ai-console-sidebar-toggle");
     if (sidebar) {
       const collapsed = shell.classList.contains("console-sidebar-collapsed");
-      const label = collapsed ? "展开工作栏" : "收起工作栏";
+      const sourceLabel = collapsed ? "展开工作栏" : "收起工作栏";
+      const label = window.aiquantTranslate?.(sourceLabel) || sourceLabel;
       sidebar.setAttribute("aria-label", label);
       sidebar.setAttribute("aria-expanded", String(!collapsed));
       const text = sidebar.querySelector("span:last-child");
@@ -35,7 +36,8 @@
     const files = document.getElementById("ai-console-files-toggle");
     if (files) {
       const opened = shell.classList.contains("files-open");
-      const label = opened ? "收起文件面板" : "打开文件面板";
+      const sourceLabel = opened ? "收起文件面板" : "打开文件面板";
+      const label = window.aiquantTranslate?.(sourceLabel) || sourceLabel;
       if (files.textContent !== label) files.textContent = label;
       files.setAttribute("aria-expanded", String(opened));
     }
@@ -49,8 +51,8 @@
     Object.entries(composerHints).forEach(([id, hint]) => {
       const element = document.getElementById(id);
       if (element) {
-        element.setAttribute("title", hint);
-        if (id === "ai-console-send") element.setAttribute("aria-label", "发送");
+        element.setAttribute("title", window.aiquantTranslate?.(hint) || hint);
+        if (id === "ai-console-send") element.setAttribute("aria-label", window.aiquantTranslate?.("发送") || "发送");
       }
     });
   };
@@ -59,6 +61,7 @@
     scheduled = true;
     requestAnimationFrame(update);
   };
+  window.addEventListener("aiquant:language-changed", schedule);
   document.addEventListener("keydown", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLTextAreaElement)) return;

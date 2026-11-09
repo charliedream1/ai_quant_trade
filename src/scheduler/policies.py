@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -101,10 +101,10 @@ def trading_day_skip_summary(params: dict[str, Any], now: datetime | None = None
 
 
 def market_date(now: datetime | None = None) -> date:
-    current = now or datetime.now(UTC)
+    current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
-        current = current.replace(tzinfo=UTC)
-    return (current.astimezone(UTC) + timedelta(hours=CHINA_MARKET_UTC_OFFSET_HOURS)).date()
+        current = current.replace(tzinfo=timezone.utc)
+    return (current.astimezone(timezone.utc) + timedelta(hours=CHINA_MARKET_UTC_OFFSET_HOURS)).date()
 
 
 def is_trading_day(value: date, calendar: dict[str, Any] | None = None) -> bool:

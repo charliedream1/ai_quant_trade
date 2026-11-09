@@ -13,7 +13,7 @@ import threading
 import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from typing import Any, TypeVar
 from urllib.parse import urlparse
@@ -30,6 +30,7 @@ from src.core.exceptions import BusinessError, ErrorCode
 from src.core.logger import get_logger
 from src.core.timeutil import utc_now_iso
 from src.data.normalization import _number
+from src.data.provider_output import provider_call
 from src.data.relation_graph import _RelationGraphBuilder
 from src.data.symbols import SecuritySymbol, parse_symbol
 
@@ -158,7 +159,7 @@ def _timestamp(value: Any) -> str:
     seconds = _integer(value)
     if seconds <= 0:
         return datetime.now(SHANGHAI_TZ).replace(microsecond=0).isoformat()
-    return datetime.fromtimestamp(seconds, tz=UTC).astimezone(SHANGHAI_TZ).isoformat()
+    return datetime.fromtimestamp(seconds, tz=timezone.utc).astimezone(SHANGHAI_TZ).isoformat()
 
 
 def _stable_id(value: str) -> int:
@@ -1003,7 +1004,7 @@ class EastmoneyDataSource:
             raise RuntimeError("未安装 baostock") from exc
         code = f"{parsed.prefix}.{parsed.code}"
         with _BAOSTOCK_LOCK:
-            login = bs.login()
+            login = provider_call(bs.login)
             if login.error_code != "0":
                 raise RuntimeError(login.error_msg)
             try:
@@ -1012,7 +1013,7 @@ class EastmoneyDataSource:
                     raise RuntimeError(result.error_msg)
                 frame = result.get_data()
             finally:
-                bs.logout()
+                provider_call(bs.logout)
         if frame.empty:
             return ""
         return str(frame.iloc[0].get("industry") or "")
@@ -1245,7 +1246,7 @@ class EastmoneyDataSource:
         end = datetime.fromisoformat(end_date).date() if end_date else datetime.now(SHANGHAI_TZ).date()
         start = datetime.fromisoformat(start_date).date() if start_date else end - timedelta(days=max(count * 3, 400))
         with _BAOSTOCK_LOCK:
-            login = bs.login()
+            login = provider_call(bs.login)
             if login.error_code != "0":
                 raise RuntimeError(login.error_msg)
             try:
@@ -1263,7 +1264,7 @@ class EastmoneyDataSource:
                 if result.error_code != "0":
                     raise RuntimeError(result.error_msg)
             finally:
-                bs.logout()
+                provider_call(bs.logout)
         rows = [
             {
                 "date": item[0],

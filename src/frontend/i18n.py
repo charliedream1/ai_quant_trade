@@ -961,6 +961,8 @@ TRANSLATIONS: dict[str, str] = {
 # Kept in YAML so interface copy can be maintained independently of the runtime.
 _WORKSPACE_TRANSLATIONS = Path(__file__).resolve().parents[2] / "egs/config/ui/ui_translations.yaml"
 TRANSLATIONS.update(yaml.safe_load(_WORKSPACE_TRANSLATIONS.read_text(encoding="utf-8")))
+_USABILITY_TRANSLATIONS = _WORKSPACE_TRANSLATIONS.with_name("usability_translations.yaml")
+TRANSLATIONS.update(yaml.safe_load(_USABILITY_TRANSLATIONS.read_text(encoding="utf-8")))
 
 
 def _normalize_text(text: str) -> str:

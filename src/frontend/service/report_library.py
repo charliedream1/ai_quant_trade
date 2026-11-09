@@ -1,9 +1,10 @@
 """Read-only report catalog with explicit origins and shared preview contracts."""
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from html import escape
 
 import gradio as gr
+
 from src.agent_strategies.service import AgentStrategyService
 from src.alpha_mining.config import digest
 from src.alpha_mining.service import AlphaService
@@ -76,7 +77,7 @@ class ReportLibraryMixin:
         def timestamp(row):
             try:
                 value = datetime.fromisoformat(row["时间"].replace("Z", "+00:00"))
-                return value.replace(tzinfo=UTC).timestamp() if value.tzinfo is None else value.timestamp()
+                return value.replace(tzinfo=timezone.utc).timestamp() if value.tzinfo is None else value.timestamp()
             except (ValueError, TypeError):
                 return float("-inf")
 

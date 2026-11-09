@@ -5,30 +5,31 @@ maximum_python_exclusive: [3, 15]
 startup:
   mode: strict
   role: web
+isolation:
+  allow_conda: true
+  conda_metadata: conda-meta/history
+  conda_base_markers: [condabin, pkgs]
+  conda_base_names: [base, root, anaconda3, miniconda3, miniforge3, mambaforge]
 environments:
   web:
     directory: .venv-secure
     directory_env: ALL_IN_ONE_WEB_ENVIRONMENT
-    directory_env: ALL_IN_ONE_WEB_ENVIRONMENT
     project_dependencies: true
-    requirements: [egs/requirements/toolchain.txt]
+    requirements: []
   models:
     directory: .venv-secure
     directory_env: ALL_IN_ONE_WEB_ENVIRONMENT
-    directory_env: ALL_IN_ONE_WEB_ENVIRONMENT
     project_dependencies: true
-    requirements: [requirements-models.txt, egs/requirements/toolchain.txt]
+    requirements: [requirements-models.txt]
   qlib:
     minimum_python: [3, 11]
     directory: .venv-qlib-secure
     directory_env: ALL_IN_ONE_QLIB_ENVIRONMENT
-    directory_env: ALL_IN_ONE_QLIB_ENVIRONMENT
     project_dependencies: false
-    requirements: [egs/requirements/qlib.txt, egs/requirements/toolchain.txt]
+    requirements: [egs/requirements/qlib.txt]
   image:
     minimum_python: [3, 11]
     directory: .venv-image-secure
     directory_env: ALL_IN_ONE_IMAGE_ENVIRONMENT
-    directory_env: ALL_IN_ONE_IMAGE_ENVIRONMENT
     project_dependencies: false
-    requirements: [egs/requirements/images.txt, egs/requirements/toolchain.txt]
+    requirements: [egs/requirements/images.txt]

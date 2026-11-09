@@ -1,6 +1,6 @@
 """Shared graph stages, with exact parent-run and same-date evidence binding."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from src.alpha_mining.config import digest
 from src.core.timeutil import utc_now_iso
@@ -75,7 +75,7 @@ def stage(node: dict, frame, incoming: dict, request: dict, emit, repo=None) -> 
             run["id"], True, frame, emit, request.get("_cancelled"), request.get("_agent_strategy_budget")
         )
         rows = [{**row, "evidence_ids": ["E1", "E2"]} for row in run["result"]["decision"]["decisions"]]
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     return {
         "summary": run["config"]["definition"]["name"],
         "decisions": rows,

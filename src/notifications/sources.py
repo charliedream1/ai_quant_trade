@@ -1,6 +1,6 @@
 """Read bounded recorded results; never fetch quotes or call a model for a notification."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from loguru import logger
 
@@ -51,7 +51,7 @@ def synchronize(store) -> list[str]:
     errors = []
     tables = {row["name"] for row in store.db.query("SELECT name FROM sqlite_master WHERE type='table'")}
     count = cfg["source_batch"]
-    cutoff = (datetime.now(UTC) - timedelta(days=cfg["retention_days"])).isoformat()
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=cfg["retention_days"])).isoformat()
     for source, query in TASK_QUERIES.items():
         if TASK_TABLES[source] not in tables:
             continue

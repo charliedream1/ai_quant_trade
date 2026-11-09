@@ -296,6 +296,14 @@
   const I18N_REVERSE_ENTRIES = Object.entries(I18N_REVERSE).sort((left, right) => right[0].length - left[0].length);
   const i18nTextSources = new WeakMap();
   const i18nInputSources = new WeakMap();
+  window.aiquantUiSource = (element) => {
+    if (!element) return "";
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const parts = [];
+    let node;
+    while ((node = walker.nextNode())) parts.push(i18nTextSources.get(node)?.source || node.nodeValue);
+    return parts.join(" ").replace(/\s+/g, " ").trim();
+  };
   let uiLang = "zh";
   let i18nTimer = 0;
   let i18nApplying = false;
@@ -309,7 +317,7 @@
   const shouldSkipElement = (element, attributes = false) => {
     if (!element) return true;
     if (SKIP_I18N_TAGS.has(element.tagName) && !(attributes && ["INPUT", "TEXTAREA"].includes(element.tagName))) return true;
-    return Boolean(element.closest("pre, .no-i18n, .cm-editor, .monaco-editor"));
+    return Boolean(element.closest("pre, .no-i18n, .cm-editor, .monaco-editor, #ai-console-chat-history .message"));
   };
   const isTranslatableText = (text) => {
     if (!text || text.length > I18N_MAX_TEXT) return false;
@@ -346,6 +354,7 @@
     if (I18N_REVERSE[normalized]) return I18N_REVERSE[normalized];
     return replaceKnownPhrases(normalized, "zh");
   };
+  window.aiquantTranslate = (text) => translateForLang(text, uiLang);
   const replaceNodeText = (node, translated) => {
     const current = node.nodeValue || "";
     const raw = current.trim();
@@ -457,8 +466,14 @@
     const label = document.getElementById("app-language-label");
     if (label) label.textContent = normalizedLang === "en" ? "EN / ZH" : "中 / EN";
     translateDocument();
+    window.dispatchEvent(new Event("aiquant:language-changed"));
     if (options.syncMarket) applyMarketSelection(LANG_MARKET[normalizedLang], { syncLanguage: false });
   };
+  window.addEventListener("message", (event) => {
+    if (event.origin === location.origin && event.source === window.parent && event.data?.type === "aiquant:language") {
+      applyLanguage(event.data.language, {syncMarket: true});
+    }
+  });
   const bindHeaderToggles = () => {
     const langButton = document.getElementById("app-language-toggle");
     const cnButton = document.getElementById("app-market-cn");
@@ -487,7 +502,8 @@
   const storedMarket = normalizeMarketValue(localStorage.getItem(MARKET_STORAGE_KEY) || "cn");
   const storedLangValue = localStorage.getItem(I18N_STORAGE_KEY);
   const storedLang = storedLangValue ? normalizeLang(storedLangValue) : MARKET_LANG[storedMarket];
-  setTimeout(() => applyLanguage(storedLang, { syncMarket: true }), 300);
-  setTimeout(() => applyLanguage(storedLang, { syncMarket: true }), 1000);
-  setTimeout(() => applyLanguage(storedLang, { syncMarket: true }), 2400);
+  const applyCurrentLanguage = () => applyLanguage(localStorage.getItem(I18N_STORAGE_KEY) || storedLang, {syncMarket: true});
+  setTimeout(applyCurrentLanguage, 300);
+  setTimeout(applyCurrentLanguage, 1000);
+  setTimeout(applyCurrentLanguage, 2400);
 }

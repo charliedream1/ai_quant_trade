@@ -7,7 +7,7 @@ import shlex
 import subprocess
 import threading
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from queue import Empty, Queue
 from typing import Any
 from uuid import uuid4
@@ -470,7 +470,7 @@ def _next_failure_state(
 
 
 def _utc_iso_from_epoch(value: float) -> str:
-    return datetime.fromtimestamp(value, UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return datetime.fromtimestamp(value, timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def _probe_stdio(config: dict[str, Any]) -> dict[str, Any]:

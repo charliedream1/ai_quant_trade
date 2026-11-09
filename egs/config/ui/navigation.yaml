@@ -4,6 +4,7 @@ reports_history_limit: 50
 route_wait_ms: 5000
 analysis_sops: {simulation: simulation_research_loop, live: live_observation_loop}
 aliases:
+  - {module: strategy, view: etf, target: strategy, target_view: management, tab: ETF研究}
   - {module: knowledge, view: sources, target: knowledge, target_view: library}
   - {module: research, view: reports, target: knowledge, target_view: research, tab: 研报检索}
   - {module: research, view: papers, target: knowledge, target_view: research, tab: 论文检索}
@@ -29,4 +30,4 @@ report_library:
   catalog_height: 280
   sources: [[全部来源, all], [Skill报告, skill], [Alpha研究, alpha], [Agent策略, agent_strategy], [旧版模板报告, model]]
   statuses: [[全部状态, all], [完成, completed], [有缺口, partial], [运行中, running], [失败, failed], [旧模板完成, finished]]
-tabs: [研报检索, 论文检索, 模型报告, 系统设置, 环境变量, 模型管理, MCP 服务, Skill 配置, 策略库, 预制策略, CLI 工作台, 回测, 模拟交易]
+tabs: [ETF研究, 研报检索, 论文检索, 模型报告, 系统设置, 环境变量, 模型管理, MCP 服务, Skill 配置, 策略库, 预制策略, CLI 工作台, 回测, 模拟交易]

@@ -9,7 +9,7 @@ from typing import Any
 
 import yaml
 
-from src.core.config import PROJECT_ROOT
+from src.core.config import PROJECT_ROOT, get_settings
 from src.core.exceptions import BusinessError, ErrorCode
 
 
@@ -71,8 +71,8 @@ def policy(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
 
 def contained(path: Path) -> Path:
     resolved = path.resolve()
-    if not resolved.is_relative_to(PROJECT_ROOT.resolve()):
-        raise invalid("Alpha研究文件必须位于项目目录")
+    if not any(resolved.is_relative_to(root) for root in (PROJECT_ROOT.resolve(), get_settings().data_dir.resolve())):
+        raise invalid("Research files must stay inside the project or its configured data directory")
     return resolved
 
 

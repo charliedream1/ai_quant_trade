@@ -2,7 +2,6 @@
 
 import os
 import sys
-import tomllib
 from importlib import metadata
 from pathlib import Path
 from time import perf_counter
@@ -12,6 +11,11 @@ import yaml
 from dotenv import dotenv_values
 from loguru import logger
 from packaging.requirements import Requirement
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from .config import PROJECT_ROOT
 
@@ -29,15 +33,26 @@ def _requirements(cfg: dict[str, Any]) -> list[str]:
 
 def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -> tuple[list[str], bool]:
     errors = []
-    if sys.version_info[:2] < tuple(minimum):
+    if sys.version_info[: len(minimum)] < tuple(minimum):
         errors.append("Python版本低于支持基线")
     expected = Path(cfg["directory"])
     if not expected.is_absolute():
         expected = PROJECT_ROOT / expected
-    if prefix != expected.resolve():
+    conda = bool(cfg.get("allow_conda")) and (prefix / cfg["conda_metadata"]).is_file()
+    conda_base = conda and (
+        prefix.name.lower() in cfg["conda_base_names"]
+        or any((prefix / marker).exists() for marker in cfg["conda_base_markers"])
+    )
+    if prefix != expected.resolve() and (not conda or cfg.get("explicit_directory")):
         errors.append("当前解释器不是此角色配置的项目环境")
+    if conda_base:
+        errors.append("Conda base/root is not supported; select a dedicated project environment in PyCharm")
     file = prefix / "pyvenv.cfg"
-    inherited = not file.is_file() or "include-system-site-packages = true" in file.read_text(encoding="utf-8").lower()
+    inherited = (
+        "include-system-site-packages = true" in file.read_text(encoding="utf-8").lower()
+        if file.is_file()
+        else not conda
+    )
     if inherited:
         errors.append("环境继承了基础包或不是独立虚拟环境")
     return errors, inherited
@@ -65,17 +80,22 @@ def _installed_requirement(line: str, prefix: Path) -> tuple[dict[str, Any] | No
 
 
 def inspect_runtime(role: str = "web") -> dict[str, Any]:
-    config = yaml.safe_load((PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load(
+        (PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8")
+    )
     if role not in config["environments"]:
         raise ValueError("未知运行环境")
-    cfg = config["environments"][role]
+    cfg = {**config.get("isolation", {}), **config["environments"][role]}
     if cfg.get("directory_env"):
         local_env = dotenv_values(PROJECT_ROOT / ".env")
         selected = os.environ.get(cfg["directory_env"]) or local_env.get(cfg["directory_env"])
         if selected:
-            cfg = {**cfg, "directory": selected}
+            cfg = {**cfg, "directory": selected, "explicit_directory": True}
     prefix = Path(sys.prefix).resolve()
-    errors, inherited = _environment_errors(prefix, cfg, config["minimum_python"])
+    errors, inherited = _environment_errors(prefix, cfg, cfg.get("minimum_python", config["minimum_python"]))
+    upper = config.get("maximum_python_exclusive")
+    if upper and sys.version_info[: len(upper)] >= tuple(upper):
+        errors.append("Python版本超出已验证支持范围")
     declared = []
     for line in _requirements(cfg):
         row, error = _installed_requirement(line, prefix)
@@ -106,7 +126,9 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
 def enforce_startup_runtime() -> dict[str, Any]:
     """Check once per launcher invocation, before announcing a usable service."""
     started = perf_counter()
-    config = yaml.safe_load((PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8"))["startup"]
+    config = yaml.safe_load(
+        (PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8")
+    )["startup"]
     env = dotenv_values(PROJECT_ROOT / ".env")
     mode = os.environ.get("ALL_IN_ONE_RUNTIME_MODE", env.get("ALL_IN_ONE_RUNTIME_MODE") or config["mode"])
     role = os.environ.get("ALL_IN_ONE_RUNTIME_ROLE", env.get("ALL_IN_ONE_RUNTIME_ROLE") or config["role"])
@@ -121,6 +143,8 @@ def enforce_startup_runtime() -> dict[str, Any]:
             "启动环境预检失败 | mode={} role={} executable={} errors={}", mode, role, sys.executable, report["errors"]
         )
         if mode == "strict":
-            raise SystemExit("环境不符合声明，已停止启动；请使用项目配置的独立环境，详情运行 egs/entrypoints/check_runtime.py")
+            raise SystemExit(
+                "环境不符合声明，已停止启动；请使用项目配置的独立环境，详情运行 egs/entrypoints/check_runtime.py"
+            )
         logger.warning("显式兼容调试模式：带上述环境偏差继续启动，不表示依赖安全或兼容验证通过")
     return {**report, "mode": mode, "elapsed_ms": elapsed}

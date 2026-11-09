@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from threading import Event, RLock, Thread
 from typing import Any
 
@@ -51,7 +51,7 @@ class SchedulerRuntime:
             if self._stop_event.is_set():
                 return
             if BackgroundScheduler is not None:
-                self._scheduler = BackgroundScheduler(timezone=UTC)
+                self._scheduler = BackgroundScheduler(timezone=timezone.utc)
                 self._scheduler.start(paused=False)
                 self.reload_jobs()
                 self.log.info("scheduler runtime started | backend=apscheduler jobs={}", self.job_count)

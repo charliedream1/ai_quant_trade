@@ -1,0 +1,6 @@
+# File format: YAML; encoding: UTF-8
+file_format: yaml
+successful_auth_messages: ['login success!', 'logout success!']
+successful_auth_level: DEBUG
+other_stdout_level: WARNING
+max_message_chars: 1000

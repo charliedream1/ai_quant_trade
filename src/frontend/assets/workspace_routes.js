@@ -23,6 +23,8 @@
     observer.observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style"]});
   };
   const apply = (data) => {
+    const alias = config.aliases.find((row) => row.module === data.module && row.view === data.view);
+    if (alias && alias.target === module) data = {...data, view: alias.target_view, tab: alias.tab || data.tab};
     if (data.module !== module || !views[data.view]) return;
     cancel();
     const ticket = epoch, key = `${module}/${data.view}`;
@@ -31,13 +33,13 @@
     currentNonce = nonce;
     waitFor(() => {
       const tab = Array.from(document.querySelectorAll(".module-tabs > .tab-wrapper button"))
-        .find((button) => !button.closest(".visually-hidden") && button.textContent.trim() === views[data.view]);
+        .find((button) => !button.closest(".visually-hidden") && (window.aiquantUiSource?.(button) || button.textContent.trim()) === views[data.view]);
       if (!tab) return false;
       tab.click();
       if (config.tabs.includes(data.tab)) {
         waitFor(() => {
           const nested = Array.from(document.querySelectorAll('[role="tab"]'))
-            .find((item) => item.offsetParent !== null && item.textContent.trim() === data.tab);
+            .find((item) => item.offsetParent !== null && (window.aiquantUiSource?.(item) || item.textContent.trim()) === data.tab);
           if (!nested) return false;
           nested.click();
           return true;
@@ -130,7 +132,7 @@
   document.addEventListener("click", (event) => {
     if (!event.isTrusted) return;
     const button = event.target.closest(".module-tabs > .tab-wrapper button");
-    const view = Object.keys(views).find((key) => views[key] === button?.textContent.trim());
+    const view = Object.keys(views).find((key) => views[key] === (window.aiquantUiSource?.(button) || button?.textContent.trim()));
     if (!view) return;
     cancel();
     if (isWorkspaceEmbedded) window.parent.postMessage({type: "aiquant:view-selected", module, view}, location.origin);

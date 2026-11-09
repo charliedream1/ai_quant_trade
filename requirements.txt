@@ -1,5 +1,5 @@
 # File format: pip requirements; encoding: UTF-8
-# Backend runtime; Python 3.11+ recommended and verified.
+# Backend runtime; supported Python range is verified in the compatibility matrix.
 # Optional isolated Qlib signal backend: egs/requirements/qlib.txt
 fastapi==0.143.0
 uvicorn==0.54.0
@@ -30,11 +30,11 @@ markitdown[docx]==0.1.9
 akshare==1.18.83
 baostock==0.9.3
 
-# Future AI integrations
+# Ordinary OpenAI-compatible SDK integration
 openai==2.43.0
-litellm==1.100.5
 httpx==0.28.1
-filelock==4.2.4
+filelock==3.32.3 ; python_version < "3.11"
+filelock==4.2.4 ; python_version >= "3.11"
 
 # Tests, linting, and dependency audit
 pytest==9.0.3
@@ -44,8 +44,11 @@ mypy==1.20.2
 pip-audit==2.10.1
 tzdata==2026.2
 
-# Audited transitive boundaries; Gradio currently requires Pillow < 13.
-# Read-only Office runtime: LibreOffice26.8.1, PDF.js6.4.299 and markdown-it15.0.3 are pinned separately in egs/file_preview_runtime.yaml and the viewer package lock.
+# Audited transitive boundaries; Gradio is verified with Pillow 12.3.0.
+# Read-only Office runtime: LibreOffice26.8.1, PDF.js6.4.299 and markdown-it15.0.3 are pinned separately in egs/config/knowledge/file_preview_runtime.yaml and the viewer package lock.
 # Image validation uses egs/requirements/images.lock.txt in .venv-image-secure, never merged here.
 pillow==12.3.0
 urllib3==2.8.0
+
+# Python 3.10 TOML compatibility
+tomli==2.2.1 ; python_version < "3.11"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gradio as gr
+
 from src.engine.backtest.config import backtest_config
 
 from ..common.callbacks import safe as _safe
@@ -18,6 +19,7 @@ from ..service.foundation import (
 )
 from .alpha import render_alpha
 from .composition import render_composition
+from .etf import render_etf_strategy
 from .execution_costs import render_execution_controls
 from .factor_monitor import render_factor_monitor
 from .parameters import render_parameter_controls
@@ -93,30 +95,6 @@ def render_strategy(service: DomainHandler, strategy_examples: list[tuple[str, s
                         ai_qlib_params,
                     ],
                     outputs=[ai_qlib_status, ai_qlib_runs],
-                )
-            with gr.Tab("ETF研究") as etf_tab:
-                with gr.Column(elem_classes=["ai-workbench-panel"]):
-                    with gr.Row():
-                        etf_universe = gr.Dropdown(
-                            choices=service.etf_universe_choices(),
-                            value=(service.etf_universe_choices() or [("A股核心宽基 ETF", "cn_core")])[0][1],
-                            label="ETF池",
-                            scale=3,
-                        )
-                        etf_refresh = gr.Button("刷新 ETF 数据", variant="primary")
-                    etf_status = gr.Markdown(elem_classes=["status-strip"])
-                    etf_table = _table("ETF 元数据与数据源快照", 360)
-                etf_refresh.click(
-                    _safe(service.etf_universe_snapshot),
-                    inputs=etf_universe,
-                    outputs=[etf_status, etf_table],
-                    queue=False,
-                )
-                etf_tab.select(
-                    _safe(service.etf_universe_snapshot),
-                    inputs=etf_universe,
-                    outputs=[etf_status, etf_table],
-                    queue=False,
                 )
             with gr.Tab("图形策略工坊"):
                 workshop_activate = gr.Button("打开策略工坊", elem_id="workspace-activate-composition")
@@ -310,6 +288,9 @@ def render_strategy(service: DomainHandler, strategy_examples: list[tuple[str, s
                             inputs=strategy_quick_task_id,
                             outputs=[parameter_controls.resolved, parameter_controls.status],
                         )
+
+                    with gr.Tab("ETF研究") as etf_tab:
+                        render_etf_strategy(service, etf_tab)
 
                     with gr.Tab("预制策略") as preset_strategy_tab:
                         with gr.Row():

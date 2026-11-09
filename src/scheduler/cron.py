@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from src.core.exceptions import BusinessError, ErrorCode
@@ -29,7 +29,7 @@ def normalize_cron(value: Any) -> str:
 def next_run_iso(cron_expr: str, base: datetime | None = None) -> str:
     normalized = normalize_cron(cron_expr)
     if CronTrigger is not None:
-        trigger = CronTrigger.from_crontab(normalized, timezone=UTC)
+        trigger = CronTrigger.from_crontab(normalized, timezone=timezone.utc)
         next_run = trigger.get_next_fire_time(None, base or utc_now())
         if next_run is None:
             raise BusinessError(ErrorCode.INVALID_PARAM, f"Cron 表达式无法计算下次执行时间：{cron_expr}")
@@ -41,12 +41,12 @@ def build_cron_trigger(cron_expr: str) -> Any:
     normalized = normalize_cron(cron_expr)
     if CronTrigger is None:
         return None
-    return CronTrigger.from_crontab(normalized, timezone=UTC)
+    return CronTrigger.from_crontab(normalized, timezone=timezone.utc)
 
 
 def _fallback_next_run(cron_expr: str, base: datetime) -> str:
     minute_set, hour_set, day_set, month_set, weekday_set = _parse_cron(cron_expr)
-    cursor = base.astimezone(UTC).replace(second=0, microsecond=0) + timedelta(minutes=1)
+    cursor = base.astimezone(timezone.utc).replace(second=0, microsecond=0) + timedelta(minutes=1)
     for _ in range(MAX_LOOKAHEAD_MINUTES):
         if (
             cursor.minute in minute_set
@@ -107,4 +107,4 @@ def _cron_weekday(value: datetime) -> int:
 
 
 def _iso(value: datetime) -> str:
-    return value.astimezone(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")

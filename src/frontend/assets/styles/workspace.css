@@ -1,4 +1,6 @@
 /* Persistent shell: viewport sizing, readable navigation and local colored icons. */
+.gradio-container > .main.app { padding: 0 !important; }
+#workspace-shell-root > .html-container { padding: 0 !important; }
 .has-tooltip { position: relative; }
 .has-tooltip::after {
   content: attr(data-tooltip);
@@ -70,7 +72,7 @@ html[data-theme="dark"] .has-tooltip::after { color: var(--shell-ink); backgroun
 [data-icon="ai"] { --nav-accent: #7867ec; }
 [data-icon="knowledge"] { --nav-accent: #3b9c7c; }
 [data-icon="admin"] { --nav-accent: #7288a5; }
-#quant-workspace-shell .workspace-main { min-height: 0; padding: 12px; overflow: hidden; }
+#quant-workspace-shell .workspace-main { min-height: 0; padding: 0; overflow: hidden; }
 #quant-workspace-shell .workspace-frame-host { height: 100% !important; min-height: 0 !important; }
 #quant-workspace-shell.sidebar-collapsed .workspace-body { grid-template-columns: 68px minmax(0, 1fr) !important; }
 #quant-workspace-shell.sidebar-collapsed .workspace-nav-button { grid-template-columns: 1fr; justify-items: center; gap: 0; }

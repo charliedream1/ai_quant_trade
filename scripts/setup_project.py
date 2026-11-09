@@ -88,9 +88,25 @@ def write_activation(runtime_root: Path, environment: Path, tools: Path, cache: 
     )
     # Single-quoted PowerShell literals prevent interpolation; double apostrophes preserve quotes.
     ps_lines = ["$env:" + key + " = '" + value.replace("'", "''") + "'" for key, value in values.items()]
+    environment_bin = environment / ("Scripts" if os.name == "nt" else "bin")
+    ps_lines.extend(
+        [
+            "$env:VIRTUAL_ENV = '" + str(environment).replace("'", "''") + "'",
+            "$env:PATH = '" + (str(environment_bin) + os.pathsep).replace("'", "''") + "' + $env:PATH",
+        ]
+    )
     # Windows PowerShell 5.1 needs a BOM to read non-ASCII paths correctly.
     (runtime_root / "activate.ps1").write_text("\n".join(ps_lines) + "\n", encoding="utf-8-sig", newline="\n")
     sh_lines = [f"export {key}={shlex.quote(value)}" for key, value in values.items()]
+    shell_bin = environment_bin.as_posix()
+    if os.name == "nt" and environment_bin.drive:
+        shell_bin = "/" + environment_bin.drive[0].lower() + shell_bin[2:]
+    sh_lines.extend(
+        [
+            f"export VIRTUAL_ENV={shlex.quote(str(environment))}",
+            f"export PATH={shlex.quote(shell_bin)}:$PATH",
+        ]
+    )
     (runtime_root / "activate.sh").write_text("\n".join(sh_lines) + "\n", encoding="utf-8", newline="\n")
 
 
@@ -139,9 +155,8 @@ def install_python(args: argparse.Namespace, environment: Path, env: dict[str, s
                 "pip",
                 "install",
                 "--upgrade",
-                "pip==25.0.1",
-                "setuptools==75.3.4",
-                "wheel==0.45.1",
+                "-r",
+                str(PROJECT_ROOT / "egs/requirements/toolchain.txt"),
             ],
             cwd=PROJECT_ROOT,
             env=env,

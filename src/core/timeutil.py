@@ -1,10 +1,10 @@
-"""UTC time helpers used by storage and API responses."""
+"""timezone.utc time helpers used by storage and API responses."""
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 
 def utc_now() -> datetime:
-    return datetime.now(UTC)
+    return datetime.now(timezone.utc)
 
 
 def utc_now_iso() -> str:

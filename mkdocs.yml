@@ -170,6 +170,7 @@ nav:
       - 阅读路线: usage/README.md
       - 安装与启动:
         - 环境安装: usage/installation.md
+        - Runtime and workspace: usage/runtime_and_workspace.md
         - Docker deployment: usage/docker.md
         - AI CLI安装与接入: usage/cli_installation.md
         - 工作台使用路线: usage/workspace.md

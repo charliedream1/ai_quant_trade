@@ -33,3 +33,9 @@ main h3 {
   overflow: auto;
   line-height: 1.75;
 }
+/* Consistent reading rhythm for application help and the public handbook. */
+.md-content__inner, .col-md-9[role="main"] { line-height: 1.8; }
+.md-content__inner > p, .col-md-9[role="main"] > p { max-width: 84ch; }
+.md-content__inner :is(h1,h2,h3), .col-md-9[role="main"] :is(h1,h2,h3) { line-height: 1.35; margin-top: 1.6em; }
+.md-content__inner pre, .col-md-9[role="main"] pre { overflow-x: auto; padding: 16px; line-height: 1.6; }
+.md-content__inner table, .col-md-9[role="main"] table { display: block; max-width: 100%; overflow-x: auto; }

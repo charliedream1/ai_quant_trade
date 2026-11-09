@@ -1,7 +1,7 @@
 """Exact point-in-time document references and bounded market observations."""
 
 import re
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -15,9 +15,9 @@ def cutoff(as_of: str) -> str:
 
 def assemble(frame, candidates: list[str], cfg: dict, dataset_id: int | None = None) -> dict:
     requested = timestamp(cutoff(frame.as_of))
-    if requested.date() > datetime.now(UTC).date():
+    if requested.date() > datetime.now(timezone.utc).date():
         raise ValueError("研究时点不能是未来")
-    when = min(requested, datetime.now(UTC))
+    when = min(requested, datetime.now(timezone.utc))
     limit = cfg["limits"]
     selected = sorted(candidates)
     if len(selected) > limit["max_candidates"]:

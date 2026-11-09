@@ -60,12 +60,12 @@ def test_context_does_not_leak_or_overwrite_cached_user_edits(routing_browser):
     page.locator("[data-workspace-module='simulation']").click()
     expect(field).to_have_value("99")
     page.locator("[data-workspace-module='strategy']").click()
-    page.locator("[data-workspace-view='etf']").click()
+    page.locator("[data-workspace-view='management']").click()
     with page.context.expect_page() as pending:
         page.locator("#workspace-open-standalone").click()
     popup = pending.value
-    expect(popup).to_have_url(re.compile("/app/strategy/\\?view=etf$"))
-    expect(popup.locator("body")).to_have_attribute("data-selected", "ETF研究")
+    expect(popup).to_have_url(re.compile("/app/strategy/\\?view=management$"))
+    expect(popup.locator("body")).to_have_attribute("data-selected", "策略管理")
     popup.close()
 
 
@@ -95,7 +95,7 @@ def test_history_clears_pipeline_target_in_other_views(routing_browser):
     page.goto("http://routing.test/app/?module=strategy&view=workshop&pipeline_version=8")
     field = page.frame_locator("iframe.workspace-frame.active").locator("#pipeline-route-version textarea")
     expect(field).to_have_value("8")
-    page.locator("[data-workspace-view='etf']").click()
+    page.locator("[data-workspace-view='management']").click()
     assert "pipeline_version" not in page.url
     page.go_back()
     assert "pipeline_version=8" in page.url

@@ -1,8 +1,11 @@
 # File format: pip requirements; encoding: UTF-8
-# Optional CPU model strategies; verified with Python 3.11 on Windows.
-numpy==2.4.6
-scipy==1.17.0
-scikit-learn==1.8.0
+# Optional CPU model strategies; interpreter-specific pins are exercised in the Python matrix.
+numpy==2.2.6 ; python_version < "3.11"
+numpy==2.4.6 ; python_version >= "3.11"
+scipy==1.15.3 ; python_version < "3.11"
+scipy==1.17.0 ; python_version >= "3.11"
+scikit-learn==1.7.2 ; python_version < "3.11"
+scikit-learn==1.8.0 ; python_version >= "3.11"
 lightgbm==4.6.0
 xgboost==3.1.3
 torch==2.13.0

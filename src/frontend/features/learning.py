@@ -44,6 +44,13 @@ def adjacent_chapter(chapter_id, direction):
     return chapters[min(max(index + direction, 0), len(chapters) - 1)]["id"]
 
 
+def localized_chapter_values(chapter_id):
+    _, chapters = curriculum()
+    item = next(item for item in chapters if item["id"] == chapter_id)
+    source = item["path"].with_suffix(".en.md")
+    return (*chapter_values(chapter_id), handbook_markdown(source.read_text(encoding="utf-8"), source, get_settings()))
+
+
 def render_learning() -> None:
     title, chapters = curriculum()
     initial = chapters[0]["id"]
@@ -53,22 +60,34 @@ def render_learning() -> None:
                 gr.Markdown(
                     "## 量化学习空间\n\n从概念到可核对的研究。课程无需模型或行情调用；教学数字均为明确标注的合成示例。"
                 )
-                with gr.Row():
-                    with gr.Column(scale=1, min_width=240):
+                with gr.Row(elem_classes=["course-layout"]):
+                    with gr.Column(scale=1, min_width=240, elem_classes=["course-directory"]):
                         chapter = gr.Radio(
                             [(item["title"], item["id"]) for item in chapters],
                             value=initial,
                             label="课程章节",
                             elem_id="quant-course-chapters",
                         )
-                    with gr.Column(scale=3, min_width=420):
+                    with gr.Column(scale=4, min_width=320):
                         progress = gr.Markdown(chapter_values(initial)[1])
-                        with gr.Row():
+                        with gr.Row(elem_classes=["course-navigation"]):
                             previous = gr.Button("上一章", interactive=False)
                             following = gr.Button("下一章")
-                        body = gr.Markdown(chapter_values(initial)[0], elem_id="quant-course-content")
+                        body = gr.Markdown(
+                            chapter_values(initial)[0],
+                            elem_id="quant-course-content",
+                            elem_classes=["course-zh", "no-i18n"],
+                        )
+                        english_body = gr.Markdown(
+                            localized_chapter_values(initial)[-1],
+                            elem_id="quant-course-content-en",
+                            elem_classes=["course-en", "no-i18n"],
+                        )
                 chapter.change(
-                    chapter_values, inputs=chapter, outputs=[body, progress, previous, following], queue=False
+                    localized_chapter_values,
+                    inputs=chapter,
+                    outputs=[body, progress, previous, following, english_body],
+                    queue=False,
                 )
                 previous.click(lambda key: adjacent_chapter(key, -1), inputs=chapter, outputs=chapter, queue=False)
                 following.click(lambda key: adjacent_chapter(key, 1), inputs=chapter, outputs=chapter, queue=False)

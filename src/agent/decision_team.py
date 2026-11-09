@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Callable
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from json_repair import loads as repair_loads
@@ -123,7 +123,7 @@ class DecisionTeam:
                 raise fail("invalid_agent", "turn budget")
             peers[role] = final
             self.emit("agent_role", role, {"status": "completed", "result": final})
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
         return {
             **final,
             "as_of": as_of,

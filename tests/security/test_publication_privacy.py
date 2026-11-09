@@ -152,7 +152,7 @@ def test_powershell_activation_loads_paths_as_literals(tmp_path: Path, shell: st
         pytest.skip("PowerShell is not installed on this host")
     runtime, values = _activation_values(tmp_path)
     activation = str(runtime / "activate.ps1").replace("'", "''")
-    rows = "; ".join(f"'{key}' = $env:{key}" for key in values)
+    rows = "; ".join(f"'{key}' = $env:{key}" for key in [*values, "VIRTUAL_ENV", "PATH"])
     wrapper = tmp_path / "probe.ps1"
     wrapper.write_text(
         "$ErrorActionPreference = 'Stop'\n"
@@ -172,7 +172,11 @@ def test_powershell_activation_loads_paths_as_literals(tmp_path: Path, shell: st
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert json.loads(result.stdout) == values
+    loaded = json.loads(result.stdout)
+    assert all(loaded[key] == value for key, value in values.items())
+    assert loaded["VIRTUAL_ENV"] == values["ALL_IN_ONE_WEB_ENVIRONMENT"]
+    directory = "Scripts" if os.name == "nt" else "bin"
+    assert loaded["PATH"].startswith(str(Path(values["ALL_IN_ONE_WEB_ENVIRONMENT"]) / directory))
 
 
 def test_posix_activation_loads_paths_as_literals(tmp_path: Path) -> None:
@@ -197,6 +201,8 @@ def test_posix_activation_loads_paths_as_literals(tmp_path: Path) -> None:
             Path(sys.executable).as_posix(),
             program,
             *values,
+            "VIRTUAL_ENV",
+            "PATH",
         ],
         capture_output=True,
         text=True,
@@ -206,4 +212,9 @@ def test_posix_activation_loads_paths_as_literals(tmp_path: Path) -> None:
         env=environment,
     )
     assert result.returncode == 0, result.stderr
-    assert json.loads(result.stdout) == values
+    loaded = json.loads(result.stdout)
+    assert all(loaded[key] == value for key, value in values.items())
+    assert loaded["VIRTUAL_ENV"] == values["ALL_IN_ONE_WEB_ENVIRONMENT"]
+    environment_dir = "Scripts" if os.name == "nt" else "bin"
+    first_entry = loaded["PATH"].split(os.pathsep)[0]
+    assert first_entry.replace("\\", "/").endswith("/" + environment_dir)

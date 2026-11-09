@@ -1,7 +1,7 @@
 """Deduplicated event history; closing a card never changes its business source."""
 
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -72,7 +72,7 @@ class NotificationStore:
         )
 
     def read_all(self, client_id: str):
-        cutoff = (datetime.now(UTC) - timedelta(days=config()["retention_days"])).isoformat()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=config()["retention_days"])).isoformat()
         self.db.execute(
             """INSERT INTO notification_states(client_id,notification_id,read_at)
             SELECT ?,id,? FROM notifications WHERE created_at>=? OR (severity='critical' AND resolved_at IS NULL)
@@ -82,7 +82,7 @@ class NotificationStore:
 
     def feed(self, client_id: str, after: int = 0, before: int = 0, initial=False) -> dict:
         cfg = config()
-        cutoff = (datetime.now(UTC) - timedelta(days=cfg["retention_days"])).isoformat()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=cfg["retention_days"])).isoformat()
         joined = """SELECT n.*,s.read_at,s.dismissed_at FROM notifications n
             LEFT JOIN notification_states s ON s.notification_id=n.id AND s.client_id=?
             WHERE (n.created_at>=? OR (n.severity='critical' AND n.resolved_at IS NULL))"""

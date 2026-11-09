@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from src.core.repository import Repository
@@ -19,7 +19,7 @@ class MonitorStore:
         row = self.repo.db.query_one("SELECT * FROM monitor_reports WHERE cache_key = ?", (key,))
         if not row:
             return None
-        age = (datetime.now(UTC) - datetime.fromisoformat(row["refreshed_at"])).total_seconds()
+        age = (datetime.now(timezone.utc) - datetime.fromisoformat(row["refreshed_at"])).total_seconds()
         return json.loads(row["payload"]) if age < seconds else None
 
     def save(self, key: str, report: dict[str, Any], config: dict[str, Any]) -> None:

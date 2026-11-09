@@ -1,0 +1,60 @@
+/* Shared workspace geometry; text readers keep a readable measure inside fluid pages. */
+:root {
+  --workspace-gutter: clamp(10px, 1.1vw, 22px);
+  --workspace-gap: 14px;
+  --reader-measure: 84ch;
+}
+.gradio-container { max-width: none !important; box-sizing: border-box; }
+.gradio-container > .main.app { padding: 0 !important; }
+.gradio-container .row { gap: var(--workspace-gap); }
+.gradio-container .column { gap: var(--workspace-gap); }
+#main-navigation > .tabitem { padding: 0 !important; }
+#main-navigation .module-tabs > .tabitem { padding: var(--workspace-gutter) 0 !important; }
+html.gradio-embedded .gradio-container { padding: 0 var(--workspace-gutter) var(--workspace-gutter) !important; }
+html.gradio-embedded #main-navigation > .tabitem { padding: 0 !important; }
+.gradio-container .row > .block { min-width: min(210px, 100%); }
+.gradio-container .row > button { min-height: 40px; }
+.gradio-container .tab-wrapper { gap: 8px; padding-block: 8px; }
+.gradio-container .tab-wrapper button { padding: 10px 16px; }
+.gradio-container .learning-reader, #quant-course-content {
+  box-shadow: none !important; padding: clamp(18px, 2.4vw, 40px) !important;
+  border: 1px solid var(--line); background: var(--surface-raised);
+  font-size: 16px; line-height: 1.85; overflow-wrap: anywhere;
+}
+#quant-course-content .prose, .learning-reader .prose { max-width: var(--reader-measure); margin-inline: 0; }
+#quant-course-content h1, #quant-course-content h2, #quant-course-content h3,
+.learning-reader h1, .learning-reader h2 { line-height: 1.35; margin-block: 1.6em .7em; }
+#quant-course-content p, .learning-reader p { margin-block: .8em; }
+#quant-course-content table, .learning-reader table { display: block; max-width: 100%; overflow-x: auto; }
+#quant-course-content pre, .learning-reader pre { overflow-x: auto; padding: 16px; line-height: 1.6; }
+.course-layout { align-items: flex-start !important; gap: 24px !important; }
+.course-directory { position: sticky; top: 12px; flex: 0 0 272px !important; min-width: 0 !important; max-height: calc(100dvh - 48px); overflow: auto; }
+#quant-course-chapters label { padding: 10px 12px !important; line-height: 1.6; }
+.course-navigation { justify-content: space-between; gap: 16px !important; }
+.course-navigation button { flex: 0 1 180px !important; }
+.course-en { display: none !important; }
+html[data-ui-lang="en"] .course-zh { display: none !important; }
+html[data-ui-lang="en"] #quant-course-content-en,
+html[data-ui-lang="en"] #quant-course-content-en .course-en { display: block !important; }
+#quant-course-content-en {
+  padding: clamp(18px, 2.4vw, 40px); background: var(--surface-raised);
+  border: 1px solid var(--line); font-size: 16px; line-height: 1.85;
+}
+#quant-course-content-en .prose { max-width: var(--reader-measure); margin-inline: 0; }
+#quant-course-content-en table { display: block; max-width: 100%; overflow-x: auto; }
+.learning-reader { max-height: none; overflow-y: visible; background: var(--surface-raised) !important; }
+.learning-reader :is(h1,h2,h3,p,li,th,td) { color: var(--ink) !important; }
+.learning-reader :is(p,li) { font-size: 16px; }
+html.ai-console-active .gradio-container { padding: 0 8px !important; }
+html.ai-console-active #main-navigation .module-tabs > .tabitem { padding: 0 !important; }
+#ai-console-shell { width: 100%; }
+@media (max-width: 900px) {
+  .course-directory { position: static; flex-basis: 100% !important; max-height: 280px; }
+  .course-layout { flex-wrap: wrap !important; }
+  #quant-course-content { padding: 18px !important; font-size: 15px; }
+}
+@media (max-width: 600px) {
+  #main-navigation .row { flex-wrap: wrap !important; }
+  #main-navigation .row > .block { min-width: 0; flex-basis: 100%; }
+  #main-navigation .tab-wrapper button { padding: 8px 10px; }
+}

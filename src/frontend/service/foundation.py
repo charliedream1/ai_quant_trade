@@ -867,7 +867,7 @@ def _learning_entries() -> list[dict[str, Any]]:
     entries: list[dict[str, Any]] = []
     chapter_id = 0
     for path in LEARNING_FILES:
-        if not path.exists() or path.name.startswith("tasks"):
+        if not path.exists() or path.name.startswith("tasks") or path.name.endswith(".en.md"):
             continue
         chapter_id += 1
         try:

@@ -1,0 +1,152 @@
+# File format: YAML; encoding: UTF-8
+# Source labels remain stable component values; these strings are display text only.
+先创建或选择账户，账户数据不会以零值代替缺失值。: Create or select an account. Missing account data is never replaced with zero.
+进入策略仿真 / 模拟交易创建账户: Create an account in Strategy Simulation / Paper Trading
+查看 ↗: View ↗
+暂无有效净值快照；生成账户快照后显示历史曲线。: No valid NAV snapshots. Save an account snapshot to display its history.
+未提供: Unavailable
+参考: Reference
+无快照: No snapshot
+首页观察参考线，非自动交易规则: Observation reference only; this is not an automated trading rule
+● 暂无高优先级风险预警: ● No high-priority risk alerts
+参考线仅用于观察，不触发自动交易: Reference lines do not trigger trades
+风险雷达: Risk Radar
+暂无账户风险数据: No account risk data
+越靠外风险占用越高，各轴分别比较，参考线不触发交易。: Higher values indicate higher risk utilization. Compare axes separately; reference lines do not trigger trades.
+仓位暴露为持仓市值占总资产比例；单票集中度为最大单票市值占总资产比例；快照回撤来自已保存账户快照。单位为百分比，缺失项不补零。面积不是统一风险分，快照回撤不等于完整历史最大回撤。: Exposure is position market value divided by assets; concentration is the largest position's share of assets. Snapshot drawdown uses saved snapshots. Values are percentages; missing values remain unavailable. Radar area is not a unified score, and snapshot drawdown is not a complete historical maximum drawdown.
+指数动量: Index Momentum
+板块广度: Sector Breadth
+板块一致性: Sector Consistency
+市场情绪雷达 · 代理指标: Market Sentiment Radar · Proxy Indicators
+综合指数动量、板块广度与一致性，不代表买卖信号: Index momentum, sector breadth and consistency; not a trading signal
+这是市场情绪代理评分，分数不代表上涨概率。: This is a market sentiment proxy score, not a probability of gains.
+指数动量由指数平均涨跌幅映射到0—100；板块广度为当前板块样本中上涨的比例；一致性由板块涨跌幅极差映射。样本是当前数据源返回的指数和板块，不保证覆盖全市场。各轴含义不同，面积不能直接解释为综合情绪总分。: Index momentum maps average index changes onto 0–100; breadth is the rising share of the returned sector sample; consistency uses its return range. The provider sample may not cover the whole market. Axes have different meanings; radar area is not a total sentiment score.
+颜色表示涨跌方向，面积或柱长的含义以图例和单位为准。: Color indicates price direction. Interpret area and bar length using the legend and units.
+当前仅包含查询返回的板块样本。热力图面积通常表示成交额，缺失时可能采用等面积；不应将面积理解为收益。核对板块名称、涨跌幅、成交额与更新时间。: Only returned sectors are included. Heatmap area usually represents turnover, or equal areas when unavailable; it does not represent returns. Check sector names, changes, turnover and update times.
+暂无有效持仓估值；不代表今日盈亏为零。: Position valuations are unavailable; this does not mean daily PnL is zero.
+正负方向表示盈亏，请区分浮动盈亏、当日盈亏和已实现盈亏。: Distinguish unrealized, daily and realized PnL; signs indicate gains or losses.
+持仓图使用当前市值与持仓成本计算浮动盈亏；交易图来自回测实际成交记录。颜色随项目盈亏配色，不能只看颜色判断方向；是否计费用及统计单位见结果明细。: Position charts compare market value with cost; trade charts use actual backtest fills. Check signs, fees and units in the results instead of relying on color alone.
+热词与主题: Topics and Keywords
+来自当前新闻样本，不代表投资建议: Based on the current news sample; not investment advice
+按优先级排列: Ordered by priority
+添加关注标的用于首页监控: Add instruments to your watchlist for dashboard monitoring
+策略库为空: Strategy library is empty
+上传策略或使用 CLI 工作台生成策略: Upload a strategy or generate one in the CLI Workbench
+未启用 LLM 模型: No enabled LLM model
+配置后可使用问答、摘要和模型报告: Configure a model for questions, summaries and research reports
+执行状态: Execution Status
+运行状态: Run Status
+回测、运行与定时任务: Backtests, Runs and Scheduled Tasks
+完整数据与历史明细: Full Data and Historical Details
+仅供学习和研究使用，不构成投资建议。数据源与交易通道状态以系统配置为准。: For education and research only; not investment advice. Verify data sources and trading channel status in System Configuration.
+高: High
+中: Medium
+低: Low
+板块样本: Sector sample
+个；不代表全市场广度。: sectors; not full-market breadth.
+红涨绿跌，悬停查看数值。: Red indicates gains and green losses; hover for values.
+个 · 面积=成交额: sectors · area = turnover
+0分: '0'
+20分: '20'
+40分: '40'
+60分: '60'
+80分: '80'
+100分: '100'
+检索后端: Retrieval Backend
+SAG检索与精排策略: SAG Retrieval and Ranking Strategy
+问答范围: Question Scope
+单文档问答目标: Selected Document
+刷新文档选项: Refresh Document Choices
+同步所选范围到SAG / 刷新索引状态: Sync Selection to SAG / Refresh Index Status
+检索后端配置状态: Retrieval Backend Configuration
+模型递归搜索（zvec-grep）: Model-Guided Search (zvec-grep)
+SAG（可降级）: SAG (with Fallback)
+整个知识库: Entire Library
+仅所选文档: Selected Document Only
+自动降级: Automatic Fallback
+JEV精排: JEV Ranking
+SAG多跳检索: SAG Multi-Hop Retrieval
+Embedding向量检索: Embedding Retrieval
+标准Rerank精排: Standard Reranking
+默认保留模型生成关键词、递归调用 zvec-grep 的原方案。SAG 为可选后端，需先在本机配置并同步。单文档问答只检索所选原文；未配置 JEV 时可用 embedding 或 rerank。回答显示实际检索方式及降级原因。: Model-guided recursive zvec-grep search remains available. Configure and sync the optional SAG backend locally. Document questions search only the selected source. Embeddings or reranking can replace JEV; answers show the actual retrieval method and fallback reasons.
+量化学习空间: Quantitative Learning Space
+从概念到可核对的研究。课程无需模型或行情调用；教学数字均为明确标注的合成示例。: From concepts to inspectable research. Lessons need no model or market requests; all teaching examples use explicitly synthetic numbers.
+课程章节: Course Chapters
+导读 · 从研究到验证: Introduction · From Research to Validation
+01 · 研究流程与假设: 01 · Research Process and Hypotheses
+02 · 股票、指数与ETF: 02 · Stocks, Indexes and ETFs
+03 · 行情与历史时点: 03 · Market Data and Information Timing
+04 · 收益、复利与基准: 04 · Returns, Compounding and Benchmarks
+05 · 统计、波动与回撤: 05 · Statistics, Volatility and Drawdown
+06 · 因子与横截面评估: 06 · Factors and Cross-Sectional Evaluation
+07 · 趋势、反转与轮动: 07 · Trend, Reversal and Rotation
+08 · 回测撮合与偏差: 08 · Backtest Execution and Bias
+09 · 组合配置与风控: 09 · Portfolio Allocation and Risk
+10 · 小模型与样本外检验: 10 · Small Models and Out-of-Sample Tests
+11 · ETF与行业轮动: 11 · ETF and Sector Rotation
+12 · 模拟、监控与复盘: 12 · Paper Trading, Monitoring and Review
+上一章: Previous Chapter
+下一章: Next Chapter
+＋ 打开图形策略工坊，组合规则、模型与风控: ＋ Open the Visual Strategy Workshop for Rules, Models and Risk
+消息渠道: Messaging Channels
+在本地 .env 配置飞书/企业微信凭据。微信可扫码登录。先私聊获取验证码，再批准对应身份；授权后才能查询、执行或接收通知。: Configure Feishu or WeCom credentials in local .env. For WeChat, sign in with a QR code. Obtain a private pairing code and approve the identity before granting queries, actions or notifications.
+刷新状态: Refresh Status
+启用消息网关: Enable Messaging Gateway
+停用消息网关: Disable Messaging Gateway
+连接、队列与请求状态: Connections, Queue and Request Status
+渠道: Channel
+启用所选渠道: Enable Selected Channel
+停用所选渠道: Disable Selected Channel
+微信扫码登录: WeChat QR Sign-In
+检查扫码结果: Check QR Sign-In
+取消扫码: Cancel QR Sign-In
+扫码状态: QR Sign-In Status
+绑定 ID: Binding ID
+私聊收到的验证码: Pairing Code Received Privately
+操作权限: Allowed Operations
+推送来源: Notification Sources
+推送级别: Notification Levels
+授权知识库名（每行一个）: Allowed Libraries (one per line)
+授权模板名（每行一个，先在 YAML 配置）: Allowed Templates (one per line; configure in YAML first)
+批准绑定或更新权限: Approve Binding or Update Grants
+撤销绑定: Revoke Binding
+向所选绑定发送测试消息: Send a Test Message to the Selected Binding
+按需读取真实公开数据，核对观察期、单位、来源和版本；模型解读可选。: Load public data on demand and verify periods, units, sources and versions. Model interpretation is optional.
+宏观指标: Macro Indicators
+GDP累计同比: Cumulative GDP YoY
+CPI同比: CPI YoY
+PPI同比: PPI YoY
+制造业PMI: Manufacturing PMI
+M2同比: M2 YoY
+社会融资规模增量: Aggregate Financing Increment
+一年期LPR: One-Year LPR
+五年期LPR: Five-Year LPR
+强制更新来源: Force Source Refresh
+读取数据: Load Data
+指标概览: Indicator Overview
+历史趋势: Historical Trends
+原始数据、计算口径与来源: Raw Data, Definitions and Sources
+模型API配置: Model API Configuration
+生成模型分析报告: Generate Model Analysis Report
+报告执行过程: Report Execution Progress
+下载HTML报告: Download HTML Report
+历史报告运行ID: Historical Report Run ID
+重新打开报告: Reopen Report
+图表只展示当前查询返回的数据。请结合横纵轴、图例、数据源和观察时间阅读；缺失数据不代表零值，统计关联不代表买卖信号。: Charts show returned data only. Read axes, legends, sources and observation times. Missing values are not zero; statistical association is not a trading signal.
+悬停查看数值，展开说明核对数据范围与单位。: Hover for values and expand the notes to verify coverage and units.
+ETF池: ETF Universe
+刷新 ETF 数据: Refresh ETF Data
+ETF 元数据与数据源快照: ETF Metadata and Source Snapshot
+ETF池读取失败: ETF universe could not be loaded
+：可用: ': Available'
+；基准: '; benchmark'
+；调仓: '; rebalance'
+。缺失数据保持为空，不用零值替代。: '. Missing values remain empty, never replaced with zero.'
+量化基础课程: Quantitative Research Course
+基准: Benchmark
+调仓: Rebalance
+添加文件或图片；也可以直接拖入附件: Add files or images, or drop attachments here
+选择实际运行后台；未接入的 CLI 会明确提示: Select a runtime backend; unavailable CLI providers are reported explicitly
+选择已启用模型；空值表示系统默认模型: Select an enabled model; empty means the backend default
+选择思考强度；是否生效取决于后台和模型: Select reasoning effort; support depends on the backend and model
+发送当前任务（Enter 发送，Ctrl+Enter 换行）: Send the task (Enter to send, Ctrl+Enter for a new line)

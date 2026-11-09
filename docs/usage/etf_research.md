@@ -1,5 +1,9 @@
 # ETF 研究与回测
 
+The current panel is Strategy Build → Strategy Management → ETF Research.
+Old `view=etf` links still work. Fund data, presets, REST and CLI capabilities
+remain available; ETF no longer has a separate sidebar entry.
+
 ![独立策略页的 ETF 池快照](assets/screenshots/09-etf-research.jpg)
 
 图 9：选择池并刷新，分别检查历史点数、状态与来源；本图 mock-local 仅演示快照，不代表真实基金估值。

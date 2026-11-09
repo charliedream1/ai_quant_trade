@@ -60,7 +60,6 @@ MODULES: tuple[GradioModule, ...] = (
             ("management", "策略管理"),
             ("factors", "因子研究与监控"),
             ("alpha", "Alpha研究"),
-            ("etf", "ETF研究"),
             ("qlib", "Qlib实验"),
         ),
     ),

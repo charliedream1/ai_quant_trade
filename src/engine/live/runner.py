@@ -1,7 +1,7 @@
 """Live trading configuration and run state manager."""
 
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from src.core.exceptions import BusinessError, ErrorCode
@@ -391,7 +391,7 @@ def _uptime_seconds(started_at: Any, stopped_at: Any = None) -> int:
     started = _parse_utc(started_at)
     if started is None:
         return 0
-    ended = _parse_utc(stopped_at) or datetime.now(UTC)
+    ended = _parse_utc(stopped_at) or datetime.now(timezone.utc)
     return max(int((ended - started).total_seconds()), 0)
 
 
@@ -404,5 +404,5 @@ def _parse_utc(value: Any) -> datetime | None:
     except ValueError:
         return None
     if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=UTC)
-    return parsed.astimezone(UTC)
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)

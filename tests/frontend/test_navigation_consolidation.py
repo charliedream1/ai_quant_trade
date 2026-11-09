@@ -24,7 +24,7 @@ def test_canonical_navigation_and_single_rag_interface(client):
     assert len(MODULES) == 9 and "research" not in {module.key for module in MODULES}
     strategy = next(module for module in MODULES if module.key == "strategy")
     assert strategy.views[0] == ("workshop", "图形策略工坊")
-    assert ("etf", "ETF研究") in strategy.views
+    assert ("etf", "ETF研究") not in strategy.views
     assert resolve_destination("market", "factors") == {"module": "strategy", "view": "factors", "tab": ""}
     config = client.get("/app/knowledge/config").json()
     labels = [item["props"].get("label") for item in config["components"]]

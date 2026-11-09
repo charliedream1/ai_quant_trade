@@ -1,6 +1,6 @@
 """Point-in-time selection and deliberately date-free model observations."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .config import invalid
@@ -13,7 +13,7 @@ def timestamp(value: str) -> datetime:
         raise invalid("资料时点必须是包含时区的ISO时间") from exc
     if result.tzinfo is None:
         raise invalid("资料时点不能省略时区")
-    return result.astimezone(UTC)
+    return result.astimezone(timezone.utc)
 
 
 def known_documents(rows: list[dict[str, Any]], cutoff: str) -> list[dict[str, Any]]:
