@@ -11,6 +11,7 @@ import yaml
 from dotenv import dotenv_values
 from loguru import logger
 from packaging.requirements import Requirement
+from packaging.version import InvalidVersion, Version
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -31,6 +32,14 @@ def _requirements(cfg: dict[str, Any]) -> list[str]:
     return [line for line in lines if line.strip() and not line.lstrip().startswith("#")]
 
 
+def _is_conda_environment(prefix: Path, cfg: dict[str, Any]) -> bool:
+    """Return whether the prefix contains Conda metadata."""
+    if not cfg.get("allow_conda"):
+        return False
+    metadata_path = Path(str(cfg.get("conda_metadata", "conda-meta/history")))
+    return (prefix / metadata_path).is_file()
+
+
 def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -> tuple[list[str], bool]:
     errors = []
     if sys.version_info[: len(minimum)] < tuple(minimum):
@@ -38,7 +47,7 @@ def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -
     expected = Path(cfg["directory"])
     if not expected.is_absolute():
         expected = PROJECT_ROOT / expected
-    conda = bool(cfg.get("allow_conda")) and (prefix / cfg["conda_metadata"]).is_file()
+    conda = _is_conda_environment(prefix, cfg)
     conda_base = conda and (
         prefix.name.lower() in cfg["conda_base_names"]
         or any((prefix / marker).exists() for marker in cfg["conda_base_markers"])
@@ -51,8 +60,10 @@ def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -
     inherited = (
         "include-system-site-packages = true" in file.read_text(encoding="utf-8").lower()
         if file.is_file()
-        else not conda
+        else False
     )
+    if not conda and not file.is_file():
+        errors.append("环境缺少独立解释器配置（pyvenv.cfg）")
     if inherited:
         errors.append("环境继承了基础包或不是独立虚拟环境")
     return errors, inherited
@@ -68,12 +79,20 @@ def _installed_requirement(line: str, prefix: Path) -> tuple[dict[str, Any] | No
         return None, f"{req.name}未安装"
     satisfied = req.specifier.contains(dist.version)
     origin = Path(str(dist.locate_file(""))).resolve()
+    compatible = True
+    exact_versions = [item.version for item in req.specifier if item.operator == "=="]
+    if exact_versions:
+        try:
+            compatible = Version(dist.version).major == Version(exact_versions[0]).major
+        except InvalidVersion:
+            compatible = True
     result = {
         "name": req.name,
         "version": dist.version,
         "declared": str(req.specifier),
         "origin": str(origin),
         "satisfied": satisfied,
+        "compatible": compatible,
     }
     error = "" if satisfied and origin.is_relative_to(prefix) else f"{req.name}版本或安装来源不符合声明"
     return result, error
@@ -93,6 +112,7 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
             cfg = {**cfg, "directory": selected, "explicit_directory": True}
     prefix = Path(sys.prefix).resolve()
     errors, inherited = _environment_errors(prefix, cfg, cfg.get("minimum_python", config["minimum_python"]))
+    warnings: list[str] = []
     upper = config.get("maximum_python_exclusive")
     if upper and sys.version_info[: len(upper)] >= tuple(upper):
         errors.append("Python版本超出已验证支持范围")
@@ -102,14 +122,19 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
         if row:
             declared.append(row)
         if error:
-            errors.append(error)
+            if error.endswith("未安装"):
+                errors.append(error)
+            elif row and not row.get("compatible", True):
+                errors.append(f"{row['name']}主版本与声明不兼容")
+            else:
+                warnings.append(error)
     outside = [
         dist.metadata["Name"]
         for dist in metadata.distributions()
         if not Path(str(dist.locate_file(""))).resolve().is_relative_to(prefix)
     ]
     if outside:
-        errors.append("存在项目环境之外的可见分发包")
+        warnings.append("存在项目环境之外的可见分发包（仅作提示，不阻断启动）")
     return {
         "role": role,
         "executable": sys.executable,
@@ -119,6 +144,7 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
         "declared": declared,
         "external_distributions": sorted(set(outside)),
         "errors": errors,
+        "warnings": warnings,
         "passed": not errors,
     }
 
@@ -136,6 +162,8 @@ def enforce_startup_runtime() -> dict[str, Any]:
         raise SystemExit("ALL_IN_ONE_RUNTIME_MODE 只支持 strict / warn")
     report = inspect_runtime(str(role))
     elapsed = (perf_counter() - started) * 1000
+    if report.get("warnings"):
+        logger.warning("启动环境预检提示 | role={} warnings={}", role, report["warnings"])
     if report["passed"]:
         logger.info("启动环境预检通过 | role={} executable={} elapsed_ms={:.1f}", role, sys.executable, elapsed)
     else:

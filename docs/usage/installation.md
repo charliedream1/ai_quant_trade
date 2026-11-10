@@ -1,8 +1,9 @@
 # 依赖安装与环境复现
 
-Dedicated non-base Conda environments support direct PyCharm startup. Application
-versions and package origins remain mandatory; build-tool versions alone no
-longer block startup. See [runtime and workspace](runtime_and_workspace.md).
+Dedicated non-base Conda environments support direct PyCharm startup. Python
+support bounds and missing application dependencies remain mandatory; compatible
+package-version or package-origin differences are warnings. Build-tool versions
+alone never block startup. See [runtime and workspace](runtime_and_workspace.md).
 
 
 Codex、Qoder、TRAE以及WorkBuddy/CodeBuddy的独立安装、登录、E盘路径和项目接入区别，见[AI CLI安装与接入](cli_installation.md)。这些工具不属于Python requirements，也不要求全部安装。

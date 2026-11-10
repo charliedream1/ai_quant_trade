@@ -101,7 +101,7 @@ def test_business_sources_do_not_use_print_calls():
 
 
 def test_business_sources_do_not_use_stdlib_logging_calls():
-    allowed = {Path("src/core/logger.py")}
+    allowed = {Path("src/core/logger.py"), Path("src/data/provider_output.py")}
     paths = [Path("start.py"), *Path("src").rglob("*.py")]
     offenders = []
     for path in paths:

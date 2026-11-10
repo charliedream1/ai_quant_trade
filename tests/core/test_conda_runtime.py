@@ -44,3 +44,8 @@ def test_package_mismatch_and_external_origin_still_fail(tmp_path):
     _, mismatch = _installed_requirement("loguru==0.0.1", tmp_path)
     _, outside = _installed_requirement("loguru==0.7.3", tmp_path)
     assert mismatch and outside
+
+
+def test_major_version_mismatch_is_marked_incompatible(tmp_path):
+    row, message = _installed_requirement("loguru==1.0.0", tmp_path)
+    assert row and not row["compatible"] and message

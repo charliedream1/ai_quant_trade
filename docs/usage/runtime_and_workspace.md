@@ -4,8 +4,10 @@
 
 Startup accepts dedicated virtual environments and non-base Conda environments.
 Conda uses `conda-meta/history`, rather than `pyvenv.cfg`, for recognition.
-Python version, application dependencies and package locations are still checked.
-Conda base/root and packages visible outside the environment are rejected.
+Python support bounds and missing application dependencies are still checked.
+Pinned-version and package-origin differences are reported as warnings so a
+compatible user upgrade does not prevent PyCharm debugging. A clearly
+incompatible major version remains a startup error. Conda base/root is rejected.
 
 In PyCharm, select your dedicated environment's interpreter, set the working
 directory to the repository root and run `start.py`. Optional script arguments
@@ -14,13 +16,16 @@ IDE already runs the selected Python.
 
 If `ALL_IN_ONE_WEB_ENVIRONMENT` is set in the process or local `.env`, it must
 match the selected environment directory. Otherwise recognized non-base Conda
-environments do not require a machine-specific prefix. Install exact project
-requirements yourself; preflight never installs or changes Conda packages.
+environments do not require a machine-specific prefix. Install the project
+requirements yourself; preflight never installs or changes Conda packages. The
+`==` pins in requirements and uv files document the tested baseline. They do
+not turn the runtime check into an exact-version lock: compatible upgrades are
+allowed and shown in the diagnostic report.
 
 Run your interpreter with `egs/entrypoints/check_runtime.py --role web` to
-inspect missing or mismatched packages. pip/setuptools/wheel version differences
-alone no longer block application startup; installation manifests retain their
-exact build-tool pins.
+inspect missing packages and compatibility warnings. pip/setuptools/wheel
+version differences alone do not block application startup; installation
+manifests retain their exact build-tool pins.
 
 For pip, optional messaging and observation profiles have committed hash-locked
 exports in `egs/requirements/channels.lock.txt` and `observability.lock.txt`.
