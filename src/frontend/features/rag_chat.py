@@ -3,6 +3,7 @@
 from uuid import uuid4
 
 import gradio as gr
+
 from src.knowledge.config import knowledge_config
 
 from ..common.callbacks import safe
@@ -27,7 +28,7 @@ def render_rag_chat(service) -> None:
             qa_mode = gr.Dropdown(ui["modes"], value="library", label=ui["mode"], elem_id="rag-qa-mode")
             document_id = gr.Dropdown([], value=None, label=ui["document"], elem_id="rag-document")
             document_refresh = gr.Button(ui["refresh_documents"])
-            sag_sync = gr.Button(ui["sync"])
+            sag2_prepare = gr.Button(ui["sync"], elem_id="rag-sag2-index")
             retrieval_status = gr.JSON(
                 value=service.rag_retrieval_status(), label=ui["status"], elem_id="rag-backend-status"
             )
@@ -37,6 +38,15 @@ def render_rag_chat(service) -> None:
                 value=policy["search"]["default_rounds"],
                 step=1,
                 label="最多检索轮数",
+            )
+            backend.change(
+                lambda selected, current: gr.update(
+                    maximum=policy["sag2" if selected == "sag2" else "search"]["max_rounds"],
+                    value=min(current, policy["sag2" if selected == "sag2" else "search"]["max_rounds"]),
+                ),
+                inputs=[backend, rounds],
+                outputs=rounds,
+                queue=False,
             )
             model = gr.Dropdown(service.rag_models(), value="", label="问答模型")
             with gr.Accordion("会话与检索设置", open=False):
@@ -101,8 +111,8 @@ def render_rag_chat(service) -> None:
             outputs=[history, refs],
             queue=False,
         )
-    sag_sync.click(
-        safe(service.rag_sag_sync), inputs=[library, session, qa_mode, document_id], outputs=retrieval_status
+    sag2_prepare.click(
+        safe(service.rag_sag2_prepare), inputs=[library, session, qa_mode, document_id], outputs=retrieval_status
     )
     new.click(
         lambda: (uuid4().hex, [], None, "", "新会话，尚未调用模型"),

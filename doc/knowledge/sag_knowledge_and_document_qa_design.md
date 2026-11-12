@@ -1,5 +1,8 @@
 # SAG Retrieval and Scoped Document Questions
 
+> Retired implementation: replaced by [SAG2 retrieval](sag2_retrieval_design.md).
+> This document records the previous design and is not current setup guidance.
+
 Date: 2026-11-07. Author: Codex. Status: implemented; isolated REST-contract and browser acceptance completed.
 
 ## Scope

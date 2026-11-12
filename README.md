@@ -72,7 +72,7 @@
 |:---|:---|
 | 2026.11 | [**Integrated quant platform and deployment**](docs/usage/workspace.md): market research, strategy composition, fee-aware backtests, Python 3.10–3.14 compatibility, exact pip/uv installation, Docker runtime and Langfuse observability. |
 | 2026.11 | [**Research, strategies and risk**](docs/usage/economic_analysis.md): macroeconomics, corporate fundamentals, ETF and industry rotation, factor research, portfolio/risk composition and execution-aware backtests. |
-| 2026.11 | [**File knowledge and document Q&A**](docs/usage/knowledge.md): named file libraries, Markdown chunking, zvec-grep retrieval, source previews, report downloads, optional SAG retrieval and JEV/embedding/rerank fallbacks. |
+| 2026.11 | [**File knowledge and document Q&A**](docs/usage/knowledge.md): named file libraries, Markdown chunking, zvec-grep retrieval, source previews, report downloads, local SAG2 BM25 retrieval with evidence expansion and replaceable JEV/embedding/rerank selectors. |
 | 2026.11 | [**AI model and agent operations**](docs/usage/model_interfaces.md): OpenAI/LiteLLM interfaces, shared RPM controls, native Agent/CLI/Skills workflows, evidence-bound research and safe execution controls. |
 | 2026.11 | [**Remote access and notifications**](docs/usage/remote_access.md): guarded browser access, notification management and remote connection guidance, with credentials and local agent memories kept outside published artifacts. |
 

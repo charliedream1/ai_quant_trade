@@ -1,49 +1,101 @@
-# SAG knowledge and single-document questions
+# SAG2 knowledge and single-document questions
 
-The knowledge page offers **模型递归搜索（zvec-grep）** and **SAG with fallback** as independent choices. The default remains the original model-guided workflow: ordinary model generation plans keywords, bounded recursive rounds call zvec-grep, and the model answers from retrieved original passages with citations. Selecting this backend does not contact SAG or an embedding/rerank service. The maximum retrieval rounds control continues to govern the original workflow. SAG is optional and disabled by default; this application connects to an independently running self-hosted SAG service through REST. It does not install SAG's desktop app or Python package.
+Actual Hy3 generation, local BGE inference, isolation and browser acceptance are
+recorded in [SAG2 live validation](sag2_live_validation.md), including measured
+query times and the limits of the available JEV/rerank coverage.
 
-## Connect and index
+## Retrieval choices
 
-Start SAG following its [official deployment guide](https://github.com/Zleap-AI/SAG). Choose an API port distinct from this platform. Configure the external service's generation and embedding models before expecting indexed documents to become ready.
+The knowledge Q&A page offers **SAG2 (BM25 with evidence expansion)** and the
+original **Model-guided recursive search (zvec-grep)** as independent choices.
+Original SAG is retired. SAG2 runs locally over the existing normalized source
+chunks: it needs no SAG service, LanceDB, event/entity extraction or vector store.
+The zvec-grep option remains the default and retains model-generated keywords.
 
-Set `ALL_IN_ONE_SAG_ENABLED=true`, `ALL_IN_ONE_SAG_BASE_URL` and `ALL_IN_ONE_SAG_TOKEN` in local `.env`. The base may include `/api/v1`; the client adds it when absent. Use an endpoint without embedded credentials, query strings or fragments. A local trusted SAG address is allowed; metadata/link-local targets are blocked by the shared network policy. Do not commit local endpoints or keys.
+## How SAG2 works
 
-Upload files normally. On the Q&A page, select the library and choose a whole-library or single-document scope. Refresh document choices and select the document where needed, then press **同步所选范围到SAG / 刷新索引状态**. This explicitly sends normalized text to the configured service and reports the real document status. If processing is pending, press again later to refresh; the gateway does not pretend pending documents are ready.
+1. Scope original chunks to the selected library, session, category, source type
+   and optional single document before retrieval.
+2. Prepare or reuse a derived SQLite FTS5 index, with no indexing-time model calls.
+3. Retrieve candidates with BM25 and score their usefulness for the question.
+4. Extract new terms from selected evidence, retrieve fresh passages, merge
+   retained evidence and score the next round against the original question.
+5. Return deduplicated original passages for cited answer generation.
 
-Each revision uses its own SAG source, keeping single-document retrieval isolated before recall. Already synchronized content refreshes status without another ingestion. Edited content or a different endpoint needs synchronization again. An uncertain write stops automatic resubmission and requires local review of the remote source rather than creating duplicates. No remote document or source is deleted automatically.
+The round limit includes the initial BM25 round. Three rounds mean initial
+recall plus up to two expansions. Search stops early when no fresh evidence or
+expansion terms remain. Limits, stopwords, time budgets and selector instructions
+are in `egs/config/knowledge/knowledge.yaml`, under `sag2`.
 
-`sag.auto_sync` in `egs/config/knowledge/knowledge.yaml` optionally synchronizes ordinary new imports. It defaults to false and excludes private session attachments. Manual synchronization can include a current session's attachment. Large libraries must be synchronized document by document when they exceed the configured batch size. Limits are reported rather than silently truncating documents.
+This is a portable adaptation of the official SAG2 method, using Python and
+SQLite FTS5 rather than upstream's compiled scoring extension. Latin words and
+Chinese character bigrams support English and Chinese lexical recall. This
+implementation does not claim exact upstream benchmark reproduction.
 
-## Ask a question
+## Select an evidence scorer
 
-Select backend **SAG（可降级）**, choose a strategy and ask a question. **整个知识库** searches the permitted current library; **仅所选文档** searches exactly one selected document. For a new attachment, single-document mode can use exactly one newly attached file when no existing document is selected. Other libraries and other attachment sessions never become implicit search scope.
-
-Single-document conversation history is separate from whole-library history. Answers retain local document IDs and clickable original-source previews. Returned SAG sections must match the permitted current original; unrelated source IDs or fabricated text are rejected before generation. Answer generation uses the platform's selected model and its existing RPM and optional Langfuse monitoring.
-
-The response shows the effective backend and strategy, citation count and fallback reasons. A successful answer after fallback is not labeled as a successful JEV request. Configuration readiness does not prove a live service connection.
-
-## JEV, embedding and rerank
-
-| Choice | Behavior |
+| Selector | Behavior and configuration |
 | --- | --- |
-| `auto` | JEV when explicitly enabled, then SAG multi-hop, then vector retrieval. A configured standard reranker can replace precision ranking on candidates. |
-| `multi_jev` | Attempts JEV only when `ALL_IN_ONE_SAG_JEV_ENABLED=true`; otherwise skips it with a visible reason and uses the declared fallback. |
-| `multi` | Ordinary SAG multi-hop retrieval, then vector fallback if unavailable. |
-| `vector` | SAG embedding/vector retrieval without requiring JEV. |
-| `rerank` | SAG vector candidates followed by the configured standard rerank endpoint. |
+| `auto` | Try JEV, rerank, embedding, then BM25, reporting skipped/failed providers. |
+| `jev` | Prefer contextual JEV `noul` decisions; use `KB_JEV_BASE_URL`, `KB_JEV_MODEL`, optional `KB_JEV_API_KEY`. |
+| `rerank` | Prefer a standard reranker with `KB_RERANK_BASE_URL`, `KB_RERANK_MODEL`, optional `KB_RERANK_API_KEY`. |
+| `embedding` | Prefer query-time cosine scoring with `KB_EMBEDDING_BASE_URL`, `KB_EMBEDDING_MODEL`, optional `KB_EMBEDDING_API_KEY`. |
+| `bm25` | Pure lexical ranking with evidence-term expansion, making no scoring requests. |
 
-JEV is a separate ranking service. SAG still needs embeddings for normal semantic indexing; choosing JEV does not eliminate that requirement. Configure JEV credentials on the external SAG service. This platform's JEV flag controls which search strategy it requests; it is not a live provider-health claim.
+Set credentials only in local `.env`. The JEV URL must be the complete
+`/decisions` or `/systemone` endpoint. Embedding and rerank URLs are API roots;
+the client appends `/embeddings` or `/rerank`. No paid provider/model is selected
+by default. Only authorized candidate passages are sent to configured providers,
+at query time. Embeddings are not persisted and do not replace BM25 recall.
 
-For a standard reranker, configure `KB_RERANK_BASE_URL`, `KB_RERANK_MODEL` and optional `KB_RERANK_API_KEY`. It uses the common `/rerank` JSON request with query, documents, model and top-n, and indexed relevance-score results. For a standard OpenAI-compatible embedding service, configure `KB_EMBEDDING_BASE_URL`, `KB_EMBEDDING_MODEL` and optional `KB_EMBEDDING_API_KEY`; it uses `/embeddings` with indexed vectors. Supply a service base such as its versioned API root, not the full method endpoint.
+Embedding and rerank replace the evidence scorer while retaining lexical recall
+and term expansion. They are different scoring approximations and are not
+claimed to reproduce JEV decisions. All unavailable/invalid providers produce
+visible fallback reasons. A deadline failure can fall back to the original
+keyword loop, with the effective backend reported explicitly.
 
-When SAG is unavailable, stale or not indexed, a configured standard reranker or embedding endpoint can rank a bounded set of authorized local chunks. If those paths are unavailable, the existing zvec-grep keyword loop remains the last fallback. Local semantic fallback is bounded by candidate limits, so it does not promise full-library semantic recall for arbitrarily large libraries. It creates no local vector database.
+## Use the page
 
-Provider response size, dimensions, candidate count, text lengths, timeouts and synchronization batch sizes are configured in YAML. No default paid provider or model is selected. Local deterministic protocol tests verify integration and boundaries, not SAG/JEV production quality or the upstream benchmark claims.
+Import files into a named knowledge library. In Knowledge Q&A, select the library,
+choose SAG2 and a selector, then choose the whole library or one document.
+**Prepare SAG2 Local Index** builds the local lexical cache; a query also prepares
+its current scope automatically. Attachments are available only to their session.
+Other libraries and other sessions never enter the candidate corpus.
 
-## API and troubleshooting
+Answers retain clickable local citations and the existing source preview. The
+selected answer model retains its RPM and optional Langfuse monitoring. The
+retrieval trace records each round, terms, candidate/selected chunk IDs, actual
+selector and fallback reasons. Source content is always read from the local
+catalogue, never from scoring-provider responses.
 
-`GET /api/v1/kb/retrieval/status` reports safe configuration booleans without network calls. `POST /api/v1/kb/sag/sync` accepts a library, optional document ID and current session ID. `POST /api/v1/kb/qa` additionally accepts `retrieval_backend`, `retrieval_strategy` and optional `document_id`. Existing requests default to local library search.
+Index caches live inside the configured knowledge storage under `sag2_indexes`.
+Their content fingerprints include scope-specific chunk identity, titles and
+text. Changes create another cache; old cache files and user data are not deleted
+automatically. They contain private document text and must not be committed.
 
-Use the indexing-status refresh when a document is not ready. Check local credentials and external SAG permissions for authentication errors; inspect model/index settings on SAG for persistent strategy failures. The platform ignores SAG's generated summary and builds its answer from checked original sections, although a SAG deployment may still perform its own server-side query/summary model calls according to its settings.
+## API and migration
 
-See [remote access](remote_access.md) for connecting a chat client or browser. A new retrieval backend does not grant another remote account permission to use a library.
+- `GET /api/v1/kb/retrieval/status`: local SQLite/scorer readiness; no network probe.
+- `POST /api/v1/kb/sag2/index`: prepare the selected library/document/session index.
+- `POST /api/v1/kb/qa`: choose `retrieval_backend=sag2` and
+  `retrieval_strategy=auto|jev|embedding|rerank|bm25`.
+- `retrieval_backend=local` keeps the original zvec-grep workflow.
+
+Old `retrieval_backend=sag`, `multi_jev`, `multi` and `vector` selections must be
+updated. `/kb/sag/sync` returns an explicit retirement error. Old
+`ALL_IN_ONE_SAG_*` settings and SAG source-status columns are not used. Original
+files, documents, chunks and conversation records remain intact; no remote
+service is contacted for ingestion or cleanup.
+
+## Sources and evidence boundary
+
+The [official SAG2 guide](https://github.com/Zleap-AI/SAG-Benchmark/tree/main/sag2)
+and [reference algorithm](https://github.com/Zleap-AI/SAG-Benchmark/blob/main/sag2/scripts/sag2.py)
+describe BM25 recall, JEV evidence decisions, term expansion and diversification.
+The [paper](https://arxiv.org/abs/2610.22588) describes the original method;
+[SAG-Wiki](https://github.com/Zleap-AI/SAG-Wiki) is its application.
+
+Repository tests use explicitly synthetic source documents and local HTTP
+protocol fixtures. These verify multi-hop bridging, scoring substitution,
+citations and isolation, not live JEV/reranker quality or upstream benchmark
+scores. Earlier original-SAG acceptance results do not validate SAG2.

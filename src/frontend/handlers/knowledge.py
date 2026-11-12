@@ -28,7 +28,7 @@ class KnowledgeHandler(DomainHandler):
             "rag_chat",
             "rag_documents",
             "rag_retrieval_status",
-            "rag_sag_sync",
+            "rag_sag2_prepare",
             "rag_index_status",
             "rag_models",
             "rag_restore",

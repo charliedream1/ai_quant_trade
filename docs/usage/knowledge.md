@@ -38,3 +38,11 @@
 ![切换章节后保持当前阅读和刷新](assets/screenshots/96-knowledge-refresh.jpg)
 
 图96为2026-10-31隔离服务实测：连续选择不同章节后刷新，当前内容与选择一致，不再丢失章节ID。
+
+## SAG2 retrieval
+
+Select SAG2 for local BM25 recall, evidence selection and multi-round term
+expansion. JEV, embedding similarity and standard reranking are interchangeable
+selectors; original model-guided zvec-grep remains an independent option.
+Original SAG has been retired. See the [SAG2 guide](sag_knowledge_qa.md) for
+configuration, data boundaries and migration.

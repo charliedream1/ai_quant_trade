@@ -4,6 +4,7 @@ import json
 from urllib.parse import urlencode
 
 import gradio as gr
+
 from src.agent.rag import RAGService
 from src.core.kb_importer import import_uploaded_document
 from src.core.repository import Repository
@@ -11,7 +12,7 @@ from src.documents.service import FilePreviewService
 from src.documents.view import launcher
 from src.knowledge.config import library_name
 from src.knowledge.files import KnowledgeFiles
-from src.knowledge.sag_service import readiness, sync_documents
+from src.knowledge.sag2_service import prepare_index, readiness
 
 from .foundation import ai_console_model_choices, require_text, to_frame, uploaded_file_path
 
@@ -106,10 +107,10 @@ class RagChatMixin:
     def rag_retrieval_status(self):
         return readiness()
 
-    def rag_sag_sync(self, library, session, qa_mode, document_id):
+    def rag_sag2_prepare(self, library, session, qa_mode, document_id):
         if qa_mode == "document" and not document_id:
             raise ValueError("Select a document first")
-        return sync_documents(
+        return prepare_index(
             {
                 "library_name": library,
                 "session_id": session or "default",

@@ -53,22 +53,17 @@
 80分: '80'
 100分: '100'
 检索后端: Retrieval Backend
-SAG检索与精排策略: SAG Retrieval and Ranking Strategy
 问答范围: Question Scope
 单文档问答目标: Selected Document
 刷新文档选项: Refresh Document Choices
-同步所选范围到SAG / 刷新索引状态: Sync Selection to SAG / Refresh Index Status
 检索后端配置状态: Retrieval Backend Configuration
 模型递归搜索（zvec-grep）: Model-Guided Search (zvec-grep)
-SAG（可降级）: SAG (with Fallback)
 整个知识库: Entire Library
 仅所选文档: Selected Document Only
 自动降级: Automatic Fallback
 JEV精排: JEV Ranking
-SAG多跳检索: SAG Multi-Hop Retrieval
 Embedding向量检索: Embedding Retrieval
 标准Rerank精排: Standard Reranking
-默认保留模型生成关键词、递归调用 zvec-grep 的原方案。SAG 为可选后端，需先在本机配置并同步。单文档问答只检索所选原文；未配置 JEV 时可用 embedding 或 rerank。回答显示实际检索方式及降级原因。: Model-guided recursive zvec-grep search remains available. Configure and sync the optional SAG backend locally. Document questions search only the selected source. Embeddings or reranking can replace JEV; answers show the actual retrieval method and fallback reasons.
 量化学习空间: Quantitative Learning Space
 从概念到可核对的研究。课程无需模型或行情调用；教学数字均为明确标注的合成示例。: From concepts to inspectable research. Lessons need no model or market requests; all teaching examples use explicitly synthetic numbers.
 课程章节: Course Chapters

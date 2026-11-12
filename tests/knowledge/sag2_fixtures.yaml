@@ -1,0 +1,15 @@
+# File format: YAML; encoding: UTF-8
+library: SAG2 acceptance
+question: Orion
+documents:
+  - title: Orion owner
+    content: Orion uses the Zephyr approval route.
+  - title: Zephyr deadline
+    content: Zephyr approval ends at 17:00. Its reference is AQT-17.
+  - title: Unrelated policy
+    content: Copper minerals support industrial manufacturing.
+chinese:
+  title: 风险审批
+  content: 风险审批的截止时间是十七点，复核人为张三。
+  question: 风险审批
+answer: 'Zephyr approval ends at 17:00, reference AQT-17 [2].'

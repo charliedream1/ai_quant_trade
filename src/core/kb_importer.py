@@ -19,7 +19,6 @@ from src.core.timeutil import utc_now_iso
 from src.documents.conversion import text_pdf
 from src.documents.store import PreviewStore
 from src.knowledge.config import chunk_length, knowledge_config, library_name
-from src.knowledge.sag_sync import auto_sync_document
 
 SUPPORTED_TEXT_EXTENSIONS = {
     ".csv",
@@ -99,7 +98,6 @@ def import_uploaded_document(
     )
     original["knowledge_id"] = row["id"]
     PreviewStore().save(original)
-    auto_sync_document(repo, int(row["id"]))
     return row
 
 
