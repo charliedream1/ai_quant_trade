@@ -16,6 +16,10 @@ def money(value: float | Decimal, precision: int) -> Decimal:
 
 def order_fee(policy: dict[str, Any], turnover: float, buy: bool, day: str, prior: dict[str, Any] | None = None):
     """Charge incremental amounts; minimum commission applies once to the external order."""
+    if policy.get("market") == "HK":
+        from .hong_kong import hk_fees
+
+        return hk_fees(policy, turnover, buy, day, prior)
     if turnover < 0:
         raise BusinessError(ErrorCode.INVALID_PARAM, "成交金额不能为负")
     cfg = effective_policy(policy, day)
@@ -44,6 +48,10 @@ def order_fee(policy: dict[str, Any], turnover: float, buy: bool, day: str, prio
 
 
 def slipped_price(base: float, buy: bool, policy: dict[str, Any], limit: float | None = None) -> float | None:
+    if policy.get("market") == "HK":
+        from .hong_kong import rounded_price
+
+        return rounded_price(base, buy, policy, limit)
     mode = policy["slippage_mode"]
     direction = Decimal(1 if buy else -1)
     raw, tick = Decimal(str(base)), Decimal(str(policy["tick_size"]))

@@ -12,8 +12,11 @@ from typing import Any
 from uuid import uuid4
 
 import gradio as gr
+from gradio.context import LocalContext
+
 from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
+from src.data.manager import REQUEST_MARKET
 
 from ..service_dispatch import lookup_method
 from .errors import ui_error_message
@@ -54,6 +57,9 @@ def callback_location(fn: Callable[..., Any]) -> tuple[str, str]:
 def _callback_run(operation: str, source: str) -> Iterator[None]:
     operation_id = uuid4().hex
     started = perf_counter()
+    request = LocalContext.request.get(None)
+    market = str((getattr(request, "headers", None) or {}).get("x-aiquant-market", "")).upper()
+    token = REQUEST_MARKET.set(market) if market in {"CN", "HK", "US"} else None
     CALLBACK_LOG.info(
         "frontend action backend method started | operation_id={} backend_method={} source={}",
         operation_id,
@@ -90,6 +96,9 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
             duration_ms,
             SLOW_CALLBACK_MS,
         )
+    finally:
+        if token is not None:
+            REQUEST_MARKET.reset(token)
 
 
 def safe(fn: Callable[..., Any]) -> Callable[..., Any]:

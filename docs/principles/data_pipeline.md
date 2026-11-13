@@ -16,3 +16,10 @@
 冷加载包括外部请求、数据整理及组件渲染；暖缓存只反映重复访问。性能比较应固定市场、账户、数据模式与刷新方式，不能用 API 配置响应时间代替浏览器可用时间。
 
 操作见[行情与因子](../usage/market_research.md)、[总览](../usage/dashboard.md)和[排障](../usage/troubleshooting.md)。
+
+## Hong Kong market support
+
+HK is a separate market for quotes, dated history, technical research and HKD
+ordinary-equity backtests/paper accounts. Board lots, ticks, fees and calendars
+use Hong Kong rules; missing data is not replaced with mainland observations.
+See [Hong Kong setup and verified limits](../usage/hong_kong_market.md).

@@ -1,0 +1,13 @@
+# File format: YAML; encoding: UTF-8
+# These are explicit research assumptions for acceptance, not historical lot evidence.
+start_date: '2026-10-01'
+end_date: '2026-10-30'
+symbols: [00700.HK, 00005.HK]
+initial_capital: 500000
+quantity: 400
+strategy: egs/examples/strategy_examples/function_signal_strategy.py
+params: {quantity: 400, close_threshold: 0}
+order_type: market
+instruments:
+  00700.HK: {from: '2026-10-01', to: '2026-12-31', lot_size: 100, currency: HKD, asset_type: stock, source: Explicit acceptance research assumption; verify historical HKEX metadata before production use, assumption: true}
+  00005.HK: {from: '2026-10-01', to: '2026-12-31', lot_size: 400, currency: HKD, asset_type: stock, source: Explicit acceptance research assumption; verify historical HKEX metadata before production use, assumption: true}

@@ -109,6 +109,7 @@ nav:
   - 行情与资料:
     - 总览与图表: usage/dashboard.md
     - 行情、因子和图谱: usage/market_research.md
+    - Hong Kong market: usage/hong_kong_market.md
     - Macroeconomics and fundamentals: usage/economic_analysis.md
     - 通用因子监控与Qlib: usage/factor_monitoring.md
     - 资源池模板与导入: usage/resource_pools.md

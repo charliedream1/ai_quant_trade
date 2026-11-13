@@ -80,6 +80,7 @@ def header_html() -> str:
         f"{_LANGUAGE_ICON}<span id='app-language-label'>中 / EN</span></button>"
         "<div class='app-market-toggle' role='group' aria-label='市场切换'>"
         "<button type='button' id='app-market-cn' class='app-market-option active' title='切换到 A 股市场'>A股</button>"
+        "<button type='button' id='app-market-hk' class='app-market-option' title='Hong Kong market'>港股</button>"
         "<button type='button' id='app-market-us' class='app-market-option' title='切换到美股市场'>美股</button>"
         "</div>"
         "</div>"

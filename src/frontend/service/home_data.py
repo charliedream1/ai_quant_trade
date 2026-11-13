@@ -8,7 +8,7 @@ from typing import Any
 
 from src.core.logger import get_logger
 from src.core.repository import Repository
-from src.data import DataSourceManager
+from src.data import DataSourceManager, current_market
 
 from .foundation import _daily_cached, _local_now
 from .home_config import label
@@ -46,6 +46,7 @@ class HomeAccount:
     basis: str = ""
     warnings: list[str] = field(default_factory=list)
     valued_at: str = ""
+    currency: str = "CNY"
 
 
 def account_snapshot(mode: str, force_refresh: bool = False) -> HomeAccount:
@@ -69,12 +70,16 @@ def _read_account(mode: str) -> HomeAccount:
         )
         return snapshot
     snapshot.account = repo.db.query_one("SELECT * FROM paper_accounts ORDER BY updated_at DESC, id DESC LIMIT 1") or {}
+    snapshot.currency = snapshot.account.get("currency", {"HK": "HKD", "US": "USD"}.get(current_market(), "CNY"))
     if not snapshot.account:
         snapshot.basis = label("empty_account")
         return snapshot
     account_id = int(snapshot.account["id"])
     positions = repo.list("paper_positions", "account_id = ? AND quantity > 0", (account_id,), "symbol ASC")
-    markets = {"CN" if str(row["symbol"]).isdigit() else "US" for row in positions}
+    markets = {
+        "HK" if str(row["symbol"]).upper().endswith(".HK") else "CN" if str(row["symbol"]).isdigit() else "US"
+        for row in positions
+    }
     manager = DataSourceManager(market=next(iter(markets)) if len(markets) == 1 else None)
     for position in positions:
         snapshot.holdings.append(_value_holding(position, manager, snapshot.warnings))

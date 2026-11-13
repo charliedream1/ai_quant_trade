@@ -1,0 +1,34 @@
+# File format: YAML; encoding: UTF-8
+market: HK
+currency: HKD
+timezone: Asia/Hong_Kong
+aliases: [hk, hkg, hongkong, hong_kong, 港股]
+excluded_counter_prefixes: ['8', '9']
+quote_fields: {name: 1, code: 2, close: 3, previous_close: 4, open: 5, volume: 6, timestamp: 30, change_pct: 32, amount: 37, currency: 75}
+cache_seconds: 300
+timeout_seconds: 12
+request_attempts: 2
+backoff_seconds: 1
+max_history_bars: 100000
+max_quotes: 100
+technical_windows: [5, 20, 60]
+endpoints:
+  quote: https://qt.gtimg.cn/q=
+  history: https://web.ifzq.gtimg.cn/appstock/app/fqkline/get
+  eastmoney_history: https://push2his.eastmoney.com/api/qt/stock/kline/get
+  referer: https://gu.qq.com/
+periods: {daily: day, weekly: week, monthly: month}
+eastmoney_periods: {daily: '101', weekly: '102', monthly: '103'}
+adjustments: {none: '', qfq: qfq, hfq: hfq}
+eastmoney_adjustments: {none: '0', qfq: '1', hfq: '2'}
+indices: [{symbol: HSI, name: Hang Seng Index}, {symbol: HSCEI, name: Hang Seng China Enterprises Index}]
+capabilities:
+  quotes: true
+  history: true
+  technical_analysis: true
+  fundamentals: false
+  sectors: false
+  news: false
+  reports: false
+  derivatives: false
+  live_trading: false

@@ -1,0 +1,9 @@
+# File format: YAML; encoding: UTF-8
+timezone: Asia/Hong_Kong
+continuous_sessions: [['09:30', '12:00'], ['13:00', '16:00']]
+half_day_continuous_sessions: [['09:30', '12:00']]
+years:
+  '2026':
+    source: https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2025/ce_SEHK_CT_075_2025.pdf
+    holidays: ['2026-01-01', '2026-02-17', '2026-02-18', '2026-02-19', '2026-04-03', '2026-04-06', '2026-04-07', '2026-05-01', '2026-05-25', '2026-06-19', '2026-07-01', '2026-10-01', '2026-10-19', '2026-12-25']
+    half_days: ['2026-02-16', '2026-12-24', '2026-12-31']

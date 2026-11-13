@@ -20,8 +20,8 @@ class Client:
         self.session.trust_env = False
         self.headers = {"X-Request-ID": uuid4().hex}
         if market:
-            if market not in {"CN", "US"}:
-                raise CliError("--market 必须为 CN 或 US")
+            if market not in {"CN", "HK", "US"}:
+                raise CliError("--market must be CN, HK or US")
             self.headers["X-AIQuant-Market"] = market
         if config.get("authorization"):
             self.headers["Authorization"] = str(config["authorization"])

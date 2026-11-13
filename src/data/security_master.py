@@ -12,7 +12,8 @@ from src.core.config import get_settings
 from src.core.logger import get_logger
 from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
-from src.data.manager import MARKET_CN, MARKET_US, current_market, normalize_market
+from src.data.hong_kong import hk_symbol
+from src.data.manager import MARKET_CN, MARKET_HK, MARKET_US, current_market, normalize_market
 from src.data.models import STOCKS, US_STOCKS
 from src.data.symbols import parse_symbol
 
@@ -42,10 +43,14 @@ class SecurityMasterService:
         with self._seed_lock:
             if db_path in self._seeded_db_paths and self._row_count() > 0:
                 return
-            if self._row_count() > 0:
-                self._seeded_db_paths.add(db_path)
-                return
+            existing = self._row_count() > 0
             rows = self._seed_rows()
+            if existing:
+                rows = [
+                    row
+                    for row in rows
+                    if row["market"] == MARKET_HK and self._row_by_symbol(row["symbol"], MARKET_HK) is None
+                ]
             if not rows:
                 return
             now = utc_now_iso()
@@ -205,6 +210,16 @@ class SecurityMasterService:
         )
 
     def _direct_symbol_row(self, text: str, market: str | None) -> dict[str, Any] | None:
+        try:
+            hk = hk_symbol(text)
+        except ValueError:
+            hk = ""
+        if hk:
+            if market not in (None, MARKET_HK):
+                return None
+            return self._row_by_symbol(hk, MARKET_HK) or _row_from_symbol(hk, MARKET_HK, "HKEX")
+        if market == MARKET_HK:
+            return None
         if market != MARKET_US:
             try:
                 parsed = parse_symbol(text, stock_only=False)
@@ -314,6 +329,8 @@ def _normalize_seed_row(row: dict[str, Any]) -> dict[str, Any]:
             symbol = parse_symbol(symbol, stock_only=False).code
         except ValueError:
             pass
+    elif market == MARKET_HK:
+        symbol = hk_symbol(symbol)
     return {
         "symbol": symbol,
         "market": market,

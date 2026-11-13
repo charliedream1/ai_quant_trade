@@ -65,3 +65,10 @@
 Qlib原生Workflow使用自身费用配置；显式传通用执行覆盖会拒绝，避免界面与原生引擎行为不一致。复权价格研究不能等同原始价格加公司行为账本。严格模式需要完整、按时可知的历史状态与权益事件确认；当前通用历史源缺少部分字段，不能仅切换开关就得到完整实盘模拟。
 
 日K不能还原盘中路径、队列和真实市场冲击。计算与限制见[执行成本原理](../principles/execution_costs.md)，结果阅读见[回测指南](backtest.md)。
+
+## Hong Kong market support
+
+HK is a separate market for quotes, dated history, technical research and HKD
+ordinary-equity backtests/paper accounts. Board lots, ticks, fees and calendars
+use Hong Kong rules; missing data is not replaced with mainland observations.
+See [Hong Kong setup and verified limits](hong_kong_market.md).

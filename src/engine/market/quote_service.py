@@ -56,6 +56,7 @@ class QuoteService:
         now = utc_now_iso()
         for symbol in symbols:
             quote = self.data.stock_quote(symbol)
+            symbol = quote.get("symbol", symbol)
             try:
                 self.repo.insert(
                     "watchlist",
@@ -85,8 +86,10 @@ class QuoteService:
         self.repo.db.execute("DELETE FROM watchlist WHERE group_id = ? AND symbol = ?", (group_id, symbol))
 
     def watchlist_quotes(self, group_id: int | None = None) -> list[dict[str, Any]]:
-        where = "group_id = ?" if group_id else ""
-        params = (group_id,) if group_id else ()
+        market_clause = "market IN ('CN', 'SH', 'SZ', 'BJ')" if self.data.market == "CN" else "market = ?"
+        where = "group_id = ? AND " + market_clause if group_id else market_clause
+        market_params = () if self.data.market == "CN" else (self.data.market,)
+        params = (group_id, *market_params) if group_id else market_params
         items = self.repo.list("watchlist", where=where, params=params, order_by="group_id ASC, sort_order ASC, id ASC")
         quotes = self.data.stock_quotes([item["symbol"] for item in items])
         return [

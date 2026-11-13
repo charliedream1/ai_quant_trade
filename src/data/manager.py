@@ -10,6 +10,8 @@ from src.core.config import get_settings
 from src.core.timeutil import utc_now_iso
 
 from .eastmoney import EastmoneyDataSource
+from .hong_kong import HongKongDataSource, hk_config
+from .hong_kong_mock import HongKongMockSource
 from .models import (
     INDEX_QUOTES,
     NEWS_ITEMS,
@@ -25,6 +27,7 @@ from .models import (
 
 MARKET_CN = "CN"
 MARKET_US = "US"
+MARKET_HK = "HK"
 _MARKET_ALIASES = {
     "cn": MARKET_CN,
     "cn_a": MARKET_CN,
@@ -41,9 +44,15 @@ REQUEST_MARKET: ContextVar[str | None] = ContextVar("all_in_one_request_market",
 
 
 def normalize_market(value: Any) -> str:
-    """Map user-facing market labels to the canonical CN/US codes."""
+    """Map labels to CN/HK/US; reject unsupported markets instead of routing to CN."""
     key = str(value or "").strip().lower()
-    return _MARKET_ALIASES.get(key, key.upper() if key in {"cn", "us"} else MARKET_CN)
+    if not key:
+        return MARKET_CN
+    if key in hk_config()["aliases"]:
+        return MARKET_HK
+    if key not in _MARKET_ALIASES:
+        raise ValueError("Market must be CN, HK or US")
+    return _MARKET_ALIASES[key]
 
 
 def set_current_market(market: Any) -> str:
@@ -71,6 +80,8 @@ class MockDataSource:
 
     def __init__(self, market: str | None = None) -> None:
         self.market = normalize_market(market) if market else current_market()
+        if self.market == MARKET_HK:
+            raise ValueError("Use DataSourceManager for the separate Hong Kong development source")
         self.source_name = "mock-local" if self.market == MARKET_CN else "mock-local-us"
 
     @property
@@ -512,8 +523,17 @@ class DataSourceManager:
         selected = str(mode or os.environ.get("ALL_IN_ONE_DATA_MODE") or settings.data_mode).strip().lower()
         selected_market = normalize_market(market) if market else current_market()
         self.market = selected_market
+        self.provider: Any
+        if selected_market == MARKET_HK:
+            if selected not in {"real", "mock"}:
+                raise ValueError("Data mode must be real or mock")
+            self.provider = (
+                HongKongMockSource() if selected == "mock" else HongKongDataSource(settings.data_timeout_seconds)
+            )
+            self.mode = selected
+            return
         if selected == "mock":
-            self.provider: Any = MockDataSource(market=selected_market)
+            self.provider = MockDataSource(market=selected_market)
         elif selected == "real":
             if selected_market == MARKET_US:
                 self.provider = MockDataSource(market=MARKET_US)

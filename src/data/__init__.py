@@ -3,6 +3,7 @@
 from .etf import ETFUniverseService
 from .manager import (
     MARKET_CN,
+    MARKET_HK,
     MARKET_US,
     DataSourceManager,
     current_market,
@@ -13,6 +14,7 @@ from .security_master import SecurityMasterService, parse_security_symbols, reso
 
 __all__ = [
     "MARKET_CN",
+    "MARKET_HK",
     "MARKET_US",
     "DataSourceManager",
     "SecurityMasterService",

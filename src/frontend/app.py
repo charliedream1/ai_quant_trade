@@ -73,7 +73,7 @@ def build_gradio_app() -> gr.Blocks:
         gr.HTML(header_html())
         with gr.Row(elem_id="market-switcher-row"):
             market_switcher = gr.Radio(
-                ["A股", "美股"],
+                ["A股", "港股", "美股"],
                 value=None,
                 label="市场",
                 interactive=True,
@@ -82,7 +82,7 @@ def build_gradio_app() -> gr.Blocks:
                 min_width=260,
             )
             market_status = gr.Markdown(
-                f"当前市场：**{'美股' if current_market() == 'US' else 'A股'}**  ·  切换后按需刷新当前模块",
+                f"当前市场：**{ ({'US': '美股', 'HK': '港股'}.get(current_market(), 'A股')) }**  ·  切换后按需刷新当前模块",
                 elem_classes=["market-status-strip"],
             )
 

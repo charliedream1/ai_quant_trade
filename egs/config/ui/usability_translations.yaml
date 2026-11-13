@@ -145,3 +145,5 @@ ETF池读取失败: ETF universe could not be loaded
 选择已启用模型；空值表示系统默认模型: Select an enabled model; empty means the backend default
 选择思考强度；是否生效取决于后台和模型: Select reasoning effort; support depends on the backend and model
 发送当前任务（Enter 发送，Ctrl+Enter 换行）: Send the task (Enter to send, Ctrl+Enter for a new line)
+港股: Hong Kong
+Hong Kong market: Hong Kong market

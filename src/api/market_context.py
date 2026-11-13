@@ -20,11 +20,11 @@ class MarketContextMiddleware:
         selected = params.get("market", [""])[-1].upper()
         # Native Qlib also uses market names such as csi300.
         header = dict(scope.get("headers") or []).get(b"x-aiquant-market", b"").decode("ascii", errors="replace")
-        if header and header.upper() not in {"CN", "US"}:
-            response = JSONResponse({"code": 1002, "message": "市场必须为 CN 或 US", "data": None})
+        if header and header.upper() not in {"CN", "HK", "US"}:
+            response = JSONResponse({"code": 1002, "message": "Market must be CN, HK or US", "data": None})
             await response(scope, receive, send)
             return
-        token = REQUEST_MARKET.set(header.upper() or (selected if selected in {"CN", "US"} else None))
+        token = REQUEST_MARKET.set(header.upper() or (selected if selected in {"CN", "HK", "US"} else None))
         try:
             await self.app(scope, receive, send)
         finally:

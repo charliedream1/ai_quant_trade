@@ -37,3 +37,10 @@ Chinese macroeconomic series and A-share financial statements now have dedicated
 选择一条关系，核对标题、来源、时间、原文链接、匹配实体与证据片段。公司直接提及与同文共现分别记录；市场背景或相似主题不能当成公司事实关系。只抓到标题/摘要时不会声称已分析全文。真实源没有相关新闻就保持为空；mock 图必须结合来源说明阅读。
 
 收益相关边现在比较相同起止交易日的收益率，显示区间、样本与正负；边宽不是可信概率。每张主要图下可展开说明，核对轴、单位、数据口径与限制。
+
+## Hong Kong market support
+
+HK is a separate market for quotes, dated history, technical research and HKD
+ordinary-equity backtests/paper accounts. Board lots, ticks, fees and calendars
+use Hong Kong rules; missing data is not replaced with mainland observations.
+See [Hong Kong setup and verified limits](hong_kong_market.md).

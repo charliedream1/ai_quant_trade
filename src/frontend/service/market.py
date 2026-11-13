@@ -477,6 +477,12 @@ class MarketServiceMixin:
             f"换手率 **{quote.get('turnover_rate', '-')}%**　数据源 `{quote.get('data_source', '-')}`"
         )
         finance = [{"指标": key, "数值": value} for key, value in (result.get("finance") or {}).items()]
+        if quote.get("market") == "HK":
+            summary += "\n\nCurrency: HKD. Technical research only; financial statements and news are unavailable."
+            finance = [
+                {"指标": key.replace("sma_", "SMA / "), "数值": f"{value:.4f}" if value is not None else "—"}
+                for key, value in result.get("technical", {}).items()
+            ]
         return (
             summary,
             score_figure(result.get("score") or {}),

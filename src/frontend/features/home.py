@@ -119,7 +119,7 @@ def render_home(
 
     def market_changed(value: str) -> str:
         market = switch_ui_market(value)
-        return f"当前市场：{'美股' if market == 'US' else 'A股'} · 已切换，首页分块刷新。"
+        return f"当前市场：{ ({'US': '美股', 'HK': '港股'}.get(market, 'A股')) } · 已切换，首页分块刷新。"
 
     market_event = market_switcher.change(
         safe(market_changed), inputs=market_switcher, outputs=market_status, queue=False

@@ -73,10 +73,10 @@ def allocation(snapshot: HomeAccount) -> go.Figure:
         sort=False,
         marker={"colors": home_config()["colors"]["palette"]},
         textinfo="percent",
-        hovertemplate="%{label}<br>%{value:,.2f} 元 · %{percent}<extra></extra>",
+        hovertemplate="%{label}<br>%{value:,.2f} " + snapshot.currency + " · %{percent}<extra></extra>",
     )
     result.update_layout(margin={"l": 18, "r": 18, "t": 45, "b": 38})
-    result.add_annotation(text=f"{snapshot.total_asset / 10000:,.2f}<br>万元", x=0.5, y=0.5, showarrow=False)
+    result.add_annotation(text=f"{snapshot.total_asset / 10000:,.2f}<br>10k {snapshot.currency}", x=0.5, y=0.5, showarrow=False)
     return result
 
 
@@ -95,9 +95,9 @@ def contribution(snapshot: HomeAccount) -> go.Figure:
         marker_color=[color("gain") if value >= 0 else color("loss") for value in values],
         text=[f"{value:+,.0f}" for value in values],
         textposition="auto",
-        hovertemplate="%{y}<br>浮动盈亏 %{x:+,.2f} 元<extra></extra>",
+        hovertemplate="%{y}<br>浮动盈亏 %{x:+,.2f} " + snapshot.currency + "<extra></extra>",
     )
-    result.update_xaxes(title="元")
+    result.update_xaxes(title=snapshot.currency)
     return result
 
 

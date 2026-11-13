@@ -18,6 +18,8 @@ class NewsAggregator:
         return "Mock Wire" if self.data.market == MARKET_US else "本地模拟源"
 
     def seed_if_empty(self, force_refresh: bool = False) -> None:
+        if self.data.market == "HK":
+            return
         if not self.data.is_mock:
             self.repo.db.execute(
                 "DELETE FROM news_items WHERE source IN (?, ?) OR url LIKE ?",
@@ -63,6 +65,9 @@ class NewsAggregator:
         page_size: int,
         refresh: bool = False,
     ) -> dict[str, Any]:
+        if self.data.market == "HK":
+            return {"items": [], "total": 0, "page": page, "page_size": page_size,
+                    "availability": "Hong Kong news provider not configured"}
         self.seed_if_empty(force_refresh=refresh)
         parts: list[tuple[str, Any]] = []
         if category:
@@ -84,6 +89,8 @@ class NewsAggregator:
         return result
 
     def keyword_cloud(self, scope: str, category: str | None, top_n: int) -> Any:
+        if self.data.market == "HK":
+            return []
         self.seed_if_empty()
         rows = self.repo.list(
             "news_items",

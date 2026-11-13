@@ -250,10 +250,15 @@ def _run_event_backtest(
         },
     )
     payload["lot_size"] = int(policy["lot_size"])
+    hk_root = dict(policy) if policy.get("market") == "HK" else None
     payload["_warmup"] = callable(getattr(runtime, "warmup", None))
     payload["_history_warmup"] = payload["_warmup"] or policy["max_participation"] < 1
     events_by_symbol = _load_events(data, symbols, payload)
     gaps = capability_gaps({s: [event.raw for event in values] for s, values in events_by_symbol.items()}, policy)
+    if hk_root:
+        gaps.append("HKD research: broker cash clearing, intraday auctions and corporate-action cash flows are not simulated")
+        if any(not value.get("calendar_completeness_verified") for value in payload.get("_coverage", {}).values()):
+            gaps.append("Hong Kong exchange calendar is not verified for this historical year")
     if _normalize_price_adjustment(payload.get("price_adjustment")) != "none":
         if policy["validation_mode"] == "strict":
             raise BusinessError(ErrorCode.INVALID_PARAM, "严格账户校验需要未复权行情及权益事件确认")
@@ -315,6 +320,11 @@ def _run_event_backtest(
                     continue
                 current_date = current_date or event.timestamp
                 latest_prices[event.symbol] = event.close
+                if hk_root:
+                    from src.engine.execution.hong_kong import dated_policy
+
+                    payload["_cost_policy"] = dated_policy(event.symbol, event.timestamp, hk_root)
+                    payload["lot_size"] = payload["_cost_policy"]["lot_size"]
                 _sync_context(context, cash, positions, latest_prices, current_date, initial_cash)
                 signals = strategy.on_bar(event, context)
                 cash = _apply_signals(cash, positions, trades, signals, event, payload)
@@ -379,6 +389,9 @@ def _run_event_backtest(
     metrics["date_coverage"] = payload.get("_coverage", {})
     metrics.update(cost_summary(payload.get("_execution_orders", []), initial_cash, equity[-1]))
     metrics.update(execution_costs=policy, execution_gaps=gaps)
+    if hk_root:
+        metrics.update(market="HK", currency="HKD", settlement_scope="Sale eligibility only; broker cash settlement excluded")
+        curve["currency"] = "HKD"
     metrics["bars_by_symbol"] = {symbol: len(events) for symbol, events in events_by_symbol.items()}
     if context.metadata.get("model_diagnostics"):
         metrics["model_diagnostics"] = context.metadata["model_diagnostics"]
@@ -667,6 +680,11 @@ def _close_open_positions(
         if not events:
             continue
         final_event = events[-1]
+        if payload.get("_cost_policy", {}).get("market") == "HK":
+            from src.engine.execution.hong_kong import dated_policy
+
+            payload["_cost_policy"] = dated_policy(symbol, final_event.timestamp, payload["_cost_policy"])
+            payload["lot_size"] = payload["_cost_policy"]["lot_size"]
         signal = StrategySignal(symbol=symbol, side="sell", quantity=0, reason="mark_to_close")
         cash = _close_long(
             cash,
@@ -1010,6 +1028,8 @@ def _max_position_weight(payload: dict[str, Any]) -> float:
 
 
 def _lot_size(payload: dict[str, Any]) -> int:
+    if payload.get("_cost_policy", {}).get("market") == "HK":
+        return int(payload["_cost_policy"]["lot_size"])
     return max(1, min(_payload_int(payload, "lot_size", 1), 10000))
 
 

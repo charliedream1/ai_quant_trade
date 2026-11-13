@@ -1,11 +1,16 @@
 """Paper account and order service."""
 
+import json
 from typing import Any
 
 from src.core.exceptions import BusinessError, ErrorCode
-from src.core.repository import Repository
+from src.core.repository import Repository, json_loads
 from src.core.timeutil import today_date, utc_now_iso
-from src.data import DataSourceManager
+from src.data import DataSourceManager, current_market, normalize_market
+from src.data.hong_kong import hk_symbol
+from src.engine.execution.config import resolve_costs
+from src.engine.execution.costs import order_fee, slipped_price
+from src.engine.execution.hong_kong import dated_policy
 
 
 class PaperAccountService:
@@ -22,6 +27,12 @@ class PaperAccountService:
     def create(self, payload: dict[str, Any]) -> dict[str, Any]:
         now = utc_now_iso()
         cash = float(payload.get("initial_capital") or payload.get("initial_cash") or 1000000)
+        market = normalize_market(payload.get("market") or getattr(self.data, "market", current_market()))
+        costs = (
+            resolve_costs({"profile": "hk_cash", **(payload.get("execution_costs") or {})}) if market == "HK" else {}
+        )
+        if market == "HK" and costs["market"] != "HK":
+            raise BusinessError(ErrorCode.INVALID_PARAM, "HK paper accounts require HK execution costs")
         row = self.repo.insert(
             "paper_accounts",
             {
@@ -29,6 +40,9 @@ class PaperAccountService:
                 "strategy_id": payload.get("strategy_id"),
                 "initial_cash": cash,
                 "current_cash": cash,
+                "market": market,
+                "currency": {"HK": "HKD", "CN": "CNY", "US": "USD"}[market],
+                "execution_costs": json.dumps(costs),
                 "status": "运行中",
                 "created_at": now,
                 "updated_at": now,
@@ -61,6 +75,8 @@ class PaperAccountService:
         total_asset = float(account["current_cash"]) + market_value
         return {
             "account_id": account_id,
+            "market": account["market"],
+            "currency": account["currency"],
             "cash": account["current_cash"],
             "market_value": round(market_value, 2),
             "total_asset": round(total_asset, 2),
@@ -74,6 +90,8 @@ class PaperAccountService:
     def order(self, account_id: int, payload: dict[str, Any]) -> dict[str, Any]:
         account = self.get(account_id)
         symbol = payload["symbol"]
+        if account["market"] == "HK":
+            symbol = hk_symbol(symbol)
         side = str(payload.get("side") or payload.get("direction") or "buy").lower()
         if side not in ("buy", "sell", "买", "卖"):
             raise BusinessError(ErrorCode.PAPER_ORDER_REJECTED, "委托方向非法")
@@ -81,7 +99,7 @@ class PaperAccountService:
         quantity = int(payload["quantity"])
         if quantity <= 0:
             raise BusinessError(ErrorCode.PAPER_ORDER_REJECTED, "委托数量必须大于 0")
-        quote = self.data.stock_quote(symbol)
+        quote = self._data_for(account).stock_quote(symbol)
         if quote.get("is_stale"):
             raise BusinessError(
                 ErrorCode.PAPER_ORDER_REJECTED,
@@ -99,6 +117,8 @@ class PaperAccountService:
             raise BusinessError(ErrorCode.PAPER_ORDER_REJECTED, "委托价格必须大于 0")
         amount = price * quantity
         fee = round(amount * 0.0003, 2)
+        if account["market"] == "HK":
+            price, fee = self._hk_fill_terms(account, symbol, price, quantity, direction == "买")
         now = utc_now_iso()
         if direction == "买" and float(account["current_cash"]) < amount + fee:
             raise BusinessError(ErrorCode.PAPER_ORDER_REJECTED, "可用资金不足")
@@ -137,7 +157,7 @@ class PaperAccountService:
         return order
 
     def match_orders(self, account_id: int) -> dict[str, Any]:
-        self.get(account_id)
+        account = self.get(account_id)
         pending = self.repo.list(
             "paper_orders",
             where="account_id = ? AND status = ?",
@@ -148,7 +168,7 @@ class PaperAccountService:
         matched: list[dict[str, Any]] = []
         skipped: list[dict[str, Any]] = []
         for order in pending:
-            quote = self.data.stock_quote(order["symbol"])
+            quote = self._data_for(account).stock_quote(order["symbol"])
             if quote.get("is_stale"):
                 skipped.append({"order_id": order["id"], "reason": quote.get("stale_reason") or "行情未更新"})
                 continue
@@ -162,6 +182,8 @@ class PaperAccountService:
                 continue
             amount = price * quantity
             fee = round(amount * 0.0003, 2)
+            if account["market"] == "HK":
+                price, fee = self._hk_fill_terms(account, order["symbol"], price, quantity, order["direction"] == "买")
             if str(order["direction"]) == "买" and float(self.get(account_id)["current_cash"]) < amount + fee:
                 skipped.append({"order_id": order["id"], "reason": "可用资金不足"})
                 continue
@@ -225,11 +247,12 @@ class PaperAccountService:
         return self.repo.page("paper_trades", page, page_size, where, params, order_by="traded_at DESC")
 
     def positions(self, account_id: int):
+        data = self._data_for(self.get(account_id))
         rows = self.repo.list(
             "paper_positions", where="account_id = ? AND quantity > 0", params=(account_id,), order_by="symbol ASC"
         )
         for row in rows:
-            quote = self.data.stock_quote(row["symbol"])
+            quote = data.stock_quote(row["symbol"])
             row["latest_price"] = quote["latest_price"]
             row["market_value"] = round(float(quote["latest_price"]) * int(row["quantity"]), 2)
             row["float_pnl"] = round(row["market_value"] - float(row["avg_cost"]) * int(row["quantity"]), 2)
@@ -245,6 +268,22 @@ class PaperAccountService:
             "net_values": [r["net_value"] for r in rows],
             "daily_returns": [r["daily_return"] or 0 for r in rows],
         }
+
+    def _data_for(self, account):
+        if account["market"] == getattr(self.data, "market", "CN"):
+            return self.data
+        return DataSourceManager(mode=getattr(self.data, "mode", None), market=account["market"])
+
+    @staticmethod
+    def _hk_fill_terms(account, symbol, price, quantity, buy):
+        policy = dated_policy(symbol, today_date(), json_loads(account["execution_costs"], {}))
+        if quantity % policy["lot_size"]:
+            raise BusinessError(ErrorCode.PAPER_ORDER_REJECTED, "HK quantity must be an integral board lot")
+        matched = slipped_price(price, buy, {**policy, "slippage_mode": "none"})
+        if matched is None or abs(matched - price) > 1e-8:
+            raise BusinessError(ErrorCode.PAPER_ORDER_REJECTED, "HK order price is off the dated tick grid")
+        fees, _ = order_fee(policy, price * quantity, buy, today_date())
+        return price, fees["total"]
 
     def snapshot(self, account_id: int) -> dict[str, Any]:
         self._snapshot(account_id)

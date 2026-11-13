@@ -7,6 +7,17 @@ from src.knowledge.config import knowledge_config
 def apply_migrations(database):
     conn = database._connection()
     conn.execute("CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY,applied_at TEXT NOT NULL)")
+    if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=5").fetchone():
+        database._ensure_columns(
+            "paper_accounts",
+            {
+                "market": "TEXT NOT NULL DEFAULT 'CN'",
+                "currency": "TEXT NOT NULL DEFAULT 'CNY'",
+                "execution_costs": "TEXT NOT NULL DEFAULT '{}'",
+            },
+        )
+        conn.execute("INSERT OR IGNORE INTO schema_migrations VALUES(?,?)", (5, utc_now_iso()))
+        conn.commit()
     if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=3").fetchone():
         database._ensure_columns(
             "llm_models",

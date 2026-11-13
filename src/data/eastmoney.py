@@ -676,6 +676,8 @@ class EastmoneyDataSource:
 
     def stock_quote(self, symbol: str) -> dict[str, Any]:
         parsed = parse_symbol(symbol)
+        if parsed.market == "HK":
+            raise ValueError("Select HK market for Hong Kong securities")
         return _cached(
             f"stock-quote:{parsed.cache_key}",
             _market_cache_ttl(15, 300),
@@ -1094,6 +1096,12 @@ class EastmoneyDataSource:
         return {"symbol": parsed.code, "quote": quote, "kline": kline, "industry": industry}
 
     def _kline(self, symbol: str, period: str, count: int, price_adjustment: str = "qfq") -> list[dict[str, Any]]:
+        try:
+            market = parse_symbol(symbol).market
+        except ValueError:
+            market = None
+        if market == "HK":
+            raise ValueError("Select HK market for Hong Kong history")
         period_value = period if period in {"daily", "weekly", "monthly"} else "daily"
         count_value = max(1, min(int(count), 240))
         adjustment = _normalize_price_adjustment(price_adjustment)

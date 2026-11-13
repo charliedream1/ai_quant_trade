@@ -105,5 +105,7 @@ html[data-theme="dark"] #quant-workspace-shell #workspace-sidebar-toggle * { col
   #quant-workspace-shell .workspace-brand-copy { display: none; }
   #quant-workspace-shell .workspace-actions { gap: 4px; }
   #quant-workspace-shell .workspace-topbar { gap: 8px; padding: 8px; }
-  #quant-workspace-shell .workspace-market { display: none; }
+  #quant-workspace-shell .workspace-market { display: flex; }
+  #quant-workspace-shell .workspace-external-links { display: none; }
+  #quant-workspace-shell .workspace-market button { min-width: 32px; padding: 0 4px; }
 }

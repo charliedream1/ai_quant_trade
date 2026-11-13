@@ -41,4 +41,8 @@ def cost_markdown(metrics):
         "毛收益是保持实际成交不变加回成本的归因，不是另跑的零成本策略。",
     ]
     lines.extend("- " + gap for gap in metrics.get("execution_gaps", []))
-    return "\n\n".join(lines)
+    text = "\n\n".join(lines)
+    if policy.get("market") == "HK":
+        text = text.replace(" 元", " HKD")
+        text += "\n\nHKD account; component rounding and dated HKEX fees apply. Cash clearing is not simulated."
+    return text

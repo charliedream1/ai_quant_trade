@@ -33,18 +33,18 @@ def account_kpis(snapshot: HomeAccount) -> str:
         metric(
             "账户总资产",
             money(snapshot.total_asset),
-            "元 · 当前可用行情估值" if snapshot.mode == "paper" else "待 broker 回传",
+            f"{snapshot.currency} · 当前可用行情估值" if snapshot.mode == "paper" else "待 broker 回传",
         ),
         metric(
             "今日盈亏",
             money(snapshot.daily_pnl, signed=True),
-            "元 · 当天与前次快照之差" if snapshot.daily_pnl is not None else label("missing_daily"),
+            f"{snapshot.currency} · 当天与前次快照之差" if snapshot.daily_pnl is not None else label("missing_daily"),
             tone(snapshot.daily_pnl),
         ),
         metric(
             "累计盈亏",
             money(pnl, signed=True),
-            "元 · 相对初始资金" if snapshot.mode == "paper" else "未提供真实盈亏",
+            f"{snapshot.currency} · 相对初始资金" if snapshot.mode == "paper" else "未提供真实盈亏",
             tone(pnl),
         ),
         metric(

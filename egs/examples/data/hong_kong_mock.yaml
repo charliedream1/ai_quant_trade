@@ -1,0 +1,10 @@
+# File format: YAML; encoding: UTF-8
+# Explicit deterministic development fixtures; never used in real mode.
+quotes:
+  00700.HK: {name: Tencent fixture, price: 400, latest_price: 400, change_pct: 1, volume: 1000000}
+  00005.HK: {name: HSBC fixture, price: 140, latest_price: 140, change_pct: 0.5, volume: 2000000}
+history:
+  start: '2026-01-02'
+  sessions: 80
+  price_increment: 0.2
+  volume: 1000000

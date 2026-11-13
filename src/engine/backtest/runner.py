@@ -13,7 +13,9 @@ from src.core.repository import Repository, json_loads
 from src.core.security_config import security_config
 from src.core.task_control import TaskEvent
 from src.core.timeutil import utc_now_iso
-from src.data import DataSourceManager
+from src.data import DataSourceManager, current_market, normalize_market
+from src.data.hong_kong import hk_symbol
+from src.data.manager import REQUEST_MARKET
 from src.engine.execution.config import resolve_costs
 from src.strategy import StrategyLoader, StrategyStore
 from src.strategy.parameters import StrategyParameters
@@ -40,15 +42,21 @@ class BacktestRunner:
         self.repo = repo or Repository()
 
     def create(self, payload: dict[str, Any], *, deferred: bool = False) -> dict[str, Any]:
+        selected_market = normalize_market(payload.get("market") or current_market())
+        payload = {**payload, "market": selected_market}
         strategy_id = int(payload["strategy_id"])
         self.repo.get("strategies", strategy_id)
         symbols = _normalize_symbols(payload.get("symbols") or payload.get("universe") or ["000001"])
+        if selected_market == "HK":
+            symbols = [hk_symbol(symbol) for symbol in symbols]
         resolution = StrategyParameters(repo=self.repo).resolve(
             strategy_id, payload.get("params"), payload.get("parameter_profile")
         )
         params = resolution["resolved_params"]
         capability = strategy_capability(strategy_id, params, self.repo)
         engine_key = resolve_engine(payload.get("engine"), capability)
+        if selected_market == "HK" and engine_key != "simple":
+            raise BusinessError(ErrorCode.INVALID_PARAM, "HK currently supports the ordinary cash-equity simple engine")
         if engine_key == "qlib" and payload.get("execution_costs"):
             raise BusinessError(
                 ErrorCode.INVALID_PARAM, "Qlib原生Workflow费用需在Workflow配置；不接受未映射的通用执行覆盖"
@@ -78,13 +86,20 @@ class BacktestRunner:
         )
         if engine_key == "composition":
             commission_rate = float(capability["execution"]["commission_rate"])
+        requested_costs = payload.get("execution_costs")
+        if selected_market == "HK":
+            requested_costs = {"profile": "hk_cash", **(requested_costs or {})}
+            if requested_costs["profile"] == "inherit":
+                requested_costs["profile"] = "hk_cash"
         costs = resolve_costs(
-            payload.get("execution_costs"),
+            requested_costs,
             {**capability["execution"], **execution_config, "commission_rate": commission_rate},
         )
         execution_config.update(
             execution_costs=costs, slippage_rate=costs["slippage_rate"], lot_size=int(costs["lot_size"])
         )
+        if selected_market == "HK" and costs["market"] != "HK":
+            raise BusinessError(ErrorCode.INVALID_PARAM, "HK backtests require HK execution costs")
         commission_rate = costs["buy_commission_rate"]
         if engine_key == "qlib":
             execution_config.pop("execution_costs", None)
@@ -183,13 +198,17 @@ class BacktestRunner:
             loaded = StrategyLoader(StrategyStore(repo=self.repo).storage).load_from_file(
                 row["file_path"], params=deepcopy(stored)
             )
-            metrics, curve, trades = get_backtest_engine(task["engine"]).run(
-                payload,
-                task["symbols"],
-                task["initial_cash"],
-                strategy=loaded.adapter,
-                data=data or DataSourceManager(),
-            )
+            market_token = REQUEST_MARKET.set(payload.get("market") or current_market())
+            try:
+                metrics, curve, trades = get_backtest_engine(task["engine"]).run(
+                    payload,
+                    task["symbols"],
+                    task["initial_cash"],
+                    strategy=loaded.adapter,
+                    data=data or DataSourceManager(),
+                )
+            finally:
+                REQUEST_MARKET.reset(market_token)
             if checkpoint:
                 checkpoint()
             with self.repo.db.transaction():

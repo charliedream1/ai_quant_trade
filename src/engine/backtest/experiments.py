@@ -60,7 +60,19 @@ def experiment_snapshot(
     files.extend(
         path.relative_to(PROJECT_ROOT).as_posix() for path in (PROJECT_ROOT / "src/engine/execution").glob("*.py")
     )
-    files.extend(["src/data/backtest_history.py", "egs/config/strategies/backtest.yaml", "src/engine/backtest/capabilities.py"])
+    files.extend(
+        ["src/data/backtest_history.py", "egs/config/strategies/backtest.yaml", "src/engine/backtest/capabilities.py"]
+    )
+    if payload.get("market") == "HK":
+        files.extend(
+            [
+                "egs/config/data/hong_kong.yaml",
+                "egs/config/data/hong_kong_calendar.yaml",
+                "egs/config/strategies/hong_kong_execution.yaml",
+                "src/data/hong_kong.py",
+                "src/data/hong_kong_calendar.py",
+            ]
+        )
     return deepcopy(
         {
             "schema_version": 1,
@@ -77,6 +89,7 @@ def experiment_snapshot(
             "resolved_params": resolution["resolved_params"],
             "run": {
                 "engine": payload.get("engine"),
+                "market": payload.get("market") or current_market(),
                 "symbols": list(symbols),
                 "start_date": payload["start_date"],
                 "end_date": payload["end_date"],
@@ -92,7 +105,7 @@ def experiment_snapshot(
             "code_sha256": {
                 name: hashlib.sha256((PROJECT_ROOT / name).read_bytes()).hexdigest() for name in sorted(files)
             },
-            "data": {"mode": get_settings().data_mode, "market": current_market()},
+            "data": {"mode": get_settings().data_mode, "market": payload.get("market") or current_market()},
         }
     )
 

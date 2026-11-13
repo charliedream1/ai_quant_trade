@@ -1,0 +1,27 @@
+# File format: YAML; encoding: UTF-8
+verified_at: '2026-11-12'
+valid_from: '2023-11-17'
+currency: HKD
+timezone: Asia/Hong_Kong
+minimum_price: 0.01
+sale_wait_sessions: 0
+clearing_cycle: T+2; broker cash availability must be configured separately
+fees:
+  stamp: {rate: 0.001, quantum: '1', rounding: ceiling}
+  sfc: {rate: 0.000027, quantum: '0.01', rounding: half_up}
+  afrc: {rate: 0.0000015, quantum: '0.01', rounding: half_up}
+  trading: {rate: 0.0000565, quantum: '0.01', rounding: half_up}
+  settlement:
+    - {from: '2023-11-17', rate: 0.00002, minimum: 2, maximum: 100, quantum: '0.01', rounding: half_up}
+    - {from: '2025-06-30', rate: 0.000042, minimum: 0, maximum: null, quantum: '0.01', rounding: half_up}
+tick_tables:
+  - from: '2023-11-17'
+    bands: [[0.25, 0.001], [0.50, 0.005], [10, 0.01], [20, 0.02], [100, 0.05], [200, 0.1], [500, 0.2], [1000, 0.5], [2000, 1], [5000, 2], [9995, 5]]
+  - from: '2025-08-04'
+    bands: [[0.25, 0.001], [0.50, 0.005], [10, 0.01], [20, 0.01], [50, 0.02], [100, 0.05], [200, 0.1], [500, 0.2], [1000, 0.5], [2000, 1], [5000, 2], [9995, 5]]
+  - from: '2026-08-03'
+    bands: [[0.25, 0.001], [10, 0.005], [20, 0.01], [50, 0.02], [100, 0.05], [200, 0.1], [500, 0.2], [1000, 0.5], [2000, 1], [5000, 2], [9995, 5]]
+sources:
+  - https://www.hkex.com.hk/services/rules-and-forms-and-fees/fees/securities-%28hong-kong%29/trading/transaction?sc_lang=en
+  - https://www.hkex.com.hk/News/Market-Communications/2025/250221news?sc_lang=en
+  - https://www.hkex.com.hk/Services/Trading/Securities/Overview/Trading-Mechanism/Reduction-of-Minimum-Spreads?sc_lang=en

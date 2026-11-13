@@ -147,10 +147,11 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         label="综合评分",
                         elem_classes=["chart-panel"],
                     )
-                    stock_finance = _table("财务指标", 260)
+                    stock_finance = _table("Financial / Technical Indicators", 260, elem_classes=["no-i18n"])
                 stock_kline = _plot(
                     label="K 线",
-                    elem_classes=["chart-panel"],
+                    elem_id="stock-kline-chart",
+                    elem_classes=["chart-panel", "no-i18n"],
                 )
                 with gr.Row():
                     stock_news = _table("相关资讯", 300)

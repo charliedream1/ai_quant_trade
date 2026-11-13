@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass
 
 import gradio as gr
+
 from src.engine.execution.config import cost_config
 
 PERCENT = 100
@@ -78,9 +79,35 @@ def render_execution_controls(service, strategy_id=None, definition=None):
             )
         with gr.Accordion("高级执行覆盖", open=False):
             extra = gr.Code(value="{}", language="json", label="执行参数JSON（非策略参数）", interactive=True)
+        hk_help = gr.Markdown(cfg["ui"].get("hk_instructions", ""), visible=False)
+
+        def _profile_controls(selected):
+            blocked = {
+                "buy_tax_rate",
+                "sell_tax_rate",
+                "transfer_rate",
+                "other_fee_rate",
+                "tick_size",
+                "lot_size",
+                "settlement_sessions",
+            }
+            return [
+                gr.update(visible=selected == "hk_cash"),
+                *[
+                    gr.update(value="", interactive=False, label=item["label"].replace("元", "HKD"))
+                    if selected == "hk_cash" and item["key"] in blocked
+                    else gr.update(
+                        interactive=True,
+                        label=item["label"].replace("元", "HKD") if selected == "hk_cash" else item["label"],
+                    )
+                    for item in cfg["ui"]["controls"]
+                ],
+            ]
+
+        profile.change(_profile_controls, inputs=profile, outputs=[hk_help, *inputs], queue=False)
         preview = gr.Button("预览实际执行配置")
         status = gr.Markdown(cfg["ui"]["gaps"])
-        resolved = gr.Code(language="json", label="本次执行配置预览")
+        resolved = gr.Code(language="json", label="本次执行配置预览", elem_classes=["execution-cost-preview"])
     fields = [profile, mode, slip_mode, regulatory, extra, *inputs]
 
     def _preview(*values):

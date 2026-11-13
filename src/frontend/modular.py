@@ -133,7 +133,7 @@ def modular_gradio_mount_options(theme_mode: str | None = None, module_key: str 
 def _market_controls() -> tuple[gr.Radio, gr.Markdown]:
     with gr.Row(elem_id="market-switcher-row"):
         market_switcher = gr.Radio(
-            ["A股", "美股"],
+            ["A股", "港股", "美股"],
             # A cached Blocks default must not suppress the browser's market-sync change event after reload.
             value=None,
             label="市场",
@@ -143,7 +143,7 @@ def _market_controls() -> tuple[gr.Radio, gr.Markdown]:
             min_width=260,
         )
         market_status = gr.Markdown(
-            f"当前市场：**{'美股' if current_market() == 'US' else 'A股'}**  ·  切换后按需刷新当前模块",
+            f"当前市场：**{ ({'US': '美股', 'HK': '港股'}.get(current_market(), 'A股')) }**  ·  切换后按需刷新当前模块",
             elem_classes=["market-status-strip"],
         )
     return market_switcher, market_status
@@ -152,7 +152,7 @@ def _market_controls() -> tuple[gr.Radio, gr.Markdown]:
 def _bind_basic_market_switch(market_switcher: gr.Radio, market_status: gr.Markdown) -> None:
     def change_market(value: str) -> str:
         market = switch_ui_market(value)
-        label = "美股" if market == "US" else "A股"
+        label = {"US": "美股", "HK": "港股"}.get(market, "A股")
         return f"当前市场：**{label}**  ·  已切换并清空当日缓存，请刷新当前数据"
 
     market_switcher.change(

@@ -1,4 +1,4 @@
-"""Strict A-share ticker parsing and market routing."""
+"""Unambiguous mainland and Hong Kong security identities."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from dataclasses import dataclass
 SH_INDEX_CODES = {"000010", "000016", "000300", "000688", "000852", "000905"}
 LEGACY_BEIJING_PREFIXES = ("43", "83", "87")
 _TICKER = re.compile(r"^(?:(sh|sz|bj)(\d{6})|(\d{6})(?:\.(sh|sz|bj))?)$", re.IGNORECASE)
+_HK_TICKER = re.compile(r"^(?:hk(\d{1,5})|(\d{1,5})\.hk|(\d{5}))$", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,8 @@ class SecuritySymbol:
 
     @property
     def secid(self) -> str:
+        if self.market == "HK":
+            return f"116.{self.code}"
         return f"{1 if self.market == 'SH' else 0}.{self.code}"
 
     @property
@@ -38,6 +41,12 @@ class SecuritySymbol:
 
 def parse_symbol(value: str, *, stock_only: bool = False) -> SecuritySymbol:
     raw = str(value or "").strip()
+    hong_kong = _HK_TICKER.fullmatch(raw)
+    if hong_kong:
+        code = next(value for value in hong_kong.groups() if value).zfill(5)
+        if int(code) == 0:
+            raise ValueError("Hong Kong security code must be positive")
+        return SecuritySymbol(code, "HK")
     matched = _TICKER.fullmatch(raw)
     if not matched:
         raise ValueError(

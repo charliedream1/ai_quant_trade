@@ -4,6 +4,8 @@ version: 1
 integer_fields: [lot_size, slippage_ticks, settlement_sessions, liquidity_window, fee_precision]
 verified_at: "2026-10-25"
 defaults:
+  currency: CNY
+  instruments: {}
   asset_type: stock
   market: CN
   buy_commission_rate: 0.0003
@@ -28,6 +30,14 @@ defaults:
   timezone: Asia/Shanghai
   fee_precision: 8
 profiles:
+  hk_cash:
+    label: Hong Kong HKD cash equities
+    description: Dated HK ordinary-share fees and spreads; supply dated board lots under instruments. Broker commission is editable. Cash settlement is not simulated.
+    valid_from: '2023-11-17'
+    settings: {market: HK, currency: HKD, asset_type: stock, lot_size: 1, settlement_sessions: 0, timezone: Asia/Hong_Kong, fee_precision: 2, commission_includes_regulatory: false, round_prices: true}
+    sources:
+      - https://www.hkex.com.hk/services/rules-and-forms-and-fees/fees/securities-%28hong-kong%29/trading/transaction?sc_lang=en
+      - https://www.hkex.com.hk/Services/Trading/Securities/Overview/Trading-Mechanism/Reduction-of-Minimum-Spreads?sc_lang=en
   inherit:
     label: 继承当前执行配置
     description: 保留普通引擎或冻结图形版本的执行假设；请核对预览。
@@ -55,6 +65,7 @@ profiles:
     description: 仅用于成本敏感性对照，不代表券商成交条件。
     settings: {buy_commission_rate: 0, sell_commission_rate: 0, minimum_commission: 0, buy_tax_rate: 0, sell_tax_rate: 0, transfer_rate: 0, other_fee_rate: 0, slippage_rate: 0, slippage_mode: none}
 ui:
+  hk_instructions: 'HKD profile: provide dated per-security board lots under instruments in Advanced execution overrides. Dated exchange rules control taxes, ticks and sale eligibility. [Hong Kong setup](/help-docs/usage/hong_kong_market/)'
   title: 交易成本与执行假设
   rate_unit: 百分比输入，例如0.03表示0.03%，内部保存为0.0003
   gaps: 日K不能还原排队成交；缺少历史交易状态和权益事件账本时，严格模式拒绝运行。

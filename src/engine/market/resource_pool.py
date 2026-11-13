@@ -140,6 +140,8 @@ class ResourcePoolService:
         master = SecurityMasterService(repo=self.repo)
         for row in rows:
             resolved = master.resolve(row.get("symbol")) or master.resolve(row.get("name"))
+            if market == "HK" and resolved and resolved.get("market") != "HK":
+                raise ValueError("HK resource requests cannot import a different-market security")
             symbol = str((resolved or {}).get("symbol") or _normalize_symbol(row.get("symbol"))).strip()
             if not symbol:
                 skipped += 1

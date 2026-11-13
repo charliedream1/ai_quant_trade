@@ -63,6 +63,9 @@ class Recommender:
         self.data = data or DataSourceManager()
 
     def create_task(self, payload: dict[str, Any]) -> dict[str, Any]:
+        if self.data.market == "HK":
+            raise BusinessError(ErrorCode.INVALID_PARAM,
+                                "HK technical analysis is available; automatic recommendation scoring is not configured")
         now = utc_now_iso()
         path = payload.get("path") or "quick"
         count = max(1, min(int(payload.get("count") or 10), 30))

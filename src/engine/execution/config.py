@@ -34,6 +34,26 @@ def resolve_costs(value: dict[str, Any] | None = None, legacy: dict[str, Any] | 
         raise BusinessError(ErrorCode.INVALID_PARAM, "未知执行字段：" + ",".join(sorted(unknown)))
     result.update(request)
     _validate(result)
+    if result["market"] == "HK":
+        from .hong_kong import hk_execution_config
+
+        unsupported = set(request) & {
+            "buy_tax_rate",
+            "sell_tax_rate",
+            "transfer_rate",
+            "other_fee_rate",
+            "tick_size",
+            "lot_size",
+            "settlement_sessions",
+            "currency",
+        }
+        if unsupported:
+            raise BusinessError(
+                ErrorCode.INVALID_PARAM,
+                "HK statutory fees/ticks and per-security lots use dated rules; unsupported overrides: "
+                + ", ".join(sorted(unsupported)),
+            )
+        result["hk_rules"] = deepcopy(hk_execution_config())
     result.update(
         profile=profile,
         profile_version=cfg["version"],
@@ -74,6 +94,9 @@ def _validate(value: dict[str, Any]) -> None:
             if key.endswith("_rate") or key == "max_participation":
                 if item > 1:
                     raise BusinessError(ErrorCode.INVALID_PARAM, f"{key}应为0至1的小数")
+        elif isinstance(default, dict):
+            if not isinstance(item, dict):
+                raise BusinessError(ErrorCode.INVALID_PARAM, f"{key} must be an object")
         elif not isinstance(item, str):
             raise BusinessError(ErrorCode.INVALID_PARAM, f"{key}必须为文本")
     if value["lot_size"] < 1 or value["tick_size"] <= 0 or value["liquidity_window"] < 1 or value["fee_precision"] > 8:

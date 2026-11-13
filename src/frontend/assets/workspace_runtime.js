@@ -275,6 +275,17 @@
   const I18N_TECHNICAL_TEXTS = __I18N_TECHNICAL_TEXTS__;
   const I18N_STORAGE_KEY = "all-in-one-ui-lang";
   const MARKET_STORAGE_KEY = "all-in-one-ui-market";
+  const marketFetch = window.fetch.bind(window);
+  window.fetch = (input, init = {}) => {
+    const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url, location.href);
+    if (url.origin === location.origin && (url.pathname.includes("/gradio_api/") || url.pathname.startsWith("/api/"))) {
+      const headers = new Headers(init.headers || (input instanceof Request ? input.headers : {}));
+      const selected = String(localStorage.getItem(MARKET_STORAGE_KEY) || "cn").toUpperCase();
+      if (["CN", "HK", "US"].includes(selected)) headers.set("X-AIQuant-Market", selected);
+      return marketFetch(input, {...init, headers});
+    }
+    return marketFetch(input, init);
+  };
   const SKIP_I18N_TAGS = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "PRE"]);
   const I18N_ATTRS = ["title", "aria-label", "placeholder"];
   const I18N_MAX_TEXT = 360;
@@ -310,6 +321,7 @@
   const normalizeLang = (lang) => (lang === "en" ? "en" : "zh");
   const normalizeMarketValue = (market) => {
     const value = String(market || "").trim().toLowerCase();
+    if (["hk", "hkg", "港股"].includes(value)) return "hk";
     return value === "us" || value === "usa" || value === "美股" || value.includes("u.s") ? "us" : "cn";
   };
   const normalizeText = (value) => String(value || "").replace(/\s+/g, " ").trim();
@@ -440,11 +452,13 @@
   const updateMarketButtons = (market) => {
     const cn = document.getElementById("app-market-cn");
     const us = document.getElementById("app-market-us");
+    const hk = document.getElementById("app-market-hk");
+    if (hk) hk.classList.toggle("active", market === "hk");
     if (cn) cn.classList.toggle("active", market === "cn");
     if (us) us.classList.toggle("active", market === "us");
   };
   const findMarketRadio = (market) => {
-    const label = market === "us" ? "美股" : "A股";
+    const label = market === "hk" ? "港股" : market === "us" ? "美股" : "A股";
     return document.querySelector(`#market-switcher input[type="radio"][value="${label}"]`);
   };
   const applyMarketSelection = (market, options = {}) => {
@@ -467,7 +481,7 @@
     if (label) label.textContent = normalizedLang === "en" ? "EN / ZH" : "中 / EN";
     translateDocument();
     window.dispatchEvent(new Event("aiquant:language-changed"));
-    if (options.syncMarket) applyMarketSelection(LANG_MARKET[normalizedLang], { syncLanguage: false });
+    if (options.syncMarket && normalizeMarketValue(localStorage.getItem(MARKET_STORAGE_KEY)) !== "hk") applyMarketSelection(LANG_MARKET[normalizedLang], { syncLanguage: false });
   };
   window.addEventListener("message", (event) => {
     if (event.origin === location.origin && event.source === window.parent && event.data?.type === "aiquant:language") {
@@ -478,6 +492,11 @@
     const langButton = document.getElementById("app-language-toggle");
     const cnButton = document.getElementById("app-market-cn");
     const usButton = document.getElementById("app-market-us");
+    const hkButton = document.getElementById("app-market-hk");
+    if (hkButton && hkButton.dataset.marketBound !== "1") {
+      hkButton.dataset.marketBound = "1";
+      hkButton.addEventListener("click", () => applyMarketSelection("hk", {syncLanguage: false}));
+    }
     if (!langButton || !cnButton || !usButton) return false;
     if (langButton.dataset.i18nBound !== "1") {
       langButton.dataset.i18nBound = "1";
@@ -502,7 +521,11 @@
   const storedMarket = normalizeMarketValue(localStorage.getItem(MARKET_STORAGE_KEY) || "cn");
   const storedLangValue = localStorage.getItem(I18N_STORAGE_KEY);
   const storedLang = storedLangValue ? normalizeLang(storedLangValue) : MARKET_LANG[storedMarket];
-  const applyCurrentLanguage = () => applyLanguage(localStorage.getItem(I18N_STORAGE_KEY) || storedLang, {syncMarket: true});
+  if (!localStorage.getItem(MARKET_STORAGE_KEY)) applyLanguage(storedLang, { syncMarket: true });
+  const applyCurrentLanguage = () => {
+    applyMarketSelection(localStorage.getItem(MARKET_STORAGE_KEY) || storedMarket, {syncLanguage: false});
+    applyLanguage(localStorage.getItem(I18N_STORAGE_KEY) || storedLang, {syncMarket: false});
+  };
   setTimeout(applyCurrentLanguage, 300);
   setTimeout(applyCurrentLanguage, 1000);
   setTimeout(applyCurrentLanguage, 2400);

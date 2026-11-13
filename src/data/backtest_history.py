@@ -21,6 +21,35 @@ def load_history(data: Any, symbol: str, start: str, end: str, adjustment: str, 
     if first > last or (last - first).days > cfg["max_calendar_days"] or last > date.today():
         raise BusinessError(ErrorCode.INVALID_PARAM, "回测日期无效、超过历史跨度限制或包含未来日期")
     provider = getattr(data, "provider", data)
+    if getattr(provider, "market", None) == "HK":
+        from .hong_kong_calendar import sessions
+
+        begin = (first - timedelta(days=cfg["warmup_calendar_days"])).isoformat() if warmup else start
+        rows = provider.history(symbol, begin, end, cfg["max_bars"], adjustment=adjustment)
+        hk_actual = [row["date"] for row in rows if start <= row["date"] <= end]
+        if not hk_actual:
+            raise BusinessError(ErrorCode.DATA_SOURCE_ERROR, "No HK history in the requested interval")
+        hk_expected = sessions(start, end)
+        missing = sorted(set(hk_expected or []) - set(hk_actual))
+        if hk_expected is not None and (missing or set(hk_actual) - set(hk_expected)):
+            raise BusinessError(
+                ErrorCode.DATA_SOURCE_ERROR,
+                "HK historical observations do not match the exchange calendar",
+                {"missing_sessions": missing},
+            )
+        return {
+            "kline": rows,
+            "coverage": {
+                "requested_start": start,
+                "requested_end": end,
+                "actual_start": min(hk_actual),
+                "actual_end": max(hk_actual),
+                "calendar_source": "HK provider observations",
+                "calendar_completeness_verified": hk_expected is not None,
+                "currency": "HKD",
+                "missing_sessions": missing,
+            },
+        }
     if not callable(getattr(provider, "_load_kline_tencent", None)):
         fetch = getattr(provider, "strategy_snapshot", None) or provider.stock_detail
         return fetch(symbol, kline_count=cfg["mock_bars"], kline_period="daily", price_adjustment=adjustment)

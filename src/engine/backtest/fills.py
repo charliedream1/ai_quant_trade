@@ -54,6 +54,10 @@ def fill_details(signal, event, payload, cash, requested, buy, commission_rate, 
         "reason": reason or ("volume_or_cash_constraint" if quantity < requested else "filled"),
         "unfilled_policy": "expired_after_bar; explicit order_id can accumulate fee across fills",
     }
+    if policy.get("market") == "HK":
+        record.update(
+            currency="HKD", board_lot=policy["lot_size"], hk_fee_components_cumulative=state.get("hk_components", {})
+        )
     payload["_execution_orders"].append(record)
     return quantity, fees
 

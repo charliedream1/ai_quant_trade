@@ -616,6 +616,11 @@ _SHELL_JS_TEMPLATE = r"""
     sidebarToggle?.addEventListener("click", () => {
       setSidebarCollapsed(!shell.classList.contains("sidebar-collapsed"));
     });
+    const narrowNavigation = window.matchMedia("(max-width: 880px)");
+    if (narrowNavigation.matches) setSidebarCollapsed(true, false);
+    narrowNavigation.addEventListener("change", (event) => {
+      setSidebarCollapsed(event.matches || localStorage.getItem("all-in-one-sidebar-collapsed") === "1", false);
+    });
     themeButton?.addEventListener("click", () => {
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       applyShellTheme(next);
@@ -838,6 +843,7 @@ def shell_html(theme_mode: str = "light") -> str:
         "<svg viewBox='0 0 24 24' width='19' height='19' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4'/></svg><span></span></button>"
         "<div class='workspace-market' role='group' aria-label='市场切换'>"
         "<button id='app-market-cn' type='button' data-workspace-market='cn'>A股</button>"
+        "<button id='app-market-hk' type='button' data-workspace-market='hk'>港股</button>"
         "<button id='app-market-us' type='button' data-workspace-market='us'>美股</button></div>"
         f"{language}{_theme_button()}{refresh}{standalone}</div></header>"
         "<div class='workspace-body'><aside id='workspace-sidebar' class='workspace-sidebar'>"
