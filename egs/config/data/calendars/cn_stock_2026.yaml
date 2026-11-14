@@ -1,0 +1,20 @@
+# File format: YAML; encoding: UTF-8
+# Exchange closures, not the government makeup-work calendar.
+file_format: yaml
+markets:
+  cn_stock:
+    source: bundled-sse-szse-2026
+    timezone: Asia/Shanghai
+    range_start: '2026-01-01'
+    range_end: '2026-12-31'
+    holidays: ['2026-01-01', '2026-01-02', '2026-02-16', '2026-02-17', '2026-02-18', '2026-02-19', '2026-02-20', '2026-02-23', '2026-04-06', '2026-05-01', '2026-05-04', '2026-05-05', '2026-06-19', '2026-09-25', '2026-10-01', '2026-10-02', '2026-10-05', '2026-10-06', '2026-10-07']
+    trading_days: []
+    metadata:
+      maintenance: annual_exchange_schedule
+      verified_as_of: '2026-11-14'
+      publication_date: '2025-12-22'
+      sources:
+        - https://www.sse.com.cn/disclosure/announcement/general/c/c_20251222_10802507.shtml
+        - https://www.szse.cn/disclosure/notice/t20251222_618087.html
+      compact: true
+      weekday_holiday_count: 19

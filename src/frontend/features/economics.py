@@ -1,7 +1,12 @@
 """On-demand macroeconomic and financial views with optional model research."""
 
+from typing import Any
+
 import gradio as gr
+
+from src.data import current_market
 from src.engine.economics.config import economics_config
+from src.frontend.service.financial_views import financial_sections
 
 from ..common.callbacks import safe
 from ..common.components import plot, table
@@ -20,18 +25,35 @@ def render_economics(service, kind):
             label=ui["series"],
             visible=kind == "macro",
         )
-        symbol = gr.Textbox(label=ui["symbol"], visible=kind != "macro", elem_id=kind + "-symbol")
+        symbol = gr.Textbox(
+            value=cfg["defaults"]["company_symbols"].get(current_market(), ""),
+            label=ui["symbol"],
+            visible=kind != "macro",
+            elem_id=kind + "-symbol",
+        )
         period = gr.Textbox(label=ui["period"], visible=kind != "macro")
         peers = gr.Textbox(label=ui["peers"], visible=kind != "macro")
     with gr.Row():
         refresh = gr.Checkbox(label=ui["refresh"], value=False)
         load = gr.Button(ui["load"], variant="primary", elem_id=kind + "-load")
     status = gr.Markdown(elem_id=kind + "-status")
+    financial_outputs: list[Any] = []
+    if kind != "macro":
+        gr.Markdown("Company financial analysis: mainland statement coverage; load once to inspect all sections.")
+        with gr.Tabs(elem_id="financial-analysis-tabs"):
+            for title in ui["financial_sections"]:
+                with gr.Tab(title):
+                    financial_outputs.append(table(title, 360))
+            with gr.Tab("Financial history"):
+                financial_outputs.append(table("Financial history", 380))
+        financial_outputs.append(gr.Markdown())
     overview = table(ui["overview"], 420)
     chart = plot(label=ui["history"])
     with gr.Accordion(ui["raw"], open=False):
         raw = gr.JSON()
         snapshot = gr.Textbox(label=ui["snapshot"], interactive=False, elem_id=kind + "-snapshot")
+    if financial_outputs:
+        raw.change(safe(financial_sections), inputs=raw, outputs=financial_outputs, queue=False)
     with gr.Row():
         model = gr.Dropdown(service.economic_models(), value=0, label=ui["model"])
         generate = gr.Button(ui["report"], elem_id=kind + "-report")

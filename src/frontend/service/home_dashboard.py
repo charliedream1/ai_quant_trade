@@ -42,6 +42,14 @@ def home_account(mode: str, force_refresh: bool = False) -> tuple:
     )
 
 
+def _news_items(force_refresh):
+    def load():
+        result = NewsAggregator().list_news(None, None, None, 1, limit("news"), refresh=force_refresh)
+        return (result.get("items") or [])[: limit("news")]
+
+    return _daily_cached(("home_shared_news",), load, force_refresh=force_refresh)[0]
+
+
 def _market_payload(force_refresh: bool) -> dict[str, Any]:
     quotes = QuoteService()
     errors = []
@@ -51,7 +59,7 @@ def _market_payload(force_refresh: bool) -> dict[str, Any]:
         indices = []
         errors.append("指数加载失败")
     try:
-        sectors = quotes.sectors(limit=limit("sectors"))
+        sectors = quotes.sector_rankings(limit=limit("sectors"), refresh=force_refresh)
     except Exception:
         sectors = []
         errors.append(label("missing_market"))
@@ -61,8 +69,7 @@ def _market_payload(force_refresh: bool) -> dict[str, Any]:
         watchlist = []
         errors.append("自选行情加载失败")
     try:
-        news_result = NewsAggregator().list_news(None, None, None, 1, limit("news"), refresh=force_refresh)
-        news = (news_result.get("items") or [])[: limit("news")]
+        news = _news_items(force_refresh)
     except Exception:
         news = []
         errors.append("新闻加载失败")
@@ -115,9 +122,7 @@ def home_operations(actions: list[dict[str, Any]]) -> tuple[str, str, str]:
 
 def home_news(mode: str, force_refresh: bool = False) -> str:
     def load() -> str:
-        result = NewsAggregator().list_news(None, None, None, 1, limit("news"), refresh=force_refresh)
-        items = (result.get("items") or [])[: limit("news")]
-        return _dashboard_news_html(items)
+        return _dashboard_news_html(_news_items(force_refresh))
 
     payload, _, _ = _daily_cached(("home_news", mode), load, force_refresh=force_refresh)
     return payload

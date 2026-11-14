@@ -7,6 +7,8 @@ from typing import Any
 
 import gradio as gr
 
+from src.data import current_market, normalize_market
+
 from ..common.callbacks import safe
 from ..common.components import plot as _plot
 from ..common.components import table
@@ -18,6 +20,7 @@ from ..service.home_tables import home_styled_frame
 def render_home(
     service: DomainHandler, market_switcher: gr.Radio, market_status: gr.Markdown, load_event: Callable[..., Any]
 ) -> None:
+    selection = gr.State({"market": current_market(), "mode": "paper", "revision": 0, "refresh": False})
     with gr.Column(elem_id="home-dashboard"):
         with gr.Row(elem_classes=["home-control-row"]):
             gr.HTML("<div class='home-title'><span>PORTFOLIO OVERVIEW</span><strong>账户与市场总览</strong></div>")
@@ -92,41 +95,80 @@ def render_home(
                 actions = table("待处理事项明细", elem_classes=["home-semantic-table"])
                 strategy = table("策略与任务状态", elem_classes=["home-semantic-table"])
 
-    def bind(event: Callable[..., Any], force: bool) -> None:
+    def bind(event: Callable[..., Any], force: bool, market_event=False) -> None:
+        def keep(state, revision):
+            return state["revision"] == revision
+
+        def account(mode, state):
+            revision = state["revision"]
+            if market_event and not state["refresh"]:
+                return tuple(gr.skip() for _ in range(9))
+            result = service.home_account(mode, force_refresh=force)
+            return result if keep(state, revision) else tuple(gr.skip() for _ in range(9))
+
+        def operations_load(mode, state):
+            revision = state["revision"]
+            if market_event and not state["refresh"]:
+                return tuple(gr.skip() for _ in range(3))
+            result = service.home_operations(mode, force_refresh=force)
+            return result if keep(state, revision) else tuple(gr.skip() for _ in range(3))
+
+        def market_load(mode, state):
+            revision = state["revision"]
+            if market_event and not state["refresh"]:
+                return tuple(gr.skip() for _ in range(6))
+            result = service.home_market(mode, force_refresh=force)
+            return result if keep(state, revision) else tuple(gr.skip() for _ in range(6))
+
+        def news_load(mode, state):
+            revision = state["revision"]
+            if market_event and not state["refresh"]:
+                return gr.skip()
+            result = service.home_news(mode, force_refresh=force)
+            return result if keep(state, revision) else gr.skip()
+
         event(
-            safe(lambda mode: service.home_account(mode, force_refresh=force)),
-            inputs=account_mode,
+            safe(account),
+            inputs=[account_mode, selection],
             outputs=[status, kpis, risk, risk_alerts, risk_radar, trend, allocation, contribution, holdings],
             queue=False,
         ).then(
-            safe(lambda mode: service.home_operations(mode, force_refresh=force)),
-            inputs=account_mode,
+            safe(operations_load),
+            inputs=[account_mode, selection],
             outputs=[alerts, actions_summary, operations],
             queue=False,
         )
         event(
-            safe(lambda mode: service.home_market(mode, force_refresh=force)),
-            inputs=account_mode,
+            safe(market_load),
+            inputs=[account_mode, selection],
             outputs=[market_brief, sentiment, sectors, themes, indices, watchlist],
             queue=False,
         )
-        event(
-            safe(lambda mode: service.home_news(mode, force_refresh=force)),
-            inputs=account_mode,
-            outputs=news,
-            queue=False,
-        )
+        event(safe(news_load), inputs=[account_mode, selection], outputs=news, queue=False)
 
-    def market_changed(value: str) -> str:
-        market = switch_ui_market(value)
-        return f"当前市场：{ ({'US': '美股', 'HK': '港股'}.get(market, 'A股')) } · 已切换，首页分块刷新。"
+    def market_changed(value: str, state):
+        market = normalize_market(value)
+        changed = market != state["market"]
+        state.update(market=market, revision=state["revision"] + int(changed), refresh=changed)
+        if changed:
+            switch_ui_market(value)
+        return f"Market: {market}", state
 
-    market_event = market_switcher.change(
-        safe(market_changed), inputs=market_switcher, outputs=market_status, queue=False
+    market_event = market_switcher.input(
+        safe(market_changed), inputs=[market_switcher, selection], outputs=[market_status, selection], queue=False
     )
-    bind(market_event.then, True)
+    bind(market_event.then, True, market_event=True)
     bind(refresh.click, True)
-    bind(account_mode.change, False)
+
+    def account_changed(mode, state):
+        changed = mode != state["mode"]
+        state.update(mode=mode, revision=state["revision"] + int(changed))
+        return state
+
+    account_event = account_mode.input(
+        account_changed, inputs=[account_mode, selection], outputs=selection, queue=False
+    )
+    bind(account_event.then, False)
     bind(load_event, False)
 
     def market_details(mode: str) -> tuple:

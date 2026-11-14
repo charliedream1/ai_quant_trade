@@ -428,6 +428,29 @@ _SHELL_JS_TEMPLATE = r"""
     if (initialKey && initialView) viewSelections.set(initialKey, initialView);
     let activeKey = "";
     let activeView = "";
+    const pageOwner = crypto.randomUUID().replaceAll("-", "");
+    let pageRevision = 0;
+    const lifetimeUrl = "__LIFETIME_URL__";
+    const lifetime = (action, scope) => fetch(lifetimeUrl, {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({action, owner: scope.owner, revision: scope.revision}), keepalive: true,
+    }).catch(() => {});
+    const advancePage = (module, view, force = false) => {
+      const old = window.aiquantWorkspaceLifetime;
+      if (!force && old?.module === module && old?.view === view) return old;
+      if (old) {
+        lifetime("deactivate", old);
+        // Abort transports synchronously; postMessage alone can race with a new callback.
+        frames.get(old.module)?.contentWindow.aiquantPageWork?.deactivate();
+      }
+      const scope = {owner: pageOwner, revision: ++pageRevision, module, view};
+      window.aiquantWorkspaceLifetime = scope;
+      lifetime("activate", scope);
+      return scope;
+    };
+    window.addEventListener("pagehide", () => {
+      if (window.aiquantWorkspaceLifetime) lifetime("deactivate", window.aiquantWorkspaceLifetime);
+    });
     let currentTheme = "light";
     const configuredTheme = shell.dataset.themeDefault || "light";
     const resolveTheme = (theme) => theme === "system"
@@ -447,8 +470,10 @@ _SHELL_JS_TEMPLATE = r"""
 
     const appMatch = window.location.pathname.match(/^(.*\/app)\/?$/);
     const appBase = appMatch ? `${appMatch[1]}/` : "/app/";
-    const moduleUrl = (item, embedded = true) =>
-      `${appBase}${item.slug}/${embedded ? "?embedded=1" : ""}`;
+    const moduleUrl = (item, embedded = true) => {
+      const scope = window.aiquantWorkspaceLifetime;
+      return `${appBase}${item.slug}/${embedded ? `?embedded=1&page_owner=${scope.owner}&page_revision=${scope.revision}&view=${encodeURIComponent(scope.view)}` : ""}`;
+    };
     const selectedView = (item) => {
       const views = item.views || [];
       const stored = viewSelections.get(item.key);
@@ -463,7 +488,7 @@ _SHELL_JS_TEMPLATE = r"""
       const target = targetState(item.key, view);
       if (!label) return;
       frame.contentWindow.postMessage(
-        { type: "aiquant:select-view", module: item.key, view, label, tab: target.tab, context: target.context, pipeline_version: target.pipeline_version, target_nonce: target.nonce },
+        { type: "aiquant:select-view", module: item.key, view, label, tab: target.tab, context: target.context, pipeline_version: target.pipeline_version, target_nonce: target.nonce, page_scope: window.aiquantWorkspaceLifetime },
         window.location.origin,
       );
     };
@@ -518,7 +543,7 @@ _SHELL_JS_TEMPLATE = r"""
         dirtyModules.delete(activeKey);
         frames.get(activeKey)?.contentWindow.postMessage({type:"aiquant:preview-discard"}, location.origin);
       }
-      if (activeKey && activeKey !== item.key) frames.get(activeKey)?.contentWindow.postMessage({type: "aiquant:deactivate"}, window.location.origin);
+      advancePage(item.key, selectedView(item));
       activeKey = item.key;
       activeView = selectedView(item);
       viewSelections.set(item.key, activeView);
@@ -567,6 +592,18 @@ _SHELL_JS_TEMPLATE = r"""
       }
       activeUrl = location.href;
     };
+    window.aiquantSelectView = (module, view) => {
+      if (module !== activeKey || !known.get(module)?.views.some((item) => item.key === view)) return null;
+      viewSelections.set(module, view);
+      select(module);
+      return window.aiquantWorkspaceLifetime;
+    };
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted && activeKey) {
+        advancePage(activeKey, activeView, true);
+        postView(frames.get(activeKey), known.get(activeKey));
+      }
+    });
 
     buttons.forEach((button) => {
       button.addEventListener("click", () => select(button.dataset.workspaceModule));
@@ -588,8 +625,11 @@ _SHELL_JS_TEMPLATE = r"""
     refreshButton.addEventListener("click", () => {
       const frame = frames.get(activeKey);
       if (!frame) return;
+      const scope = advancePage(activeKey, activeView, true);
+      const url = new URL(frame.src);
+      url.searchParams.set("page_revision", scope.revision);
       setStatus("正在刷新当前模块...");
-      frame.contentWindow.location.reload();
+      frame.src = url.href;
     });
     standaloneButton.addEventListener("click", () => {
       const item = known.get(activeKey) || modules[0];
@@ -762,6 +802,7 @@ SHELL_JS = (
     )
     .replace("__CACHE_LIMIT__", str(SHELL_CACHE_LIMIT))
     .replace("__ROUTING__", json.dumps(navigation_config(), ensure_ascii=False))
+    .replace("__LIFETIME_URL__", get_settings().api_prefix + "/workspace/lifetime")
 )
 
 

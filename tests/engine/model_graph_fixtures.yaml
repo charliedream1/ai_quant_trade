@@ -1,0 +1,40 @@
+# File format: YAML; encoding: UTF-8
+# Explicitly synthetic protocol and lifecycle fixtures.
+target: '600519'
+library: Relationship acceptance
+text: Alpha supplies precision components to Beta. Beta is a subsidiary of Alpha.
+nodes:
+  - {id: '600519', name: Alpha}
+  - {id: beta, name: Beta}
+edges:
+  - source: '600519'
+    target: beta
+    relation_type: supplier
+    classification: stated
+    description: Alpha supplies precision components to Beta.
+    evidence: [{source_id: E1, quote: Alpha supplies precision components to Beta.}]
+    valid_from: ''
+    valid_to: ''
+empty_model: {action: finish}
+# Synthetic transport cases for isolation and cancellation acceptance.
+protocols:
+  success:
+    events:
+      - {type: system, subtype: init, tools: [], skills: [], plugins: [], mcp_servers: []}
+      - {type: result, result: '{"available":true}'}
+  native_capability:
+    events:
+      - {type: system, subtype: init, tools: [Read], skills: [], plugins: [], mcp_servers: []}
+    wait_seconds: 10
+  missing_initialization:
+    events:
+      - {type: result, result: '{"available":true}'}
+  native_tool_call:
+    events:
+      - {type: system, subtype: init, tools: [], skills: [], plugins: [], mcp_servers: []}
+      - {type: assistant, message: {content: [{type: tool_use, name: Read}]}}
+    wait_seconds: 10
+  waiting:
+    events:
+      - {type: system, subtype: init, tools: [], skills: [], plugins: [], mcp_servers: []}
+    wait_seconds: 10

@@ -18,7 +18,6 @@ class MarketHandler(DomainHandler):
             "add_watchlist_symbols",
             "create_resource_pool",
             "create_watchlist_group",
-            "export_relations",
             "market_overview",
             "news",
             "news_detail",
@@ -27,7 +26,6 @@ class MarketHandler(DomainHandler):
             "recommend",
             "recommend_candidate_compare",
             "recommend_condition_template",
-            "recommend_first_to_relations",
             "recommend_group_compare",
             "recommend_load_template",
             "recommend_save_template",
@@ -37,7 +35,6 @@ class MarketHandler(DomainHandler):
             "relation_evidence_detail",
             "relation_evidence_options",
             "relation_fit",
-            "relations",
             "remove_watchlist_symbol",
             "resource_import_commit",
             "resource_import_preview",
@@ -47,7 +44,6 @@ class MarketHandler(DomainHandler):
             "resource_template",
             "security_master_search",
             "stock",
-            "stock_to_relations",
             "watchlist_groups",
         }
     )

@@ -11,6 +11,8 @@ from src.agent.model_catalog import (
     test_model,
     update_model,
 )
+from src.scheduler.calendar_refresh import refresh_managed_calendar
+from src.scheduler.calendar_setup import active_calendar_path, initialize_calendar
 
 from .foundation import (
     SYSTEM_LAKE_COLUMNS,
@@ -46,6 +48,10 @@ from .visuals import model_stat_figure
 
 class AdminServiceMixin:
     """Callbacks owned by the admin frontend domain."""
+
+    def calendar_setup(self, refresh=False):
+        result = refresh_managed_calendar() if refresh else initialize_calendar()
+        return compact_json(result), self.system_runtime_status()
 
     def jobs(self) -> pd.DataFrame:
         return to_frame(SchedulerService().list(page=1, page_size=100))
@@ -123,7 +129,7 @@ class AdminServiceMixin:
             float(values.get("data_timeout_seconds") or 12.0),
             int(values.get("data_http_retries") or 0),
             int(values.get("data_cache_ttl_seconds") or 300),
-            values.get("trading_calendar_path") or "",
+            str(active_calendar_path()),
             values.get("scheduler_executors_path") or "",
             to_frame(payload.get("rows") or [], SYSTEM_SETTING_COLUMNS),
             to_frame(runtime_storage_rows(), SYSTEM_STORAGE_COLUMNS),
@@ -158,7 +164,7 @@ class AdminServiceMixin:
         result = save_global_settings(payload)
         overrides = result.get("env_overrides") or []
         suffix = f"；当前进程环境变量覆盖：{', '.join(overrides)}" if overrides else ""
-        return (f"系统设置已保存到 `egs/config.yaml`，重启后全部生效{suffix}。", *self.settings())
+        return (f"系统设置已保存到 `egs/config/platform/config.yaml`，重启后全部生效{suffix}。", *self.settings())
 
     def models(self) -> pd.DataFrame:
         return to_frame(list_models())

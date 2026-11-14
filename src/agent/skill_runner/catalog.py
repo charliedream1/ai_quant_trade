@@ -10,6 +10,7 @@ import yaml
 from src.agent.providers.config import backend_names
 from src.agent.providers.contracts import ModelSelection
 from src.core.config import PROJECT_ROOT
+from src.engine.market.model_graph.config import config as graph_config
 
 
 @lru_cache(maxsize=1)
@@ -51,10 +52,18 @@ def preview(payload: dict) -> dict:
         if key in {"kind", "workflow"} or key == "mode" and workflow["family"] == "alpha"
     ):
         raise ValueError("Skill家族与研究模式不一致")
-    selection = ModelSelection.model_validate(payload.get("provider") or {"backend": "api"}).model_dump(
-        exclude_none=True
-    )
-    if selection.get("backend", "api") not in backend_names():
+    requested_provider = payload.get("provider") or {
+        "backend": "qoder" if workflow["family"] == "relation_graph" else "api"
+    }
+    graph_backend = requested_provider.get("backend") if workflow["family"] == "relation_graph" else None
+    if graph_backend is not None:
+        if graph_backend not in graph_config()["providers"]:
+            raise ValueError("Unsupported graph CLI capability profile")
+        requested_provider = {**requested_provider, "backend": "qoder"}
+    selection = ModelSelection.model_validate(requested_provider).model_dump(exclude_none=True)
+    if graph_backend is not None:
+        selection["backend"] = graph_backend
+    if graph_backend is None and selection.get("backend", "api") not in backend_names():
         raise ValueError("未知生成后端")
     imports = payload.get("imports") or []
     if not isinstance(imports, list):

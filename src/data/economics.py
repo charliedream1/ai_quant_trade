@@ -89,7 +89,7 @@ class EconomicDataSource:
                     content.extend(chunk)
                     if len(content) > policy["max_response_bytes"]:
                         raise ValueError("Economic source response exceeds the configured budget")
-        logger.info(
+        logger.debug(
             "Economic source fetched | bytes={} duration_ms={:.1f}", len(content), (time.monotonic() - started) * 1000
         )
         return json.loads(content)

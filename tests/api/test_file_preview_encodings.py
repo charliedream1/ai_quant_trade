@@ -1,6 +1,10 @@
 """Windows text encodings and byte limits remain correct through editable file routes."""
 
+import pytest
+
 from src.documents.config import preview_config
+
+pytestmark = pytest.mark.usefixtures("document_write_root")
 
 
 def test_gb18030_markdown_reads_and_saves_as_utf8(client):

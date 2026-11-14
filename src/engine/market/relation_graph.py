@@ -279,6 +279,7 @@ class RelationGraphService:
             "summary": summary,
             "data_source": getattr(self.data, "source_name", "未标注"),
             "is_mock": bool(getattr(self.data, "is_mock", False)),
+            "source_gaps": graph.get("source_gaps", []),
         }
 
     def _augment_task_relations(
@@ -340,7 +341,7 @@ class RelationGraphService:
         )
         notes = list(graph.get("construction_notes") or [])
         notes.append(f"已关联本地任务证据 {len(task_rows)} 条。")
-        return {"nodes": nodes, "edges": edges, "construction_notes": notes}
+        return {**graph, "nodes": nodes, "edges": edges, "construction_notes": notes}
 
     def _task_relation_rows(self, symbol: str) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []

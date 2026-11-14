@@ -4,6 +4,11 @@ from __future__ import annotations
 
 import gradio as gr
 
+from src.core.diagnostics_config import diagnostics_config
+from src.engine.market.model_graph.config import config as model_graph_config
+from src.engine.market.rule_graph_jobs import RuleGraphJobs
+from src.frontend.service.rule_graph_view import rule_graph_view
+
 from ..common.callbacks import safe as _safe
 from ..common.components import plot as _plot
 from ..common.components import table as _table
@@ -13,19 +18,60 @@ from ..service.foundation import (
     BACKTEST_ENGINE_CHOICES,
     RECOMMEND_PLAN_CHOICES,
     RELATION_TYPE_CHOICES,
+    parse_stock_symbols,
 )
 from .economics import render_economics
+from .model_relation_graph import render_model_graph_panel
 
 
 def render_market(service: DomainHandler, default_relation_types: list[str]) -> None:
+    rule_jobs = RuleGraphJobs()
+
+    def enqueue_rules(symbol, depth, types):
+        row = rule_jobs.start(symbol, depth, types)
+        return row["run_id"], f"{row['run_id']} · {row['status']}", gr.update(active=True)
+
+    def poll_rules(key):
+        if not key:
+            return *(gr.skip() for _ in range(6)), gr.update(active=False)
+        row = rule_jobs.detail(key)
+        if row["status"] in {"completed", "partial"}:
+            return *rule_graph_view(rule_jobs.store.result(key)), gr.update(active=False)
+        if row["status"] in {"cancelled", "failed", "interrupted"}:
+            return (f"{key} · {row['status']} · {row.get('reason', '')}", [], [], [], [], None, gr.update(active=False))
+        return (
+            f"{key} · {row['status']} · {row.get('stage', 'Waiting for source')} · {row.get('reason', '')}",
+            *(gr.skip() for _ in range(5)),
+            gr.update(active=row["status"] in {"queued", "running"}),
+        )
+
+    def enqueue_stock(symbol, depth, types):
+        return f"Graph requested for {symbol}", symbol, *enqueue_rules(symbol, depth, types)
+
+    def enqueue_recommend(rows, fallback, depth, types):
+        symbols = parse_stock_symbols(rows) or parse_stock_symbols(fallback)
+        if not symbols:
+            raise ValueError("Select a recommendation or enter a stock code")
+        return enqueue_stock(symbols[0], depth, types)
+
     with gr.Tab("市场研究"):
         with gr.Tabs(elem_classes=["module-tabs"]):
             with gr.Tab("行情看盘"):
                 with gr.Row():
                     market_board = gr.Dropdown(["industry", "concept"], value="industry", label="板块类型")
                     market_limit = gr.Slider(5, 100, value=20, step=5, label="展示数量")
+                    market_ranking = gr.Dropdown(
+                        [
+                            ("Gainers and decliners", "balanced"),
+                            ("Top gainers", "gainers"),
+                            ("Top decliners", "decliners"),
+                        ],
+                        value="balanced",
+                        label="Sector ranking",
+                    )
                     market_refresh = gr.Button(
                         "刷新行情",
+                        elem_id="market-quotes-refresh",
                         variant="primary",
                         scale=0,
                         min_width=120,
@@ -36,11 +82,12 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     market_sectors = _table("板块行情", 380)
                     market_plot = _plot(
                         label="板块涨跌",
+                        elem_id="market-sectors-plot",
                         elem_classes=["chart-panel"],
                     )
                 market_refresh.click(
                     _safe(service.market_overview),
-                    inputs=[market_board, market_limit],
+                    inputs=[market_board, market_limit, market_ranking],
                     outputs=[market_indices, market_sectors, market_plot],
                     queue=False,
                 )
@@ -121,7 +168,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
 
             with gr.Tab("宏观经济"):
                 render_economics(service, "macro")
-            with gr.Tab("基本面分析"):
+            with gr.Tab("Fundamentals & Financial Analysis"):
                 render_economics(service, "fundamentals")
             with gr.Tab("个股分析"):
                 gr.HTML(workspace_link("查看财报三表与基本面分析", "market", "fundamentals"))
@@ -176,86 +223,147 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 )
 
             with gr.Tab("关系图谱"):
-                with gr.Row():
-                    relation_symbol = gr.Textbox(value="600519", label="股票代码/名称")
-                    relation_depth = gr.Slider(1, 5, value=3, step=1, label="关系深度（1-5层，越深越慢）")
-                    relation_types = gr.CheckboxGroup(
-                        choices=RELATION_TYPE_CHOICES,
-                        value=default_relation_types,
-                        label="关系类型",
+                relation_mode = gr.Radio(
+                    model_graph_config()["ui"]["modes"],
+                    value="rules",
+                    label="Graph construction mode",
+                    elem_id="relation-graph-mode",
+                )
+                with gr.Group(visible=True) as rule_graph_panel:
+                    with gr.Row():
+                        relation_symbol = gr.Textbox(value="600519", label="股票代码/名称")
+                        relation_depth = gr.Slider(
+                            1,
+                            5,
+                            value=diagnostics_config()["rules"]["default_depth"],
+                            step=1,
+                            label="关系深度（1-5层，越深越慢）",
+                        )
+                        relation_types = gr.CheckboxGroup(
+                            choices=RELATION_TYPE_CHOICES,
+                            value=default_relation_types,
+                            label="关系类型",
+                        )
+                        relation_query = gr.Button(
+                            "查询关系",
+                            elem_id="rule-graph-start",
+                            variant="primary",
+                            scale=0,
+                            min_width=120,
+                            elem_classes=["page-refresh-btn"],
+                        )
+                        relation_export = gr.Button("导出图谱JSON")
+                    relation_summary = gr.Markdown(elem_classes=["status-strip"], elem_id="rule-graph-status")
+                    relation_export_status = gr.Markdown(elem_classes=["status-strip"])
+                    relation_export_file = gr.Textbox(label="图谱导出文件路径", interactive=False)
+                    rule_run_id = gr.Textbox(label="Rule graph run ID", elem_id="rule-graph-run-id", interactive=False)
+                    rule_timer = gr.Timer(value=1, active=False)
+                    rule_cancel = gr.Button("Cancel rule graph", elem_id="rule-graph-cancel")
+                    rule_download = gr.File(label="Saved rule graph export", elem_id="rule-graph-download")
+                    relation_plot = _plot(
+                        label="关联网络",
+                        elem_id="rule-graph-plot",
+                        elem_classes=["chart-panel"],
                     )
-                    relation_query = gr.Button(
-                        "查询关系",
-                        variant="primary",
-                        scale=0,
-                        min_width=120,
-                        elem_classes=["page-refresh-btn"],
+                    relation_fit = gr.Button("适应全部 / 重新居中")
+                    relation_evidence_choice = gr.Dropdown([], label="选择关系查看证据", interactive=True)
+                    relation_evidence = gr.HTML("<p>请选择关系查看来源、新闻内容及匹配依据。</p>")
+                    relation_plot.change(
+                        _safe(service.relation_evidence_options),
+                        inputs=relation_plot,
+                        outputs=relation_evidence_choice,
+                        queue=False,
                     )
-                    relation_export = gr.Button("导出图谱JSON")
-                relation_summary = gr.Markdown(elem_classes=["status-strip"])
-                relation_export_status = gr.Markdown(elem_classes=["status-strip"])
-                relation_export_file = gr.Textbox(label="图谱导出文件路径", interactive=False)
-                relation_plot = _plot(
-                    label="关联网络",
-                    elem_classes=["chart-panel"],
-                )
-                relation_fit = gr.Button("适应全部 / 重新居中")
-                relation_evidence_choice = gr.Dropdown([], label="选择关系查看证据", interactive=True)
-                relation_evidence = gr.HTML("<p>请选择关系查看来源、新闻内容及匹配依据。</p>")
-                relation_plot.change(
-                    _safe(service.relation_evidence_options),
-                    inputs=relation_plot,
-                    outputs=relation_evidence_choice,
+                    relation_evidence_choice.change(
+                        _safe(service.relation_evidence_detail),
+                        inputs=[relation_plot, relation_evidence_choice],
+                        outputs=relation_evidence,
+                        queue=False,
+                    )
+                    relation_fit.click(
+                        _safe(service.relation_fit), inputs=relation_plot, outputs=relation_plot, queue=False
+                    )
+                    relation_analysis = _table("图谱分析", 300)
+                    relation_paths = _table("层级链路", 300)
+                    with gr.Row():
+                        relation_nodes = _table("节点", 400)
+                        relation_edges = _table("关系", 400)
+                    rule_run_id.change(
+                        lambda: ([], [], [], [], None, "", "", None),
+                        outputs=[
+                            relation_analysis,
+                            relation_paths,
+                            relation_nodes,
+                            relation_edges,
+                            relation_plot,
+                            relation_export_status,
+                            relation_export_file,
+                            rule_download,
+                        ],
+                        queue=False,
+                    )
+                    relation_query.click(
+                        _safe(enqueue_rules),
+                        inputs=[relation_symbol, relation_depth, relation_types],
+                        outputs=[
+                            rule_run_id,
+                            relation_summary,
+                            rule_timer,
+                        ],
+                        queue=False,
+                    )
+                    relation_export.click(
+                        _safe(
+                            lambda key: (
+                                rule_jobs.store.result(key) and "Saved graph exported",
+                                str(rule_jobs.store.directory(key) / "graph.json"),
+                                str(rule_jobs.store.directory(key) / "graph.json"),
+                            )
+                        ),
+                        inputs=rule_run_id,
+                        outputs=[relation_export_status, relation_export_file, rule_download],
+                        queue=True,
+                    )
+                    stock_to_relation.click(
+                        _safe(enqueue_stock),
+                        inputs=[stock_symbol, relation_depth, relation_types],
+                        outputs=[
+                            stock_watch_status,
+                            relation_symbol,
+                            rule_run_id,
+                            relation_summary,
+                            rule_timer,
+                        ],
+                        queue=False,
+                    )
+                    rule_cancel.click(
+                        _safe(lambda key: rule_jobs.store.cancel(key)["status"]),
+                        inputs=rule_run_id,
+                        outputs=relation_summary,
+                        queue=False,
+                    )
+                    rule_timer.tick(
+                        _safe(poll_rules),
+                        inputs=rule_run_id,
+                        outputs=[
+                            relation_summary,
+                            relation_analysis,
+                            relation_paths,
+                            relation_nodes,
+                            relation_edges,
+                            relation_plot,
+                            rule_timer,
+                        ],
+                        queue=False,
+                    )
+                model_graph_panel = render_model_graph_panel()
+                relation_mode.change(
+                    lambda mode: (gr.update(visible=mode == "rules"), gr.update(visible=mode == "model")),
+                    inputs=relation_mode,
+                    outputs=[rule_graph_panel, model_graph_panel],
                     queue=False,
                 )
-                relation_evidence_choice.change(
-                    _safe(service.relation_evidence_detail),
-                    inputs=[relation_plot, relation_evidence_choice],
-                    outputs=relation_evidence,
-                    queue=False,
-                )
-                relation_fit.click(
-                    _safe(service.relation_fit), inputs=relation_plot, outputs=relation_plot, queue=False
-                )
-                relation_analysis = _table("图谱分析", 300)
-                relation_paths = _table("层级链路", 300)
-                with gr.Row():
-                    relation_nodes = _table("节点", 400)
-                    relation_edges = _table("关系", 400)
-                relation_query.click(
-                    _safe(service.relations),
-                    inputs=[relation_symbol, relation_depth, relation_types],
-                    outputs=[
-                        relation_summary,
-                        relation_analysis,
-                        relation_paths,
-                        relation_nodes,
-                        relation_edges,
-                        relation_plot,
-                    ],
-                    queue=False,
-                )
-                relation_export.click(
-                    _safe(service.export_relations),
-                    inputs=[relation_symbol, relation_depth, relation_types],
-                    outputs=[relation_export_status, relation_export_file],
-                    queue=False,
-                )
-                stock_to_relation.click(
-                    _safe(service.stock_to_relations),
-                    inputs=[stock_symbol, relation_depth, relation_types],
-                    outputs=[
-                        stock_watch_status,
-                        relation_symbol,
-                        relation_summary,
-                        relation_analysis,
-                        relation_paths,
-                        relation_nodes,
-                        relation_edges,
-                        relation_plot,
-                    ],
-                    queue=False,
-                )
+                stock_to_relation.click(lambda: "rules", outputs=relation_mode, queue=False)
 
             with gr.Tab("资源池"):
                 pool_pipeline_activate = gr.Button("打开方案筛选", elem_id="workspace-activate-pool-pipeline")
@@ -549,17 +657,14 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     queue=False,
                 )
                 recommend_to_relation.click(
-                    _safe(service.recommend_first_to_relations),
+                    _safe(enqueue_recommend),
                     inputs=[recommend_table, recommend_universe, relation_depth, relation_types],
                     outputs=[
                         recommend_status,
                         relation_symbol,
+                        rule_run_id,
                         relation_summary,
-                        relation_analysis,
-                        relation_paths,
-                        relation_nodes,
-                        relation_edges,
-                        relation_plot,
+                        rule_timer,
                     ],
                     queue=False,
                 )

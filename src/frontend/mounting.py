@@ -14,6 +14,7 @@ from starlette.types import Receive, Scope, Send
 
 from src.core.async_work import blocking_call
 from src.core.logger import capture_stdout_to_loguru
+from src.core.page_work import check
 
 from .common.navigation import resolve_destination
 from .registry import LEGACY_MODULES, MODULES
@@ -46,15 +47,16 @@ class LazyGradioASGI:
         return self._started
 
     def _ensure_app(self) -> Any:
+        check()
         if self._app is not None:
             return self._app
         with self._lock:
+            check()
             if self._app is not None:
                 return self._app
 
-            from fastapi import FastAPI
-
             import gradio as gr
+            from fastapi import FastAPI
 
             started = perf_counter()
             self._log.info(
@@ -80,7 +82,10 @@ class LazyGradioASGI:
                 else:
                     from .modular import build_gradio_module, modular_gradio_mount_options
 
-                    gradio_app = build_gradio_module(self._module_key)
+                    gradio_app = build_gradio_module(
+                        self._module_key,
+                        (str(self._cfg.data_dir), str(self._cfg.db_path), self._cfg.data_mode, self._cfg.ui_theme),
+                    )
                     mount_options = modular_gradio_mount_options(self._cfg.ui_theme, self._module_key)
 
             if self._cfg.frontend_root_path and "root_path" in inspect.signature(gr.mount_gradio_app).parameters:
@@ -138,6 +143,9 @@ class LazyGradioASGI:
         self._started = False
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        from .page_reads import start
+
+        start(warm=True)
         app = self._app if self._app is not None else await blocking_call(self._ensure_app, group="ui_build")
         await self._ensure_started()
         await app(scope, receive, send)

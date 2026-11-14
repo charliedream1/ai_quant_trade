@@ -7,6 +7,7 @@ class AdminHandler(DomainHandler):
     domain = "admin"
     allowed_methods = frozenset(
         {
+            "calendar_setup",
             "check_environment_variable",
             "create_job",
             "create_mcp",

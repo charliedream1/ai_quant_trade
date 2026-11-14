@@ -1,0 +1,27 @@
+# File format: YAML; encoding: UTF-8
+callbacks:
+  slow_seconds: 5
+  success_level: DEBUG
+  slow_success_level: DEBUG
+console:
+  file_level: ''
+  quiet_modules: [frontend.callback, startup, frontend.gradio.stdout, help_docs]
+  quiet_below: WARNING
+  ready_module: service.lifecycle
+cache:
+  wait_seconds: 45
+calendar:
+  directory: calendars
+  filename: trading_calendar.yaml
+  seed: egs/config/data/calendars/cn_stock_2026.yaml
+  timeout_seconds: 10
+  max_bytes: 2000000
+  chunk_bytes: 65536
+  lock_seconds: 3
+rules:
+  default_depth: 1
+  timeout_seconds: 30
+  network_read_seconds: 3
+  poll_seconds: 0.25
+  active_runs: 2
+  shutdown_seconds: 5

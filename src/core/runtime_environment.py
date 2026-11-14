@@ -11,7 +11,6 @@ import yaml
 from dotenv import dotenv_values
 from loguru import logger
 from packaging.requirements import Requirement
-from packaging.version import InvalidVersion, Version
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -43,7 +42,7 @@ def _is_conda_environment(prefix: Path, cfg: dict[str, Any]) -> bool:
 def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -> tuple[list[str], bool]:
     errors = []
     if sys.version_info[: len(minimum)] < tuple(minimum):
-        errors.append("Python版本低于支持基线")
+        errors.append("Python is below the supported baseline")
     expected = Path(cfg["directory"])
     if not expected.is_absolute():
         expected = PROJECT_ROOT / expected
@@ -53,19 +52,17 @@ def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -
         or any((prefix / marker).exists() for marker in cfg["conda_base_markers"])
     )
     if prefix != expected.resolve() and (not conda or cfg.get("explicit_directory")):
-        errors.append("当前解释器不是此角色配置的项目环境")
+        errors.append("Interpreter does not match the configured role environment")
     if conda_base:
         errors.append("Conda base/root is not supported; select a dedicated project environment in PyCharm")
     file = prefix / "pyvenv.cfg"
     inherited = (
-        "include-system-site-packages = true" in file.read_text(encoding="utf-8").lower()
-        if file.is_file()
-        else False
+        "include-system-site-packages = true" in file.read_text(encoding="utf-8").lower() if file.is_file() else False
     )
     if not conda and not file.is_file():
-        errors.append("环境缺少独立解释器配置（pyvenv.cfg）")
+        errors.append("Environment lacks isolated interpreter metadata (pyvenv.cfg)")
     if inherited:
-        errors.append("环境继承了基础包或不是独立虚拟环境")
+        errors.append("Environment inherits system packages")
     return errors, inherited
 
 
@@ -76,34 +73,43 @@ def _installed_requirement(line: str, prefix: Path) -> tuple[dict[str, Any] | No
     try:
         dist = metadata.distribution(req.name)
     except metadata.PackageNotFoundError:
-        return None, f"{req.name}未安装"
+        return None, f"{req.name} is not installed"
     satisfied = req.specifier.contains(dist.version)
     origin = Path(str(dist.locate_file(""))).resolve()
-    compatible = True
-    exact_versions = [item.version for item in req.specifier if item.operator == "=="]
-    if exact_versions:
-        try:
-            compatible = Version(dist.version).major == Version(exact_versions[0]).major
-        except InvalidVersion:
-            compatible = True
     result = {
         "name": req.name,
         "version": dist.version,
         "declared": str(req.specifier),
         "origin": str(origin),
         "satisfied": satisfied,
-        "compatible": compatible,
     }
-    error = "" if satisfied and origin.is_relative_to(prefix) else f"{req.name}版本或安装来源不符合声明"
+    error = (
+        ""
+        if satisfied and origin.is_relative_to(prefix)
+        else f"{req.name} differs from the tested version or package origin"
+    )
     return result, error
 
 
-def inspect_runtime(role: str = "web") -> dict[str, Any]:
+def _runtime_mode(config: dict[str, Any], mode: str | None = None) -> str:
+    """Resolve explicit, process, local dotenv, then YAML mode selection."""
+    local_env = dotenv_values(PROJECT_ROOT / ".env")
+    selected = mode or os.environ.get("ALL_IN_ONE_RUNTIME_MODE") or local_env.get("ALL_IN_ONE_RUNTIME_MODE")
+    selected = selected or config["startup"]["mode"]
+    if selected == "warn":
+        selected = "non-strict"
+    if selected not in {"strict", "non-strict"}:
+        raise ValueError("ALL_IN_ONE_RUNTIME_MODE must be strict / non-strict (warn is a legacy alias)")
+    return str(selected)
+
+
+def inspect_runtime(role: str = "web", mode: str | None = None) -> dict[str, Any]:
     config = yaml.safe_load(
         (PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8")
     )
+    mode = _runtime_mode(config, mode)
     if role not in config["environments"]:
-        raise ValueError("未知运行环境")
+        raise ValueError("Unknown runtime role")
     cfg = {**config.get("isolation", {}), **config["environments"][role]}
     if cfg.get("directory_env"):
         local_env = dotenv_values(PROJECT_ROOT / ".env")
@@ -115,17 +121,15 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
     warnings: list[str] = []
     upper = config.get("maximum_python_exclusive")
     if upper and sys.version_info[: len(upper)] >= tuple(upper):
-        errors.append("Python版本超出已验证支持范围")
+        errors.append("Python exceeds the verified support range")
     declared = []
     for line in _requirements(cfg):
         row, error = _installed_requirement(line, prefix)
         if row:
             declared.append(row)
         if error:
-            if error.endswith("未安装"):
+            if error.endswith(" is not installed"):
                 errors.append(error)
-            elif row and not row.get("compatible", True):
-                errors.append(f"{row['name']}主版本与声明不兼容")
             else:
                 warnings.append(error)
     outside = [
@@ -134,8 +138,12 @@ def inspect_runtime(role: str = "web") -> dict[str, Any]:
         if not Path(str(dist.locate_file(""))).resolve().is_relative_to(prefix)
     ]
     if outside:
-        warnings.append("存在项目环境之外的可见分发包（仅作提示，不阻断启动）")
+        warnings.append("External distributions are visible outside the selected environment")
+    if mode == "strict":
+        errors.extend(warnings)
+        warnings = []
     return {
+        "mode": mode,
         "role": role,
         "executable": sys.executable,
         "prefix": str(prefix),
@@ -154,25 +162,36 @@ def enforce_startup_runtime() -> dict[str, Any]:
     started = perf_counter()
     config = yaml.safe_load(
         (PROJECT_ROOT / "egs/config/operations/runtime_environments.yaml").read_text(encoding="utf-8")
-    )["startup"]
+    )
     env = dotenv_values(PROJECT_ROOT / ".env")
-    mode = os.environ.get("ALL_IN_ONE_RUNTIME_MODE", env.get("ALL_IN_ONE_RUNTIME_MODE") or config["mode"])
-    role = os.environ.get("ALL_IN_ONE_RUNTIME_ROLE", env.get("ALL_IN_ONE_RUNTIME_ROLE") or config["role"])
-    if mode not in {"strict", "warn"}:
-        raise SystemExit("ALL_IN_ONE_RUNTIME_MODE 只支持 strict / warn")
-    report = inspect_runtime(str(role))
+    role = os.environ.get("ALL_IN_ONE_RUNTIME_ROLE", env.get("ALL_IN_ONE_RUNTIME_ROLE") or config["startup"]["role"])
+    try:
+        mode = _runtime_mode(config)
+        report = inspect_runtime(str(role))
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    mode = report.get("mode", mode)
     elapsed = (perf_counter() - started) * 1000
     if report.get("warnings"):
-        logger.warning("启动环境预检提示 | role={} warnings={}", role, report["warnings"])
+        logger.warning(
+            "Runtime package differences | role={} count={} | Run check_runtime.py for details",
+            role,
+            len(report["warnings"]),
+        )
+        logger.debug("Runtime package differences | details={}", report["warnings"])
     if report["passed"]:
-        logger.info("启动环境预检通过 | role={} executable={} elapsed_ms={:.1f}", role, sys.executable, elapsed)
+        logger.info("Runtime preflight passed | mode={} role={}", mode, role)
+        logger.debug("Runtime interpreter | executable={} elapsed_ms={:.1f}", sys.executable, elapsed)
     else:
         logger.warning(
-            "启动环境预检失败 | mode={} role={} executable={} errors={}", mode, role, sys.executable, report["errors"]
+            "Runtime preflight failed | mode={} role={} executable={} errors={}",
+            mode,
+            role,
+            sys.executable,
+            report["errors"],
         )
-        if mode == "strict":
-            raise SystemExit(
-                "环境不符合声明，已停止启动；请使用项目配置的独立环境，详情运行 egs/entrypoints/check_runtime.py"
-            )
-        logger.warning("显式兼容调试模式：带上述环境偏差继续启动，不表示依赖安全或兼容验证通过")
+        raise SystemExit(
+            "Runtime requirements are incomplete; startup stopped. Inspect with egs/entrypoints/check_runtime.py --mode "
+            + str(mode)
+        )
     return {**report, "mode": mode, "elapsed_ms": elapsed}

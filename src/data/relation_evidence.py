@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import re
+from contextvars import ContextVar
 from functools import lru_cache
 from statistics import StatisticsError, correlation
 from typing import Any
@@ -98,3 +99,18 @@ def return_correlation(left: dict[str, float], right: dict[str, float]) -> tuple
     except StatisticsError:
         coefficient = None
     return coefficient, evidence
+
+
+OBSERVER: ContextVar = ContextVar("rule_graph_observer", default=None)
+SELECTED: ContextVar = ContextVar("rule_graph_selected_types", default=None)
+
+
+def publish(graph, stage):
+    observer = OBSERVER.get()
+    if observer:
+        observer(graph, stage)
+
+
+def wants(*types):
+    selected = SELECTED.get()
+    return not selected or bool(set(types) & selected)

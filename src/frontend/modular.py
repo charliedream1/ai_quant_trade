@@ -164,7 +164,7 @@ def _bind_basic_market_switch(market_switcher: gr.Radio, market_status: gr.Markd
 
 
 @lru_cache(maxsize=16)
-def build_gradio_module(module_key: str) -> gr.Blocks:
+def build_gradio_module(module_key: str, runtime_key: tuple | None = None) -> gr.Blocks:
     module = get_module(module_key)
     service = CallbackServices()
     handlers = build_frontend_handlers(service)

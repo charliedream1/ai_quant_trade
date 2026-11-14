@@ -31,3 +31,37 @@ Web、模型和Qlib是不同依赖集合。当前验收将Web/CPU模型组合安
 每个模块/视图拥有独立的上下文、嵌套页签、冻结版本和定位序号。上下文白名单在导航YAML声明；普通切页只取目标自己的状态，历史跳转重建相应定位。子页共享嵌入式/独立窗口定位程序，挂载等待有上限，切页立即取消旧观察器与延迟动作，重复消息不会覆盖已应用字段。
 
 报告库只在首次进入、显式刷新或筛选时读取目录，不增加轮询或模型调用。筛选保留有效选择，时间按时区排序；异常记录和损坏事件行跳过并记日志。原状态、HTML可用性和过程可用性分开显示，文件缺失既不生成替代报告，也不产生有效下载链接。
+
+## Page-owned work
+
+Each top-level document creates an unpredictable capability and increasing
+navigation revision. Same-origin activation invalidates earlier revisions;
+deactivation cannot affect a newer revision or another document. The bounded
+registry retains cancellation tombstones and expires abandoned owners.
+
+An early script runs before Gradio hydration and attaches ownership to its
+requests. The shell signals backend cancellation before waiting for iframe
+navigation. Cached frames keep their inputs, suppress hidden timer work, abort
+obsolete direct reads and use Gradio's cancellation protocol to close queued SSE
+streams. This avoids an upstream async-generator failure seen with abrupt SSE
+disconnects. Callbacks also validate the revision before publishing results.
+
+Explicit transient callbacks execute through trusted local IPC in a bounded
+process pool. Only registered method names and server-preprocessed arguments
+cross the pipe; no network endpoint accepts pickled content. Styling is converted
+to Gradio table metadata instead of serializing closures. Homepage callbacks
+have worker affinity so that account/news snapshots retain their existing reuse.
+Equivalent in-flight reads maintain consumer sets across document lifetimes.
+The last consumer stops the worker and its owned descendants, releases file locks
+and clears only that worker's model concurrency leases. RPM history is retained.
+
+Rule and model graph creators register cancellation ownership separately from
+viewers. Model graph resolution and source acquisition use the same hard-stop
+boundary; its CLI keeps the established native cancellation protocol. Saved
+results remain immutable. Independent accepted backtests, research campaigns,
+schedules and trading services are outside this page cancellation registry.
+
+Cancellation cannot roll back committed writes or model usage already consumed.
+A hard worker exit can interrupt an SDK's buffered observation export; complete
+remote token accounting after an interrupted response cannot be guaranteed.
+For configuration and user behavior, see [page navigation](../usage/page_navigation.md).

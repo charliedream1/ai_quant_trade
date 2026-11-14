@@ -1,0 +1,76 @@
+# File format: YAML; encoding: UTF-8
+# Only explicitly listed transient callbacks use cancellable worker processes.
+max_documents: 512
+lifetime_payload_bytes: 256
+max_pending_reads: 32
+event_prefix_chars: 512
+max_revision: 2147483647
+idle_seconds: 90
+retention_seconds: 1800
+sweep_seconds: 10
+heartbeat_seconds: 20
+workers: 4
+# Preserve same-process snapshot reuse across the four homepage presentations.
+affinity_groups:
+  - [home_account, home_market, home_news, home_operations]
+poll_seconds: 0.05
+read_deadline_seconds: 180
+worker_error_chars: 500
+shutdown_seconds: 3
+messages:
+  cancelled: Previous loading was cancelled when you left this page. Refresh or retry to load data.
+share_methods: [home_market, home_news, market_overview, news, economic_load]
+source_methods: [graph_local, graph_read, graph_search, graph_resolve]
+read_methods:
+  - home_account
+  - home_market
+  - home_news
+  - home_operations
+  - dashboard_account
+  - dashboard_market
+  - dashboard_strategy
+  - dashboard_trade_history
+  - market_overview
+  - stock
+  - news
+  - refresh_news
+  - news_detail
+  - economic_load
+  - economic_open
+  - security_master_search
+  - research_reports
+  - research_reports_with_status
+  - research_reports_page
+  - research_report_detail
+  - paper_search
+  - paper_search_with_status
+  - paper_search_page
+  - refresh_papers
+  - paper_detail
+  - kb_search
+  - kb_document_detail
+  - kb_library_documents
+  - kb_qa
+  - kb_qa_session
+  - rag_chat
+  - rag_restore
+  - rag_documents
+  - rag_source_preview
+  - rag_sag2_prepare
+  - remote_documents
+  - model_reports
+  - model_report_detail
+  - factor_monitor_summary
+  - factor_monitor_details
+  - recommend
+  - recommend_group_compare
+  - recommend_candidate_compare
+  - etf_universe_snapshot
+  - learning_detail
+  - backtest_detail
+  - backtest_analysis
+  - compare_backtests
+  - paper_overview
+  - ai_console_file_preview
+  - ai_console_project_tree
+  - pipeline_preview

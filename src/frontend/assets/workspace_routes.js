@@ -133,7 +133,15 @@
     if (!event.isTrusted) return;
     const button = event.target.closest(".module-tabs > .tab-wrapper button");
     const view = Object.keys(views).find((key) => views[key] === (window.aiquantUiSource?.(button) || button?.textContent.trim()));
-    if (!view) return;
+    if (!view || view === currentView) return;
+    if (isWorkspaceEmbedded) {
+      const scope = parent.aiquantSelectView?.(module, view);
+      if (scope) window.aiquantPageWork?.activate(scope);
+    } else {
+      window.aiquantPageWork?.deactivate();
+      window.aiquantPageWork?.activate();
+    }
+    currentView = view;
     cancel();
     if (isWorkspaceEmbedded) window.parent.postMessage({type: "aiquant:view-selected", module, view}, location.origin);
     else {
@@ -146,5 +154,5 @@
       });
       history.pushState({}, "", url);
     }
-  });
+  }, true);
 })();

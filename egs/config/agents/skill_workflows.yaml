@@ -14,6 +14,11 @@ exports:
   codebuddy: .codebuddy/skills
   trae: null
 workflows:
+  quant-stock-relations:
+    label: Stock relationship graph
+    family: relation_graph
+    defaults: {}
+    required: [symbol]
   quant-market-review:
     label: 市场复盘
     family: insight

@@ -1,0 +1,7 @@
+# File format: YAML; encoding: UTF-8
+# Explicitly synthetic ranking inputs; not live market observations.
+sectors:
+  - {code: up, name: Up sample, change_pct: 4.0}
+  - {code: mild, name: Mild sample, change_pct: 1.0}
+  - {code: down, name: Down sample, change_pct: -3.0}
+  - {code: flat, name: Flat sample, change_pct: 0.0}

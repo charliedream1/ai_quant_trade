@@ -43,7 +43,7 @@ MODULES: tuple[GradioModule, ...] = (
             ("news", "新闻中心"),
             ("stock", "个股分析"),
             ("macro", "宏观经济"),
-            ("fundamentals", "基本面分析"),
+            ("fundamentals", "Fundamentals & Financial Analysis"),
             ("relations", "关系图谱"),
             ("resources", "资源池"),
             ("recommendations", "股票推荐"),

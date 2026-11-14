@@ -72,6 +72,7 @@ class EconomicStore:
     @staticmethod
     def _write(path: Path, value: dict) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = path.with_name(path.name + "." + uuid4().hex + ".tmp")
+        # Keep atomic temporary names shorter than the destination on legacy Windows paths.
+        temporary = path.with_name(uuid4().hex + ".tmp")
         temporary.write_text(json.dumps(value, ensure_ascii=False, allow_nan=False), encoding="utf-8")
         os.replace(temporary, path)

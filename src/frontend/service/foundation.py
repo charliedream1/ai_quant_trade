@@ -13,6 +13,7 @@ import copy
 import json
 import re
 from collections.abc import Callable, Sequence
+from concurrent.futures import Future
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from html import escape
@@ -30,6 +31,7 @@ from src.agent import GenericAgentRuntime, LLMClient, RAGService
 from src.agent.composer_config import composer_config
 from src.core.config import get_settings
 from src.core.database import Database
+from src.core.diagnostics_config import diagnostics_config
 from src.core.env_file import delete_env_value, env_status, import_env_file, masked_env_rows
 from src.core.exceptions import BusinessError
 from src.core.fts import FTSService, kb_document_source_scope, kb_remote_source_id
@@ -46,6 +48,7 @@ from src.data import (
     parse_security_symbols,
     set_current_market,
 )
+from src.data.manager import REQUEST_MARKET
 from src.engine.backtest import BacktestRunner
 from src.engine.live import LiveBrokerEventService, LiveTradingService
 from src.engine.market import (
@@ -77,14 +80,20 @@ SHANGHAI_TZ = timezone(timedelta(hours=8))
 LOG = get_logger("frontend.services")
 _DAILY_UI_CACHE: dict[str, tuple[str, str, Any]] = {}
 _DAILY_UI_CACHE_LOCK = RLock()
+_DAILY_UI_LOADING: dict[str, Future] = {}
 
 
 def switch_ui_market(value: Any) -> str:
-    """Switch the process-wide market and drop same-day UI caches."""
-
+    """Invalidate only an actual process-market change, not header synchronization."""
+    token = REQUEST_MARKET.set(None)
+    try:
+        previous = current_market()
+    finally:
+        REQUEST_MARKET.reset(token)
     market = set_current_market(value)
-    with _DAILY_UI_CACHE_LOCK:
-        _DAILY_UI_CACHE.clear()
+    if market != previous:
+        with _DAILY_UI_CACHE_LOCK:
+            _DAILY_UI_CACHE.clear()
     return market
 
 
@@ -940,12 +949,29 @@ def _daily_cached(
         cached = _DAILY_UI_CACHE.get(cache_key)
         if cached and cached[0] == today and not force_refresh:
             return copy.deepcopy(cached[2]), True, cached[1]
-
-    value = loader()
-    refreshed_at = _display_now()
-    with _DAILY_UI_CACHE_LOCK:
-        _DAILY_UI_CACHE[cache_key] = (today, refreshed_at, copy.deepcopy(value))
-    return copy.deepcopy(value), False, refreshed_at
+        pending = _DAILY_UI_LOADING.get(cache_key)
+        owner = pending is None
+        if owner:
+            pending = Future()
+            _DAILY_UI_LOADING[cache_key] = pending
+    assert pending is not None
+    if not owner:
+        value, refreshed_at = pending.result(timeout=diagnostics_config()["cache"]["wait_seconds"])
+        return copy.deepcopy(value), True, refreshed_at
+    try:
+        LOG.debug("UI snapshot load | key={} refresh={}", cache_key, force_refresh)
+        value = loader()
+        refreshed_at = _display_now()
+        with _DAILY_UI_CACHE_LOCK:
+            _DAILY_UI_CACHE[cache_key] = (today, refreshed_at, copy.deepcopy(value))
+        pending.set_result((value, refreshed_at))
+        return copy.deepcopy(value), False, refreshed_at
+    except BaseException as exc:
+        pending.set_exception(exc)
+        raise
+    finally:
+        with _DAILY_UI_CACHE_LOCK:
+            _DAILY_UI_LOADING.pop(cache_key, None)
 
 
 def _cache_badge(cache_hit: bool, refreshed_at: str) -> str:

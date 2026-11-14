@@ -10,6 +10,7 @@ from typing import Any
 import yaml
 
 from src.core.config import get_settings
+from src.scheduler.calendar_setup import active_calendar_path
 
 CHINA_MARKET_UTC_OFFSET_HOURS = 8
 DEFAULT_RETRY_TIMES = 0
@@ -95,6 +96,14 @@ def trading_day_skip_summary(params: dict[str, Any], now: datetime | None = None
         return None
     calendar = _calendar_params(params)
     current_date = market_date(now)
+    if calendar.get("_calendar_invalid"):
+        return "Calendar is unavailable; trading-day task skipped: " + str(calendar["_calendar_invalid"])
+    if (
+        calendar.get("range_start")
+        and calendar.get("range_end")
+        and not str(calendar["range_start"]) <= current_date.isoformat() <= str(calendar["range_end"])
+    ):
+        return f"Calendar coverage excludes {current_date.isoformat()}; trading-day task skipped"
     if is_trading_day(current_date, calendar):
         return None
     return f"非交易日 {current_date.isoformat()}，按交易日过滤跳过。"
@@ -109,7 +118,13 @@ def market_date(now: datetime | None = None) -> date:
 
 def is_trading_day(value: date, calendar: dict[str, Any] | None = None) -> bool:
     calendar = calendar or {}
+    if calendar.get("_calendar_invalid"):
+        return False
     text = value.isoformat()
+    if calendar.get("range_start") and text < str(calendar["range_start"]):
+        return False
+    if calendar.get("range_end") and text > str(calendar["range_end"]):
+        return False
     if text in _date_set(calendar, "extra_trading_days", "trading_days"):
         return True
     if text in _date_set(calendar, "extra_holidays", "holidays"):
@@ -122,28 +137,34 @@ def _calendar_params(params: dict[str, Any]) -> dict[str, Any]:
     inline_calendar = params.get("trading_calendar") or params.get("calendar") or {}
     if isinstance(inline_calendar, dict):
         calendar = _merge_calendar(calendar, inline_calendar)
+        if any(key in inline_calendar for key in ("holidays", "trading_days", "extra_holidays", "extra_trading_days")):
+            calendar.pop("_calendar_invalid", None)
     return calendar
 
 
 def _calendar_file_params(params: dict[str, Any]) -> dict[str, Any]:
     path = _calendar_path(params)
     if path is None or not path.exists():
-        return {}
+        return {"_calendar_invalid": "missing file"}
     loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(loaded, dict):
-        return {}
+        return {"_calendar_invalid": "invalid document"}
     market = str(params.get("calendar_market") or params.get("market") or "cn_stock").strip() or "cn_stock"
+    if market.upper() in {"CN", "A", "A股"}:
+        market = "cn_stock"
     market_payload = loaded.get("markets", {})
     if isinstance(market_payload, dict):
-        loaded = market_payload.get(market) or market_payload.get("cn_stock") or {}
-    return loaded if isinstance(loaded, dict) else {}
+        loaded = market_payload.get(market) or {}
+    if not isinstance(loaded, dict) or not loaded.get("range_start") or not loaded.get("range_end"):
+        return {"_calendar_invalid": "missing market or coverage"}
+    return loaded
 
 
 def _calendar_path(params: dict[str, Any]) -> Path | None:
     settings = get_settings()
     raw = params.get("trading_calendar_path") or params.get("calendar_path") or settings.trading_calendar_path or None
     if raw in (None, ""):
-        return None
+        return active_calendar_path()
     path = Path(str(raw))
     return path if path.is_absolute() else (settings.project_root / path).resolve()
 

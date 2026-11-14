@@ -156,8 +156,13 @@ class MockDataSource:
     def indices(self, refresh: bool = False) -> list[dict[str, Any]]:
         return [dict(item, data_source=self.source_name, updated_at=utc_now_iso()) for item in self._indices]
 
-    def sectors(self, board: str = "industry", limit: int = 20) -> list[dict[str, Any]]:
-        return [dict(item, board=board, updated_at=utc_now_iso()) for item in self._sectors[:limit]]
+    def sectors(
+        self, board: str = "industry", limit: int = 20, direction: str = "desc", refresh: bool = False
+    ) -> list[dict[str, Any]]:
+        return [
+            dict(item, board=board, updated_at=utc_now_iso())
+            for item in sorted(self._sectors, key=lambda row: row["change_pct"], reverse=direction == "desc")[:limit]
+        ]
 
     def stock_quote(self, symbol: str) -> dict[str, Any]:
         stock = dict(

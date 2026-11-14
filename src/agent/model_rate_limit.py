@@ -17,6 +17,18 @@ from .model_budget import CallBudget
 from .model_options import quota_identity
 
 
+def release_worker_slots(db_path: Path, owner_pid: int) -> None:
+    """Release concurrency after a confirmed owned-worker exit; retain RPM admission history."""
+    if not db_path.exists():
+        return
+    connection = sqlite3.connect(db_path, timeout=llm_config()["rate_limit"]["database_busy_seconds"])
+    try:
+        with connection:
+            connection.execute("UPDATE llm_request_slots SET lease_until=0 WHERE owner_pid=?", (owner_pid,))
+    finally:
+        connection.close()
+
+
 class ModelRateLimiter:
     def __init__(self, db_path: Path, config: dict):
         self.db_path = db_path

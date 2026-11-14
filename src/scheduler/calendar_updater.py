@@ -17,6 +17,7 @@ from loguru import logger
 
 from src.core.config import get_settings
 from src.core.timeutil import utc_now_iso
+from src.scheduler.calendar_setup import active_calendar_path, exchange_today
 
 DEFAULT_MARKET = "cn_stock"
 DEFAULT_TIMEZONE = "Asia/Shanghai"
@@ -287,6 +288,25 @@ def trading_calendar_status(params: dict[str, Any] | None = None) -> dict[str, A
                 "market": market,
                 "message": f"交易日历文件中缺少市场 {market}。",
             }
+        start, end = str(calendar.get("range_start") or ""), str(calendar.get("range_end") or "")
+        if not start or not end:
+            return {
+                "status": "invalid",
+                "path": str(path),
+                "market": market,
+                "message": "Calendar coverage is missing; initialize or refresh a verified schedule",
+            }
+        date.fromisoformat(start)
+        date.fromisoformat(end)
+        if not start <= (_date_param(params, "as_of_date") or exchange_today()).isoformat() <= end:
+            return {
+                "status": "out_of_range",
+                "path": str(path),
+                "market": market,
+                "range_start": start,
+                "range_end": end,
+                "message": "Calendar does not cover the requested date",
+            }
         updated_at = str(calendar.get("updated_at") or "")
         return {
             "status": "ok",
@@ -399,7 +419,7 @@ def trading_calendar_alerts(
         ]
 
     alerts: list[dict[str, Any]] = []
-    today = _date_param(params, "as_of_date") or date.today()
+    today = _date_param(params, "as_of_date") or exchange_today()
     warn_days = _int_param(params, "calendar_warn_days", DEFAULT_CALENDAR_WARN_DAYS)
     stale_days = _int_param(params, "calendar_stale_days", DEFAULT_CALENDAR_STALE_DAYS)
     range_end = _optional_date(calendar.get("range_end"))
@@ -449,7 +469,7 @@ def trading_calendar_alerts(
                 "message": "交易日历未记录 updated_at，无法确认最近一次自动更新是否成功。",
             }
         )
-    elif stale_days > 0:
+    elif stale_days > 0 and calendar.get("metadata", {}).get("maintenance") != "annual_exchange_schedule":
         age_days = (
             (datetime.now(updated_at.tzinfo) - updated_at).days
             if updated_at.tzinfo
@@ -536,7 +556,7 @@ def _announcement_profiles_path(params: dict[str, Any]) -> Path:
         or params.get("announcement_profile_path")
         or params.get("official_announcement_profiles_path")
         or params.get("official_announcement_profile_path")
-        or "egs/exchange_announcement_profiles.yaml"
+        or "egs/config/data/exchange_announcement_profiles.yaml"
     )
     path = Path(str(raw))
     resolved = path if path.is_absolute() else (get_settings().project_root / path)
@@ -839,7 +859,7 @@ def _announcement_default_year(params: dict[str, Any], text: str) -> int:
     match = re.search(r"20\d{2}", text)
     if match:
         return int(match.group(0))
-    return date.today().year
+    return exchange_today().year
 
 
 def _announcement_segments(text: str) -> list[str]:
@@ -952,7 +972,7 @@ def _compact_calendar_dates(range_start: date, range_end: date, trade_dates: set
 def _calendar_write_path(params: dict[str, Any]) -> Path:
     settings = get_settings()
     raw = params.get("calendar_path") or params.get("trading_calendar_path") or settings.trading_calendar_path
-    path = Path(str(raw)) if raw else Path("egs/trading_calendar.yaml")
+    path = Path(str(raw)) if raw else active_calendar_path()
     resolved = path if path.is_absolute() else (settings.project_root / path)
     resolved = resolved.resolve()
     _ensure_project_path(resolved)
@@ -960,7 +980,9 @@ def _calendar_write_path(params: dict[str, Any]) -> Path:
 
 
 def _official_calendar_write_path(params: dict[str, Any]) -> Path:
-    path = _reference_calendar_path(params) or (get_settings().project_root / "egs" / "trading_calendar.official.yaml")
+    path = _reference_calendar_path(params) or (
+        get_settings().project_root / "egs/config/data/trading_calendar.official.yaml"
+    )
     resolved = path.resolve()
     _ensure_project_path(resolved)
     return resolved
@@ -969,7 +991,7 @@ def _official_calendar_write_path(params: dict[str, Any]) -> Path:
 def _calendar_status_path(params: dict[str, Any]) -> Path:
     settings = get_settings()
     raw = params.get("calendar_path") or params.get("trading_calendar_path") or settings.trading_calendar_path
-    path = Path(str(raw)) if raw else Path("egs/trading_calendar.yaml")
+    path = Path(str(raw)) if raw else active_calendar_path()
     return (path if path.is_absolute() else (settings.project_root / path)).resolve()
 
 
@@ -1044,11 +1066,10 @@ def _calendar_is_compact(calendar: dict[str, Any]) -> bool:
 
 
 def _ensure_project_path(path: Path) -> None:
-    project_root = get_settings().project_root.resolve()
-    try:
-        path.resolve().relative_to(project_root)
-    except ValueError as exc:
-        raise ValueError(f"交易日历自动更新只能访问项目目录内路径：{path}") from exc
+    settings = get_settings()
+    allowed = (settings.project_root.resolve(), settings.data_dir.resolve())
+    if not any(path.resolve().is_relative_to(root) for root in allowed):
+        raise ValueError("Calendar updates must stay inside project or configured private data")
 
 
 def _market_from_params(params: dict[str, Any]) -> str:

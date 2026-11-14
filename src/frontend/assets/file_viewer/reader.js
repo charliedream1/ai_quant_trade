@@ -35,12 +35,20 @@ function renderMarkdown() {
   });
   element("markdown-preview").querySelectorAll("a").forEach((link) => { link.target="_blank"; link.rel="noopener noreferrer"; });
 }
-const safeAction = (action) => async () => { try { await action(); } catch(error) {status(error.message,true);} };
+const showFailure = (error) => status(
+  error.name === "AbortError" ? "Preview loading cancelled; use Reload to retry." : error.message,
+  error.name !== "AbortError",
+);
+const safeAction = (action) => async () => { try { await action(); } catch(error) {showFailure(error);} };
 async function showOffice() {
+  const revision = window.aiquantPageWork?.state.revision;
   let result = await api(endpoint+"/conversion", {method:"POST"});
   while(["running","queued"].includes(result.status)) {
     status(result.status === "queued"?"Office转换任务排队中…":"Office文件正在转换为只读PDF，完成后自动展示…");
     await new Promise((resolve) => setTimeout(resolve, record.limits.conversion_poll_ms));
+    if (window.aiquantPageWork && (!window.aiquantPageWork.active || revision !== window.aiquantPageWork.state.revision)) {
+      throw new DOMException("Preview navigation cancelled", "AbortError");
+    }
     result = await api(endpoint+"/conversion", {method:"POST"});
   }
   if (result.status !== "completed") throw new Error(result.error || "Office预览失败，仍可下载原件");
@@ -116,4 +124,4 @@ function locateCitation() {
     mark.scrollIntoView({block:"center"}); break;
   }
 }
-load().then(locateCitation).catch((error) => status(error.message,true));
+load().then(locateCitation).catch(showFailure);

@@ -104,3 +104,12 @@ def cli_command(client):
         thread.join(timeout=10)
         listener.close()
         assert not thread.is_alive(), "CLI HTTP test service did not stop"
+
+
+@pytest.fixture
+def document_write_root(client, monkeypatch):
+    """Constrain editable-document fixtures to their isolated temporary data root."""
+    from src.core.config import get_settings
+    from src.documents import service
+
+    monkeypatch.setattr(service, "PROJECT_ROOT", get_settings().data_dir.resolve())

@@ -1,6 +1,7 @@
 # File format: YAML; encoding: UTF-8
 version: 1
 defaults:
+  company_symbols: {CN: '600519'}
   cache_seconds: 21600
   connect_seconds: 4
   read_seconds: 12
@@ -81,6 +82,11 @@ messages:
   debt_gap: 借款和债券科目覆盖不全，无法据此评估总有息债务、期限结构或流动性压力。
   simulated: 当前包含模拟来源，仅用于功能验证，不代表真实经济或公司财务数据。
 ui:
+  financial_sections:
+    Income statement: [revenue, profit, consolidated_profit, revenue_yoy, profit_yoy, revenue_quarter, profit_quarter, revenue_ttm, profit_ttm]
+    Balance sheet: [assets, liabilities, equity, short_loan, long_loan, bonds, known_debt_components]
+    Cash flow: [operating_cashflow, investing_cashflow, financing_cashflow, operating_cashflow_quarter, operating_cashflow_ttm, cash_profit_ratio]
+    Financial ratios: [gross_margin, roe, debt_asset_ratio]
   macro_title: 宏观经济
   fundamental_title: 基本面分析
   intro: 按需读取真实公开数据，核对观察期、单位、来源和版本；模型解读可选。

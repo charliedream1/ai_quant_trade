@@ -78,6 +78,7 @@
 
 | **日時** | **機能** |
 |:---|:---|
+| 2026.11 | [**Responsive workspace navigation**](docs/usage/page_navigation.md): cancel obsolete reads, graphs and previews while retaining drafts, shared readers and independent backtests. |
 | 2026.11.06 | [**SAG knowledge and document Q&A**](docs/usage/sag_knowledge_qa.md): optional SAG retrieval, isolated single-document questions, JEV/vector/standard rerank alternatives and explicit fallback traces. |
 | 2026.11.01 | 🆕 [**統合クオンツリサーチワークスペース**](docs/usage/workspace.md)：Gradioアプリ内で資産概要、市場調査、戦略グラフ、コスト付きバックテスト、AI会話と引用付き知識Q&Aを利用。 |
 | 2026.10.31 | [**実行管理と研究記録**](docs/usage/access_and_execution.md)：カスタムソースのレビュー、固定パラメーター、処理状態、RAG引用、文書閲覧とMarkdown編集。 |

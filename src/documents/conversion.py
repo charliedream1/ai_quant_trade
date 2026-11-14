@@ -3,12 +3,11 @@
 import json
 import os
 import shutil
-import signal
 import subprocess
 import sys
 from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
-from threading import RLock
+from threading import Event, RLock, Thread
 from uuid import uuid4
 
 from dotenv import dotenv_values
@@ -17,6 +16,8 @@ from pypdf import PdfReader
 
 from src.core.config import PROJECT_ROOT
 from src.core.exceptions import BusinessError, ErrorCode
+from src.core.page_work import finish_run, own_run
+from src.core.process_control import stop_process_tree
 from src.core.process_env import process_environment
 
 from .access import bounded_read, compact_path
@@ -26,6 +27,8 @@ from .store import PreviewStore
 _LOCK = RLock()
 _EXECUTOR: ThreadPoolExecutor | None = None
 _JOBS: dict[str, Future] = {}
+_CANCEL: dict[str, Event] = {}
+_PROCESSES: dict[str, subprocess.Popen] = {}
 
 
 def _profile_uri(path: Path) -> str:
@@ -51,17 +54,11 @@ def executable() -> str:
 
 
 def _stop(process: subprocess.Popen[bytes]) -> None:
-    if sys.platform == "win32":
-        taskkill = shutil.which("taskkill")
-        if taskkill:
-            subprocess.run([taskkill, "/PID", str(process.pid), "/T", "/F"], capture_output=True, check=False)
-        else:
-            process.kill()
-    else:
-        os.killpg(process.pid, signal.SIGKILL)
+    if process.poll() is None:
+        stop_process_tree(process)
 
 
-def _convert(row: dict, cache: Path) -> Path:
+def _convert_inner(row: dict, cache: Path) -> Path:
     cache.mkdir(parents=True, exist_ok=True)
     working_root = (PROJECT_ROOT / preview_config()["converter"]["work_directory"]).resolve()
     if not working_root.is_relative_to(PROJECT_ROOT.resolve()):
@@ -107,12 +104,19 @@ def _convert(row: dict, cache: Path) -> Path:
         env=process_environment("document"),
         start_new_session=os.name != "nt",
     ) as process:
+        with _LOCK:
+            _PROCESSES[str(cache)] = process
+            stopped = _CANCEL[str(cache)].is_set()
+        if stopped:
+            _stop(process)
         try:
             stdout, stderr = process.communicate(timeout=preview_config()["limits"]["conversion_timeout_seconds"])
         except subprocess.TimeoutExpired as exc:
             _stop(process)
             process.communicate()
             raise BusinessError(ErrorCode.DATA_SOURCE_ERROR, "Office转换超时，已停止本次转换进程") from exc
+    if _CANCEL[str(cache)].is_set():
+        raise InterruptedError("Page preview conversion cancelled")
     (cache / "conversion.log").write_bytes(stdout + b"\n" + stderr)
     result = working / "document.pdf"
     if process.returncode or not result.is_file():
@@ -132,7 +136,40 @@ def _convert(row: dict, cache: Path) -> Path:
     return cached
 
 
+def _convert(row: dict, cache: Path) -> Path:
+    try:
+        if _CANCEL[str(cache)].is_set():
+            raise InterruptedError("Page preview conversion cancelled")
+        return _convert_inner(row, cache)
+    finally:
+        with _LOCK:
+            _PROCESSES.pop(str(cache), None)
+        finish_run("preview", str(cache))
+
+
+def _cancel_job(key: str) -> None:
+    with _LOCK:
+        event = _CANCEL.get(key)
+        if event:
+            event.set()
+        job = _JOBS.get(key)
+        queued = job.cancel() if job else False
+        process = _PROCESSES.get(key)
+    if queued:
+        finish_run("preview", key)
+    if process is not None and process.poll() is None:
+        Thread(target=_stop, args=(process,), daemon=True, name="preview-cancel").start()
+
+
 def request_pdf(row: dict) -> dict:
+    result = _request_pdf(row)
+    if result["status"] in {"queued", "running"}:
+        key = str(PreviewStore().root / "converted" / result["cache_key"])
+        own_run("preview", key, lambda: _cancel_job(key))
+    return result
+
+
+def _request_pdf(row: dict) -> dict:
     global _EXECUTOR
     settings = preview_config()
     signature = json.dumps(settings["converter"], sort_keys=True).encode()
@@ -144,6 +181,8 @@ def request_pdf(row: dict) -> dict:
     with _LOCK:
         job_key = str(cache)
         job = _JOBS.get(job_key)
+        if job is not None and job.done() and _CANCEL.get(job_key, Event()).is_set():
+            job = None
         if job is not None and not job.done():
             return {"status": "running" if job.running() else "queued", "cache_key": key}
         if result.is_file() and (cache / "complete.json").is_file():
@@ -161,6 +200,7 @@ def request_pdf(row: dict) -> dict:
             )
         if sum(not future.done() for future in _JOBS.values()) >= settings["limits"]["max_pending_conversions"]:
             raise BusinessError(ErrorCode.CONSTRAINT_CONFLICT, "Office转换队列已满，请稍后重试")
+        _CANCEL[job_key] = Event()
         _JOBS[job_key] = _EXECUTOR.submit(_convert, dict(row), cache)
     return {"status": "running", "cache_key": key}
 
@@ -169,10 +209,14 @@ def shutdown() -> None:
     global _EXECUTOR
     with _LOCK:
         executor, _EXECUTOR = _EXECUTOR, None
+        keys = list(_JOBS)
+    for key in keys:
+        _cancel_job(key)
     if executor is not None:
         executor.shutdown(wait=True, cancel_futures=True)
     with _LOCK:
         _JOBS.clear()
+        _CANCEL.clear()
 
 
 def text_pdf(row: dict) -> Path:

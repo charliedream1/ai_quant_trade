@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gradio as gr
+
 from src.core.llm_config import llm_config
 from src.help_docs import help_docs_iframe_html
 
@@ -66,11 +67,11 @@ def render_admin(service: DomainHandler) -> None:
                     )
 
             with gr.Tab("系统配置"):
-                with gr.Tabs():
-                    with gr.Tab("系统设置"):
+                with gr.Tabs(selected="system-settings"):
+                    with gr.Tab("系统设置", id="system-settings"):
                         initial_settings = service.settings()
                         settings_status = gr.Markdown(
-                            value="全局设置保存到 `egs/config.yaml`；环境变量优先级更高，路径类修改建议重启后生效。",
+                            value="全局设置保存到 `egs/config/platform/config.yaml`；环境变量优先级更高，路径类修改建议重启后生效。",
                             elem_classes=["status-strip"],
                         )
                         settings_runtime = gr.Markdown(
@@ -112,6 +113,21 @@ def render_admin(service: DomainHandler) -> None:
                                     precision=0,
                                 )
                         with gr.Accordion("调度与日历", open=True):
+                            gr.Markdown("Use the verified exchange schedule; coverage and sources remain visible.")
+                            with gr.Row():
+                                calendar_initialize = gr.Button("Initialize calendar", elem_id="calendar-initialize")
+                                calendar_refresh = gr.Button("Refresh official calendar", elem_id="calendar-refresh")
+                            calendar_operation = gr.Textbox(
+                                label="Calendar operation", interactive=False, elem_id="calendar-operation"
+                            )
+                            calendar_initialize.click(
+                                _safe(lambda: service.calendar_setup(False)),
+                                outputs=[calendar_operation, settings_runtime],
+                            )
+                            calendar_refresh.click(
+                                _safe(lambda: service.calendar_setup(True)),
+                                outputs=[calendar_operation, settings_runtime],
+                            )
                             with gr.Row():
                                 settings_calendar_path = gr.Textbox(
                                     value=initial_settings[8],
@@ -162,7 +178,7 @@ def render_admin(service: DomainHandler) -> None:
                         with gr.Row():
                             environment_file = gr.File(
                                 label="环境变量文件",
-                                file_types=[".env", ".llm_env", ".secrets", ".txt"],
+                                file_types=[".env", ".secrets", ".txt"],
                                 type="filepath",
                             )
                             environment_overwrite = gr.Checkbox(value=False, label="覆盖同名变量")
@@ -222,7 +238,7 @@ def render_admin(service: DomainHandler) -> None:
                                 model_model_name = gr.Textbox(label="模型名称")
                             with gr.Row():
                                 model_api_key_env = gr.Textbox(label="API Key 环境变量", placeholder="OPENAI_API_KEY")
-                                model_api_key = gr.Textbox(label="API Key（安全写入 .llm_env）", type="password")
+                                model_api_key = gr.Textbox(label="API Key（安全写入 .env）", type="password")
                                 model_level = gr.Radio(["fast", "deep"], value="fast", label="层级")
                                 model_purpose = gr.Textbox(label="用途")
                             with gr.Row():

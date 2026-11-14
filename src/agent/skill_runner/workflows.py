@@ -7,6 +7,7 @@ from src.agent_strategies.service import AgentStrategyService
 from src.alpha_mining.data_io import parse_upload
 from src.alpha_mining.service import AlphaService
 from src.engine.insights.service import InsightReportService
+from src.engine.market.model_graph.service import GraphResearchService
 from src.strategy.composition.service import PipelineService
 
 from .catalog import local_file, settings
@@ -136,4 +137,27 @@ def composition(request, provider, cancelled, emit):
     return result, service.store.artifact(run["id"], "report.html")
 
 
-HANDLERS = {"insight": insight, "team": team, "alpha": alpha, "agents": agents, "composition": composition}
+def relation_graph(request, provider, cancelled, emit):
+    service = GraphResearchService()
+    run = service.start({**provider, **request})
+    result = _wait(
+        lambda: service.detail(run["run_id"]),
+        lambda: service.store.events(run["run_id"]),
+        {"queued", "running"},
+        cancelled,
+        lambda: service.store.cancel(run["run_id"]),
+        emit,
+    )
+    if result["status"] in {"completed", "partial"}:
+        result["graph"] = service.store.result(run["run_id"])
+    return result, None
+
+
+HANDLERS = {
+    "relation_graph": relation_graph,
+    "insight": insight,
+    "team": team,
+    "alpha": alpha,
+    "agents": agents,
+    "composition": composition,
+}

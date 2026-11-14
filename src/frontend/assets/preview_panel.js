@@ -1,7 +1,7 @@
 (() => {
   if (window.__filePreviewPanelBound) return;
   window.__filePreviewPanelBound = true;
-  let panel, frame, dirty = false;
+  let panel, frame, openedView, dirty = false;
   const notify = () => { if (parent !== window) parent.postMessage({type:"aiquant:preview-dirty-state",dirty},location.origin); };
   const seen = new Set();
   const allowed = (url) => url.origin === location.origin && /\/file-previews\/[a-f0-9]{32}\/view$/.test(url.pathname);
@@ -14,6 +14,7 @@
     const url = new URL(href, location.origin);
     if (!allowed(url) || !discard()) return;
     panel?.remove(); dirty = false; notify();
+    openedView = window.aiquantPageWork?.state.view;
     panel = document.createElement("aside");
     panel.className = "file-reader-panel";
     if (new URLSearchParams(url.hash.slice(1)).get("side") === "left") panel.classList.add("file-reader-panel-left");
@@ -39,6 +40,18 @@
     if (event.source === parent && event.data?.type === "aiquant:preview-discard") {dirty=false;close();}
   });
   window.addEventListener("beforeunload", (event) => {if(dirty){event.preventDefault();event.returnValue="";}});
+  window.addEventListener("aiquant:page-suspended", () => {
+    if (panel) panel.style.display = "none";
+    document.documentElement.classList.remove("file-reader-open");
+    frame?.contentWindow.aiquantPageWork?.deactivate();
+  });
+  window.addEventListener("aiquant:page-resumed", () => {
+    if (panel && openedView === window.aiquantPageWork?.state.view) {
+      panel.style.display = "";
+      document.documentElement.classList.add("file-reader-open");
+      frame?.contentWindow.postMessage({type: "aiquant:preview-resume"}, location.origin);
+    }
+  });
   const check = (root) => {
     const nodes = [];
     if (root.matches?.("[data-preview-auto]")) nodes.push(root);

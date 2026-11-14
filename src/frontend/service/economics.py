@@ -1,6 +1,8 @@
 """Translate economic snapshots into tables, independent axes and report previews."""
 
+import calendar
 import math
+from datetime import date
 from html import escape
 
 import pandas as pd
@@ -8,6 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src.agent.model_catalog import list_models
+from src.core.exceptions import BusinessError, ErrorCode
 from src.data import current_market
 from src.engine.economics.config import economics_config
 from src.engine.economics.service import EconomicAnalysis
@@ -114,6 +117,22 @@ class EconomicUIMixin:
         ]
 
     def economic_load(self, kind, series, symbol, period, peers, refresh):
+        if current_market() != "CN":
+            raise BusinessError(ErrorCode.INVALID_PARAM, economics_config()["messages"]["unsupported"])
+        if kind != "macro":
+            symbol = str(symbol or "").strip()
+            if not symbol:
+                raise BusinessError(
+                    ErrorCode.MISSING_PARAM, "Enter an A-share code or company name before loading financials"
+                )
+            period = str(period or "").strip()
+            if period:
+                try:
+                    value = date.fromisoformat(period)
+                    if value.month not in (3, 6, 9, 12) or value.day != calendar.monthrange(value.year, value.month)[1]:
+                        raise ValueError("Not a quarter end")
+                except ValueError as exc:
+                    raise BusinessError(ErrorCode.INVALID_PARAM, "Use a calendar-quarter endpoint YYYY-MM-DD") from exc
         service = EconomicAnalysis()
         snapshot = (
             service.macro(series, refresh=refresh, market=current_market())

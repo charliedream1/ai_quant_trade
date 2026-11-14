@@ -29,7 +29,8 @@ from src.core.env_file import resolve_env_value
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.logger import get_logger
 from src.core.timeutil import utc_now_iso
-from src.data.normalization import _number
+from src.data.normalization import _number, _optional_number
+from src.data.provider_gate import eastmoney_gate
 from src.data.provider_output import provider_call
 from src.data.relation_graph import _RelationGraphBuilder
 from src.data.symbols import SecuritySymbol, parse_symbol
@@ -228,12 +229,9 @@ def _http_get(url: str, **kwargs: Any) -> requests.Response:
             response = _HTTP.get(url, **kwargs)
         else:
             global _EASTMONEY_LAST_REQUEST_AT
-            with _EASTMONEY_REQUEST_LOCK:
-                base_wait = EASTMONEY_MIN_INTERVAL_SECONDS - (time.monotonic() - _EASTMONEY_LAST_REQUEST_AT)
-                jitter = _random.uniform(EASTMONEY_JITTER_MIN, EASTMONEY_JITTER_MAX)
-                wait = max(base_wait, 0.0) + jitter
-                if wait > 0:
-                    time.sleep(wait)
+            with eastmoney_gate(
+                EASTMONEY_MIN_INTERVAL_SECONDS, _random.uniform(EASTMONEY_JITTER_MIN, EASTMONEY_JITTER_MAX)
+            ):
                 _EASTMONEY_LAST_REQUEST_AT = time.monotonic()
                 response = _HTTP.get(url, **kwargs)
     except requests.exceptions.RequestException as exc:
@@ -579,19 +577,37 @@ class EastmoneyDataSource:
             raise RuntimeError("新浪指数接口返回空数据")
         return rows
 
-    def sectors(self, board: str = "industry", limit: int = 20) -> list[dict[str, Any]]:
+    def sectors(
+        self, board: str = "industry", limit: int = 20, direction: str = "desc", refresh: bool = False
+    ) -> list[dict[str, Any]]:
+        if direction not in {"asc", "desc"}:
+            raise ValueError("Sector direction must be asc or desc")
         board_value = "concept" if board == "concept" else "industry"
         limit_value = max(1, min(int(limit), 100))
+        ttl = _market_cache_ttl(60, 600)
+        opposite = "asc" if direction == "desc" else "desc"
+        with _CACHE_LOCK:
+            cached = _CACHE.get(f"sectors:{board_value}:{opposite}")
+            if cached and not refresh and time.monotonic() - cached[0] < ttl:
+                universe = copy.deepcopy(cached[1])
+                if universe and universe[0].get("universe_total") == len(universe):
+                    valid = [row for row in universe if row.get("change_pct") is not None]
+                    return sorted(valid, key=lambda row: row["change_pct"], reverse=direction == "desc")[:limit_value]
         items = _cached(
-            f"sectors:{board_value}",
-            _market_cache_ttl(60, 600),
+            f"sectors:{board_value}:{direction}",
+            ttl,
             "quotes",
             "eastmoney / sina",
-            lambda: self._load_sectors(board_value, 100),
+            lambda: (
+                self._load_sectors(board_value, 100)
+                if direction == "desc"
+                else self._load_sectors(board_value, 100, direction)
+            ),
+            force_refresh=refresh,
         )
         return items[:limit_value]
 
-    def _load_sectors(self, board: str, limit: int) -> list[dict[str, Any]]:
+    def _load_sectors(self, board: str, limit: int, direction: str = "desc") -> list[dict[str, Any]]:
         try:
             board_type = 3 if board == "concept" else 2
             payload = self._get_json(
@@ -599,7 +615,7 @@ class EastmoneyDataSource:
                 {
                     "pn": 1,
                     "pz": limit,
-                    "po": 1,
+                    "po": 1 if direction == "desc" else 0,
                     "np": 1,
                     "ut": "bd1d9ddb04089700cf9c27f6f7426281",
                     "fltt": 2,
@@ -612,27 +628,32 @@ class EastmoneyDataSource:
             rows = (payload.get("data") or {}).get("diff") or []
             if not rows:
                 raise RuntimeError("板块接口返回空数据")
+            if isinstance(rows, dict):
+                rows = list(rows.values())
             return [
                 {
                     "code": item.get("f12"),
                     "name": item.get("f14"),
                     "price": _number(item.get("f2")),
-                    "change_pct": _number(item.get("f3")),
+                    "change_pct": _optional_number(item.get("f3")),
                     "leader": item.get("f128") or "-",
                     "leader_code": item.get("f140") or "-",
                     "amount": _number(item.get("f6")),
                     "up_count": _integer(item.get("f104")),
                     "down_count": _integer(item.get("f105")),
                     "board": board,
+                    "universe_total": (payload.get("data") or {}).get("total"),
                     "data_source": SOURCE_NAME,
                     "updated_at": _timestamp(item.get("f124")),
                 }
                 for item in rows
             ]
         except Exception:
-            return self._load_sectors_sina(board, limit)
+            return self._load_sectors_sina(board, limit, direction, full=True)
 
-    def _load_sectors_sina(self, board: str, limit: int) -> list[dict[str, Any]]:
+    def _load_sectors_sina(
+        self, board: str, limit: int, direction: str = "desc", full: bool = False
+    ) -> list[dict[str, Any]]:
         if board == "concept":
             url = "https://money.finance.sina.com.cn/q/view/newFLJK.php"
             params = {"param": "class"}
@@ -658,7 +679,7 @@ class EastmoneyDataSource:
                     "code": parts[0],
                     "name": parts[1],
                     "price": _number(parts[3]),
-                    "change_pct": _number(parts[5]),
+                    "change_pct": _optional_number(parts[5]),
                     "leader": parts[12] or "-",
                     "leader_code": re.sub(r"^(sh|sz|bj)", "", parts[8]),
                     "amount": _number(parts[7]),
@@ -669,10 +690,14 @@ class EastmoneyDataSource:
                     "updated_at": datetime.now(SHANGHAI_TZ).replace(microsecond=0).isoformat(),
                 }
             )
-        rows.sort(key=lambda item: float(item["change_pct"]), reverse=True)
+        total = len(rows)
+        rows = [row for row in rows if row["change_pct"] is not None]
+        for row in rows:
+            row["universe_total"] = total
+        rows.sort(key=lambda item: float(item["change_pct"]), reverse=direction == "desc")
         if not rows:
             raise RuntimeError("新浪板块接口返回空数据")
-        return rows[:limit]
+        return rows if full else rows[:limit]
 
     def stock_quote(self, symbol: str) -> dict[str, Any]:
         parsed = parse_symbol(symbol)

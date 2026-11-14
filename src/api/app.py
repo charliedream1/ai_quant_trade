@@ -42,6 +42,7 @@ from src.api.routes import (
     market,
     market_analysis_reports,
     mcp_servers,
+    model_relations,
     news,
     notifications,
     paper_accounts,
@@ -65,6 +66,7 @@ from src.api.routes import (
 from src.api.schemas.common import ok
 from src.api.security import AccessControl, access_options
 from src.api.ws_hub import ws_hub
+from src.core.asyncio_diagnostics import install_client_close_diagnostics
 from src.core.config import get_settings
 from src.core.database import Database
 from src.core.exceptions import BusinessError
@@ -73,10 +75,14 @@ from src.core.logger import get_logger, intercept_stdlib_logging, setup_logging,
 from src.documents.conversion import shutdown as shutdown_document_jobs
 from src.engine.backtest.jobs import shutdown as shutdown_backtest_jobs
 from src.engine.composition.monitor import PaperRiskMonitor
+from src.engine.market.model_graph.service import shutdown as shutdown_graph_jobs
+from src.engine.market.rule_graph_jobs import shutdown as shutdown_rule_graph_jobs
 from src.engine.research.monitor_jobs import shutdown_monitor_jobs
 from src.frontend.components.strategy_graph import mount_graph_assets
 from src.frontend.mounting import LEGACY_FRONTEND_MOUNT_PATH, mount_gradio_apps, shutdown_gradio_apps
 from src.frontend.registry import MODULES
+from src.observability.runtime import shutdown_observability
+from src.scheduler.calendar_setup import initialize_calendar
 
 SENSITIVE_QUERY_KEYS = ("key", "token", "secret", "password", "authorization", "credential")
 FRONTEND_MOUNT_PATH = "/app"
@@ -260,18 +266,27 @@ def create_app() -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
+        from src.core import page_work
         from src.data import DataSourceManager
+        from src.frontend import page_reads
         from src.scheduler import scheduler_runtime
 
         manager = DataSourceManager()
-        mode_label = "mock 本地模拟数据" if manager.is_mock else "real 真实行情数据"
+        restore_loop_diagnostics = install_client_close_diagnostics()
+        page_work.start()
+        page_reads.start()
+        mode_label = "development fixtures" if manager.is_mock else "public market data"
         started = time.perf_counter()
+        try:
+            initialize_calendar()
+        except (ValueError, OSError) as exc:
+            get_logger("service.lifecycle").warning("Calendar setup requires attention | reason={}", str(exc))
         scheduler_runtime.start()
         paper_risk_monitor = PaperRiskMonitor()
         paper_risk_monitor.start()
         log.info(
-            "AIQuant智投后端启动 | 监听 {}:{} | 数据源模式={}（{}，源：{}） | "
-            "调度器={} jobs={} | 日志级别={} | startup_ms={:.0f}",
+            "Service starting | listen={}:{} data_mode={} ({}, source={}) | "
+            "scheduler={} jobs={} log_level={} startup_ms={:.0f}",
             cfg.host,
             cfg.port,
             cfg.data_mode,
@@ -287,33 +302,23 @@ def create_app() -> FastAPI:
         api_url = f"http://{display_host}:{cfg.port}/docs"
         health_url = f"http://{display_host}:{cfg.port}{cfg.api_prefix}/health"
         startup_banner(
-            log,
-            app_name=cfg.app_name,
+            get_logger("service.lifecycle"),
+            app_name="AIQuant",
             web_url=web_url,
             api_url=api_url,
             health_url=health_url,
             github_url="https://github.com/charliedream1/ai_quant_trade",
             gitee_url="https://gitee.com/charlie1/ai_quant_trade.git",
         )
-        log.info("=" * 66)
-        log.info(
-            "启动成功 | AIQuant智投已就绪 | Gradio前端 http://{}:{}{}/ | API 文档 http://{}:{}/docs | "
-            "数据模式={} | 请求日志已降级 DEBUG，控制台仅显示业务日志 | 按 Ctrl+C 停止服务",
-            display_host,
-            cfg.port,
-            FRONTEND_DEFAULT_PATH,
-            display_host,
-            cfg.port,
-            cfg.data_mode,
-        )
-        log.info("=" * 66)
         try:
             yield
         finally:
+            page_work.shutdown()
+            page_reads.shutdown()
             paper_risk_monitor.stop()
             shutdown_started = time.perf_counter()
             log.info(
-                "AIQuant智投后端关闭开始 | pid={} | 监听 {}:{} | 调度器={} jobs={}",
+                "Service stopping | pid={} listen={}:{} scheduler={} jobs={}",
                 os.getpid(),
                 cfg.host,
                 cfg.port,
@@ -322,18 +327,22 @@ def create_app() -> FastAPI:
             )
             shutdown_gradio_apps(_app, log)
             shutdown_monitor_jobs()
+            shutdown_graph_jobs()
+            shutdown_rule_graph_jobs()
             shutdown_backtest_jobs()
             shutdown_document_jobs()
             shutdown_alpha_jobs()
             shutdown_agent_strategy_jobs()
+            shutdown_observability()
             scheduler_runtime.stop()
-            log.info(
-                "AIQuant智投后端关闭完成 | pid={} | 监听 {}:{} | shutdown_ms={:.0f}",
+            get_logger("service.lifecycle").info(
+                "Service stopped | pid={} listen={}:{} shutdown_ms={:.0f}",
                 os.getpid(),
                 cfg.host,
                 cfg.port,
                 (time.perf_counter() - shutdown_started) * 1000,
             )
+            restore_loop_diagnostics()
 
     app = FastAPI(
         title="AIQuant智投 API",
@@ -342,6 +351,11 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     mount_graph_assets(app)
+    from src.api.page_lifetime import PageLifetimeMiddleware
+    from src.api.page_lifetime import router as page_lifetime_router
+
+    app.include_router(page_lifetime_router, prefix=cfg.api_prefix)
+    app.add_middleware(PageLifetimeMiddleware, api_prefix=cfg.api_prefix)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[],
@@ -460,6 +474,7 @@ def create_app() -> FastAPI:
         watchlist.router,
         workspace_resources.router,
         relations.router,
+        model_relations.router,
         stocks.router,
         recommend_tasks.router,
         factors.router,

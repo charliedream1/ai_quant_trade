@@ -9,6 +9,8 @@ from src.core.repository import Repository
 from src.documents.service import FilePreviewService
 from src.documents.store import PreviewStore
 
+pytestmark = pytest.mark.usefixtures("document_write_root")
+
 
 def upload(client, name, content):
     result = client.post("/api/v1/file-previews/uploads", files={"file": (name, content)}).json()
@@ -92,7 +94,7 @@ def test_legacy_records_do_not_claim_originals_and_notes_share_revision(client):
 
 
 @pytest.mark.parametrize(
-    "path", ["../README.md", ".env", "data/all_in_one.db", "egs/config.yaml", "C:/Windows/win.ini"]
+    "path", ["../README.md", ".env", "data/all_in_one.db", "egs/config/platform/config.yaml", "C:/Windows/win.ini"]
 )
 def test_project_preview_refuses_unscoped_or_private_files(client, path):
     assert client.post("/api/v1/file-previews/project", json={"path": path}).json()["code"] != 0

@@ -272,7 +272,7 @@ class HongKongDataSource:
 
         return self._cached(("indices",), load)
 
-    def sectors(self, board="industry", limit=20):
+    def sectors(self, board="industry", limit=20, direction="desc", refresh=False):
         return []
 
     def heatmap(self, level="industry", board=None, threshold=0):

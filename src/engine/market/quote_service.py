@@ -1,5 +1,6 @@
 """Market quote aggregation."""
 
+from math import isfinite
 from typing import Any
 
 from src.core.repository import Repository
@@ -15,9 +16,41 @@ class QuoteService:
     def indices(self, refresh: bool = False) -> list[dict[str, Any]]:
         return self.data.indices(refresh=refresh)
 
-    def sectors(self, board: str = "industry", sort: str = "涨跌幅", limit: int = 20) -> list[dict[str, Any]]:
-        items = self.data.sectors(board=board, limit=limit)
-        return sorted(items, key=lambda row: row["change_pct"], reverse=True)
+    def sectors(
+        self,
+        board: str = "industry",
+        sort: str = "涨跌幅",
+        limit: int = 20,
+        direction: str = "desc",
+        refresh: bool = False,
+    ) -> list[dict[str, Any]]:
+        if direction not in {"asc", "desc"} or sort not in {"涨跌幅", "change_pct"}:
+            raise ValueError("Select change_pct sorting and asc/desc direction")
+        options = {"refresh": True} if refresh else {}
+        items = self.data.sectors(board=board, limit=limit, direction=direction, **options)
+        items = [row for row in items if row.get("change_pct") is not None and isfinite(float(row["change_pct"]))]
+        return sorted(items, key=lambda row: row["change_pct"], reverse=direction == "desc")
+
+    def sector_rankings(self, board="industry", limit=20, selection="balanced", refresh=False):
+        if selection not in {"balanced", "gainers", "decliners"}:
+            raise ValueError("Unknown sector ranking selection")
+        count = max(1, min(int(limit), 100))
+        each = (count + 1) // 2 if selection == "balanced" else count
+        rows: list[dict[str, Any]] = []
+        if selection != "decliners":
+            rows.extend(
+                dict(row, ranking="Gainer")
+                for row in self.sectors(board, limit=each, direction="desc", refresh=refresh)
+                if row.get("change_pct") is not None and float(row["change_pct"]) > 0
+            )
+        if selection != "gainers":
+            rows.extend(
+                dict(row, ranking="Decliner")
+                for row in self.sectors(board, limit=each, direction="asc", refresh=refresh)
+                if row.get("change_pct") is not None and float(row["change_pct"]) < 0
+            )
+        unique = {row["code"]: row for row in rows}
+        return list(unique.values())[:count]
 
     def heatmap(
         self, level: str = "industry", board: str | None = None, threshold: float = 0.0

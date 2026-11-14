@@ -1037,12 +1037,18 @@ def factor_correlation_figure(correlation: dict[str, Any]) -> go.Figure:
     return figure
 
 
-def relation_figure(nodes: Sequence[dict[str, Any]], edges: Sequence[dict[str, Any]], center_id: str) -> go.Figure:
+def relation_figure(
+    nodes: Sequence[dict[str, Any]],
+    edges: Sequence[dict[str, Any]],
+    center_id: str,
+    *,
+    coordinates: dict[str, tuple[float, float]] | None = None,
+) -> go.Figure:
     if not nodes:
         return empty_figure("个股关联网络", "暂无关联数据", 430)
     node_ids = [str(node.get("id")) for node in nodes]
     center = center_id if center_id in node_ids else node_ids[0]
-    positions = graph_positions(list(nodes), list(edges), center)
+    positions = coordinates or graph_positions(list(nodes), list(edges), center)
     x_range, y_range = graph_bounds(positions)
 
     figure = go.Figure()
@@ -1055,8 +1061,11 @@ def relation_figure(nodes: Sequence[dict[str, Any]], edges: Sequence[dict[str, A
         sx, sy = positions[source]
         tx, ty = positions[target]
         relation_type = str(edge.get("relation_type") or "relation")
-        group_key = relation_type + (
-            "_negative" if relation_type == "correlation" and edge.get("coefficient", 0) < 0 else ""
+        classification = edge.get("classification", "stated")
+        group_key = (
+            relation_type
+            + ("_inference" if classification != "stated" else "")
+            + ("_negative" if relation_type == "correlation" and edge.get("coefficient", 0) < 0 else "")
         )
         relation_label = str(edge.get("relation_label") or RELATION_TYPE_LABELS.get(relation_type, relation_type))
         weight = _safe_float(edge.get("weight"), 1.0)
@@ -1064,6 +1073,7 @@ def relation_figure(nodes: Sequence[dict[str, Any]], edges: Sequence[dict[str, A
         group = edge_groups.setdefault(
             group_key,
             {
+                "classification": classification,
                 "label": relation_label + ("（反向）" if group_key.endswith("_negative") else ""),
                 "x": [],
                 "y": [],
@@ -1086,6 +1096,7 @@ def relation_figure(nodes: Sequence[dict[str, Any]], edges: Sequence[dict[str, A
                 if relation_type == "correlation_negative"
                 else RELATION_TYPE_COLORS.get(relation_type, "#9aa6a1"),
                 "width": group["max_width"],
+                "dash": "solid" if group["classification"] == "stated" else "dash",
             },
             name=group["label"],
             legendgroup=relation_type,

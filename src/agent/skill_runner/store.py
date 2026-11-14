@@ -1,4 +1,4 @@
-"""Project-local jobs survive for inspection; processes do not become daemons."""
+"""Jobs stay inside configured private data; processes do not become daemons."""
 
 import json
 import os
@@ -17,9 +17,10 @@ LOCK = RLock()
 
 class SkillRunStore:
     def __init__(self):
-        self.root = (get_settings().data_dir / "skill_runs").resolve()
-        if not self.root.is_relative_to(get_settings().project_root.resolve()):
-            raise ValueError("Skill运行目录必须位于本项目内")
+        base = get_settings().data_dir.resolve()
+        self.root = (base / "skill_runs").resolve()
+        if not self.root.is_relative_to(base):
+            raise ValueError("Skill run directory escapes the configured data directory")
 
     def directory(self, run_id: str) -> Path:
         try:

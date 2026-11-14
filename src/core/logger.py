@@ -6,6 +6,7 @@ uvicorn 等基于标准库 logging 的组件通过 :class:`InterceptHandler`
 """
 
 import logging
+import os
 import sys
 import traceback
 from collections.abc import Iterator
@@ -13,21 +14,21 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from dotenv import dotenv_values
 from loguru import logger
 
+from src.core.config import PROJECT_ROOT
+from src.core.diagnostics_config import diagnostics_config
 from src.core.redaction import redact, redact_text
 
 _CONFIGURED = False
 _INTERCEPTED = False
+_CONSOLE_VERBOSE = False
 LOG_FORMAT = (
     "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {extra[channel]} | {extra[module]} | "
     "{name}:{function}:{line} | {message}"
 )
-CONSOLE_LOG_FORMAT = (
-    "<dim>{time:YYYY-MM-DD HH:mm:ss.SSS}</dim> | <level>{level: <8}</level> | "
-    "<cyan>{extra[channel]}</cyan> | <blue>{extra[module]}</blue> | "
-    "<white>{name}:{function}:{line}</white> | <level>{message}</level>"
-)
+CONSOLE_LOG_FORMAT = "<dim>{time:HH:mm:ss}</dim> | <level>{level: <8}</level> | <level>{message}</level>"
 STDLIB_LOGGER_NAMES = (
     "uvicorn",
     "uvicorn.error",
@@ -37,7 +38,7 @@ STDLIB_LOGGER_NAMES = (
     "urllib3",
     "numexpr",
 )
-THIRD_PARTY_LOGGER_PREFIXES = ("uvicorn", "httpx", "httpcore", "urllib3", "numexpr")
+THIRD_PARTY_LOGGER_PREFIXES = ("uvicorn", "httpx", "httpcore", "urllib3", "numexpr", "apscheduler")
 QUIET_STDLIB_LOGGERS = set(STDLIB_LOGGER_NAMES)
 
 
@@ -78,6 +79,13 @@ def _ensure_module(record: Any) -> None:
 def _should_emit_console(record: Any) -> bool:
     module = str(record["extra"].get("module") or "")
     channel = str(record["extra"].get("channel") or _log_channel(module))
+    policy = diagnostics_config()["console"]
+    if (
+        not _CONSOLE_VERBOSE
+        and module in policy["quiet_modules"]
+        and record["level"].no < logger.level(policy["quiet_below"]).no
+    ):
+        return False
     if channel == "third_party" and record["level"].no < logger.level("ERROR").no:
         return False
     if module in QUIET_STDLIB_LOGGERS and record["level"].no < logger.level("ERROR").no:
@@ -140,12 +148,28 @@ class LoguruStdout:
             self._log.log(self._level, "third-party stdout captured | {}", text[:1000])
 
 
+def _file_log_level(default):
+    selected = (
+        os.environ.get("ALL_IN_ONE_LOG_FILE_LEVEL")
+        or dotenv_values(PROJECT_ROOT / ".env").get("ALL_IN_ONE_LOG_FILE_LEVEL")
+        or diagnostics_config()["console"]["file_level"]
+        or default
+    )
+    name = str(selected).upper()
+    try:
+        logger.level(name)
+    except ValueError:
+        raise ValueError("Invalid file log level; use a configured Loguru level name") from None
+    return name
+
+
 def setup_logging(log_dir: Path | None = None, level: str = "INFO") -> None:
-    global _CONFIGURED
+    global _CONFIGURED, _CONSOLE_VERBOSE
     if _CONFIGURED:
         return
     _configure_console_encoding()
     normalized_level = level.upper()
+    _CONSOLE_VERBOSE = normalized_level in {"DEBUG", "TRACE"}
     logger.remove()
     logger.configure(patcher=_ensure_module)
     logger.add(
@@ -164,7 +188,7 @@ def setup_logging(log_dir: Path | None = None, level: str = "INFO") -> None:
             log_dir / "app_{time:YYYY-MM-DD}.log",
             rotation="00:00",
             retention="30 days",
-            level=normalized_level,
+            level=_file_log_level(normalized_level),
             encoding="utf-8",
             format=LOG_FORMAT,
             filter=_should_emit_file,
@@ -193,15 +217,15 @@ def startup_banner(
         "<cyan>│</cyan> <white>Quant Research · AI · Trade</white><cyan> │</cyan>\n"
         "<cyan>╰──────────────────────────────╯</cyan>"
     )
-    log.opt(colors=True).info(logo)
+    log.opt(colors=True).debug(logo)
     log.opt(colors=True).info(
-        "<bold><green>启动成功</green></bold> | Web <u><blue>{}</blue></u> | API <u><blue>{}</blue></u> | Health <u><blue>{}</blue></u>",
+        "<bold><green>Service ready</green></bold> | Web <u><blue>{}</blue></u> | API <u><blue>{}</blue></u> | Health <u><blue>{}</blue></u>",
         web_url,
         api_url,
         health_url,
     )
-    log.opt(colors=True).info(
-        "项目链接 | GitHub <u><blue>{}</blue></u> | Gitee <u><blue>{}</blue></u>",
+    log.opt(colors=True).debug(
+        "Project links | GitHub <u><blue>{}</blue></u> | Gitee <u><blue>{}</blue></u>",
         github_url,
         gitee_url,
     )

@@ -3,7 +3,7 @@
 import importlib
 import inspect
 from collections.abc import Callable
-from functools import lru_cache
+from functools import lru_cache, wraps
 from typing import Any, Protocol
 
 import yaml
@@ -17,7 +17,9 @@ class CallbackService(Protocol):
 
 @lru_cache(maxsize=1)
 def callback_registry() -> dict:
-    return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/frontend_services.yaml").read_text(encoding="utf-8"))["methods"]
+    return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/frontend_services.yaml").read_text(encoding="utf-8"))[
+        "methods"
+    ]
 
 
 def lookup_method(name: str):
@@ -43,5 +45,20 @@ class CallbackServices:
         method = getattr(cls, name)
         descriptor = inspect.getattr_static(cls, name)
         bound = method if isinstance(descriptor, (staticmethod, classmethod)) else method.__get__(self, type(self))
+        from src.core.page_work import CURRENT_PAGE, check, policy
+
+        if name in policy()["read_methods"]:
+            original = bound
+
+            @wraps(original)
+            def transient(*args, **kwargs):
+                check()
+                if CURRENT_PAGE.get() is not None:
+                    from .page_reads import read
+
+                    return read(name, args, kwargs)
+                return original(*args, **kwargs)
+
+            bound = transient
         setattr(self, name, bound)
         return bound

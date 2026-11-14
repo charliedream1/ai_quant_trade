@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from src.core.logger import get_logger
 from src.data.normalization import _empty_boards, _empty_rows, _number
-from src.data.relation_evidence import dated_returns, graph_config, news_evidence, return_correlation
+from src.data.relation_evidence import dated_returns, graph_config, news_evidence, publish, return_correlation, wants
 from src.data.symbols import SecuritySymbol
 
 if TYPE_CHECKING:
@@ -41,6 +41,7 @@ class _RelationGraphBuilder:
         self.edge_keys: set[tuple[str, str, str]] = set()
         self.peer_codes: list[str] = []
         self.second_hop_codes: list[str] = []
+        self.gaps: list[str] = []
 
     def build(self, depth: int) -> dict[str, Any]:
         self._add_node(
@@ -49,20 +50,35 @@ class _RelationGraphBuilder:
             "stock",
             _number(self.quote.get("change_pct")),
         )
-        boards = self._safe(
-            lambda: self.ds._stock_boards(self.parsed.qualified),
-            _empty_boards(),
-        )
-        self._layer_boards(boards)
+        self._checkpoint("Target quote loaded")
+        boards = _empty_boards()
+        if wants("industry", "concept", "index", "correlation"):
+            boards = self._safe(
+                lambda: self.ds._stock_boards(self.parsed.qualified),
+                _empty_boards(),
+            )
+            self._layer_boards(boards)
+            self._checkpoint("Membership sources loaded")
         if depth >= 2:
-            self._run_layers([lambda branch: branch._layer_peers(boards), lambda branch: branch._layer_news(limit=3)])
+            tasks = []
+            if wants("correlation", "industry", "concept", "index"):
+                tasks.append(lambda branch: branch._layer_peers(boards))
+            if wants("news_cooccurrence"):
+                tasks.append(lambda branch: branch._layer_news(limit=3))
+            self._run_layers(tasks)
+            self._checkpoint("Peer and news branches completed")
         if depth >= 3:
             self._run_layers(
                 [
-                    lambda branch: branch._layer_holders(branch.center, limit=3),
-                    lambda branch: branch._layer_peer_boards(boards),
+                    *([lambda branch: branch._layer_holders(branch.center, limit=3)] if wants("shareholder") else []),
+                    *(
+                        [lambda branch: branch._layer_peer_boards(boards)]
+                        if wants("industry", "concept", "index")
+                        else []
+                    ),
                 ]
             )
+            self._checkpoint("Ownership and peer membership branches completed")
         if depth >= 4:
             depth_four_tasks = [lambda branch: branch._layer_second_hop(boards)]
             if self.peer_codes:
@@ -70,7 +86,10 @@ class _RelationGraphBuilder:
             self._run_layers(depth_four_tasks)
         if depth >= 5:
             self._run_layers([lambda branch: branch._layer_deep_expand()])
-        return {"nodes": list(self.nodes.values()), "edges": self._unique_edges()}
+        return {"nodes": list(self.nodes.values()), "edges": self._unique_edges(), "source_gaps": self.gaps}
+
+    def _checkpoint(self, stage):
+        publish({"nodes": list(self.nodes.values()), "edges": self._unique_edges(), "source_gaps": self.gaps}, stage)
 
     def _run_layers(self, tasks: list[Callable[[Any], None]]) -> None:
         """同层任务并发执行，单层超时或异常时降级，不阻塞其他层。"""
@@ -84,6 +103,7 @@ class _RelationGraphBuilder:
             try:
                 branch = future.result(timeout=max(deadline - time.monotonic(), 0))
                 self.nodes.update(branch.nodes)
+                self.gaps = list(dict.fromkeys([*self.gaps, *branch.gaps]))
                 for edge in branch.edges:
                     key = (edge["source"], edge["target"], edge["relation_type"])
                     if key not in self.edge_keys:
@@ -94,12 +114,13 @@ class _RelationGraphBuilder:
                 if branch.second_hop_codes:
                     self.second_hop_codes = branch.second_hop_codes
             except Exception as exc:
+                self.gaps.append(type(exc).__name__)
                 DATA_LOG.warning("图谱分支未完成 | error_type={}", type(exc).__name__)
         executor.shutdown(wait=False, cancel_futures=True)
 
     def _clone(self):
         branch = copy.copy(self)
-        for key in ("nodes", "edges", "edge_keys", "peer_codes", "second_hop_codes"):
+        for key in ("nodes", "edges", "edge_keys", "peer_codes", "second_hop_codes", "gaps"):
             setattr(branch, key, copy.deepcopy(getattr(self, key)))
         return branch
 
@@ -152,11 +173,11 @@ class _RelationGraphBuilder:
             }
         )
 
-    @staticmethod
-    def _safe(loader: Callable[[], T], default: T) -> T:
+    def _safe(self, loader: Callable[[], T], default: T) -> T:
         try:
             return loader()
-        except Exception:
+        except Exception as exc:
+            self.gaps.append(type(exc).__name__)
             return default
 
     @staticmethod

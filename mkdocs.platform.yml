@@ -111,6 +111,10 @@ nav:
     - 行情、因子和图谱: usage/market_research.md
     - Hong Kong market: usage/hong_kong_market.md
     - Macroeconomics and fundamentals: usage/economic_analysis.md
+    - Runtime and market research: usage/runtime_market_research.md
+    - Page navigation and cancellation: usage/page_navigation.md
+    - CLI and Skill relationship graphs: usage/model_stock_relationships.md
+    - Relationship graph validation: usage/model_stock_relationship_validation.md
     - 通用因子监控与Qlib: usage/factor_monitoring.md
     - 资源池模板与导入: usage/resource_pools.md
     - 研报与论文: usage/reports.md
@@ -187,6 +191,7 @@ nav:
   - 知识库文件检索: principles/knowledge_retrieval.md
   - 模型接口与共享配额: principles/model_interfaces.md
   - Economic evidence and accounting: principles/economic_analysis.md
+  - Evidence-grounded company relationships: principles/model_stock_relationships.md
   - 验证原则: principles/testing_principles.md
 - 新仓库入口: platform/migration.md
 plugins:

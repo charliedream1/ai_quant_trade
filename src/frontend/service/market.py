@@ -38,7 +38,6 @@ from .foundation import (
     WATCHLIST_GROUP_COLUMNS,
     Any,
     BacktestRunner,
-    DataSourceManager,
     FactorMonitorService,
     NewsAggregator,
     QlibWorkflowService,
@@ -125,14 +124,16 @@ class MarketServiceMixin:
         center = next((str(row["id"]) for row in nodes if row.get("is_center")), str(nodes[0]["id"]) if nodes else "")
         return relation_figure(nodes, edges, center)
 
-    def market_overview(self, board: str, limit: Any) -> tuple[Any, Any, go.Figure]:
+    def market_overview(self, board: str, limit: Any, selection="balanced") -> tuple[Any, Any, go.Figure]:
         quotes = QuoteService()
         limit_value = max(1, min(int(limit or 20), 100))
         indices = quotes.indices(refresh=True)
-        sectors = quotes.sectors(board=board or "industry", limit=limit_value)
+        sectors = quotes.sector_rankings(
+            board=board or "industry", limit=limit_value, selection=selection, refresh=True
+        )
         return (
             styled_frame(indices, INDEX_COLUMNS, gradient=["change_pct"]),
-            styled_frame(sectors, SECTOR_COLUMNS, gradient=["change_pct"]),
+            styled_frame(sectors, ["ranking", *SECTOR_COLUMNS], gradient=["change_pct"]),
             market_bar_figure(sectors),
         )
 
@@ -524,27 +525,7 @@ class MarketServiceMixin:
             ("relations", symbol_value, depth_value, ",".join(sorted(selected_types))),
             lambda: RelationGraphService().graph(symbol_value, selected_types or None, depth_value),
         )
-        data = DataSourceManager()
-        quote = data.stock_quote(symbol_value)
-        sector_by_code = {item["code"]: item for item in data.sectors(limit=100)}
-        nodes = []
-        for item in result.get("nodes") or []:
-            node = dict(item)
-            node_id = str(node.get("id"))
-            if node_id == symbol_value:
-                node.update(
-                    name=quote.get("name") or node_id,
-                    type="stock",
-                    change_pct=quote.get("change_pct") or 0,
-                )
-            elif node_id in sector_by_code:
-                sector = sector_by_code[node_id]
-                node.update(
-                    name=sector.get("name") or node_id,
-                    type="sector",
-                    change_pct=sector.get("change_pct") or 0,
-                )
-            nodes.append(node)
+        nodes = result.get("nodes") or []
         edges = result.get("edges") or []
         summary = result.get("summary") or {}
         return (
