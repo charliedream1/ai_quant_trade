@@ -7,6 +7,7 @@ import gradio as gr
 
 from src.agent.rag import RAGService
 from src.core.kb_importer import import_uploaded_document
+from src.core.panel_updates import observe_references
 from src.core.repository import Repository
 from src.documents.service import FilePreviewService
 from src.documents.view import launcher
@@ -71,7 +72,8 @@ class RagChatMixin:
             )
             if selected_model:
                 payload["model_id"] = selected_model["id"]
-        result = RAGService().ask(payload)
+        with observe_references(2, to_frame):
+            result = RAGService().ask(payload)
         messages, refs = self.rag_restore(result["session_id"], name, qa_mode, document_id)
         trace = result["retrieval_trace"]
         detail = "；".join(f"第{item['round']}轮：{'、'.join(item['keywords'])}（{item['hits']}条）" for item in trace)

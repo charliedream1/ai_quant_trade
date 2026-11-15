@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import multiprocessing
+import os
 
 # Only hashes server-owned arguments; no client pickle is accepted.
 import pickle  # nosec B403
 from concurrent.futures import Future
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from threading import Condition, Event, RLock, Thread
 from time import monotonic
@@ -19,6 +21,7 @@ from src.core.config import get_settings
 from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
 from src.core.page_work import CURRENT_PAGE, PageCancelled, PageWork, check, on_cancel, policy
+from src.core.panel_updates import PANEL_UPDATE
 from src.core.process_control import stop_process_tree
 from src.data import current_market
 
@@ -30,6 +33,7 @@ SLOTS: list[Any] = []
 BUSY: set[int] = set()
 STOP = Event()
 WARMING = False
+READ_STOP: ContextVar[Event | None] = ContextVar("page_read_stop", default=None)
 
 
 @dataclass
@@ -38,6 +42,7 @@ class ReadJob:
     future: Future = field(default_factory=Future)
     stop: Event = field(default_factory=Event)
     consumers: dict[PageWork, int] = field(default_factory=dict)
+    panels: list[tuple[int, Any]] = field(default_factory=list)
 
 
 JOBS: dict[str, ReadJob] = {}
@@ -55,6 +60,7 @@ def _new_slot():
 def start(*, warm: bool = False) -> None:
     """Warm the pool off the event loop; no source calls occur during warmup."""
     global WARMING
+    os.environ.setdefault("ALL_IN_ONE_PAGE_CACHE_EPOCH", uuid4().hex)
     STOP.clear()
     if not warm:
         return
@@ -69,7 +75,7 @@ def start(*, warm: bool = False) -> None:
 
     def warm_pool():
         with CAPACITY:
-            while not STOP.is_set() and len(SLOTS) < policy()["workers"]:
+            while not STOP.is_set() and len(SLOTS) < policy()["warm_workers"]:
                 SLOTS.append(_new_slot())
             CAPACITY.notify_all()
 
@@ -119,20 +125,38 @@ def _execute(key: str, job: ReadJob) -> None:
     index = None
     reusable = False
     outcome = "failed"
+    started = monotonic()
     try:
         deadline = monotonic() + policy()["read_deadline_seconds"]
         log = get_logger("ui.work")
         log.info("Page work queued | operation={} method={}", key[:12], job.request[0])
         index, slot = _slot(job, deadline)
         process, connection = slot
-        log.info("Page work started | operation={} method={} worker={}", key[:12], job.request[0], process.pid)
+        log.info("Page work assigned | operation={} method={} worker={}", key[:12], job.request[0], process.pid)
         connection.send(job.request)
         while not STOP.is_set() and not job.stop.is_set():
             if connection.poll(policy()["poll_seconds"]):
                 message = connection.recv()
+                if message[0] == "ready":
+                    log.info(
+                        "Page worker ready | operation={} worker={} wait_ms={:.0f}",
+                        key[:12],
+                        message[1],
+                        (monotonic() - started) * 1000,
+                    )
+                    continue
                 if message[0] == "progress":
                     log.info(
                         "Page work progress | operation={} method={} stage={}", key[:12], job.request[0], message[1]
+                    )
+                    continue
+                if message[0] == "panel":
+                    with LOCK:
+                        if len(job.panels) >= policy()["max_panel_updates"]:
+                            raise ValueError("Too many section updates")
+                        job.panels.append((message[1], message[2]))
+                    log.info(
+                        "Page section ready | operation={} method={} section={}", key[:12], job.request[0], message[1]
                     )
                     continue
                 success, value = message[:2]
@@ -214,15 +238,32 @@ def read(name: str, args: tuple, kwargs: dict) -> Any:
                 job.consumers[page] = count - 1
             else:
                 job.consumers.pop(page, None)
-            if not job.consumers:
+            if not job.consumers and not job.future.done():
                 job.stop.set()
 
     detach = on_cancel(page, leave)
+    observed = 0
+
+    def publish():
+        nonlocal observed
+        callback = PANEL_UPDATE.get()
+        with LOCK:
+            pending = job.panels[observed:]
+            observed = len(job.panels)
+        if callback:
+            for index, value in pending:
+                callback(index, value)
+
     try:
         while not job.future.done():
             check()
+            local_stop = READ_STOP.get()
+            if local_stop and local_stop.is_set():
+                raise PageCancelled()
+            publish()
             page.wait(policy()["poll_seconds"])
         check()
+        publish()
         return job.future.result()
     finally:
         detach()
@@ -248,3 +289,4 @@ def shutdown() -> None:
         if not BUSY:
             SLOTS.clear()
             WARMING = False
+            os.environ.pop("ALL_IN_ONE_PAGE_CACHE_EPOCH", None)

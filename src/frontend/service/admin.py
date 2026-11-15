@@ -11,6 +11,7 @@ from src.agent.model_catalog import (
     test_model,
     update_model,
 )
+from src.core.panel_updates import panel_values
 from src.scheduler.calendar_refresh import refresh_managed_calendar
 from src.scheduler.calendar_setup import active_calendar_path, initialize_calendar
 
@@ -171,7 +172,12 @@ class AdminServiceMixin:
 
     def models_with_stats(self) -> tuple[pd.DataFrame, go.Figure]:
         frame = self.models()
-        return (frame, model_stat_figure(frame))
+        return panel_values(
+            (
+                lambda: frame,
+                lambda: model_stat_figure(frame),
+            )
+        )
 
     def model_form(self, model_id: Any) -> tuple[Any, ...]:
         item = get_model(require_id(model_id, "模型 ID"))

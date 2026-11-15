@@ -50,7 +50,7 @@ Explicit transient callbacks execute through trusted local IPC in a bounded
 process pool. Only registered method names and server-preprocessed arguments
 cross the pipe; no network endpoint accepts pickled content. Styling is converted
 to Gradio table metadata instead of serializing closures. Homepage callbacks
-have worker affinity so that account/news snapshots retain their existing reuse.
+run independently; OS-locked JSON observations preserve account/news reuse across workers.
 Equivalent in-flight reads maintain consumer sets across document lifetimes.
 The last consumer stops the worker and its owned descendants, releases file locks
 and clears only that worker's model concurrency leases. RPM history is retained.
@@ -80,3 +80,19 @@ independent geography and subject plus inspectable inclusion reasons. These rule
 describe relevance, not predicted prices. Notification day windows use original
 occurrence time converted from the configured local timezone; read state remains
 client-specific, and unresolved critical history remains separately visible.
+
+## Incremental section delivery
+
+Eligible multi-output reads publish bounded indexed sections through the existing
+owned-worker pipe. Each consumer advances its own cursor; leaving one window does
+not stop another window's shared source. Independent sources can finish in any
+order, and dependent views use their original shared snapshot. A section is sent
+when ready instead of waiting for the final tuple. Normal service/API return
+contracts and committed-job lifecycles remain unchanged.
+
+The UI callback queue carries cumulative updates, preserving completed tables,
+charts and citations while another section loads or fails. Each generator retains
+one context even if the SDK advances it on different executor threads. Closing it
+releases its subscription and keeps the existing last-consumer process cancellation.
+Section state labels and output counts are configured in
+`egs/config/ui/page_work.yaml`. Composite writes retain their transaction boundary.

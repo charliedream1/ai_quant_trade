@@ -335,7 +335,7 @@ def test_policy_lists_registered_reads_and_excludes_job_submission():
 def test_worker_error_diagnostics_preserve_type_and_redact_secrets(client, monkeypatch):
     from src.core.config import get_settings
     from src.frontend.read_worker import invoke
-    from src.frontend.service.dashboard import DashboardServiceMixin
+    from src.frontend.service.home_service import HomeServiceMixin
 
     secret = "worker-private-marker"
     monkeypatch.setenv("WORKER_TEST_API_KEY", secret)
@@ -343,7 +343,7 @@ def test_worker_error_diagnostics_preserve_type_and_redact_secrets(client, monke
     def fail(*args, **kwargs):
         raise RuntimeError("Controlled worker failure: " + secret)
 
-    monkeypatch.setattr(DashboardServiceMixin, "home_news", fail)
+    monkeypatch.setattr(HomeServiceMixin, "home_news", fail)
     success, payload = invoke(("home_news", (), {}, get_settings(), "CN"))
     assert not success and payload["error_type"] == "RuntimeError"
     assert secret not in payload["message"] and secret not in payload["diagnostic"]

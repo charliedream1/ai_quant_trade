@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from math import isfinite
 from typing import Any
 
@@ -10,8 +10,9 @@ from src.core.logger import get_logger
 from src.core.repository import Repository
 from src.data import DataSourceManager, current_market
 
-from .foundation import _daily_cached, _local_now
 from .home_config import label
+from .shared_observations import shared_observation
+from .view_primitives import _daily_cached, _local_now
 
 LOG = get_logger("frontend.home")
 
@@ -51,7 +52,11 @@ class HomeAccount:
 
 def account_snapshot(mode: str, force_refresh: bool = False) -> HomeAccount:
     payload, _, _ = _daily_cached(
-        ("home_account_snapshot", mode), lambda: _read_account(mode), force_refresh=force_refresh
+        ("home_account_snapshot", mode),
+        lambda: HomeAccount(
+            **shared_observation(["account", mode], lambda: asdict(_read_account(mode)), force_refresh)
+        ),
+        force_refresh=force_refresh,
     )
     return payload
 

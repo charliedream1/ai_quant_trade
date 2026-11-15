@@ -9,6 +9,7 @@ from loguru import logger
 
 from src.core.config import PROJECT_ROOT
 from src.core.fts import FTSService, kb_document_source_scope, kb_remote_source_id
+from src.core.panel_updates import observation_ready
 from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
 from src.knowledge.answer_retrieval import AnswerRetrieval
@@ -84,19 +85,6 @@ class RAGService:
                 for index, doc in enumerate(docs, start=1)
             ]
         )
-        prompt = self._prompt(question, context, history_context)
-        config = yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/rag.yaml").read_text(encoding="utf-8"))
-        completion = None
-        status = retrieval_status
-        answer = config.get(retrieval_status, config["no_hits"])
-        if docs:
-            try:
-                options: dict[str, Any] = {"model_id": int(payload["model_id"])} if payload.get("model_id") else {}
-                completion = self.llm.complete(prompt, purpose="问答", **options)
-                answer, status = completion["text"], "answered"
-            except Exception as exc:
-                logger.warning("知识问答生成失败 | error={}", type(exc).__name__)
-                answer, status = config["model_unavailable"], "model_unavailable"
         refs = [
             {
                 "doc_id": doc["id"],
@@ -117,6 +105,20 @@ class RAGService:
             }
             for index, doc in enumerate(docs, start=1)
         ]
+        observation_ready("knowledge.references", refs)
+        prompt = self._prompt(question, context, history_context)
+        config = yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/rag.yaml").read_text(encoding="utf-8"))
+        completion = None
+        status = retrieval_status
+        answer = config.get(retrieval_status, config["no_hits"])
+        if docs:
+            try:
+                options: dict[str, Any] = {"model_id": int(payload["model_id"])} if payload.get("model_id") else {}
+                completion = self.llm.complete(prompt, purpose="问答", **options)
+                answer, status = completion["text"], "answered"
+            except Exception as exc:
+                logger.warning("知识问答生成失败 | error={}", type(exc).__name__)
+                answer, status = config["model_unavailable"], "model_unavailable"
         self.repo.insert(
             "kb_qa_history",
             {

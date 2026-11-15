@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
+from contextvars import copy_context
 from functools import wraps
 from inspect import isgeneratorfunction, unwrap
 from pathlib import Path
+from queue import Empty, Queue
+from threading import Event, Thread
 from time import perf_counter
 from typing import Any
 from uuid import uuid4
@@ -17,12 +20,13 @@ from gradio.context import LocalContext
 from src.core.diagnostics_config import diagnostics_config
 from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
-from src.core.page_work import CURRENT_PAGE, PageCancelled, check
+from src.core.page_work import CURRENT_PAGE, PageCancelled, check, policy
+from src.core.panel_updates import PANEL_UPDATE
 from src.core.stream_control import STREAM_STOP
 from src.core.workspace_config import workspace_config
 from src.data.manager import REQUEST_MARKET
 
-from ..service_dispatch import lookup_method
+from ..service_dispatch import callback_registry, lookup_method
 from .errors import ui_error_message
 
 CALLBACK_LOG = get_logger("frontend.callback")
@@ -39,7 +43,7 @@ def callback_location(fn: Callable[..., Any]) -> tuple[str, str]:
         if getattr(getattr(fn, "__self__", None), "frontend_callback_service", False)
         else ""
     )
-    if code is not None and getattr(fn, "__name__", "") == "<lambda>":
+    if code is not None and not service_operation:
         for name in reversed(code.co_names):
             method = lookup_method(name)
             if method is not None and hasattr(method, "__code__"):
@@ -137,6 +141,40 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
 def safe(fn: Callable[..., Any]) -> Callable[..., Any]:
     """Preserve streaming registration and handle errors throughout iteration."""
     operation, source = callback_location(fn)
+    output_count = policy()["progressive_methods"].get(operation.removeprefix("FrontendService."))
+    original = unwrap(fn)
+    if getattr(original, "__self__", None) is None:
+        code = getattr(original, "__code__", None)
+        referenced = set(code.co_names).intersection(callback_registry()) if code else set()
+        if len(referenced) > 1:
+            output_count = None
+
+    if output_count and not isgeneratorfunction(fn):
+
+        @wraps(fn)
+        def sections(*args: Any, **kwargs: Any) -> Iterator[Any]:
+            def execute():
+                page_owned = False
+                try:
+                    with _callback_run(operation, source):
+                        page_owned = CURRENT_PAGE.get() is not None
+                        if CURRENT_PAGE.get() is None:
+                            yield fn(*args, **kwargs)
+                        else:
+                            yield from _section_call(
+                                fn, args, kwargs, output_count, sections.__dict__.get("aiquant_output_classes")
+                            )
+                except (PageCancelled, GeneratorExit):
+                    return
+                except gr.Error as exc:
+                    if not page_owned:
+                        raise
+                    gr.Warning(str(exc))
+
+            yield from _context_iterator(execute())
+
+        sections.__dict__["aiquant_progressive"] = True
+        return sections
 
     if isgeneratorfunction(fn):
 
@@ -163,3 +201,100 @@ def safe(fn: Callable[..., Any]) -> Callable[..., Any]:
             return gr.skip()
 
     return wrapped
+
+
+def _context_iterator(iterator):
+    """Gradio may advance a synchronous generator on different executor threads."""
+    context = copy_context()
+    try:
+        while True:
+            try:
+                value = context.run(next, iterator)
+            except StopIteration:
+                return
+            yield value
+    finally:
+        context.run(iterator.close)
+
+
+def enable_progressive_queue(blocks):
+    """Both installed Gradio versions stream generator events through their queue protocol."""
+    for function in blocks.fns.values():
+        if getattr(function.fn, "aiquant_progressive", False):
+            function.queue = True
+            function.show_progress = "hidden"
+            function.fn.__dict__["aiquant_output_classes"] = [
+                list(component.elem_classes or []) if hasattr(component, "elem_classes") else None
+                for component in function.outputs
+            ]
+    return blocks
+
+
+def _section_call(fn, args, kwargs, output_count, classes=None):
+    """The parent adapter only waits for cancellable owned reads; business work stays in workers."""
+    from src.frontend.page_reads import READ_STOP
+
+    events: Queue = Queue()
+    stop = Event()
+    classes = classes or [None] * output_count
+    visible = [
+        gr.update(elem_classes=[*style, "section-loading"]) if style is not None else gr.skip() for style in classes
+    ]
+    completed = set()
+
+    def publish(index, value):
+        if not stop.is_set():
+            events.put(("panel", (index, value)))
+
+    def run():
+        token = PANEL_UPDATE.set(publish)
+        cancel_token = READ_STOP.set(stop)
+        try:
+            result = fn(*args, **kwargs)
+            events.put(("result", result))
+        except BaseException as exc:
+            events.put(("error", exc))
+        finally:
+            PANEL_UPDATE.reset(token)
+            READ_STOP.reset(cancel_token)
+
+    context = copy_context()
+    thread = Thread(target=context.run, args=(run,), daemon=True, name="page-section-adapter")
+    thread.start()
+    try:
+        yield tuple(visible) if output_count > 1 else visible[0]
+        while True:
+            check()
+            try:
+                kind, value = events.get(timeout=policy()["poll_seconds"])
+            except Empty:
+                continue
+            if kind == "panel":
+                index, data = value
+                completed.add(index)
+                visible[index] = (
+                    gr.update(value=data, elem_classes=[*classes[index], "section-ready"])
+                    if classes[index] is not None
+                    else data
+                )
+                yield tuple(visible) if output_count > 1 else visible[0]
+            elif kind == "error":
+                for index, style in enumerate(classes):
+                    if index not in completed and style is not None:
+                        visible[index] = gr.update(elem_classes=[*style, "section-failed"])
+                yield tuple(visible) if output_count > 1 else visible[0]
+                raise value
+            else:
+                if isinstance(value, tuple) and len(value) == output_count:
+                    yield tuple(
+                        gr.update(value=item, elem_classes=[*classes[index], "section-ready"])
+                        if classes[index] is not None
+                        else item
+                        for index, item in enumerate(value)
+                    )
+                else:
+                    yield value
+                return
+    finally:
+        stop.set()
+        thread.join(timeout=policy()["shutdown_seconds"])

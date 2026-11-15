@@ -70,7 +70,7 @@
 
 | **Period** | **Major capability** |
 |:---|:---|
-| 2026.11 | [**Integrated quant platform and deployment**](docs/usage/workspace.md): market research, strategy composition, fee-aware backtests, [responsive research workspace](docs/usage/research_workspace.md), Python 3.10–3.14 compatibility, exact pip/uv installation, Docker runtime and Langfuse observability. |
+| 2026.11 | [**Integrated quant platform and deployment**](docs/usage/workspace.md): market research, strategy composition, fee-aware backtests, [responsive research workspace with progressive section loading](docs/usage/research_workspace.md), Python 3.10–3.14 compatibility, exact pip/uv installation, Docker runtime and Langfuse observability. |
 | 2026.11 | [**Research, strategies and risk**](docs/usage/economic_analysis.md): macroeconomics, [financial statements and market research](docs/usage/runtime_market_research.md), [Hong Kong HKD research](docs/usage/hong_kong_market.md), ETF and industry rotation, factor research, portfolio/risk composition and execution-aware backtests. |
 | 2026.11 | [**File knowledge and document Q&A**](docs/usage/knowledge.md): named file libraries, Markdown chunking, zvec-grep retrieval, source previews, report downloads, local SAG2 BM25 retrieval with evidence expansion and replaceable JEV/embedding/rerank selectors. |
 | 2026.11 | [**AI model and agent operations**](docs/usage/model_interfaces.md): OpenAI/LiteLLM interfaces, shared RPM controls, native Agent/CLI/Skills workflows, [evidence-grounded company relationship graphs](docs/usage/model_stock_relationships.md), research and safe execution controls. |

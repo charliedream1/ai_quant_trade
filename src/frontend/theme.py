@@ -11,6 +11,7 @@ from typing import Any
 import gradio as gr
 
 from src.core.config import get_settings
+from src.core.page_work import policy as page_work_policy
 from src.core.workspace_config import workspace_config
 
 from .common.chart_help import chart_help_js
@@ -26,6 +27,13 @@ CSS += _ASSET_ROOT.joinpath("styles", "composer.css").read_text(encoding="utf-8"
 CSS += _ASSET_ROOT.joinpath("styles", "notifications.css").read_text(encoding="utf-8")
 CSS += _ASSET_ROOT.joinpath("styles", "usability.css").read_text(encoding="utf-8")
 CSS += _ASSET_ROOT.joinpath("styles", "floating_panel.css").read_text(encoding="utf-8")
+_SECTION_CSS = _ASSET_ROOT.joinpath("styles", "sections.css").read_text(encoding="utf-8")
+for _language, _messages in page_work_policy()["section_messages"].items():
+    for _name, _message in _messages.items():
+        _SECTION_CSS = _SECTION_CSS.replace(
+            f"__{_name.upper()}_{_language.upper()}__", json.dumps(_message, ensure_ascii=False)
+        )
+CSS += _SECTION_CSS
 HOME_CSS = _ASSET_ROOT.joinpath("styles", "home_dashboard.css").read_text(encoding="utf-8")
 _AI_CONSOLE_JS = _ASSET_ROOT.joinpath("ai_console.js").read_text(encoding="utf-8")
 _AI_CONSOLE_JS += _ASSET_ROOT.joinpath("home_dashboard.js").read_text(encoding="utf-8")

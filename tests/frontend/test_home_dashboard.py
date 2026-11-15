@@ -147,7 +147,7 @@ def test_market_switch_does_not_reprice_cn_holdings_as_us(client):
 def test_market_outage_is_explicit_and_partial_charts_are_empty(client):
     with patch("src.frontend.service.home_dashboard.QuoteService") as quotes:
         quotes.return_value.indices.side_effect = RuntimeError("offline")
-        quotes.return_value.sectors.side_effect = RuntimeError("offline")
+        quotes.return_value.sector_rankings.side_effect = RuntimeError("offline")
         quotes.return_value.watchlist_quotes.return_value = []
         summary, _, heatmap, _, indices, _ = FrontendService().home_market(force_refresh=True)
     assert "加载失败" in summary

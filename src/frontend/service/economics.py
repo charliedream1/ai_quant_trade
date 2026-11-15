@@ -11,6 +11,7 @@ from plotly.subplots import make_subplots
 
 from src.agent.model_catalog import list_models
 from src.core.exceptions import BusinessError, ErrorCode
+from src.core.panel_updates import panel_ready
 from src.data import current_market
 from src.engine.economics.config import economics_config
 from src.engine.economics.service import EconomicAnalysis
@@ -148,7 +149,14 @@ class EconomicUIMixin:
         status = "快照 `" + snapshot["snapshot_id"] + "` · " + snapshot["scope"]
         if snapshot["gaps"]:
             status += "\n\n" + "；".join(snapshot["gaps"])
-        return status, economic_table(snapshot), economic_figure(snapshot), snapshot, snapshot["snapshot_id"]
+        panel_ready(0, status)
+        overview = economic_table(snapshot)
+        panel_ready(1, overview)
+        panel_ready(3, snapshot)
+        panel_ready(4, snapshot["snapshot_id"])
+        chart = economic_figure(snapshot)
+        panel_ready(2, chart)
+        return status, overview, chart, snapshot, snapshot["snapshot_id"]
 
     def economic_report(self, kind, identifier, model_id):
         data = EconomicAnalysis().store.read(identifier)

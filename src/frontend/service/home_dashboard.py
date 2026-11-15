@@ -2,19 +2,23 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextvars import copy_context
 from html import escape
 from typing import Any
 
 from src.core.config import get_settings
+from src.core.panel_updates import panel_ready
 from src.core.repository import Repository
 from src.engine.market import NewsAggregator, QuoteService
 
 from . import home_charts, home_views
-from .dashboard_views import _dashboard_news_html
-from .foundation import HOLDING_COLUMNS, INDEX_COLUMNS, WATCHLIST_COLUMNS, _daily_cached, to_frame
 from .home_config import label, limit
 from .home_data import HomeAccount, account_snapshot
+from .home_news_view import _dashboard_news_html
 from .home_tables import home_styled_frame
+from .shared_observations import shared_observation
+from .view_primitives import HOLDING_COLUMNS, INDEX_COLUMNS, WATCHLIST_COLUMNS, _daily_cached, to_frame
 
 
 def account_status(snapshot: HomeAccount) -> str:
@@ -29,17 +33,23 @@ def account_status(snapshot: HomeAccount) -> str:
 
 def home_account(mode: str, force_refresh: bool = False) -> tuple:
     snapshot = account_snapshot(mode, force_refresh)
-    return (
-        account_status(snapshot),
-        home_views.account_kpis(snapshot),
-        home_views.risk_summary(snapshot),
-        home_views.risk_alerts(snapshot),
-        home_charts.risk_radar(snapshot),
-        home_charts.account_trend(snapshot),
-        home_charts.allocation(snapshot),
-        home_charts.contribution(snapshot),
-        home_styled_frame(to_frame(snapshot.holdings, HOLDING_COLUMNS)),
+    builders = (
+        lambda: account_status(snapshot),
+        lambda: home_views.account_kpis(snapshot),
+        lambda: home_views.risk_summary(snapshot),
+        lambda: home_views.risk_alerts(snapshot),
+        lambda: home_charts.risk_radar(snapshot),
+        lambda: home_charts.account_trend(snapshot),
+        lambda: home_charts.allocation(snapshot),
+        lambda: home_charts.contribution(snapshot),
+        lambda: home_styled_frame(to_frame(snapshot.holdings, HOLDING_COLUMNS)),
     )
+    values = []
+    for index, build in enumerate(builders):
+        value = build()
+        values.append(value)
+        panel_ready(index, value)
+    return tuple(values)
 
 
 def _news_items(force_refresh):
@@ -47,33 +57,53 @@ def _news_items(force_refresh):
         result = NewsAggregator().list_news(None, None, None, 1, limit("news"), refresh=force_refresh)
         return (result.get("items") or [])[: limit("news")]
 
-    return _daily_cached(("home_shared_news",), load, force_refresh=force_refresh)[0]
+    return shared_observation("home_shared_news", load, force_refresh)
 
 
 def _market_payload(force_refresh: bool) -> dict[str, Any]:
-    quotes = QuoteService()
-    errors = []
-    try:
-        indices = quotes.indices(refresh=force_refresh)
-    except Exception:
-        indices = []
-        errors.append("指数加载失败")
-    try:
-        sectors = quotes.sector_rankings(limit=limit("sectors"), refresh=force_refresh)
-    except Exception:
-        sectors = []
-        errors.append(label("missing_market"))
-    try:
-        watchlist = quotes.watchlist_quotes(None)
-    except Exception:
-        watchlist = []
-        errors.append("自选行情加载失败")
-    try:
-        news = _news_items(force_refresh)
-    except Exception:
-        news = []
-        errors.append("新闻加载失败")
-    return {"indices": indices, "sectors": sectors, "watchlist": watchlist, "news": news, "errors": errors}
+    # Provider gates continue to bound source traffic; independent reads need not serialize here.
+    from src.core.page_work import policy
+
+    with ThreadPoolExecutor(max_workers=policy()["home_source_workers"], thread_name_prefix="home-sources") as pool:
+        methods = {
+            "indices": lambda: QuoteService().indices(refresh=force_refresh),
+            "sectors": lambda: QuoteService().sector_rankings(limit=limit("sectors"), refresh=force_refresh),
+            "watchlist": lambda: QuoteService().watchlist_quotes(None),
+            "news": lambda: _news_items(force_refresh),
+        }
+        futures = {key: pool.submit(copy_context().run, method) for key, method in methods.items()}
+        result: dict[str, Any] = {"errors": [], "presentations": {}}
+
+        def present(index, value):
+            result["presentations"][index] = value
+            panel_ready(index, value)
+
+        for future in as_completed(futures.values()):
+            key = next(name for name, pending in futures.items() if pending is future)
+            try:
+                result[key] = future.result()
+            except Exception:
+                result[key] = []
+                result["errors"].append(
+                    {
+                        "indices": "指数加载失败",
+                        "sectors": label("missing_market"),
+                        "watchlist": "自选行情加载失败",
+                        "news": "新闻加载失败",
+                    }[key]
+                )
+            if key == "indices":
+                present(4, home_styled_frame(to_frame(result[key], INDEX_COLUMNS)))
+            elif key == "sectors":
+                present(2, home_charts.sector_heatmap(result[key]))
+            elif key == "watchlist":
+                present(5, home_styled_frame(to_frame(result[key], WATCHLIST_COLUMNS)))
+            elif key == "news":
+                present(3, home_views.theme_summary(result[key]))
+            if "indices" in result and "sectors" in result and 1 not in result["presentations"]:
+                present(0, home_views.market_summary(result["indices"], result["sectors"]))
+                present(1, home_charts.sentiment_radar(result["indices"], result["sectors"]))
+        return result
 
 
 def home_market(mode: str, force_refresh: bool = False) -> tuple:
@@ -83,14 +113,9 @@ def home_market(mode: str, force_refresh: bool = False) -> tuple:
     summary = home_views.market_summary(payload["indices"], payload["sectors"])
     if payload["errors"]:
         summary += f"<p class='home-muted'>{escape('；'.join(payload['errors']))}</p>"
-    return (
-        summary,
-        home_charts.sentiment_radar(payload["indices"], payload["sectors"]),
-        home_charts.sector_heatmap(payload["sectors"]),
-        home_views.theme_summary(payload["news"]),
-        home_styled_frame(to_frame(payload["indices"], INDEX_COLUMNS)),
-        home_styled_frame(to_frame(payload["watchlist"], WATCHLIST_COLUMNS)),
-    )
+    panel_ready(0, summary)
+    values = payload["presentations"]
+    return summary, values[1], values[2], values[3], values[4], values[5]
 
 
 def operation_counts(repo: Repository) -> list[dict[str, Any]]:

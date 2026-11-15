@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from src.core.panel_updates import panel_values
+
 from .foundation import (
     BACKTEST_COMPARE_COLUMNS,
     BACKTEST_PARAM_COMPARE_COLUMNS,
@@ -116,12 +118,14 @@ class SimulationServiceMixin:
         value = require_id(task_id, "回测任务 ID")
         runner = BacktestRunner()
         attribution = runner.attribution(value)
-        return (
-            metrics_frame(runner.performance(value)),
-            equity_figure(runner.equity_curve(value)),
-            to_frame(runner.trades(value, 1, 100), TRADE_COLUMNS),
-            backtest_attribution_figure(attribution),
-            backtest_attribution_frame(attribution),
+        return panel_values(
+            (
+                lambda: metrics_frame(runner.performance(value)),
+                lambda: equity_figure(runner.equity_curve(value)),
+                lambda: to_frame(runner.trades(value, 1, 100), TRADE_COLUMNS),
+                lambda: backtest_attribution_figure(attribution),
+                lambda: backtest_attribution_frame(attribution),
+            )
         )
 
     def backtest_analysis(self, task_id: Any) -> tuple[str, go.Figure, go.Figure, go.Figure, go.Figure]:
@@ -130,12 +134,14 @@ class SimulationServiceMixin:
         metrics = runner.performance(value)
         curve = runner.equity_curve(value)
         trades = runner.trades(value, page=1, page_size=100000).get("items") or []
-        return (
-            backtest_explanation(metrics, curve),
-            backtest_monthly_figure(curve),
-            backtest_rolling_figure(curve),
-            backtest_trade_figure(trades),
-            backtest_exposure_figure(curve),
+        return panel_values(
+            (
+                lambda: backtest_explanation(metrics, curve),
+                lambda: backtest_monthly_figure(curve),
+                lambda: backtest_rolling_figure(curve),
+                lambda: backtest_trade_figure(trades),
+                lambda: backtest_exposure_figure(curve),
+            )
         )
 
     def empty_backtest_analysis(self) -> tuple[str, go.Figure, go.Figure, go.Figure, go.Figure]:
@@ -269,11 +275,13 @@ class SimulationServiceMixin:
                     "创建时间": _format_display_time(task.get("created_at")),
                 }
             )
-        return (
-            f"已对比 {len(compare_rows)} 个回测任务，可重点观察收益、回撤、夏普和参数差异。",
-            to_frame(compare_rows, BACKTEST_COMPARE_COLUMNS),
-            backtest_compare_figure(metric_rows),
-            to_frame(param_rows, BACKTEST_PARAM_COMPARE_COLUMNS),
+        return panel_values(
+            (
+                lambda: f"已对比 {len(compare_rows)} 个回测任务，可重点观察收益、回撤、夏普和参数差异。",
+                lambda: to_frame(compare_rows, BACKTEST_COMPARE_COLUMNS),
+                lambda: backtest_compare_figure(metric_rows),
+                lambda: to_frame(param_rows, BACKTEST_PARAM_COMPARE_COLUMNS),
+            )
         )
 
     def delete_backtest(
@@ -358,11 +366,13 @@ class SimulationServiceMixin:
     def paper_overview(self, account_id: Any) -> tuple[str, pd.DataFrame, pd.DataFrame, go.Figure]:
         value = require_id(account_id, "模拟账户 ID")
         service = PaperAccountService()
-        return (
-            compact_json(service.overview(value)),
-            to_frame(service.positions(value), POSITION_COLUMNS),
-            to_frame(service.orders(value, page=1, page_size=100), ORDER_COLUMNS),
-            nav_figure(service.equity_history(value)),
+        return panel_values(
+            (
+                lambda: compact_json(service.overview(value)),
+                lambda: to_frame(service.positions(value), POSITION_COLUMNS),
+                lambda: to_frame(service.orders(value, page=1, page_size=100), ORDER_COLUMNS),
+                lambda: nav_figure(service.equity_history(value)),
+            )
         )
 
     def latest_paper_account(self) -> tuple[Any, str, pd.DataFrame, pd.DataFrame, go.Figure]:

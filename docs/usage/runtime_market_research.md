@@ -1,8 +1,8 @@
 # Runtime diagnostics and market research
 
 Normal startup and shutdown messages are English. The console shows readiness,
-actionable warnings and failures. Successful frontend callback pairs, source
-locations, operation identifiers and startup phases use DEBUG. A slow successful
+actionable warnings and failures. Explicit actions and worker readiness/progress are logged at INFO; polling, detailed source
+locations and startup phases use DEBUG. A slow successful
 request is not an execution error. To investigate a problem, set
 `ALL_IN_ONE_LOG_LEVEL=DEBUG` locally and inspect the private application log.
 Secret redaction remains enabled. Settings live in

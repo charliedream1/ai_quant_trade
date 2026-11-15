@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from threading import Thread
+from threading import Event, Thread
 from types import SimpleNamespace
 
 import pytest
@@ -62,6 +62,9 @@ def test_news_geography_and_topic_clicks(cli_command, tmp_path):
 
 @pytest.fixture
 def compatible_model():
+    answer_started, release_answer = Event(), Event()
+    release_answer.set()
+
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -69,6 +72,10 @@ def compatible_model():
 
             prompt = str(body["messages"][-1]["content"])
             prefix = knowledge_config()["search"]["planner_prompt"].splitlines()[0]
+            if not prompt.startswith(prefix):
+                answer_started.set()
+                if not release_answer.wait(60):
+                    raise TimeoutError("Controlled answer gate was not released")
             text = (
                 json.dumps({"keywords": ["policy", "rate"], "sufficient": True})
                 if prompt.startswith(prefix)
@@ -92,9 +99,17 @@ def compatible_model():
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     worker = Thread(target=server.serve_forever, daemon=True)
     worker.start()
+
+    class Endpoint(str):
+        pass
+
+    endpoint = Endpoint(f"http://127.0.0.1:{server.server_port}/v1")
+    endpoint.answer_started = answer_started
+    endpoint.release_answer = release_answer
     try:
-        yield f"http://127.0.0.1:{server.server_port}/v1"
+        yield endpoint
     finally:
+        release_answer.set()
         server.shutdown()
         server.server_close()
         worker.join(timeout=3)

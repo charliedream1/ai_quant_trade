@@ -110,4 +110,6 @@ def build_gradio_app() -> gr.Blocks:
             "数据源与交易通道状态以系统配置为准。</p></div>"
         )
 
-    return demo.queue(default_concurrency_limit=8)
+    from .common.callbacks import enable_progressive_queue
+
+    return enable_progressive_queue(demo).queue(default_concurrency_limit=8)

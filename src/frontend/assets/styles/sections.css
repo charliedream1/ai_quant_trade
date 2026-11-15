@@ -1,0 +1,12 @@
+.section-loading, .section-failed, .section-cancelled { position: relative; }
+.section-loading::after, .section-failed::after, .section-cancelled::after {
+  position: absolute; top: 6px; right: 10px; z-index: 5; pointer-events: none;
+  padding: 3px 8px; border-radius: 5px; font: 12px sans-serif;
+  background: var(--surface-raised, white); color: var(--muted, #526277);
+}
+.section-loading::after { content: __LOADING_EN__; }
+.section-failed::after { content: __FAILED_EN__; color: #b42318; }
+.section-cancelled::after { content: __CANCELLED_EN__; }
+html[data-ui-lang="zh"] .section-loading::after { content: __LOADING_ZH__; }
+html[data-ui-lang="zh"] .section-failed::after { content: __FAILED_ZH__; }
+html[data-ui-lang="zh"] .section-cancelled::after { content: __CANCELLED_ZH__; }

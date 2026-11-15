@@ -7,20 +7,10 @@ from typing import Any
 
 import gradio as gr
 
+from . import features
+from .common.callbacks import enable_progressive_queue
 from .common.callbacks import safe as _safe
 from .common.components import supports_parameter as _supports_parameter
-from .features import (
-    render_admin,
-    render_ai,
-    render_dashboard,
-    render_floating_assistant,
-    render_knowledge,
-    render_live,
-    render_market,
-    render_research,
-    render_simulation,
-    render_strategy,
-)
 from .features.learning import render_learning
 from .handlers import build_frontend_handlers
 from .header import header_html
@@ -39,6 +29,25 @@ from .service.foundation import (
 from .service_dispatch import CallbackServices
 from .theme import APP_JS, CSS, HOME_CSS, gradio_mount_options
 from .theme import theme as _theme
+
+
+def _lazy_renderer(name):
+    def render(*args, **kwargs):
+        return getattr(features, name)(*args, **kwargs)
+
+    return render
+
+
+render_admin = _lazy_renderer("render_admin")
+render_ai = _lazy_renderer("render_ai")
+render_dashboard = _lazy_renderer("render_dashboard")
+render_floating_assistant = _lazy_renderer("render_floating_assistant")
+render_knowledge = _lazy_renderer("render_knowledge")
+render_live = _lazy_renderer("render_live")
+render_market = _lazy_renderer("render_market")
+render_research = _lazy_renderer("render_research")
+render_simulation = _lazy_renderer("render_simulation")
+render_strategy = _lazy_renderer("render_strategy")
 
 MODULAR_CSS = """
 #module-navigation {
@@ -226,4 +235,4 @@ def build_gradio_module(module_key: str, runtime_key: tuple | None = None) -> gr
             "数据源与交易通道状态以系统配置为准。</p></div>"
         )
 
-    return demo.queue(default_concurrency_limit=8)
+    return enable_progressive_queue(demo).queue(default_concurrency_limit=8)

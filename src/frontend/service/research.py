@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import cast
 
+from src.core.panel_updates import panel_values
 from src.knowledge.research_import import import_research_document
 
 from .contracts import CrossDomainCallbacks
@@ -82,7 +83,13 @@ class ResearchServiceMixin:
         self, keyword: str, symbol: str, force_refresh: bool = False
     ) -> tuple[str, pd.DataFrame, go.Figure]:
         status, frame = self.research_reports_with_status(keyword, symbol, force_refresh)
-        return status, frame, report_rating_figure(frame)
+        return panel_values(
+            (
+                lambda: status,
+                lambda: frame,
+                lambda: report_rating_figure(frame),
+            )
+        )
 
     def research_report_detail(self, report_id: Any) -> str:
         detail = DataSourceManager().report_detail(require_id(report_id, "研报 ID"))
@@ -204,7 +211,13 @@ class ResearchServiceMixin:
         force_refresh: bool = False,
     ) -> tuple[str, pd.DataFrame, go.Figure]:
         status, frame = self.paper_search_with_status(keyword, source, year_from, year_to, refresh, force_refresh)
-        return status, frame, paper_distribution_figure(frame)
+        return panel_values(
+            (
+                lambda: status,
+                lambda: frame,
+                lambda: paper_distribution_figure(frame),
+            )
+        )
 
     def _build_paper_search(
         self,

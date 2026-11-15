@@ -16,13 +16,9 @@ def transferable(value: Any) -> Any:
     from pandas.io.formats.style import Styler
 
     if isinstance(value, Styler):
-        import gradio as gr
+        from .table_wire import styled_table
 
-        return {
-            "headers": list(value.data.columns),
-            "data": gr.Dataframe.get_cell_data(value),
-            "metadata": gr.Dataframe.get_metadata(value),
-        }
+        return styled_table(value)
     if isinstance(value, tuple):
         return tuple(transferable(item) for item in value)
     if isinstance(value, list):
@@ -32,10 +28,11 @@ def transferable(value: Any) -> Any:
     return value
 
 
-def invoke(request):
+def invoke(request, on_panel=None):
     """Resolve a named callback in the selected private runtime."""
     from src.core.exceptions import BusinessError
     from src.core.page_work import policy
+    from src.core.panel_updates import PANEL_UPDATE
     from src.data.manager import REQUEST_MARKET
     from src.frontend.common.errors import ui_error_message
     from src.frontend.service_dispatch import CallbackServices
@@ -48,6 +45,7 @@ def invoke(request):
         Database.reset_instance()
     config._SETTINGS = settings
     token = REQUEST_MARKET.set(market)
+    panel_token = PANEL_UPDATE.set(on_panel)
     result: Any
     try:
         if name in policy()["source_methods"]:
@@ -79,6 +77,7 @@ def invoke(request):
             "diagnostic": redact_text(str(exc))[: policy()["worker_error_chars"]],
         }
     finally:
+        PANEL_UPDATE.reset(panel_token)
         REQUEST_MARKET.reset(token)
 
 
@@ -96,12 +95,12 @@ def serve(connection):
         level="DEBUG",
         filter=lambda record: record["message"].startswith("UI snapshot load |"),
     )
-    # Load the domain facade once during warmup, before the first interactive read.
+    from src.core.page_work import policy
     from src.core.work_progress import PROGRESS
     from src.core.workspace_config import workspace_config
-    from src.frontend.service import foundation  # noqa: F401
     from src.observability.runtime import shutdown_observability
 
+    connection.send(("ready", os.getpid()))
     while True:
         try:
             request = connection.recv()
@@ -122,9 +121,21 @@ def serve(connection):
                 last_stage, last_time = stage, now
 
         token = PROGRESS.set(emit)
+        published = 0
+
+        def publish(index, value, method=request[0]):
+            nonlocal published
+            count = policy()["progressive_methods"].get(method, 0)
+            if not count:
+                return
+            if not 0 <= index < count or published >= policy()["max_panel_updates"]:
+                raise ValueError("Invalid section publication")
+            published += 1
+            connection.send(("panel", index, transferable(value)))
+
         try:
             emit("Loading configured service")
-            success, value = invoke(request)
+            success, value = invoke(request, publish)
         finally:
             PROGRESS.reset(token)
         connection.send((success, value, snapshots))

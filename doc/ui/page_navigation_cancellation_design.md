@@ -136,8 +136,7 @@ second guard even after the browser cancels its transport.
 
 A reusable spawn-based pool isolates synchronous read callbacks and graph source
 acquisition. Trusted named dispatch avoids additional serialization packages;
-table styling crosses as Gradio metadata. Homepage worker affinity preserves
-snapshot reuse. Coalesced reads and graph runs track their active creators, while
+table styling crosses as Gradio metadata. JSON observations preserve snapshot reuse across independently scheduled homepage workers. Coalesced reads and graph runs track their active creators, while
 independent callers retain an explicit consumer. A terminated read worker frees
 only its own model concurrency slots and retains RPM admission history.
 Nested document readers use separate preview capabilities. The parent view

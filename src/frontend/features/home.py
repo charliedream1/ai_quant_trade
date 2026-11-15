@@ -136,6 +136,13 @@ def render_home(
             outputs=[alerts, actions_summary, operations],
             queue=False,
         )
+        # Local task state is useful before account valuation; the chained update adds final valuation status.
+        event(
+            safe(operations_load),
+            inputs=[account_mode, selection],
+            outputs=[alerts, actions_summary, operations],
+            queue=False,
+        )
         event(
             safe(market_load),
             inputs=[account_mode, selection],

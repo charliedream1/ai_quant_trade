@@ -24,6 +24,7 @@ DOMAIN_NAMES = {
 }
 
 EXPECTED_SERVICE_MODULES = {
+    "home_service",
     "alpha",
     "report_library",
     "execution_costs",

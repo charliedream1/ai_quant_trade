@@ -78,9 +78,9 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         min_width=120,
                         elem_classes=["page-refresh-btn"],
                     )
-                market_indices = _table("指数行情", 280)
+                market_indices = _table("指数行情", 280, elem_id="market-indices")
                 with gr.Row():
-                    market_sectors = _table("板块行情", 380)
+                    market_sectors = _table("板块行情", 380, elem_id="market-sectors")
                     market_plot = _plot(
                         label="板块涨跌",
                         elem_id="market-sectors-plot",

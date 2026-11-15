@@ -56,3 +56,32 @@ response; changing pages cancels eligible page-owned work as described in
 
 Interaction limits and copy are configured in `egs/config/ui/research_workspace.yaml`;
 daily inbox configuration remains in `egs/config/ui/notifications.yaml`.
+
+## Loading performance
+
+Homepage operations use a small service facade. Domain exports and feature renderers
+load on demand, one lightweight worker warms initially, and independent account,
+market and news callbacks no longer queue behind each other. Raw observations
+share a runtime-scoped JSON cache; stored source times remain unchanged. Worker
+logs distinguish assignment, readiness and business stages. Cached navigation and
+first data completion are separate timings; real source gates and network delays
+still apply. A hard cancellation may require a replacement worker on the next action.
+
+## Sections appear as they become ready
+
+The active page and its controls appear first. Independent sections can update
+in parallel, while sections that share data follow their dependencies. For
+example, index data can be visible while sectors are still loading; search
+results appear before their chart; retrieved citations appear while the model
+answer is pending. Account metrics can appear before all portfolio plots.
+
+Loading markers belong to individual sections. A failed section is marked for
+retry and does not erase completed sections. Use the view's refresh/query control
+to retry. Switching pages cancels unfinished work and marks pending sections
+cancelled. Financial tables and charts continue to reference one saved snapshot;
+display timing does not authorize mixing reporting periods or unfinished ratios.
+
+The application uses cumulative streamed updates for eligible read callbacks.
+Ordinary service/API return values and independent accepted-job lifecycles remain
+compatible. Writes retain their atomic behavior, and single-result forms/readers
+keep their existing independent request boundaries.

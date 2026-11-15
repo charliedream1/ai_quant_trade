@@ -6,6 +6,8 @@ from typing import cast
 
 import gradio as gr
 
+from src.core.panel_updates import panel_ready, panel_values
+
 from .contracts import CrossDomainCallbacks
 from .dashboard_views import (
     _dashboard_kpis_html,
@@ -128,14 +130,16 @@ class MarketServiceMixin:
         quotes = QuoteService()
         limit_value = max(1, min(int(limit or 20), 100))
         indices = quotes.indices(refresh=True)
+        index_table = styled_frame(indices, INDEX_COLUMNS, gradient=["change_pct"])
+        panel_ready(0, index_table)
         sectors = quotes.sector_rankings(
             board=board or "industry", limit=limit_value, selection=selection, refresh=True
         )
-        return (
-            styled_frame(indices, INDEX_COLUMNS, gradient=["change_pct"]),
-            styled_frame(sectors, ["ranking", *SECTOR_COLUMNS], gradient=["change_pct"]),
-            market_bar_figure(sectors),
-        )
+        sector_table = styled_frame(sectors, ["ranking", *SECTOR_COLUMNS], gradient=["change_pct"])
+        panel_ready(1, sector_table)
+        chart = market_bar_figure(sectors)
+        panel_ready(2, chart)
+        return index_table, sector_table, chart
 
     def factor_default_universe(self) -> str:
         return FactorMonitorService().default_universe_text()
@@ -147,14 +151,16 @@ class MarketServiceMixin:
     ) -> tuple[str, str, go.Figure, go.Figure, go.Figure, go.Figure, go.Figure]:
         payload, cache_hit, refreshed_at = self._factor_monitor_payload(universe_text, force_refresh)
         status = f"{payload.get('status', '因子监控已刷新')}  ·  {_cache_badge(cache_hit, refreshed_at)}"
-        return (
-            status,
-            _dashboard_kpis_html(payload.get("kpis") or []),
-            factor_ic_figure(payload.get("ic_history") or []),
-            factor_quantile_figure(payload.get("quantile_returns") or []),
-            factor_diagnostic_figure(payload.get("ic_decay") or [], payload.get("metrics") or []),
-            factor_quantile_history_figure(payload.get("quantile_history") or []),
-            factor_style_exposure_figure(payload.get("style_exposure") or []),
+        return panel_values(
+            (
+                lambda: status,
+                lambda: _dashboard_kpis_html(payload.get("kpis") or []),
+                lambda: factor_ic_figure(payload.get("ic_history") or []),
+                lambda: factor_quantile_figure(payload.get("quantile_returns") or []),
+                lambda: factor_diagnostic_figure(payload.get("ic_decay") or [], payload.get("metrics") or []),
+                lambda: factor_quantile_history_figure(payload.get("quantile_history") or []),
+                lambda: factor_style_exposure_figure(payload.get("style_exposure") or []),
+            )
         )
 
     def factor_monitor_details(
@@ -169,20 +175,22 @@ class MarketServiceMixin:
             f"版本 `{qlib.get('version', '-')}`  ·  许可证 `{qlib.get('license', '-')}`\n\n"
             f"{qlib.get('next_step', '')}"
         )
-        return (
-            styled_frame(
-                payload.get("metrics") or [],
-                FACTOR_METRIC_COLUMNS,
-                gradient=["rank_ic_mean", "ic", "icir", "hit_rate", "long_short_return"],
-            ),
-            to_frame(payload.get("alerts") or [], FACTOR_ALERT_COLUMNS),
-            styled_frame(
-                payload.get("snapshots") or [],
-                FACTOR_SNAPSHOT_COLUMNS,
-                gradient=["value", "change_pct"],
-            ),
-            factor_correlation_figure(payload.get("correlation") or {}),
-            qlib_markdown,
+        return panel_values(
+            (
+                lambda: styled_frame(
+                    payload.get("metrics") or [],
+                    FACTOR_METRIC_COLUMNS,
+                    gradient=["rank_ic_mean", "ic", "icir", "hit_rate", "long_short_return"],
+                ),
+                lambda: to_frame(payload.get("alerts") or [], FACTOR_ALERT_COLUMNS),
+                lambda: styled_frame(
+                    payload.get("snapshots") or [],
+                    FACTOR_SNAPSHOT_COLUMNS,
+                    gradient=["value", "change_pct"],
+                ),
+                lambda: factor_correlation_figure(payload.get("correlation") or {}),
+                lambda: qlib_markdown,
+            )
         )
 
     def qlib_workflow_defaults(self) -> tuple[str, str, str]:
@@ -445,13 +453,16 @@ class MarketServiceMixin:
             region=region,
             topic=topic,
         )
+        frame = to_frame(
+            result, [*NEWS_COLUMNS, "region", "topics", "relevance_reasons", "affected_markets", "time_status"]
+        )
+        panel_ready(0, frame)
+        panel_ready(2, f"共找到 {result.get('total', 0)} 条新闻")
         cloud = aggregator.keyword_cloud(
             "day", category_value, 30, region=region, topic=topic, keyword=keyword or None, source=source or None
         )
         return (
-            to_frame(
-                result, [*NEWS_COLUMNS, "region", "topics", "relevance_reasons", "affected_markets", "time_status"]
-            ),
+            frame,
             keyword_figure(cloud),
             f"共找到 {result.get('total', 0)} 条新闻",
         )
@@ -481,6 +492,16 @@ class MarketServiceMixin:
         count: Any,
     ) -> tuple[str, go.Figure, pd.DataFrame, go.Figure, pd.DataFrame, pd.DataFrame]:
         symbol_value = resolve_stock_symbol(symbol, "股票代码/名称")
+        try:
+            quote = QuoteService().data.stock_quote(symbol_value)
+            panel_ready(
+                0,
+                f"### {quote.get('name', symbol_value)} `{symbol_value}`\n\n"
+                f"现价 **{quote.get('latest_price', '-')}** · 数据源 `{quote.get('data_source', '-')}`\n\nAnalysis sections are loading.",
+            )
+        except Exception:
+            # The complete analyzer retains its source fallbacks and public failure handling.
+            pass
         result = StockAnalyzer().detail(symbol_value, "", period or "daily", int(count or 60))
         quote = result.get("quote") or {}
         change = float(quote.get("change_pct") or 0)
@@ -496,13 +517,15 @@ class MarketServiceMixin:
                 {"指标": key.replace("sma_", "SMA / "), "数值": f"{value:.4f}" if value is not None else "—"}
                 for key, value in result.get("technical", {}).items()
             ]
-        return (
-            summary,
-            score_figure(result.get("score") or {}),
-            to_frame(finance, ["指标", "数值"]),
-            kline_figure(result.get("kline") or [], symbol_value),
-            to_frame(result.get("news") or [], NEWS_COLUMNS),
-            to_frame(result.get("reports") or []),
+        return panel_values(
+            (
+                lambda: summary,
+                lambda: score_figure(result.get("score") or {}),
+                lambda: to_frame(finance, ["指标", "数值"]),
+                lambda: kline_figure(result.get("kline") or [], symbol_value),
+                lambda: to_frame(result.get("news") or [], NEWS_COLUMNS),
+                lambda: to_frame(result.get("reports") or []),
+            )
         )
 
     def add_stock_to_watchlist(self, symbol: str, group_id: Any) -> tuple[str, pd.DataFrame]:
@@ -813,11 +836,13 @@ class MarketServiceMixin:
             f"已完成 {len(selected_plans)} 组推荐参数横向对比；"
             f"覆盖 {len(symbol_rows)} 只候选，跨方案共识 {consensus_count} 只。"
         )
-        return (
-            status,
-            to_frame(summary_rows, RECOMMEND_GROUP_SUMMARY_COLUMNS),
-            to_frame(symbol_rows, RECOMMEND_GROUP_SYMBOL_COLUMNS),
-            recommend_group_compare_figure(summary_rows, symbol_rows, score_matrix),
+        return panel_values(
+            (
+                lambda: status,
+                lambda: to_frame(summary_rows, RECOMMEND_GROUP_SUMMARY_COLUMNS),
+                lambda: to_frame(symbol_rows, RECOMMEND_GROUP_SYMBOL_COLUMNS),
+                lambda: recommend_group_compare_figure(summary_rows, symbol_rows, score_matrix),
+            )
         )
 
     def recommend_candidate_compare(
@@ -871,10 +896,12 @@ class MarketServiceMixin:
                     "风险提示": risk,
                 }
             )
-        return (
-            f"已生成 {len(rows)} 个候选的对比视图，前 5 只可直接作为回测股票池。",
-            to_frame(rows, RECOMMEND_COMPARE_COLUMNS),
-            recommend_factor_figure(records),
+        return panel_values(
+            (
+                lambda: f"已生成 {len(rows)} 个候选的对比视图，前 5 只可直接作为回测股票池。",
+                lambda: to_frame(rows, RECOMMEND_COMPARE_COLUMNS),
+                lambda: recommend_factor_figure(records),
+            )
         )
 
     def recommend_to_backtest(

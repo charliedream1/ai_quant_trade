@@ -54,6 +54,9 @@
     signal("deactivate");
     banner();
     window.dispatchEvent(new Event("aiquant:page-suspended"));
+    document.querySelectorAll(".section-loading").forEach((section) => {
+      section.classList.remove("section-loading"); section.classList.add("section-cancelled");
+    });
   };
   const activate = (next) => {
     if (next && next.owner === state.owner && next.revision < state.revision) return;

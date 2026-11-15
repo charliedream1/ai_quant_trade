@@ -10,9 +10,39 @@ retention_seconds: 1800
 sweep_seconds: 10
 heartbeat_seconds: 20
 workers: 4
+warm_workers: 1
+home_source_workers: 4
+source_cache_directory: home_observations
+source_cache_lock_seconds: 45
+source_cache_max_bytes: 4000000
+max_panel_updates: 64
+section_messages:
+  en: {loading: Loading…, failed: Failed — retry, cancelled: Cancelled}
+  zh: {loading: 加载中…, failed: 加载失败，可重试, cancelled: 已取消}
+progressive_methods:
+  home_account: 9
+  home_market: 6
+  market_overview: 3
+  factor_monitor_summary: 7
+  factor_monitor_details: 5
+  recommend_group_compare: 4
+  recommend_candidate_compare: 3
+  compare_backtests: 4
+  etf_universe_snapshot: 2
+  stock: 6
+  economic_load: 5
+  news: 3
+  refresh_news: 3
+  research_reports_page: 3
+  paper_search_page: 3
+  backtest_detail: 5
+  backtest_analysis: 5
+  paper_overview: 4
+  models_with_stats: 2
+  rag_chat: 5
+  floating_qa: 2
 # Preserve same-process snapshot reuse across the four homepage presentations.
-affinity_groups:
-  - [home_account, home_market, home_news, home_operations]
+affinity_groups: []
 poll_seconds: 0.05
 read_deadline_seconds: 180
 worker_error_chars: 500
@@ -22,6 +52,7 @@ messages:
 share_methods: [home_market, home_news, market_overview, news, economic_load]
 source_methods: [graph_local, graph_read, graph_search, graph_resolve]
 read_methods:
+  - models_with_stats
   - floating_qa
   - floating_citation
   - home_account

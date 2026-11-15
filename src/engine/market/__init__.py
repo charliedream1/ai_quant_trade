@@ -1,13 +1,17 @@
-"""Market analysis engine exports."""
+"""Compatible domain exports loaded only when requested."""
 
-from .news_aggregator import NewsAggregator
-from .paper_search import PaperSearchService
-from .quote_service import QuoteService
-from .recommender import Recommender
-from .relation_graph import RelationGraphService
-from .report_generator import MarketReportGenerator
-from .resource_pool import ResourcePoolService
-from .stock_analyzer import StockAnalyzer
+from importlib import import_module
+
+EXPORTS = {
+    "NewsAggregator": (".news_aggregator", "NewsAggregator"),
+    "PaperSearchService": (".paper_search", "PaperSearchService"),
+    "QuoteService": (".quote_service", "QuoteService"),
+    "Recommender": (".recommender", "Recommender"),
+    "RelationGraphService": (".relation_graph", "RelationGraphService"),
+    "MarketReportGenerator": (".report_generator", "MarketReportGenerator"),
+    "ResourcePoolService": (".resource_pool", "ResourcePoolService"),
+    "StockAnalyzer": (".stock_analyzer", "StockAnalyzer"),
+}
 
 __all__ = [
     "MarketReportGenerator",
@@ -19,3 +23,12 @@ __all__ = [
     "ResourcePoolService",
     "StockAnalyzer",
 ]
+
+
+def __getattr__(name):
+    if name not in EXPORTS:
+        raise AttributeError(name)
+    module, symbol = EXPORTS[name]
+    value = getattr(import_module(module, __name__), symbol)
+    globals()[name] = value
+    return value

@@ -664,22 +664,10 @@
       "src.frontend.service.assistant",
       "AssistantServiceMixin"
     ],
-    "home_account": [
-      "src.frontend.service.dashboard",
-      "DashboardServiceMixin"
-    ],
-    "home_market": [
-      "src.frontend.service.dashboard",
-      "DashboardServiceMixin"
-    ],
-    "home_news": [
-      "src.frontend.service.dashboard",
-      "DashboardServiceMixin"
-    ],
-    "home_operations": [
-      "src.frontend.service.dashboard",
-      "DashboardServiceMixin"
-    ],
+    "home_account": ["src.frontend.service.home_service", "HomeServiceMixin"],
+    "home_market": ["src.frontend.service.home_service", "HomeServiceMixin"],
+    "home_news": ["src.frontend.service.home_service", "HomeServiceMixin"],
+    "home_operations": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "import_cli_artifact": [
       "src.frontend.service.strategy",
       "StrategyServiceMixin"

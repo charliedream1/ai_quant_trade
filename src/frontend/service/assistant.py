@@ -16,6 +16,7 @@ from src.agent.providers.native import NativeCliRunner
 from src.agent.qoder_cli import QoderCliRunner
 from src.agent.rag import RAGService
 from src.agent.real_models import real_model, real_profile, require_real_model
+from src.core.panel_updates import observe_references
 from src.core.repository import Repository
 from src.strategy.codex_cli import CodexCliRunner
 
@@ -46,7 +47,12 @@ class AssistantServiceMixin:
 
     def floating_qa(self, question, category, top_k):
         selected = real_model()
-        with require_real_model():
+        from .foundation import to_frame
+
+        with (
+            require_real_model(),
+            observe_references(1, lambda refs: to_frame(refs, ["citation", "title", "snippet", "doc_id", "chunk_id"])),
+        ):
             result = RAGService().ask(
                 {
                     "question": require_text(question, "Question"),
@@ -55,7 +61,6 @@ class AssistantServiceMixin:
                     "model_id": selected["id"],
                 }
             )
-        from .foundation import to_frame
 
         return result.get("answer") or "", to_frame(
             result.get("references") or [], ["citation", "title", "snippet", "doc_id", "chunk_id"]

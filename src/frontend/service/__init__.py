@@ -1,19 +1,22 @@
-"""Business-domain implementations behind the Gradio compatibility facade."""
+"""Compatible domain exports loaded only when requested."""
 
-from __future__ import annotations
+from importlib import import_module
 
-from .admin import AdminServiceMixin
-from .ai import AIServiceMixin
-from .assistant import AssistantServiceMixin
-from .dashboard import DashboardServiceMixin
-from .etf import ETFServiceMixin
-from .knowledge import KnowledgeServiceMixin
-from .live import LiveServiceMixin
-from .market import MarketServiceMixin
-from .parameters import ParameterServiceMixin
-from .research import ResearchServiceMixin
-from .simulation import SimulationServiceMixin
-from .strategy import StrategyServiceMixin
+EXPORTS = {
+    "annotations": ("__future__", "annotations"),
+    "AdminServiceMixin": (".admin", "AdminServiceMixin"),
+    "AIServiceMixin": (".ai", "AIServiceMixin"),
+    "AssistantServiceMixin": (".assistant", "AssistantServiceMixin"),
+    "DashboardServiceMixin": (".dashboard", "DashboardServiceMixin"),
+    "ETFServiceMixin": (".etf", "ETFServiceMixin"),
+    "KnowledgeServiceMixin": (".knowledge", "KnowledgeServiceMixin"),
+    "LiveServiceMixin": (".live", "LiveServiceMixin"),
+    "MarketServiceMixin": (".market", "MarketServiceMixin"),
+    "ParameterServiceMixin": (".parameters", "ParameterServiceMixin"),
+    "ResearchServiceMixin": (".research", "ResearchServiceMixin"),
+    "SimulationServiceMixin": (".simulation", "SimulationServiceMixin"),
+    "StrategyServiceMixin": (".strategy", "StrategyServiceMixin"),
+}
 
 __all__ = [
     "DashboardServiceMixin",
@@ -29,3 +32,12 @@ __all__ = [
     "AdminServiceMixin",
     "AssistantServiceMixin",
 ]
+
+
+def __getattr__(name):
+    if name not in EXPORTS:
+        raise AttributeError(name)
+    module, symbol = EXPORTS[name]
+    value = getattr(import_module(module, __name__), symbol)
+    globals()[name] = value
+    return value

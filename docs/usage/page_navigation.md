@@ -34,12 +34,15 @@ browser does not shut down the application server.
 
 `egs/config/ui/page_work.yaml` defines the worker count, read deadline, heartbeat,
 document capacity and explicit transient callback/source policies. The default
-pool has four processes. The homepage callbacks share one process to retain
-snapshot/news cache reuse; other page reads use the remaining capacity. Idle
+pool allows four processes, warms one lightweight worker and grows on demand.
+Homepage callbacks run independently. Raw news/account observations share a
+JSON cache and file lock, rather than serializing the entire homepage in one
+process. Cache scope includes runtime, database, market, data mode and local day;
+explicit refresh fetches again while overlapping refreshes coalesce. Idle
 workers are reused, and a worker stopped during a read is replaced when needed.
 No new Python dependency or special Conda environment is required.
 
-Normal cancellation is silent at INFO and is recorded at DEBUG. Detailed
+Explicit action cancellation is recorded once at INFO; polling stays DEBUG. Detailed
 diagnostics remain private; see [runtime diagnostics](runtime_market_research.md).
 Unexpected worker failures retain their original error type and redacted details
 in the private backend log; the browser receives the public error message.
