@@ -21,7 +21,7 @@ from src.core.diagnostics_config import diagnostics_config
 from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
 from src.core.page_work import CURRENT_PAGE, PageCancelled, check, policy
-from src.core.panel_updates import PANEL_UPDATE
+from src.core.panel_updates import PANEL_LOADING, PANEL_UPDATE
 from src.core.stream_control import STREAM_STOP
 from src.core.workspace_config import workspace_config
 from src.data.manager import REQUEST_MARKET
@@ -230,6 +230,21 @@ def enable_progressive_queue(blocks):
     return blocks
 
 
+def _section_value(value, classes):
+    """SDK updates are control envelopes, including no-ops, rather than component values."""
+    if isinstance(value, dict) and value.get("__type__") == "update":
+        return value
+    return gr.update(value=value, elem_classes=[*classes, "section-ready"]) if classes is not None else value
+
+
+def _section_snapshot(values):
+    """Gradio removes value from update envelopes during postprocessing."""
+    copied = tuple(
+        dict(value) if isinstance(value, dict) and value.get("__type__") == "update" else value for value in values
+    )
+    return copied if len(copied) > 1 else copied[0]
+
+
 def _section_call(fn, args, kwargs, output_count, classes=None):
     """The parent adapter only waits for cancellable owned reads; business work stays in workers."""
     from src.frontend.page_reads import READ_STOP
@@ -248,6 +263,7 @@ def _section_call(fn, args, kwargs, output_count, classes=None):
 
     def run():
         token = PANEL_UPDATE.set(publish)
+        loading_token = PANEL_LOADING.set(lambda: events.put(("loading", None)))
         cancel_token = READ_STOP.set(stop)
         try:
             result = fn(*args, **kwargs)
@@ -256,42 +272,39 @@ def _section_call(fn, args, kwargs, output_count, classes=None):
             events.put(("error", exc))
         finally:
             PANEL_UPDATE.reset(token)
+            PANEL_LOADING.reset(loading_token)
             READ_STOP.reset(cancel_token)
 
     context = copy_context()
     thread = Thread(target=context.run, args=(run,), daemon=True, name="page-section-adapter")
     thread.start()
     try:
-        yield tuple(visible) if output_count > 1 else visible[0]
+        announced = False
         while True:
             check()
             try:
                 kind, value = events.get(timeout=policy()["poll_seconds"])
             except Empty:
                 continue
-            if kind == "panel":
+            if kind == "loading":
+                if not announced:
+                    announced = True
+                    yield _section_snapshot(visible)
+            elif kind == "panel":
                 index, data = value
                 completed.add(index)
-                visible[index] = (
-                    gr.update(value=data, elem_classes=[*classes[index], "section-ready"])
-                    if classes[index] is not None
-                    else data
-                )
-                yield tuple(visible) if output_count > 1 else visible[0]
+                visible[index] = _section_value(data, classes[index])
+                announced = True
+                yield _section_snapshot(visible)
             elif kind == "error":
                 for index, style in enumerate(classes):
                     if index not in completed and style is not None:
                         visible[index] = gr.update(elem_classes=[*style, "section-failed"])
-                yield tuple(visible) if output_count > 1 else visible[0]
+                yield _section_snapshot(visible)
                 raise value
             else:
                 if isinstance(value, tuple) and len(value) == output_count:
-                    yield tuple(
-                        gr.update(value=item, elem_classes=[*classes[index], "section-ready"])
-                        if classes[index] is not None
-                        else item
-                        for index, item in enumerate(value)
-                    )
+                    yield _section_snapshot([_section_value(item, classes[index]) for index, item in enumerate(value)])
                 else:
                     yield value
                 return

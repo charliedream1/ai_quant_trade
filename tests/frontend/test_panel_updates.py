@@ -42,8 +42,9 @@ def test_failed_section_retains_cumulative_completed_output():
         raise ValueError("second section failed")
 
     updates = _section_call(load, (), {}, 2, [["chart"], ["table"]])
-    next(updates)
     completed = next(updates)
+    if "section-ready" not in completed[0]["elem_classes"]:
+        completed = next(updates)
     failed = next(updates)
     assert failed[0] == completed[0]
     assert "section-ready" in failed[0]["elem_classes"]
@@ -84,3 +85,51 @@ def test_financial_evidence_precedes_chart_from_one_snapshot(client, monkeypatch
     assert loads == ["once"]
     assert result[3] is snapshot
     assert events[-1] == (2, "chart")
+
+
+@pytest.mark.parametrize("delayed", [False, True])
+def test_noop_does_not_publish_loading_or_nest_updates(delayed):
+    from time import sleep
+
+    import gradio as gr
+
+    from src.core.page_work import policy
+    from src.frontend.common.callbacks import _section_call
+
+    unchanged = (gr.skip(), gr.skip())
+
+    def noop():
+        if delayed:
+            sleep(policy()["poll_seconds"] * 2)
+        return unchanged
+
+    updates = list(_section_call(noop, (), {}, 2, [["plot"], ["status"]]))
+    assert updates == [unchanged]
+
+
+def test_component_property_update_preserves_its_envelope():
+    import gradio as gr
+
+    from src.frontend.common.callbacks import _section_call
+
+    value = gr.update(visible=False)
+    updates = list(_section_call(lambda: (value,), (), {}, 1, [["status"]]))
+    assert updates == [value]
+
+
+def test_sdk_consuming_update_value_cannot_erase_later_sections():
+    from src.frontend.common.callbacks import _section_call
+
+    def load():
+        panel_ready(0, "retained HTML")
+        panel_ready(1, "second section")
+        return "retained HTML", "second section"
+
+    updates = _section_call(load, (), {}, 2, [["html"], ["plot"]])
+    first = next(updates)
+    if "value" not in first[0]:
+        first = next(updates)
+    assert first[0].pop("value") == "retained HTML"
+    second = next(updates)
+    assert second[0]["value"] == "retained HTML"
+    assert list(updates)[-1][0]["value"] == "retained HTML"

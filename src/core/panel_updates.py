@@ -6,6 +6,7 @@ from contextvars import ContextVar
 from typing import Any
 
 PANEL_UPDATE: ContextVar[Callable[[int, Any], None] | None] = ContextVar("panel_update", default=None)
+PANEL_LOADING: ContextVar[Callable[[], None] | None] = ContextVar("panel_loading", default=None)
 OBSERVATION_READY: ContextVar[Callable[[str, Any], None] | None] = ContextVar("observation_ready", default=None)
 
 

@@ -20,7 +20,7 @@ trading services retain their independent producer lifecycle.
 
 | Page area | Early publication | Subsequent publication |
 | --- | --- | --- |
-| Homepage | Local state, account metrics and each completed source | Dependent risk plots, market summary and remaining charts |
+| Homepage | Independent account, market, local task and news groups | Each group uses the original complete callback result for SDK compatibility |
 | Sector monitoring | Index table | Sector table, then sector plot |
 | Company research | Available quote summary | Scores, indicators, K-line, news and reports |
 | Financial/macro research | Validated snapshot table, raw evidence and identity | Derived section views and history chart |
@@ -57,6 +57,35 @@ Existing component classes, including original-evidence translation protection,
 are preserved when loading/failure markers change.
 The SDK's whole-callback progress overlay is disabled for these events so it
 cannot dim completed content while another section is still pending.
+
+## Homepage initialization regression repair
+
+The homepage has initial-load and market-synchronization event chains. An
+unchanged market deliberately returns SDK no-op updates. The section adapter
+must preserve update envelopes rather than passing one as a component value;
+nesting a no-op inside a plot or Markdown value causes postprocessing errors.
+A no-op must not reset a completed section to a loading placeholder. Delay the
+initial loading publication until work actually remains pending; immediate
+results and no-ops publish directly. Preserve partial updates and existing
+component properties through terminal delivery.
+Each emission owns its update envelopes because SDK postprocessing destructively
+removes their value field. The adapter's retained cumulative state must never
+share those mutable envelopes with an earlier emission.
+
+Until full homepage streaming is verified under both SDKs, the homepage account
+and market groups use the established independent callback transport. These two
+methods are excluded from the progressive-method policy. This deliberately
+restores group-level rendering without disabling lazy imports, shared raw data,
+independent group scheduling or page cancellation. Other classified pages retain
+section delivery. Loading state begins only after an owned read actually starts,
+so a no-op synchronization callback never creates a new loading placeholder.
+
+Compare the prior snapshot and current code under the same interpreter and
+declared fixture. Verify all six homepage plots, all eight account metrics, market/task
+summaries and news after automatic initialization, explicit refresh and return
+navigation. Cover both installed SDK versions and retain early section delivery,
+failure/retry and multiwindow cancellation. Do not remove or relocate dashboard
+content to improve timing. The live user service is not stopped by acceptance.
 
 ## Verification
 

@@ -87,3 +87,13 @@ and both strict documentation builds. New source comments, design and usage text
 are English. Update the weekly changelog. All temporary evidence stays on E;
 stop owned services. No package changes, file deletions, commit or push are part
 of this proposal.
+
+## Homepage rendering acceptance correction
+
+The 2026-11-15 progressive-output change exposed a homepage regression after
+initial market synchronization. Source completion alone is insufficient evidence
+of page readiness. Acceptance now requires all eight account metrics and all six
+plots, plus summaries and news, after initialization, refresh and return.
+The homepage retains its original independent complete-result group transport;
+lazy initialization and shared raw observations remain enabled. Detailed section
+streaming on other pages is covered by its own compatibility checks.

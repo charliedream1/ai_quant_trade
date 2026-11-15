@@ -96,3 +96,8 @@ one context even if the SDK advances it on different executor threads. Closing i
 releases its subscription and keeps the existing last-consumer process cancellation.
 Section state labels and output counts are configured in
 `egs/config/ui/page_work.yaml`. Composite writes retain their transaction boundary.
+The homepage uses the established independent account, market, local-task and
+news callback groups for SDK compatibility. Its two large read groups are excluded
+from section streaming until full-page parity is verified on both installations.
+No-op SDK updates remain control messages, and emitted update dictionaries are
+copied because postprocessing consumes their value fields.

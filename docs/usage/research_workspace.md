@@ -73,7 +73,10 @@ The active page and its controls appear first. Independent sections can update
 in parallel, while sections that share data follow their dependencies. For
 example, index data can be visible while sectors are still loading; search
 results appear before their chart; retrieved citations appear while the model
-answer is pending. Account metrics can appear before all portfolio plots.
+answer is pending. The homepage uses independent account, market, local-task and
+news groups. Each group retains the established complete-result transport on
+both supported Gradio installations; its eight account metrics and six plots
+must remain available after initialization, refresh and return navigation.
 
 Loading markers belong to individual sections. A failed section is marked for
 retry and does not erase completed sections. Use the view's refresh/query control

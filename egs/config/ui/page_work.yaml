@@ -20,8 +20,7 @@ section_messages:
   en: {loading: Loading…, failed: Failed — retry, cancelled: Cancelled}
   zh: {loading: 加载中…, failed: 加载失败，可重试, cancelled: 已取消}
 progressive_methods:
-  home_account: 9
-  home_market: 6
+  # Keep homepage groups on the stable independent callback transport on both SDK versions.
   market_overview: 3
   factor_monitor_summary: 7
   factor_monitor_details: 5

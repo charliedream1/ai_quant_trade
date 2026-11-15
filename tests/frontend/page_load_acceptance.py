@@ -37,6 +37,10 @@ def inspect(base, output):
             results["cold_market_complete_seconds"] = round(monotonic() - start, 3)
             expect(frame.locator("#home-news article").first).to_be_visible(timeout=90000)
             results["cold_news_complete_seconds"] = round(monotonic() - start, 3)
+            expect(frame.locator("#home-kpis .home-metric")).to_have_count(8, timeout=15000)
+            for section in ("trend", "allocation", "risk-radar", "sentiment", "sectors", "contribution"):
+                expect(frame.locator(f"#home-{section} .js-plotly-plot")).to_be_visible(timeout=15000)
+            results["cold_all_six_plots_seconds"] = round(monotonic() - start, 3)
             page.screenshot(path=str(output / "cold-home.png"))
             start = monotonic()
             page.locator('[data-workspace-module="market"]').click()

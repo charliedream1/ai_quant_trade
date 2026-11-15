@@ -21,7 +21,7 @@ from src.core.config import get_settings
 from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
 from src.core.page_work import CURRENT_PAGE, PageCancelled, PageWork, check, on_cancel, policy
-from src.core.panel_updates import PANEL_UPDATE
+from src.core.panel_updates import PANEL_LOADING, PANEL_UPDATE
 from src.core.process_control import stop_process_tree
 from src.data import current_market
 
@@ -213,6 +213,9 @@ def read(name: str, args: tuple, kwargs: dict) -> Any:
     if page is None:
         raise RuntimeError("Page worker requires a browser lifetime")
     check()
+    loading = PANEL_LOADING.get()
+    if loading is not None:
+        loading()
     request = name, args, kwargs, get_settings(), current_market()
     key = hashlib.sha256(pickle.dumps(request)).hexdigest() if name in policy()["share_methods"] else uuid4().hex
     with LOCK:
