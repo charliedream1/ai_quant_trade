@@ -1,0 +1,23 @@
+# File format: YAML; encoding: UTF-8
+assistant:
+  width: 640
+  height: 720
+  min_width: 340
+  min_height: 360
+  viewport_margin: 12
+  storage_key: aiquant-assistant-size
+  excluded_models: [mock, mock-llm, mock_llm, demo, test, fixture]
+  excluded_schemes: [mock, fixture, test]
+  references_height: 280
+  question_lines: 2
+  messages:
+    model_missing: Configure and enable a real model in System Settings before using the assistant.
+    simulated: Simulated model profiles are unavailable in the assistant.
+    settings: Retrieval settings
+    references: Sources and full citation
+    citation: Select a citation row to read its full text and original source.
+    resize: Drag to resize the assistant
+logging:
+  progress_interval_seconds: 2
+  automatic_methods: [poll_rules, poll, home_operations, settings, report_library_catalog]
+  automatic_path_parts: [/heartbeat/, /workspace/lifetime, /notifications]

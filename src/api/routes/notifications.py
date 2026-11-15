@@ -1,5 +1,6 @@
 """Read local notifications and change only this client's display state."""
 
+from datetime import date
 from typing import Literal
 from uuid import UUID
 
@@ -20,6 +21,8 @@ router = APIRouter(
 class Action(BaseModel):
     client_id: UUID
     action: Literal["read", "dismiss"]
+    selected_date: date | None = None
+    history: bool = False
 
 
 @router.get("/config")
@@ -28,8 +31,19 @@ def settings():
 
 
 @router.get("")
-def feed(client_id: UUID, after: int = Query(0, ge=0), before: int = Query(0, ge=0), initial: bool = False):
-    return ok(NotificationService().feed(str(client_id), after, before, initial))
+def feed(
+    client_id: UUID,
+    after: int = Query(0, ge=0),
+    before: int = Query(0, ge=0),
+    initial: bool = False,
+    selected_date: date | None = None,
+    history: bool = False,
+):
+    return ok(
+        NotificationService().feed(
+            str(client_id), after, before, initial, selected_date.isoformat() if selected_date else None, history
+        )
+    )
 
 
 @router.post("/{identifier}/state")
@@ -40,5 +54,7 @@ def action(identifier: int, payload: Action):
 
 @router.post("/read-all")
 def read_all(payload: Action):
-    NotificationService().store.read_all(str(payload.client_id))
+    NotificationService().store.read_all(
+        str(payload.client_id), payload.selected_date.isoformat() if payload.selected_date else None, payload.history
+    )
     return ok({"read": True})

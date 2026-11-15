@@ -172,7 +172,11 @@ def market_summary(indices: list[dict[str, Any]], sectors: list[dict[str, Any]])
     return (
         "<div class='home-index-grid'>"
         + "".join(cards)
-        + f"</div><p class='home-muted'>板块样本 {len(sectors)} 个；不代表全市场广度。红涨绿跌，悬停查看数值。</p>"
+        + f"</div><p class='home-muted'>已展示板块 {len(sectors)} 个；不代表全市场广度。红涨绿跌，悬停查看数值。 "
+        + escape(" · ".join(sorted({str(row.get("data_source") or "Source unavailable") for row in sectors})))
+        + " · "
+        + escape(max((str(row.get("updated_at") or "") for row in sectors), default=""))
+        + "</p>"
     )
 
 

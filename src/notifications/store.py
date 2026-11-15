@@ -1,7 +1,6 @@
 """Deduplicated event history; closing a card never changes its business source."""
 
 import json
-from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -9,6 +8,7 @@ from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
 
 from .config import config
+from .dates import window
 
 
 def signature(value) -> str:
@@ -71,46 +71,56 @@ class NotificationStore:
             (client_id, identifier, utc_now_iso()),
         )
 
-    def read_all(self, client_id: str):
-        cutoff = (datetime.now(timezone.utc) - timedelta(days=config()["retention_days"])).isoformat()
+    def read_all(self, client_id: str, selected_date=None, history=False):
+        start, end, _ = window(selected_date, history)
         self.db.execute(
             """INSERT INTO notification_states(client_id,notification_id,read_at)
-            SELECT ?,id,? FROM notifications WHERE created_at>=? OR (severity='critical' AND resolved_at IS NULL)
+            SELECT ?,id,? FROM notifications
+            WHERE julianday(occurred_at)>=julianday(?) AND julianday(occurred_at)<julianday(?)
             ON CONFLICT(client_id,notification_id) DO UPDATE SET read_at=excluded.read_at""",
-            (client_id, utc_now_iso(), cutoff),
+            (client_id, utc_now_iso(), start, end),
         )
 
-    def feed(self, client_id: str, after: int = 0, before: int = 0, initial=False) -> dict:
+    def feed(
+        self, client_id: str, after: int = 0, before: int = 0, initial=False, selected_date=None, history=False
+    ) -> dict:
         cfg = config()
-        cutoff = (datetime.now(timezone.utc) - timedelta(days=cfg["retention_days"])).isoformat()
+        start, end, selected = window(selected_date, history)
         joined = """SELECT n.*,s.read_at,s.dismissed_at FROM notifications n
             LEFT JOIN notification_states s ON s.notification_id=n.id AND s.client_id=?
-            WHERE (n.created_at>=? OR (n.severity='critical' AND n.resolved_at IS NULL))"""
+            WHERE julianday(n.occurred_at)>=julianday(?) AND julianday(n.occurred_at)<julianday(?)"""
+        parameters = [client_id, start, end]
         items = self.db.query(
             joined + (" AND n.id<?" if before else "") + " ORDER BY n.id DESC LIMIT ?",
-            [client_id, cutoff, *([before] if before else []), cfg["page_size"]],
+            [*parameters, *([before] if before else []), cfg["page_size"]],
         )
-        events = self.db.query(
-            joined + " AND n.id>? ORDER BY n.id LIMIT ?", (client_id, cutoff, after, cfg["max_page_size"])
-        )
+        events = self.db.query(joined + " AND n.id>? ORDER BY n.id LIMIT ?", [*parameters, after, cfg["max_page_size"]])
         critical = self.db.query(
-            joined + " AND n.severity='critical' AND n.resolved_at IS NULL ORDER BY n.id DESC LIMIT ?",
-            (client_id, cutoff, cfg["page_size"]),
+            """SELECT n.*,s.read_at,s.dismissed_at FROM notifications n LEFT JOIN notification_states s
+            ON s.notification_id=n.id AND s.client_id=? WHERE n.severity='critical' AND n.resolved_at IS NULL
+            ORDER BY n.id DESC LIMIT ?""",
+            (client_id, cfg["page_size"]),
         )
         for row in [*items, *events, *critical]:
             row["target"] = json.loads(row["target"])
         unread = self.db.scalar(
             """SELECT COUNT(*) FROM notifications n LEFT JOIN notification_states s
-            ON s.notification_id=n.id AND s.client_id=? WHERE (n.created_at>=? OR (n.severity='critical' AND n.resolved_at IS NULL)) AND s.read_at IS NULL""",
-            (client_id, cutoff),
+            ON s.notification_id=n.id AND s.client_id=? WHERE julianday(n.occurred_at)>=julianday(?)
+            AND julianday(n.occurred_at)<julianday(?) AND s.read_at IS NULL""",
+            parameters,
         )
         latest = self.db.scalar("SELECT COALESCE(MAX(id),0) FROM notifications")
+        today = window()[2]
         return {
             "items": items,
-            "events": [] if initial else events,
+            "events": [] if initial or history or selected != today else events,
             "critical": critical,
             "unread": unread,
-            "cursor": latest if initial else events[-1]["id"] if events else after,
+            "selected_date": selected,
+            "today": today,
+            "timezone": cfg["timezone"],
+            "history": history,
+            "cursor": latest if initial or history or selected != today else events[-1]["id"] if events else latest,
             "has_more_events": not initial and len(events) == cfg["max_page_size"],
             "before": items[-1]["id"] if len(items) == cfg["page_size"] else 0,
         }

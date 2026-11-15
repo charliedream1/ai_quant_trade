@@ -1,0 +1,26 @@
+# File format: YAML; encoding: UTF-8
+version: 1
+classification_batch: 2000
+default_region: all
+default_topic: all
+regions:
+  domestic: [中国, 我国, 国内, 国务院, 人民银行, 证监会, 财政部, 发改委, A股, 人民币, 北京, 上海, 深圳]
+  overseas: [海外, 国际, 美国, 美联储, 欧洲, 欧盟, 日本, 韩国, 英国, 俄罗斯, 乌克兰, 伊朗, 以色列, 关税, Federal Reserve, US, Europe, China tariff]
+exclude: [娱乐, 明星婚礼, 综艺, 体育赛果, celebrity wedding, entertainment gossip]
+transmission:
+  monetary_policy: [央行, 美联储, 利率, 降息, 加息, 货币政策, 通胀, CPI, Federal Reserve, interest rate, inflation]
+  fiscal_policy: [财政, 国债, 专项债, 税收, 减税, fiscal, treasury, tax cut]
+  regulation_trade: [监管, 证监会, 国务院, 发改委, 财政部, 人民银行, 出口管制, 关税, 制裁, 行业政策, regulation, tariff, sanction, export control]
+  supply_energy: [原油, 石油, 天然气, 能源, 航运, 供应链, 供应中断, oil, energy, supply chain, shipping]
+  markets_companies: [股市, 股票, A股, 港股, 美股, 指数, 债券, 汇率, 人民币, 黄金, 营收, 净利润, 财报, 年报, 并购, IPO, 增持, 减持, 违约, 业绩, 证券, GDP, PMI, 市值, 上市, 半导体, 新能源, stock, equity, earnings, bond, currency, merger, market, shares, profit]
+policy_terms: [政策, 国务院, 财政部, 发改委, 证监会, 人民银行, 央行, 美联储, 立法, 法案, 监管, 关税, 制裁, 出口管制, 货币政策, 财政, regulation, tariff, sanction, legislation, central bank, Federal Reserve]
+political_terms: [政府, 总统, 选举, 战争, 冲突, 袭击, 停火, 俄乌, 中东, government, president, election, war, conflict, attack]
+impact_terms:
+  equity: [A股, 股市, 股票, 指数, 上市, stock, equity, shares]
+  rates: [利率, 债券, 国债, 央行, 美联储, bond, interest rate, Federal Reserve]
+  currency: [汇率, 人民币, 美元, currency, dollar]
+  energy: [原油, 能源, 石油, oil, energy]
+  technology: [半导体, 芯片, 出口管制, semiconductor, chip, export control]
+ui:
+  regions: [[全部地区, all], [国内, domestic], [海外, overseas], [跨境, cross_border], [待确认地区, unknown]]
+  topics: [[财经与时政, all], [财经经济, finance], [时政政策, policy]]

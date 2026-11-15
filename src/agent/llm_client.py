@@ -16,8 +16,10 @@ from src.core.network_policy import network_session
 from src.core.redaction import redact_text
 from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
+from src.core.work_progress import progress
 
 from .model_calls import call_model
+from .real_models import REQUIRE_REAL_MODEL, real_profile
 
 DEFAULT_SYSTEM_PROMPT = llm_config()["system_prompt"]
 
@@ -43,6 +45,8 @@ class LLMClient:
     ) -> dict[str, Any]:
         try:
             config = self._select_config(model_id)
+            if REQUIRE_REAL_MODEL.get() and not real_profile(config):
+                raise BusinessError(ErrorCode.LLM_ERROR, "Simulated model profiles are unavailable in the assistant")
             if timeout_seconds is not None:
                 if timeout_seconds <= 0:
                     raise BusinessError(ErrorCode.INVALID_PARAM, "模型截止时间必须为正数")
@@ -55,7 +59,7 @@ class LLMClient:
                     "max_tokens": min(max_output_tokens, _bounded_int(config.get("max_tokens"), 1200, 1, 131072)),
                 }
         except BusinessError:
-            if os.environ.get("ALL_IN_ONE_DATA_MODE", "").lower() != "mock":
+            if REQUIRE_REAL_MODEL.get() or os.environ.get("ALL_IN_ONE_DATA_MODE", "").lower() != "mock":
                 raise
             return {
                 "model": "mock-llm",
@@ -72,6 +76,7 @@ class LLMClient:
             user_content.extend({"type": "image_url", "image_url": {"url": path}} for path in image_paths)
         messages.append({"role": "user", "content": user_content})  # type: ignore[list-item]
         started = time.perf_counter()
+        progress("Waiting for configured model response")
         try:
             options = {"enable_thinking": enable_thinking} if enable_thinking is not None else {}
             result = self._request(config, messages, reasoning_effort=reasoning_effort, **options)

@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from collections.abc import Iterator
+from html import escape
 from time import perf_counter
+from typing import cast
 
 from src.agent.composer_config import normalize_backend
 from src.agent.providers.config import provider_config
 from src.agent.providers.native import NativeCliRunner
 from src.agent.qoder_cli import QoderCliRunner
+from src.agent.rag import RAGService
+from src.agent.real_models import real_model, real_profile, require_real_model
+from src.core.repository import Repository
 from src.strategy.codex_cli import CodexCliRunner
 
 from .foundation import (
@@ -25,6 +31,51 @@ from .foundation import (
 
 class AssistantServiceMixin:
     """Callbacks owned by the assistant frontend domain."""
+
+    def floating_models(self):
+        rows = Repository().db.query("SELECT * FROM llm_models WHERE enabled=1 ORDER BY is_default DESC,id DESC")
+        return [(str(row["name"] or row["model_name"]), row["model_name"]) for row in rows if real_profile(row)]
+
+    def floating_send(self, session, message, history, backend, attachments, model, effort, access):
+        if normalize_backend(backend) == "generic_agent":
+            model = real_model(str(model or ""))["model_name"]
+        with require_real_model():
+            yield from cast(Any, self).ai_console_send_stream(
+                session, message, history, backend, attachments, model, effort, access
+            )
+
+    def floating_qa(self, question, category, top_k):
+        selected = real_model()
+        with require_real_model():
+            result = RAGService().ask(
+                {
+                    "question": require_text(question, "Question"),
+                    "category_id": category or None,
+                    "top_k": int(top_k),
+                    "model_id": selected["id"],
+                }
+            )
+        from .foundation import to_frame
+
+        return result.get("answer") or "", to_frame(
+            result.get("references") or [], ["citation", "title", "snippet", "doc_id", "chunk_id"]
+        )
+
+    def floating_citation(self, rows, index):
+        from src.documents.service import FilePreviewService
+        from src.documents.view import launcher
+
+        row = rows.iloc[int(index)].to_dict()
+        text = row.get("chunk_content") or row.get("snippet") or row.get("content") or ""
+        if row.get("chunk_id"):
+            chunk = Repository().db.query_one(
+                "SELECT content FROM kb_document_chunks WHERE id=?", (int(row["chunk_id"]),)
+            )
+            if chunk:
+                text = chunk["content"]
+        original = launcher(FilePreviewService().knowledge(int(row["doc_id"]))) if row.get("doc_id") else ""
+        original = re.sub(r' data-preview-auto="[^"]*"', "", original)
+        return f"<h4>{escape(str(row.get('title') or 'Source'))}</h4><pre class='citation-full'>{escape(str(text))}</pre>{original}"
 
     def floating_chat(
         self,

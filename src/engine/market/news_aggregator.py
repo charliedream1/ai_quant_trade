@@ -8,6 +8,8 @@ from typing import Any
 from src.core.repository import Repository, make_where
 from src.data import MARKET_US, DataSourceManager
 
+from .news_policy import initialize
+
 
 class NewsAggregator:
     def __init__(self, repo: Repository | None = None, data: DataSourceManager | None = None) -> None:
@@ -20,11 +22,6 @@ class NewsAggregator:
     def seed_if_empty(self, force_refresh: bool = False) -> None:
         if self.data.market == "HK":
             return
-        if not self.data.is_mock:
-            self.repo.db.execute(
-                "DELETE FROM news_items WHERE source IN (?, ?) OR url LIKE ?",
-                ("本地模拟源", "Mock Wire", "https://example.local/%"),
-            )
         has_items = bool(
             self.repo.db.scalar(
                 "SELECT COUNT(*) AS cnt FROM news_items WHERE source = ?"
@@ -64,12 +61,31 @@ class NewsAggregator:
         page: int,
         page_size: int,
         refresh: bool = False,
+        region: str = "all",
+        topic: str = "all",
+        market_relevant: bool = True,
     ) -> dict[str, Any]:
         if self.data.market == "HK":
-            return {"items": [], "total": 0, "page": page, "page_size": page_size,
-                    "availability": "Hong Kong news provider not configured"}
+            return {
+                "items": [],
+                "total": 0,
+                "page": page,
+                "page_size": page_size,
+                "availability": "Hong Kong news provider not configured",
+            }
         self.seed_if_empty(force_refresh=refresh)
+        initialize(self.repo.db)
         parts: list[tuple[str, Any]] = []
+        if market_relevant:
+            parts.append(("id IN (SELECT news_id FROM news_classification WHERE market_relevant=?)", 1))
+        if region != "all":
+            if region not in {"domestic", "overseas", "cross_border", "unknown"}:
+                raise ValueError("Unknown news geography")
+            parts.append(("id IN (SELECT news_id FROM news_classification WHERE region=?)", region))
+        if topic != "all":
+            if topic not in {"finance", "policy"}:
+                raise ValueError("Unknown news subject")
+            parts.append(("id IN (SELECT news_id FROM news_classification WHERE topics LIKE ?)", '%"' + topic + '"%'))
         if category:
             parts.append(("category = ?", category))
         if keyword:
@@ -79,30 +95,33 @@ class NewsAggregator:
             parts.append(("source = ?", source))
         elif self.data.is_mock:
             parts.append(("source = ?", self._mock_source_label()))
+        if not self.data.is_mock:
+            parts.append(
+                ("source NOT IN (?,?) AND url NOT LIKE ?", ("本地模拟源", "Mock Wire", "https://example.local/%"))
+            )
         where, params = make_where(parts)
         result = self.repo.page("news_items", page, page_size, where, params, order_by="published_at DESC")
         for item in result["items"]:
+            metadata = self.repo.db.query_one("SELECT metadata FROM news_classification WHERE news_id=?", (item["id"],))
+            if metadata:
+                item.update(json.loads(metadata["metadata"]))
             item["keywords"] = json.loads(item["keywords"] or "[]")
             score = item.pop("sentiment", None)
             item["sentiment"] = "positive" if score and score > 0.1 else "neutral"
             item["symbols"] = []
         return result
 
-    def keyword_cloud(self, scope: str, category: str | None, top_n: int) -> Any:
+    def keyword_cloud(
+        self, scope: str, category: str | None, top_n: int, region="all", topic="all", keyword=None, source=None
+    ) -> Any:
         if self.data.market == "HK":
             return []
-        self.seed_if_empty()
-        rows = self.repo.list(
-            "news_items",
-            where="category = ?" if category else "",
-            params=(category,) if category else (),
-            order_by="published_at DESC",
-            limit=500,
-        )
+        rows = self.list_news(category, keyword, source, 1, 500, region=region, topic=topic)["items"]
         counts: Counter[str] = Counter()
         for item in rows:
             try:
-                counts.update(json.loads(item.get("keywords") or "[]"))
+                value = item.get("keywords") or []
+                counts.update(json.loads(value) if isinstance(value, str) else value)
             except (TypeError, ValueError, json.JSONDecodeError):
                 continue
         total = max(sum(counts.values()), 1)

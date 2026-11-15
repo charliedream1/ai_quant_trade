@@ -21,7 +21,7 @@ class NotificationService:
     def __init__(self, repo=None):
         self.store = NotificationStore(repo)
 
-    def feed(self, client_id, after=0, before=0, initial=False):
+    def feed(self, client_id, after=0, before=0, initial=False, selected_date=None, history=False):
         cfg = config()
         key = str(self.store.db.db_path)
         with LOCK:
@@ -29,7 +29,7 @@ class NotificationService:
             if cfg["enabled"] and monotonic() - stamp >= cfg["sync_seconds"]:
                 warnings = synchronize(self.store)
                 SYNC[key] = monotonic(), warnings
-        result = self.store.feed(client_id, after, before, initial)
+        result = self.store.feed(client_id, after, before, initial, selected_date, history)
         return {**result, "warnings": warnings}
 
 
@@ -69,7 +69,17 @@ def public_config() -> dict:
             logger.warning("助手素材校验失败，使用内置形象 | error_type={}", type(exc).__name__)
     return {
         key: cfg[key]
-        for key in ("enabled", "poll_seconds", "backoff_seconds", "toast_limit", "toast_width", "toast_seconds", "ui")
+        for key in (
+            "enabled",
+            "poll_seconds",
+            "backoff_seconds",
+            "toast_limit",
+            "toast_width",
+            "toast_seconds",
+            "ui",
+            "timezone",
+            "group_threshold",
+        )
     } | {
         "api": get_settings().api_prefix + "/notifications",
         "avatar": {"style": avatar["style"] if avatar["style"] in images else "robot", "images": images},

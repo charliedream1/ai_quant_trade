@@ -14,7 +14,11 @@
     const header = node('header'); header.append(node('strong', ui.title));
     const close = node('button', '×'); close.setAttribute('aria-label', ui.close); close.onclick = () => {box.hidden = true; bell.setAttribute('aria-expanded','false'); bell.focus();}; header.append(close);
     const toolbar = node('div', '', 'notification-toolbar');
-    const allRead = node('button', ui.read_all); toolbar.append(allRead);
+    const allRead = node('button', ui.day_read); toolbar.append(allRead);
+    const dateInput=node('input');dateInput.type='date';dateInput.setAttribute('aria-label',ui.date);dateInput.id='notification-date';
+    const todayButton=node('button',ui.today),historyButton=node('button',ui.history);
+    toolbar.prepend(dateInput,todayButton,historyButton);
+    let selectedDate='',history=false,generation=0;
     const note = node('p', '', 'notification-status'); note.setAttribute('role', 'status');
     const entries = node('div', '', 'notification-entries');
     const more = node('button', ui.more); more.hidden = true;
@@ -29,7 +33,7 @@
     toasts.style.width=`min(${cfg.toast_width}px,calc(100vw - 24px))`;
     const position=()=>{const top=Math.ceil(document.querySelector('.workspace-topbar').getBoundingClientRect().bottom)+8;box.style.top=top+'px';banner.style.top=top+'px';toasts.style.top=(top+(banner.hidden?0:banner.offsetHeight+10))+'px';};
     new ResizeObserver(position).observe(document.querySelector('.workspace-topbar'));window.addEventListener('resize',position);
-    const open = () => {box.hidden=false;bell.setAttribute('aria-expanded','true');close.focus();};
+    const open = () => {box.hidden=false;bell.setAttribute('aria-expanded','true');close.focus();refresh();};
     bell.setAttribute('title',ui.open); bell.setAttribute('aria-label',ui.open); bell.setAttribute('aria-expanded','false');
     bell.onclick=()=>box.hidden?open():close.click(); banner.onclick=open;
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!box.hidden)close.click();});
@@ -40,6 +44,11 @@
     let cursor=Number(localStorage.getItem(cursorKey)||0),initial=!localStorage.getItem(cursorKey),busy=false,again=false,timer,older=0,items=[];
     const seen=new Set(),visible=new Map();
     const request=async(path, options)=>{const response=await fetch(cfg.api+path,options);const body=await response.json();if(!response.ok||body.code!==0)throw Error('notification unavailable');return body.data;};
+    const scope=()=>({...selectedDate?{selected_date:selectedDate}:{},history:String(history)});
+    const changeDate=()=>{generation++;initial=true;older=0;items=[];refresh();};
+    dateInput.onchange=()=>{selectedDate=dateInput.value;history=false;changeDate();};
+    todayButton.onclick=()=>{selectedDate='';history=false;changeDate();};
+    historyButton.onclick=()=>{history=true;changeDate();};
     const action=async(id,kind)=>request('/'+id+'/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client_id:client,action:kind})});
     const navigate=async(row)=>{try{await action(row.id,'read');}catch(_){} window.dispatchEvent(new CustomEvent('aiquant:notification-open',{detail:row.target}));close.click();refresh();};
     const card=(row,toast=false)=>{
@@ -52,33 +61,48 @@
       if(!toast&&!row.read_at){const read=node('button',ui.read);read.onclick=async()=>{try{await action(row.id,'read');refresh();}catch(_){note.textContent=ui.offline;}};actions.append(read);}
       article.append(top,description,time,actions);return article;
     };
-    const render=()=>{entries.replaceChildren(...items.map(row=>card(row)));if(!items.length)entries.append(node('p',ui.empty));};
+    const dayOf=row=>new Intl.DateTimeFormat('en-CA',{timeZone:cfg.timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(row.occurred_at));
+    const render=()=>{
+      entries.replaceChildren(); const days=new Map();
+      items.forEach(row=>{const day=dayOf(row);if(!days.has(day))days.set(day,[]);days.get(day).push(row);});
+      [...days].sort((a,b)=>b[0].localeCompare(a[0])).forEach(([day,rows])=>{
+        entries.append(node('h3',day)); const successes=rows.filter(row=>row.severity==='success');
+        rows.filter(row=>row.severity!=='success').forEach(row=>entries.append(card(row)));
+        if(successes.length>=cfg.group_threshold){const details=node('details');details.append(node('summary',ui.success+' · '+successes.length));successes.forEach(row=>details.append(card(row)));entries.append(details);}
+        else successes.forEach(row=>entries.append(card(row)));
+      });
+      if(!items.length)entries.append(node('p',ui.empty));
+    };
     const removeToast=id=>{const active=visible.get(id);if(active){clearTimeout(active.timer);active.el.remove();visible.delete(id);}};
     const pop=row=>{
       if(seen.has(row.id)||row.dismissed_at||row.read_at||row.resolved_at)return;seen.add(row.id);
       if(visible.size>=cfg.toast_limit){note.textContent=ui.overflow;return;}
       const el=card(row,true);el.setAttribute('role',row.severity==='critical'?'alert':'status');
       const state={el,timer:null};visible.set(row.id,state);toasts.append(el);
-      if(['info','success'].includes(row.severity)){
+      if(row.severity!=='critical'){
         const schedule=()=>{clearTimeout(state.timer);state.timer=setTimeout(()=>removeToast(row.id),cfg.toast_seconds*1000);};
         el.onpointerenter=()=>clearTimeout(state.timer);el.onpointerleave=schedule;el.onfocusin=()=>clearTimeout(state.timer);el.onfocusout=schedule;schedule();
       }
     };
-    allRead.onclick=async()=>{allRead.disabled=true;try{await request('/read-all',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client_id:client,action:'read'})});await refresh();}catch(_){note.textContent=ui.offline;}finally{allRead.disabled=false;}};
-    more.onclick=async()=>{try{const data=await request('?'+new URLSearchParams({client_id:client,before:older}));const known=new Set(items.map(row=>row.id));items.push(...data.items.filter(row=>!known.has(row.id)));older=data.before;more.hidden=!older;render();}catch(_){note.textContent=ui.offline;}};
+    allRead.onclick=async()=>{allRead.disabled=true;try{await request('/read-all',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client_id:client,action:'read',selected_date:selectedDate||null,history})});await refresh();}catch(_){note.textContent=ui.offline;}finally{allRead.disabled=false;}};
+    more.onclick=async()=>{const ticket=generation;try{const data=await request('?'+new URLSearchParams({client_id:client,before:older,...scope()}));if(ticket!==generation)return;const known=new Set(items.map(row=>row.id));items.push(...data.items.filter(row=>!known.has(row.id)));older=data.before;more.hidden=!older;render();}catch(_){note.textContent=ui.offline;}};
     const schedule=delay=>{clearTimeout(timer);if(!document.hidden&&cfg.enabled)timer=setTimeout(refresh,delay*1000);};
     async function refresh(){
       if(document.hidden||!cfg.enabled)return;if(busy){again=true;return;}busy=true;
+      const ticket=generation;
       try{
-        const data=await request('?'+new URLSearchParams({client_id:client,after:cursor,initial:String(initial)}));
+        const data=await request('?'+new URLSearchParams({client_id:client,after:cursor,initial:String(initial),...scope()}));
+        if(ticket!==generation){again=true;return;}
+        dateInput.value=data.selected_date;dateInput.max=data.today;
         items=data.items;older=data.before;more.hidden=!older;render();
         bell.querySelector('span').textContent=data.unread?String(data.unread):'';
         bell.setAttribute('aria-label',ui.open+' '+data.unread+' '+ui.unread);
-        banner.hidden=!data.critical.length;banner.textContent=data.critical.length?ui.critical_summary+' · '+data.critical[0].title:'';
+        banner.hidden=!data.critical.length;banner.textContent=data.critical.length?ui.critical_summary+' · '+data.critical.length:'';
+        banner.onclick=()=>{history=true;changeDate();open();};
         position();
         note.textContent=(data.warnings||[]).map(key=>ui[key]).join(' ');
         for(const [id]of visible){const row=items.find(item=>item.id===id);if(row&&(row.resolved_at||row.dismissed_at||row.read_at))removeToast(id);}
-        const events=initial?items.filter(row=>['warning','critical'].includes(row.severity)):data.events;
+        const events=initial?[]:data.events;
         events.forEach(pop);cursor=data.cursor;initial=false;localStorage.setItem(cursorKey,String(cursor));
         schedule(data.has_more_events?0:cfg.poll_seconds);
       }catch(_){note.textContent=ui.offline;schedule(cfg.backoff_seconds);}finally{busy=false;if(again){again=false;schedule(0);}}

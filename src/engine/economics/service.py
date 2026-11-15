@@ -5,6 +5,7 @@ from datetime import date, datetime
 from typing import Any
 
 from src.core.timeutil import utc_now_iso
+from src.core.work_progress import progress
 from src.data import DataSourceManager, SecurityMasterService, current_market
 from src.data.economics import EconomicDataSource
 from src.data.symbols import parse_symbol
@@ -25,6 +26,8 @@ class EconomicAnalysis:
             raise ValueError(self.config["messages"]["unsupported"])
 
     def _fetch(self, names: list[str], symbol: str = "", refresh: bool = False):
+        progress("Fetching financial statements" if symbol else "Fetching macroeconomic observations")
+
         def one(name):
             try:
                 return name, self.source.fetch(name, symbol=symbol, refresh=refresh), None
@@ -33,6 +36,7 @@ class EconomicAnalysis:
 
         with ThreadPoolExecutor(max_workers=self.config["defaults"]["workers"]) as pool:
             results = list(pool.map(one, names))
+        progress("Validating source observations")
         return {name: value for name, value, _ in results if value}, [error for _, _, error in results if error]
 
     def macro(self, series: list[str] | None = None, *, refresh=False, market=None) -> dict:

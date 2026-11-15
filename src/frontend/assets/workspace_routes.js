@@ -26,6 +26,7 @@
     const alias = config.aliases.find((row) => row.module === data.module && row.view === data.view);
     if (alias && alias.target === module) data = {...data, view: alias.target_view, tab: alias.tab || data.tab};
     if (data.module !== module || !views[data.view]) return;
+    if (currentView === data.view && currentNonce === String(data.target_nonce || `standalone:${location.search}`)) return;
     cancel();
     const ticket = epoch, key = `${module}/${data.view}`;
     const nonce = String(data.target_nonce || `standalone:${location.search}`);
@@ -128,6 +129,14 @@
       history.replaceState({}, "", url);
     }
   });
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest?.("#stock-research-tabs [role='tab']");
+    if (button && !/Technical analysis|Financial analysis|技术分析|财务分析/.test(window.aiquantUiSource?.(button) || button.textContent)) return;
+    if (!event.isTrusted || !button || button.getAttribute("aria-selected") === "true") return;
+    const subview = button.id.includes("financial") || /Financial|财务|基本面/.test(window.aiquantUiSource?.(button) || button.textContent) ? "financials" : "technical";
+    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(subview);
+    else { window.aiquantPageWork?.deactivate(); window.aiquantPageWork?.activate(); }
+  }, true);
   // Keep the shell's independent-window target aligned with genuine in-page tab clicks.
   document.addEventListener("click", (event) => {
     if (!event.isTrusted) return;

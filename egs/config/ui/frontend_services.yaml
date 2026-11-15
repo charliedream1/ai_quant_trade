@@ -2,6 +2,10 @@
 {
   "version": 1,
   "methods": {
+    "floating_models": ["src.frontend.service.assistant", "AssistantServiceMixin"],
+    "floating_send": ["src.frontend.service.assistant", "AssistantServiceMixin"],
+    "floating_qa": ["src.frontend.service.assistant", "AssistantServiceMixin"],
+    "floating_citation": ["src.frontend.service.assistant", "AssistantServiceMixin"],
     "calendar_setup": ["src.frontend.service.admin", "AdminServiceMixin"],
     "pipeline_research_import": ["src.frontend.service.composition", "CompositionServiceMixin"],
     "economic_models": ["src.frontend.service.economics", "EconomicUIMixin"],

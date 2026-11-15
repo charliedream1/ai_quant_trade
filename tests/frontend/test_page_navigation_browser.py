@@ -86,7 +86,7 @@ def test_two_window_navigation_cancels_last_read(cli_command, monkeypatch, tmp_p
             assert closed.wait(3), "Cancelling the last consumer must close its actual source connection"
             with FileLock(str(folder / "source.lock"), timeout=0.1):
                 pass
-            first.locator('[data-workspace-view="fundamentals"]').click()
+            first.locator('[data-workspace-view="stock"]').click()
             expect(first_frame.locator("#fundamentals-symbol textarea")).to_have_value("600036")
             expect(first_frame.locator("#fundamentals-status")).not_to_contain_text("快照")
             first.screenshot(path=str(tmp_path / "cancelled-load-draft-retained.png"))
@@ -170,7 +170,7 @@ def test_preview_draft_survives_view_navigation(client, cli_command, tmp_path):
             page.locator('[data-workspace-view="quotes"]').click()
             expect(frame.locator(".file-reader-panel")).to_be_hidden()
             expect(frame.locator("#market-quotes-refresh")).to_be_visible()
-            page.locator('[data-workspace-view="fundamentals"]').click()
+            page.locator('[data-workspace-view="stock"]').click()
             expect(frame.locator(".file-reader-panel")).to_be_visible()
             expect(reader.locator("#markdown-editor")).to_have_value("# Unsaved draft retained")
             assert client.get(url + "/raw").content == original

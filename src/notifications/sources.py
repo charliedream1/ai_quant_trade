@@ -42,7 +42,7 @@ def task(store, source, identifier, status, stamp=None):
         f"{cfg['sources'][source]} #{identifier} · {cfg['ui'][label]}",
         cfg["ui"]["task_message"],
         destination,
-        stamp if source != "job" else None,
+        stamp,
     )
 
 

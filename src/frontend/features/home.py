@@ -61,9 +61,7 @@ def render_home(
             sentiment = _plot(
                 label="市场情绪雷达", show_label=False, elem_id="home-sentiment", elem_classes=["home-chart"]
             )
-            sectors = _plot(
-                label="板块样本热力图", show_label=False, elem_id="home-sectors", elem_classes=["home-chart"]
-            )
+            sectors = _plot(label="板块涨跌概览", show_label=False, elem_id="home-sectors", elem_classes=["home-chart"])
             contribution = _plot(
                 label="持仓浮动盈亏", show_label=False, elem_id="home-contribution", elem_classes=["home-chart"]
             )

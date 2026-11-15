@@ -185,6 +185,7 @@ nav:
         - Macroeconomics and fundamentals: usage/economic_analysis.md
         - Runtime and market research: usage/runtime_market_research.md
         - Page navigation and cancellation: usage/page_navigation.md
+        - Research workspace controls: usage/research_workspace.md
         - CLI and Skill relationship graphs: usage/model_stock_relationships.md
         - Relationship graph validation: usage/model_stock_relationship_validation.md
         - 通用因子监控与Qlib: usage/factor_monitoring.md

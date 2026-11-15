@@ -11,6 +11,7 @@ from typing import Any
 import gradio as gr
 
 from src.core.config import get_settings
+from src.core.workspace_config import workspace_config
 
 from .common.chart_help import chart_help_js
 from .common.navigation import navigation_config
@@ -24,6 +25,7 @@ CSS += _ASSET_ROOT.joinpath("styles", "ai_console.css").read_text(encoding="utf-
 CSS += _ASSET_ROOT.joinpath("styles", "composer.css").read_text(encoding="utf-8")
 CSS += _ASSET_ROOT.joinpath("styles", "notifications.css").read_text(encoding="utf-8")
 CSS += _ASSET_ROOT.joinpath("styles", "usability.css").read_text(encoding="utf-8")
+CSS += _ASSET_ROOT.joinpath("styles", "floating_panel.css").read_text(encoding="utf-8")
 HOME_CSS = _ASSET_ROOT.joinpath("styles", "home_dashboard.css").read_text(encoding="utf-8")
 _AI_CONSOLE_JS = _ASSET_ROOT.joinpath("ai_console.js").read_text(encoding="utf-8")
 _AI_CONSOLE_JS += _ASSET_ROOT.joinpath("home_dashboard.js").read_text(encoding="utf-8")
@@ -34,6 +36,11 @@ _AI_CONSOLE_JS += (
     .replace("__NOTICE_CONFIG__", get_settings().api_prefix + "/notifications/config")
 )
 _AI_CONSOLE_JS += _ASSET_ROOT.joinpath("preview_panel.js").read_text(encoding="utf-8")
+_AI_CONSOLE_JS += (
+    _ASSET_ROOT.joinpath("floating_panel.js")
+    .read_text(encoding="utf-8")
+    .replace("__ASSISTANT_LAYOUT__", json.dumps(workspace_config()["assistant"], ensure_ascii=False))
+)
 _AI_CONSOLE_JS += chart_help_js()
 
 _APP_JS_TEMPLATE = _ASSET_ROOT.joinpath("workspace_runtime.js").read_text(encoding="utf-8")

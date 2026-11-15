@@ -19,8 +19,14 @@ def list_news(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     refresh: bool = False,
+    region: str = "all",
+    topic: str = "all",
 ):
-    return ok(NewsAggregator().list_news(category, keyword, source, page, page_size, refresh=refresh))
+    return ok(
+        NewsAggregator().list_news(
+            category, keyword, source, page, page_size, refresh=refresh, region=region, topic=topic
+        )
+    )
 
 
 @router.get("/news/keyword-cloud")

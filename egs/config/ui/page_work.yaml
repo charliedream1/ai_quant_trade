@@ -22,6 +22,8 @@ messages:
 share_methods: [home_market, home_news, market_overview, news, economic_load]
 source_methods: [graph_local, graph_read, graph_search, graph_resolve]
 read_methods:
+  - floating_qa
+  - floating_citation
   - home_account
   - home_market
   - home_news

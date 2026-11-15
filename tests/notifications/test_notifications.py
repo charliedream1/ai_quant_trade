@@ -72,9 +72,12 @@ def test_unresolved_critical_does_not_expire_with_ordinary_history(client):
     important = publish(store, "old-critical", severity="critical")
     ordinary = publish(store, "old-warning", severity="warning")
     for row in (important, ordinary):
-        store.repo.update("notifications", row["id"], {"created_at": "2000-01-01T00:00:00Z"})
+        store.repo.update(
+            "notifications", row["id"], {"created_at": "2000-01-01T00:00:00Z", "occurred_at": "2000-01-01T00:00:00Z"}
+        )
     feed = store.feed(DATA["client"])
-    assert [row["id"] for row in feed["items"]] == [important["id"]]
+    assert feed["items"] == []
+    assert [row["id"] for row in feed["critical"]] == [important["id"]]
     store.read_all(DATA["client"])
     assert store.feed(DATA["client"])["unread"] == 0
     assert store.feed(DATA["client"])["critical"]

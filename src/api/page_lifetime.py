@@ -1,6 +1,7 @@
 """Same-origin page lifetime control and early Gradio transport instrumentation."""
 
 import json
+import re
 from html import escape
 from pathlib import Path
 from urllib.parse import parse_qs
@@ -9,6 +10,8 @@ from fastapi import APIRouter, HTTPException, Request
 from starlette.datastructures import Headers
 from starlette.responses import Response
 
+from src.core.async_work import blocking_call
+from src.core.logger import get_logger
 from src.core.page_work import PageCancelled, activate, context, deactivate, policy, resolve
 
 router = APIRouter(prefix="/workspace", tags=["workspace"])
@@ -31,11 +34,20 @@ async def lifetime(request: Request):
             raise HTTPException(413, "Lifetime payload too large")
     try:
         payload = json.loads(raw)
+        module = str(payload.get("module") or "unknown")
+        view = str(payload.get("view") or "unknown")
+        if not all(re.fullmatch(r"[A-Za-z0-9_/-]{1,64}", value) for value in (module, view)):
+            raise ValueError("Invalid page label")
         if payload["action"] == "activate":
-            page = activate(payload["owner"], payload["revision"])
+            page = await blocking_call(activate, payload["owner"], payload["revision"], group="page_lifetime")
+            if getattr(page, "view_label", None) != (module, view) and not page.is_set():
+                page.view_label = (module, view)
+                get_logger("ui.navigation").info(
+                    "Page selected | module={} view={} revision={}", module, view, page.revision
+                )
             return {"active": not page.is_set()}
         if payload["action"] == "deactivate":
-            deactivate(payload["owner"], payload["revision"])
+            await blocking_call(deactivate, payload["owner"], payload["revision"], group="page_lifetime")
             return {"active": False}
     except (ValueError, TypeError, KeyError):
         raise HTTPException(400, "Invalid lifetime payload") from None

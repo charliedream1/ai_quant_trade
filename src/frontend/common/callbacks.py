@@ -19,6 +19,7 @@ from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
 from src.core.page_work import CURRENT_PAGE, PageCancelled, check
 from src.core.stream_control import STREAM_STOP
+from src.core.workspace_config import workspace_config
 from src.data.manager import REQUEST_MARKET
 
 from ..service_dispatch import lookup_method
@@ -60,6 +61,10 @@ def callback_location(fn: Callable[..., Any]) -> tuple[str, str]:
 @contextmanager
 def _callback_run(operation: str, source: str) -> Iterator[None]:
     operation_id = uuid4().hex
+    method = operation.rsplit(".", 1)[-1]
+    automatic = method in workspace_config()["logging"]["automatic_methods"]
+    level = "DEBUG" if automatic else "INFO"
+    action_log = get_logger("ui.action")
     started = perf_counter()
     request = LocalContext.request.get(None)
     from src.api.page_lifetime import request_page
@@ -79,10 +84,11 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
     )
     try:
         check()
+        action_log.log(level, "Action started | operation={} action={}", operation_id[:12], operation)
         yield
         check()
     except PageCancelled:
-        CALLBACK_LOG.debug("Page callback cancelled | backend_method={}", operation)
+        action_log.log(level, "Action cancelled | operation={} action={}", operation_id[:12], operation)
         raise
     except Exception as exc:
         message = ui_error_message(exc)
@@ -101,6 +107,13 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
         raise gr.Error(message, print_exception=False) from None
     else:
         duration_ms = (perf_counter() - started) * 1000
+        action_log.log(
+            level,
+            "Action completed | operation={} action={} duration_ms={:.0f}",
+            operation_id[:12],
+            operation,
+            duration_ms,
+        )
         policy = diagnostics_config()["callbacks"]
         finish_level = policy["slow_success_level"] if duration_ms >= SLOW_CALLBACK_MS else policy["success_level"]
         CALLBACK_LOG.log(

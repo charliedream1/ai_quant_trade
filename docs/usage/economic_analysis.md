@@ -1,6 +1,6 @@
 # Macroeconomics and corporate fundamentals
 
-Open **Market Research → 宏观经济** or **Market Research → 基本面分析**. These views support Chinese macroeconomic data and A-share companies. Data and calculations work without a configured model. Navigation does not fetch economic sources or generate a report.
+Open **Market Research → 宏观经济** or **Market Research → Stock Analysis → Financial analysis**. Company research shares one symbol across technical and financial sections; existing fundamentals links open the financial section. These views support Chinese macroeconomic data and A-share companies. Data and calculations work without a configured model. Navigation does not fetch economic sources or generate a report. See [workspace controls](research_workspace.md).
 
 ## Read macroeconomic evidence
 

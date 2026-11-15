@@ -34,6 +34,7 @@ class PageWork:
     touched: float = field(default_factory=monotonic)
     callbacks: list[Callable[[], None]] = field(default_factory=list)
     cancelled: Callable[[], bool] | None = None
+    view_label: tuple[str, str] | None = None
 
     def is_set(self) -> bool:
         return self.stopped.is_set() or bool(self.cancelled and self.cancelled())

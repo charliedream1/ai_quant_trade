@@ -18,3 +18,6 @@ html[data-theme="dark"] #ai-floating-panel .ai-panel-header strong,html[data-the
 #ai-floating-button.assistant-avatar:hover{transform:translateY(-2px)}
 @media(prefers-reduced-motion:reduce){#ai-floating-button.assistant-avatar{transition:none!important;transform:none!important}}
 @media(max-width:600px){.notification-toasts{right:10px;top:76px}.notification-center{right:8px;top:76px;bottom:8px}.notification-critical{right:10px;top:70px;max-width:calc(100vw - 20px)}}
+.notification-toolbar { flex-wrap: wrap; gap: 8px; }
+.notification-toolbar input[type="date"] { max-width: 160px; padding: 6px; border: 1px solid var(--line); border-radius: 6px; }
+.notification-entries details summary { cursor: pointer; padding: 10px; font-weight: 600; }

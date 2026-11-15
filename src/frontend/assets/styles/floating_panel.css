@@ -1,0 +1,13 @@
+#ai-floating-panel { box-sizing: border-box; padding-bottom: 8px !important; overscroll-behavior: contain; }
+#ai-floating-panel .ai-panel-header { cursor: move; touch-action: none; }
+#ai-floating-panel .assistant-resize-handle {
+  position: sticky; bottom: 0; float: right; margin: 0 -6px -4px 0;
+  width: 26px; height: 26px; z-index: 15; cursor: nwse-resize; touch-action: none;
+  border: 0; border-radius: 4px; background: var(--surface-raised, white); color: var(--ink, #233);
+}
+#floating-kb-answer { max-height: 45vh; overflow: auto; min-height: 100px; }
+#floating-kb-sources { overflow: auto; width: 100%; }
+#floating-kb-results .citation-full { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 32vh; overflow: auto; }
+#ai-floating-panel .tab-wrapper { flex-wrap: wrap; gap: 6px; }
+#ai-floating-panel .composer-toolbar { flex-wrap: wrap !important; gap: 8px !important; }
+#ai-floating-panel .composer-backend-options, #ai-floating-panel .composer-options { flex-basis: 220px !important; }

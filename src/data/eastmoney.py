@@ -1963,7 +1963,7 @@ class EastmoneyDataSource:
         try:
             parsed = datetime.fromisoformat(text)
         except ValueError:
-            return datetime.now(SHANGHAI_TZ).replace(microsecond=0).isoformat()
+            return ""
         if parsed.tzinfo is None:
             parsed = parsed.replace(tzinfo=SHANGHAI_TZ)
         return parsed.isoformat()

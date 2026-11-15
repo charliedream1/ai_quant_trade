@@ -28,9 +28,10 @@ def table(
     datatype: str | list[str] | None = None,
     value: Any | None = None,
     elem_id: str | None = None,
+    compact: bool = False,
 ) -> gr.Dataframe:
     height_parameter = "height" if supports_parameter(gr.Dataframe, "height") else "max_height"
-    display_height = max(height, 520 if height_parameter == "height" else 640)
+    display_height = height if compact else max(height, 520 if height_parameter == "height" else 640)
     options: dict[str, Any] = {
         "label": label,
         "interactive": False,

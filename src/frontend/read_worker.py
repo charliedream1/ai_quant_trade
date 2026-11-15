@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import os
 import sys
+from time import monotonic
 from typing import Any
 
+from src.core import config
 from src.core.redaction import redact_text
 
 
@@ -32,7 +34,6 @@ def transferable(value: Any) -> Any:
 
 def invoke(request):
     """Resolve a named callback in the selected private runtime."""
-    from src.core import config
     from src.core.exceptions import BusinessError
     from src.core.page_work import policy
     from src.data.manager import REQUEST_MARKET
@@ -96,6 +97,8 @@ def serve(connection):
         filter=lambda record: record["message"].startswith("UI snapshot load |"),
     )
     # Load the domain facade once during warmup, before the first interactive read.
+    from src.core.work_progress import PROGRESS
+    from src.core.workspace_config import workspace_config
     from src.frontend.service import foundation  # noqa: F401
     from src.observability.runtime import shutdown_observability
 
@@ -109,5 +112,19 @@ def serve(connection):
             shutdown_observability()
             return
         snapshots.clear()
-        success, value = invoke(request)
+        last_stage, last_time = "", 0.0
+
+        def emit(stage):
+            nonlocal last_stage, last_time
+            now = monotonic()
+            if stage != last_stage or now - last_time >= workspace_config()["logging"]["progress_interval_seconds"]:
+                connection.send(("progress", stage))
+                last_stage, last_time = stage, now
+
+        token = PROGRESS.set(emit)
+        try:
+            emit("Loading configured service")
+            success, value = invoke(request)
+        finally:
+            PROGRESS.reset(token)
         connection.send((success, value, snapshots))

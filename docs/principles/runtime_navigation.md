@@ -65,3 +65,18 @@ Cancellation cannot roll back committed writes or model usage already consumed.
 A hard worker exit can interrupt an SDK's buffered observation export; complete
 remote token accounting after an interrupted response cannot be guaranteed.
 For configuration and user behavior, see [page navigation](../usage/page_navigation.md).
+
+## Research subviews and observable work
+
+Stock technical/financial subviews share identity but have separate transient
+lifetimes. Navigation invalidates the backend revision and posts a revision-bound
+deactivation message to the old iframe. Pool warmup never waits for its condition
+on the event-loop caller. Callback and worker stage events use distinct English
+INFO records; automatic polling stays DEBUG. A worker reports stages over its
+private pipe rather than copying prompts or source content into progress logs.
+
+News classifications use versioned metadata beside the original records, with
+independent geography and subject plus inspectable inclusion reasons. These rules
+describe relevance, not predicted prices. Notification day windows use original
+occurrence time converted from the configured local timezone; read state remains
+client-specific, and unresolved critical history remains separately visible.

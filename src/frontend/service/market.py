@@ -409,16 +409,18 @@ class MarketServiceMixin:
         source: str,
         refresh: bool = False,
         force_refresh: bool = False,
+        region="all",
+        topic="all",
     ) -> tuple[pd.DataFrame, go.Figure, str]:
-        cache_parts = ("news", category or "", keyword or "", source or "", bool(refresh))
+        cache_parts = ("news", category or "", keyword or "", source or "", bool(refresh), region, topic)
         if not refresh:
             payload, cache_hit, refreshed_at = _daily_cached(
                 cache_parts,
-                lambda: self._build_news(category, keyword, source, refresh=False),
+                lambda: self._build_news(category, keyword, source, refresh=False, region=region, topic=topic),
                 force_refresh=force_refresh,
             )
             return payload[0], payload[1], f"{payload[2]}  ·  {_cache_badge(cache_hit, refreshed_at)}"
-        payload = self._build_news(category, keyword, source, refresh=True)
+        payload = self._build_news(category, keyword, source, refresh=True, region=region, topic=topic)
         return payload[0], payload[1], f"{payload[2]}  ·  最后刷新 `{_display_now()}`  ·  已同步最新"
 
     def _build_news(
@@ -427,6 +429,8 @@ class MarketServiceMixin:
         keyword: str,
         source: str,
         refresh: bool = False,
+        region="all",
+        topic="all",
     ) -> tuple[pd.DataFrame, go.Figure, str]:
         category_value = None if category in (None, "", "全部") else category
         source_value = str(source or "").strip() or None
@@ -438,16 +442,24 @@ class MarketServiceMixin:
             1,
             30,
             refresh=refresh,
+            region=region,
+            topic=topic,
         )
-        cloud = aggregator.keyword_cloud("day", category_value, 30)
+        cloud = aggregator.keyword_cloud(
+            "day", category_value, 30, region=region, topic=topic, keyword=keyword or None, source=source or None
+        )
         return (
-            to_frame(result, NEWS_COLUMNS),
+            to_frame(
+                result, [*NEWS_COLUMNS, "region", "topics", "relevance_reasons", "affected_markets", "time_status"]
+            ),
             keyword_figure(cloud),
             f"共找到 {result.get('total', 0)} 条新闻",
         )
 
-    def refresh_news(self, category: str, keyword: str, source: str) -> tuple[pd.DataFrame, go.Figure, str]:
-        return self.news(category, keyword, source, refresh=True)
+    def refresh_news(
+        self, category: str, keyword: str, source: str, region="all", topic="all"
+    ) -> tuple[pd.DataFrame, go.Figure, str]:
+        return self.news(category, keyword, source, refresh=True, region=region, topic=topic)
 
     def news_detail(self, news_id: Any) -> str:
         row = Repository().get("news_items", require_id(news_id, "新闻 ID"))

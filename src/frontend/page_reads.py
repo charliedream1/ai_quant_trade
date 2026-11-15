@@ -58,10 +58,14 @@ def start(*, warm: bool = False) -> None:
     STOP.clear()
     if not warm:
         return
-    with CAPACITY:
+    if not CAPACITY.acquire(blocking=False):
+        return
+    try:
         if WARMING:
             return
         WARMING = True
+    finally:
+        CAPACITY.release()
 
     def warm_pool():
         with CAPACITY:
@@ -114,14 +118,23 @@ def _execute(key: str, job: ReadJob) -> None:
     slot = None
     index = None
     reusable = False
+    outcome = "failed"
     try:
         deadline = monotonic() + policy()["read_deadline_seconds"]
+        log = get_logger("ui.work")
+        log.info("Page work queued | operation={} method={}", key[:12], job.request[0])
         index, slot = _slot(job, deadline)
         process, connection = slot
+        log.info("Page work started | operation={} method={} worker={}", key[:12], job.request[0], process.pid)
         connection.send(job.request)
         while not STOP.is_set() and not job.stop.is_set():
             if connection.poll(policy()["poll_seconds"]):
                 message = connection.recv()
+                if message[0] == "progress":
+                    log.info(
+                        "Page work progress | operation={} method={} stage={}", key[:12], job.request[0], message[1]
+                    )
+                    continue
                 success, value = message[:2]
                 for snapshot in message[2] if len(message) > 2 else []:
                     get_logger("page.worker").debug("{}", snapshot)
@@ -140,6 +153,7 @@ def _execute(key: str, job: ReadJob) -> None:
                         raise ValueError(value["message"])
                     raise ValueError(value)
                 job.future.set_result(value)
+                outcome = "completed"
                 return
             if not process.is_alive():
                 raise RuntimeError("Page read worker stopped before producing a result")
@@ -153,6 +167,12 @@ def _execute(key: str, job: ReadJob) -> None:
             pid = slot[0].pid
             _terminate(slot)
             release_worker_slots(job.request[3].db_path, pid)
+        get_logger("ui.work").info(
+            "Page work ended | operation={} method={} status={}",
+            key[:12],
+            job.request[0],
+            "cancelled" if job.stop.is_set() or STOP.is_set() else outcome,
+        )
         if index is not None:
             with CAPACITY:
                 if not reusable:

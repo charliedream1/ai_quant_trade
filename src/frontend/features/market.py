@@ -6,6 +6,7 @@ import gradio as gr
 
 from src.core.diagnostics_config import diagnostics_config
 from src.engine.market.model_graph.config import config as model_graph_config
+from src.engine.market.news_policy import news_policy
 from src.engine.market.rule_graph_jobs import RuleGraphJobs
 from src.frontend.service.rule_graph_view import rule_graph_view
 
@@ -56,7 +57,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
 
     with gr.Tab("市场研究"):
         with gr.Tabs(elem_classes=["module-tabs"]):
-            with gr.Tab("行情看盘"):
+            with gr.Tab("行业与概念板块"):
                 with gr.Row():
                     market_board = gr.Dropdown(["industry", "concept"], value="industry", label="板块类型")
                     market_limit = gr.Slider(5, 100, value=20, step=5, label="展示数量")
@@ -131,18 +132,28 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 gr.HTML(workspace_link("打开因子研究与监控", "strategy", "factors"))
 
             with gr.Tab("新闻中心"):
+                gr.Markdown(
+                    "Market and policy relevant news · geography and topic are independent; inclusion is not a price forecast."
+                )
                 with gr.Row():
                     news_category = gr.Dropdown(
                         ["全部", "domestic", "international", "finance", "company"],
                         value="全部",
                         label="新闻分类",
+                        visible=False,
+                    )
+                    news_region = gr.Dropdown(
+                        news_policy()["ui"]["regions"], value="all", label="新闻地区", elem_id="news-region"
+                    )
+                    news_topic = gr.Dropdown(
+                        news_policy()["ui"]["topics"], value="all", label="新闻主题", elem_id="news-topic"
                     )
                     news_keyword = gr.Textbox(label="关键词")
                     news_source = gr.Textbox(label="来源")
                     news_search = gr.Button("查询", variant="primary", elem_classes=["page-refresh-btn"])
                     news_refresh = gr.Button("同步最新")
                 news_status = gr.Markdown(elem_classes=["compact-note"])
-                news_table = _table("新闻列表", 430)
+                news_table = _table("新闻列表", 430, elem_classes=["no-i18n"])
                 with gr.Row():
                     news_detail_id = gr.Number(label="新闻 ID", precision=0)
                     news_detail_btn = gr.Button("查看详情")
@@ -153,74 +164,78 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 )
                 news_search.click(
                     _safe(
-                        lambda category, keyword, source: service.news(category, keyword, source, force_refresh=True)
+                        lambda category, keyword, source, region, topic: service.news(
+                            category, keyword, source, force_refresh=True, region=region, topic=topic
+                        )
                     ),
-                    inputs=[news_category, news_keyword, news_source],
+                    inputs=[news_category, news_keyword, news_source, news_region, news_topic],
                     outputs=[news_table, news_cloud, news_status],
                     queue=False,
                 )
                 news_refresh.click(
                     _safe(service.refresh_news),
-                    inputs=[news_category, news_keyword, news_source],
+                    inputs=[news_category, news_keyword, news_source, news_region, news_topic],
                     outputs=[news_table, news_cloud, news_status],
                 )
                 news_detail_btn.click(_safe(service.news_detail), inputs=news_detail_id, outputs=news_detail)
 
             with gr.Tab("宏观经济"):
                 render_economics(service, "macro")
-            with gr.Tab("Fundamentals & Financial Analysis"):
-                render_economics(service, "fundamentals")
             with gr.Tab("个股分析"):
-                gr.HTML(workspace_link("查看财报三表与基本面分析", "market", "fundamentals"))
                 with gr.Row():
-                    stock_symbol = gr.Textbox(value="600519", label="股票代码/名称")
-                    stock_period = gr.Dropdown(["daily", "weekly", "monthly"], value="daily", label="K 线周期")
-                    stock_count = gr.Slider(20, 240, value=60, step=20, label="K 线数量")
-                    stock_query = gr.Button(
-                        "分析",
-                        variant="primary",
-                        scale=0,
-                        min_width=120,
-                        elem_classes=["page-refresh-btn"],
-                    )
-                    stock_watch_group = gr.Number(label="自选分组 ID", precision=0)
-                    stock_add_watch = gr.Button("加入自选")
-                    stock_to_relation = gr.Button("同步关系图")
-                stock_summary = gr.Markdown(elem_classes=["status-strip"])
-                stock_watch_status = gr.Markdown(elem_classes=["status-strip"])
-                stock_watchlist = _table("自选行情", 260)
-                with gr.Row():
-                    stock_score = _plot(
-                        label="综合评分",
-                        elem_classes=["chart-panel"],
-                    )
-                    stock_finance = _table("Financial / Technical Indicators", 260, elem_classes=["no-i18n"])
-                stock_kline = _plot(
-                    label="K 线",
-                    elem_id="stock-kline-chart",
-                    elem_classes=["chart-panel", "no-i18n"],
-                )
-                with gr.Row():
-                    stock_news = _table("相关资讯", 300)
-                    stock_reports = _table("相关研报", 300)
-                stock_query.click(
-                    _safe(service.stock),
-                    inputs=[stock_symbol, stock_period, stock_count],
-                    outputs=[
-                        stock_summary,
-                        stock_score,
-                        stock_finance,
-                        stock_kline,
-                        stock_news,
-                        stock_reports,
-                    ],
-                    queue=False,
-                )
-                stock_add_watch.click(
-                    _safe(service.add_stock_to_watchlist),
-                    inputs=[stock_symbol, stock_watch_group],
-                    outputs=[stock_watch_status, stock_watchlist],
-                )
+                    stock_symbol = gr.Textbox(value="600519", label="股票代码/名称", elem_id="fundamentals-symbol")
+                with gr.Tabs(elem_id="stock-research-tabs"):
+                    with gr.Tab("Technical analysis", id="technical"):
+                        stock_period = gr.Dropdown(["daily", "weekly", "monthly"], value="daily", label="K 线周期")
+                        stock_count = gr.Slider(20, 240, value=60, step=20, label="K 线数量")
+                        stock_query = gr.Button(
+                            "分析",
+                            variant="primary",
+                            scale=0,
+                            min_width=120,
+                            elem_classes=["page-refresh-btn"],
+                        )
+                        stock_watch_group = gr.Number(label="自选分组 ID", precision=0)
+                        stock_add_watch = gr.Button("加入自选")
+                        stock_to_relation = gr.Button("同步关系图")
+                        stock_summary = gr.Markdown(elem_classes=["status-strip"])
+                        stock_watch_status = gr.Markdown(elem_classes=["status-strip"])
+                        stock_watchlist = _table("自选行情", 260)
+                        with gr.Row():
+                            stock_score = _plot(
+                                label="综合评分",
+                                elem_classes=["chart-panel"],
+                            )
+                            stock_finance = _table("Financial / Technical Indicators", 260, elem_classes=["no-i18n"])
+                        stock_kline = _plot(
+                            label="K 线",
+                            elem_id="stock-kline-chart",
+                            elem_classes=["chart-panel", "no-i18n"],
+                        )
+                        with gr.Row():
+                            stock_news = _table("相关资讯", 300)
+                            stock_reports = _table("相关研报", 300)
+                        stock_query.click(
+                            _safe(service.stock),
+                            inputs=[stock_symbol, stock_period, stock_count],
+                            outputs=[
+                                stock_summary,
+                                stock_score,
+                                stock_finance,
+                                stock_kline,
+                                stock_news,
+                                stock_reports,
+                            ],
+                            queue=False,
+                        )
+                        stock_add_watch.click(
+                            _safe(service.add_stock_to_watchlist),
+                            inputs=[stock_symbol, stock_watch_group],
+                            outputs=[stock_watch_status, stock_watchlist],
+                        )
+
+                    with gr.Tab("Financial analysis", id="financials"):
+                        render_economics(service, "fundamentals", shared_symbol=stock_symbol)
 
             with gr.Tab("关系图谱"):
                 relation_mode = gr.Radio(

@@ -31,7 +31,8 @@
   };
   const signal = (action, value = state) => nativeFetch(prefix + "/workspace/lifetime", {
     method: "POST", headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({owner: value.owner, revision: value.revision, action}), keepalive: true,
+    body: JSON.stringify({owner: value.owner, revision: value.revision, action,
+      module: location.pathname.match(/\/app\/([^/]+)/)?.[1] || "preview", view: value.view || "unknown"}), keepalive: true,
   }).catch(() => {});
   const abort = () => {
     queued.forEach((item) => nativeFetch(item.url, {
@@ -161,7 +162,7 @@
       if (event.data?.type === "aiquant:preview-resume" && !active) activate();
       return;
     }
-    if (event.data?.type === "aiquant:deactivate") deactivate();
+    if (event.data?.type === "aiquant:deactivate" && (!event.data.revision || event.data.revision === state.revision)) deactivate();
     if (event.data?.type === "aiquant:select-view" && event.data.page_scope) activate(event.data.page_scope);
   });
   // A frame can finish loading after its parent has already selected another module.

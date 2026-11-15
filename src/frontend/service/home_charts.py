@@ -76,7 +76,9 @@ def allocation(snapshot: HomeAccount) -> go.Figure:
         hovertemplate="%{label}<br>%{value:,.2f} " + snapshot.currency + " · %{percent}<extra></extra>",
     )
     result.update_layout(margin={"l": 18, "r": 18, "t": 45, "b": 38})
-    result.add_annotation(text=f"{snapshot.total_asset / 10000:,.2f}<br>10k {snapshot.currency}", x=0.5, y=0.5, showarrow=False)
+    result.add_annotation(
+        text=f"{snapshot.total_asset / 10000:,.2f}<br>10k {snapshot.currency}", x=0.5, y=0.5, showarrow=False
+    )
     return result
 
 
@@ -104,12 +106,12 @@ def contribution(snapshot: HomeAccount) -> go.Figure:
 def sector_heatmap(sectors: list[dict[str, Any]]) -> go.Figure:
     rows = [row for row in sectors if number(row.get("change_pct")) is not None]
     if not rows:
-        return empty("板块样本热力图", label("missing_market"))
+        return empty("板块涨跌概览", label("missing_market"))
     weighted = all((number(row.get("amount")) or 0) > 0 for row in rows)
     values = [float(row["amount"]) if weighted else 1.0 for row in rows]
     changes = [float(row["change_pct"]) for row in rows]
     bound = max(abs(value) for value in changes) or 1.0
-    result = figure(f"板块样本 · {len(rows)} 个 · {'面积=成交额' if weighted else '等面积（规模缺失）'}", market=True)
+    result = figure(f"已展示板块 · {len(rows)} 个 · {'面积=成交额' if weighted else '等面积（规模缺失）'}", market=True)
     result.add_treemap(
         labels=[str(row.get("name") or row.get("code")) for row in rows],
         parents=[""] * len(rows),

@@ -13,6 +13,8 @@
   const open = (href) => {
     const url = new URL(href, location.origin);
     if (!allowed(url) || !discard()) return;
+    document.getElementById("ai-floating-panel")?.classList.remove("ai-panel-open");
+    document.getElementById("ai-floating-button")?.classList.remove("ai-button-hidden");
     panel?.remove(); dirty = false; notify();
     openedView = window.aiquantPageWork?.state.view;
     panel = document.createElement("aside");

@@ -6,6 +6,8 @@ from typing import Any
 
 import gradio as gr
 
+from src.core.workspace_config import workspace_config
+
 from ..common.callbacks import safe as _safe
 from ..common.components import supports_parameter as _supports_parameter
 from ..common.components import table as _table
@@ -16,6 +18,8 @@ from ..service.foundation import CLI_TYPE_CHOICES
 
 
 def render_floating_assistant(service: DomainHandler) -> None:
+    settings = workspace_config()["assistant"]
+    copy = settings["messages"]
     gr.Button("AI", elem_id="ai-floating-button")
     with gr.Column(elem_id="ai-floating-panel"):
         gr.HTML(
@@ -37,15 +41,13 @@ def render_floating_assistant(service: DomainHandler) -> None:
                     chatbot_options["buttons"] = ["copy"]
                 ai_chat_history = gr.Chatbot(**chatbot_options)
                 ai_chat_status = gr.Markdown("使用系统默认模型", elem_id="ai-chat-status")
-                composer = render_composer(
-                    "ai-chat", service.ai_console_model_choices(), service.ai_console_model_choices
-                )
+                composer = render_composer("ai-chat", service.floating_models(), service.floating_models)
                 ai_chat_input, ai_chat_send = composer.text, composer.send
                 ai_chat_session = gr.State(0)
                 ai_chat_clear = gr.Button("新对话")
 
                 def _send(session, message, history, backend, attachments, model, effort, access):
-                    for result in service.ai_console_send_stream(
+                    for result in service.floating_send(
                         session, message, history, backend, attachments, model, effort, access
                     ):
                         yield result[0], result[1], result[2], result[3], result[4]
@@ -71,15 +73,33 @@ def render_floating_assistant(service: DomainHandler) -> None:
                     queue=False,
                 )
             with gr.Tab("知识问答"):
-                ai_kb_question = gr.Textbox(label="问题", lines=3, placeholder="输入知识库问题")
-                with gr.Row():
-                    ai_kb_category = gr.Number(label="分类 ID", precision=0)
-                    ai_kb_top_k = gr.Slider(1, 10, value=5, step=1, label="引用数量")
-                ai_kb_ask = gr.Button("提问", variant="primary")
-                ai_kb_answer = gr.Markdown(label="回答")
-                ai_kb_sources = _table("引用来源", 220)
+                ai_kb_question = gr.Textbox(
+                    label="问题",
+                    lines=settings["question_lines"],
+                    placeholder="输入知识库问题",
+                    elem_id="floating-kb-question",
+                )
+                with gr.Accordion(copy["settings"], open=False):
+                    with gr.Row():
+                        ai_kb_category = gr.Number(label="分类 ID", precision=0)
+                        ai_kb_top_k = gr.Slider(1, 10, value=5, step=1, label="引用数量")
+                ai_kb_ask = gr.Button("提问", variant="primary", elem_id="floating-kb-ask")
+                with gr.Tabs(elem_id="floating-kb-results"):
+                    with gr.Tab("回答"):
+                        ai_kb_answer = gr.Markdown(elem_id="floating-kb-answer")
+                    with gr.Tab(copy["references"]):
+                        gr.Markdown(copy["citation"])
+                        ai_kb_sources = _table(
+                            "引用来源", settings["references_height"], elem_id="floating-kb-sources", compact=True
+                        )
+                        full_citation = gr.HTML(elem_id="rag-file-reader")
+
+                def citation(rows, event: gr.SelectData):
+                    return service.floating_citation(rows, event.index[0])
+
+                ai_kb_sources.select(_safe(citation), inputs=ai_kb_sources, outputs=full_citation, queue=False)
                 ai_kb_ask.click(
-                    _safe(service.kb_qa),
+                    _safe(service.floating_qa),
                     inputs=[ai_kb_question, ai_kb_category, ai_kb_top_k],
                     outputs=[ai_kb_answer, ai_kb_sources],
                 )

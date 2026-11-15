@@ -1,0 +1,9 @@
+# File format: YAML; encoding: UTF-8
+news:
+  - {title: 中国央行公布货币政策与利率安排, category: domestic, region: domestic, topic: policy, relevant: true}
+  - {title: 美国上市公司财报净利润增长, category: international, region: overseas, topic: finance, relevant: true}
+  - {title: 美国对中国半导体出口管制政策, category: international, region: cross_border, topic: policy, relevant: true}
+  - {title: 总统出席私人庆典, category: international, region: unknown, topic: policy, relevant: false}
+  - {title: 明星婚礼娱乐综艺热搜, category: finance, region: unknown, topic: finance, relevant: false}
+  - {title: 中东冲突影响原油航运供应链, category: international, region: unknown, topic: policy, relevant: true}
+  - {title: 'No source location: earnings improve', category: finance, region: unknown, topic: finance, relevant: true}

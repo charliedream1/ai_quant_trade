@@ -12,7 +12,7 @@ from ..common.callbacks import safe
 from ..common.components import plot, table
 
 
-def render_economics(service, kind):
+def render_economics(service, kind, shared_symbol=None):
     cfg = economics_config()
     ui = cfg["ui"]
     gr.Markdown(ui["intro"])
@@ -25,11 +25,15 @@ def render_economics(service, kind):
             label=ui["series"],
             visible=kind == "macro",
         )
-        symbol = gr.Textbox(
-            value=cfg["defaults"]["company_symbols"].get(current_market(), ""),
-            label=ui["symbol"],
-            visible=kind != "macro",
-            elem_id=kind + "-symbol",
+        symbol = (
+            shared_symbol
+            if shared_symbol is not None
+            else gr.Textbox(
+                value=cfg["defaults"]["company_symbols"].get(current_market(), ""),
+                label=ui["symbol"],
+                visible=kind != "macro",
+                elem_id=kind + "-symbol",
+            )
         )
         period = gr.Textbox(label=ui["period"], visible=kind != "macro")
         peers = gr.Textbox(label=ui["peers"], visible=kind != "macro")

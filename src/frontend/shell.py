@@ -433,15 +433,15 @@ _SHELL_JS_TEMPLATE = r"""
     const lifetimeUrl = "__LIFETIME_URL__";
     const lifetime = (action, scope) => fetch(lifetimeUrl, {
       method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({action, owner: scope.owner, revision: scope.revision}), keepalive: true,
+      body: JSON.stringify({action, owner: scope.owner, revision: scope.revision, module: scope.module, view: scope.view}), keepalive: true,
     }).catch(() => {});
     const advancePage = (module, view, force = false) => {
       const old = window.aiquantWorkspaceLifetime;
       if (!force && old?.module === module && old?.view === view) return old;
       if (old) {
         lifetime("deactivate", old);
-        // Abort transports synchronously; postMessage alone can race with a new callback.
-        frames.get(old.module)?.contentWindow.aiquantPageWork?.deactivate();
+        // Backend revision invalidation is independent of the old frame's rendering work.
+        frames.get(old.module)?.contentWindow.postMessage({type: "aiquant:deactivate", revision: old.revision}, location.origin);
       }
       const scope = {owner: pageOwner, revision: ++pageRevision, module, view};
       window.aiquantWorkspaceLifetime = scope;
@@ -597,6 +597,11 @@ _SHELL_JS_TEMPLATE = r"""
       viewSelections.set(module, view);
       select(module);
       return window.aiquantWorkspaceLifetime;
+    };
+    window.aiquantSelectSubview = (subview) => {
+      const scope = advancePage(activeKey, `${activeView}/${subview}`, true);
+      frames.get(activeKey)?.contentWindow.aiquantPageWork?.activate(scope);
+      return scope;
     };
     window.addEventListener("pageshow", (event) => {
       if (event.persisted && activeKey) {

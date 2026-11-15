@@ -1,5 +1,7 @@
 # 文件格式：YAML，编码：UTF-8；全局提醒与助手形象，不修改交易规则。
 enabled: true
+timezone: Asia/Shanghai
+group_threshold: 3
 poll_seconds: 15
 backoff_seconds: 60
 sync_seconds: 10
@@ -63,4 +65,9 @@ ui:
   task_failed: 任务执行失败
   task_partial: 任务有缺口
   task_message: 请打开来源页面核对结果；此提醒不触发交易或重试。
+  date: 提醒日期
+  today: 今天
+  history: 查看历史
+  day_read: 当前日期标为已读
+  earlier_critical: 之前日期仍有严重事项待处理
   source_error: 部分提醒来源暂不可用；其他来源仍可查看。

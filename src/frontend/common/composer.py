@@ -4,6 +4,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 import gradio as gr
+
 from src.agent.composer_config import composer_config, normalize_backend
 from src.agent.qoder_cli import model_choices as qoder_models
 
@@ -68,7 +69,7 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
                 with gr.Column(elem_classes=["composer-model-slot"], min_width=0, scale=1):
                     model = gr.Dropdown(
                         models,
-                        value="",
+                        value=(models[0][1] if models else None) if prefix == "ai-chat" else "",
                         label="模型",
                         min_width=0,
                         scale=1,
