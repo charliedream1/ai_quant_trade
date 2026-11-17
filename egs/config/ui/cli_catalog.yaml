@@ -1,0 +1,43 @@
+# File format: YAML; encoding: UTF-8
+timeout_seconds: 12
+cache_seconds: 300
+max_bytes: 2097152
+max_models: 200
+max_identifier_chars: 200
+max_name_chars: 200
+codex_arguments: [app-server, --listen, 'stdio://']
+qoder_arguments: [--setting-sources, user, --list-models]
+manual_backends: [codex, qoder, codebuddy]
+catalog_env:
+  codex: ALL_IN_ONE_CODEX_MODEL_CATALOG
+  qoder: ALL_IN_ONE_QODER_MODEL_CATALOG
+  trae: ALL_IN_ONE_TRAE_MODEL_CATALOG
+  codebuddy: ALL_IN_ONE_CODEBUDDY_MODEL_CATALOG
+  workbuddy: ALL_IN_ONE_WORKBUDDY_PRODUCT
+sources:
+  codex: https://chatgpt.com/codex/pricing/
+  qoder: https://docs.qoder.com/cli/model
+  codebuddy: https://www.codebuddy.ai/docs/cli/slash-commands
+  trae: https://docs.trae.ai/
+  workbuddy: https://www.codebuddy.ai/
+  generic_agent: Model API configuration
+labels:
+  default: Backend default
+  unknown: Price unknown
+  free: Free (reported by provider)
+  credits: '{factor}× credits'
+  subscription: Subscription / quota; account terms apply
+  tokens: Token billed
+messages:
+  loading: Loading selected backend models…
+  ready: Available models loaded. Rates are provider metadata, not a final bill.
+  missing: CLI not installed or configured. No model discovery was performed.
+  unsupported: This CLI version has no verified noninteractive model-list command. Configure its model catalogue or use its native model selector.
+  failed: Model discovery failed or timed out. Check CLI login and connectivity, then refresh.
+  empty: No available models were reported by the selected CLI.
+  workbuddy: WorkBuddy chat is unavailable here. Its catalogue is informational; use the relationship-graph workflow for supported WorkBuddy research.
+  unknown: The provider did not report a verified rate for this selection. Unknown is not zero cost.
+  initial: Model API · Price unknown. Configure/select a model; API billing depends on its provider.
+  not_refreshed: Not refreshed
+  configured: 'Configured CLI catalogue · '
+  detail: 'Billing: {billing} · Source: {source} · Refreshed: {updated}'

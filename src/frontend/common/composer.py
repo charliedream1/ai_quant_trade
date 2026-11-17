@@ -5,8 +5,11 @@ from dataclasses import dataclass
 
 import gradio as gr
 
-from src.agent.composer_config import composer_config, normalize_backend
-from src.agent.qoder_cli import model_choices as qoder_models
+from src.agent.cli_catalog import catalog_config
+from src.agent.composer_config import composer_config
+
+from .callbacks import safe
+from .composer_catalog import CatalogSelection
 
 
 @dataclass
@@ -68,12 +71,16 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
             with gr.Row(elem_classes=["composer-options"]):
                 with gr.Column(elem_classes=["composer-model-slot"], min_width=0, scale=1):
                     model = gr.Dropdown(
-                        models,
+                        [
+                            (name + " · " + catalog_config()["labels"]["unknown"], identifier)
+                            for name, identifier in models
+                        ],
                         value=(models[0][1] if models else None) if prefix == "ai-chat" else "",
                         label="模型",
                         min_width=0,
                         scale=1,
                         elem_id=f"{prefix}-model",
+                        elem_classes=["no-i18n"],
                         interactive=True,
                     )
                     refresh = gr.Button(
@@ -100,35 +107,33 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
                 elem_id=f"{prefix}-send",
                 elem_classes=["composer-send"],
             )
-        note = gr.Markdown(visible=False, elem_classes=["composer-backend-note"])
-
-    def select_backend(selected, refresh_models=False):
-        selected = normalize_backend(selected)
-        profile = cfg["backends"][selected]
-        choices, hint = (
-            model_loader() if refresh_models and selected == "generic_agent" and model_loader else models,
-            "",
+        note = gr.Markdown(
+            catalog_config()["messages"]["initial"],
+            elem_id=f"{prefix}-billing",
+            elem_classes=["composer-backend-note", "no-i18n"],
         )
-        if selected == "qoder":
-            choices, hint = qoder_models(refresh=refresh_models)
-        elif selected != "generic_agent":
-            choices = [("默认模型", "")]
-        return (
-            gr.update(choices=choices, value="", allow_custom_value=selected in {"codex", "qoder", "codebuddy"}),
-            gr.update(value="", interactive=len(profile["efforts"]) > 1),
-            gr.update(value="read-only", interactive=len(profile["permissions"]) > 1),
-            gr.update(value=hint, visible=bool(hint)),
-        )
+        state = gr.State({"backend": "generic_agent", "revision": 0, "catalog": {}})
 
-    backend.change(
-        lambda: (gr.update(value=""), gr.update(value=""), gr.update(value="read-only")),
-        outputs=[model, reasoning, permission],
+    selection = CatalogSelection(models, model_loader)
+    backend.input(
+        safe(selection.begin),
+        inputs=[backend, state],
+        outputs=[state, model, reasoning, permission, note, send],
         queue=False,
-    ).then(select_backend, inputs=backend, outputs=[model, reasoning, permission, note], queue=False)
-    refresh.click(
-        lambda selected: select_backend(selected, True),
-        inputs=backend,
-        outputs=[model, reasoning, permission, note],
+        trigger_mode="multiple",
+    ).then(
+        safe(selection.load),
+        inputs=state,
+        outputs=[model, reasoning, permission, note, send],
         queue=False,
+        trigger_mode="multiple",
     )
+    refresh.click(
+        safe(selection.refresh),
+        inputs=state,
+        outputs=[model, reasoning, permission, note, send],
+        queue=False,
+        trigger_mode="multiple",
+    )
+    model.input(safe(selection.select), inputs=[model, backend, state], outputs=[note, reasoning], queue=False)
     return Composer(text, attachments, backend, permission, model, reasoning, send)

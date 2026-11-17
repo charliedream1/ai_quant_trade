@@ -1,5 +1,8 @@
 # Agent后端与原生研究Skills
 
+Workbench and floating-assistant model discovery, billing labels and backend
+limitations are described in [CLI models and billing](cli_model_catalog.md).
+
 本页说明如何让平台Agent使用API/CLI，以及如何在CLI里直接执行研究。CLI安装、认证见[安装指南](cli_installation.md)，各研究的证据和指标见[Alpha研究](alpha_mining.md)、[Agent策略](agent_strategies.md)和[ETF复核](etf_research.md)。
 
 ## 两种使用方向

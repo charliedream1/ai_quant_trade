@@ -7,8 +7,8 @@
       send?.setAttribute('aria-label', '发送');
       send?.setAttribute('title', 'Enter 发送，Ctrl+Enter 换行');
       const refresh = document.getElementById(`${prefix}-refresh-models`);
-      refresh?.setAttribute('aria-label', '刷新模型');
-      refresh?.setAttribute('title', '按需刷新所选后端的模型；Qoder需要先登录');
+      refresh?.setAttribute('aria-label', 'Refresh models');
+      refresh?.setAttribute('title', 'Refresh the selected backend catalogue and reported billing metadata');
       document.getElementById(`${prefix}-permission`)?.setAttribute('title', '权限实际传给后端；模型API仅支持只读');
     }
   };
