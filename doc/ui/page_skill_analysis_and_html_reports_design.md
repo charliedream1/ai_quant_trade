@@ -227,3 +227,19 @@ claim. The available native Codex metadata protocol was previously verified;
 an independently verified free vendor generation route was not configured for
 this run. No paid generation or silent substitution was performed. Physical Linux
 execution and unavailable provider profiles remain unverified.
+
+## Explicit interruption completion
+
+The stop button acknowledges cancellation immediately and retains a stopping
+status until the owned work has exited. Local page runs receive a direct event
+as well as the persisted cross-process cancellation request. Native CLI cleanup
+terminates the owned process tree, including silent children holding stdout or
+stderr pipes; Unix runners create their own session. Timeout and generator-close
+cleanup use the same termination boundary. An already cancelled request does not
+start a new CLI. Final cancelled runs keep observed events, expose no success
+report and release their task lease/page slot. Repeated cancellation is safe.
+
+Acceptance must use a real silent parent/child process and verify lock release,
+terminal cancellation, lease release and immediate restart, in addition to
+browser clicks while a declared generation request is blocked. This verifies
+local resource cleanup, not reversal of usage already incurred at a provider.

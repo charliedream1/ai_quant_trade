@@ -6,6 +6,7 @@ ui:
   task: Analysis task
   run: Run Skill analysis
   cancel: Cancel analysis
+  stopping: Stopping analysis; waiting for owned CLI processes and resources to exit.
   history: Saved page reports
   refresh: Refresh report history
   open: Open saved HTML

@@ -6,7 +6,7 @@ import gradio as gr
 
 from src.core.config import get_settings
 from src.core.page_analysis_snapshot import analysis_config
-from src.core.task_control import cancel_lease
+from src.engine.insights.page_analysis import cancel as cancel_analysis
 from src.engine.insights.page_analysis import start
 from src.engine.insights.page_generation import capability
 from src.engine.insights.service import InsightReportService
@@ -115,7 +115,10 @@ def render_page_analysis(blocks, module):
             return tuple(gr.skip() for _ in range(7))
         service = InsightReportService()
         row = service.detail(key)
-        result = list(_view(service, row, service.store.events(key)))
+        recorded = service.store.events(key)
+        result = list(_view(service, row, recorded))
+        if row["status"] == "running" and any(item["kind"] == "cancellation" for item in recorded):
+            result[0] = ui["stopping"] + " · " + key
         result[3] = (
             f'<a href="{escape(get_settings().api_prefix)}/insights/runs/{escape(key)}/files/report.html" download="report.html">{escape(ui["download"])}</a>'
             if result[3]
@@ -130,9 +133,10 @@ def render_page_analysis(blocks, module):
 
     def cancel_run(tracker):
         if tracker.get("run"):
-            cancel_lease("insight", tracker["run"])
+            return cancel_analysis(tracker["run"])
+        return ui["waiting"]
 
-    cancel.click(safe(cancel_run), inputs=identifier, outputs=None, queue=False)
+    cancel.click(safe(cancel_run), inputs=identifier, outputs=status, queue=False)
     refresh.click(
         safe(
             lambda: gr.update(

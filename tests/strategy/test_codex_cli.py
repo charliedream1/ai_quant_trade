@@ -34,3 +34,9 @@ def test_silent_cli_child_times_out_and_is_reaped(monkeypatch, tmp_path):
     events = list(runner.stream("hello"))
     assert events[-1].kind == "error" and events[-1].status == "timeout"
     assert monotonic() - started < 8
+
+
+def test_cancelled_before_start_does_not_spawn(monkeypatch, tmp_path):
+    runner = CodexCliRunner(project_root=tmp_path)
+    monkeypatch.setattr(runner, "command", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("spawned")))
+    assert list(runner.stream("unused", cancelled=lambda: True))[-1].status == "cancelled"

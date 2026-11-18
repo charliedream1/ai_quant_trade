@@ -66,9 +66,15 @@ def execute(run: dict[str, Any], store: InsightStore, config: dict[str, Any], ca
         run.update(status="partial", title=report["title"], gaps=evidence["gaps"] + report["missing"])
         emit("artifact", config["messages"]["saved"], {"file": "report.html"})
     except Exception as exc:
-        run.update(status="failed", error=str(exc))
-        store.append(run["run_id"], "error", str(exc))
-        logger.warning("insight report failed | run={} error={}", run["run_id"], exc)
+        stopped = bool(cancelled and cancelled())
+        run.update(status="cancelled" if stopped else "failed", error="" if stopped else str(exc))
+        store.append(
+            run["run_id"],
+            "cancellation" if stopped else "error",
+            "Analysis cancelled; owned work stopped" if stopped else str(exc),
+        )
+        if not stopped:
+            logger.warning("insight report failed | run={} error={}", run["run_id"], exc)
     finally:
         run.update(finished_at=utc_now_iso(), duration_ms=round((monotonic() - started) * 1000))
         store.save(run)

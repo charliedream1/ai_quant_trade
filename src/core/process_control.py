@@ -28,7 +28,7 @@ def _linux_descendants(root: int) -> list[int]:
     return result
 
 
-def stop_process_tree(process: subprocess.Popen[bytes]) -> None:
+def stop_process_tree(process: subprocess.Popen[bytes] | subprocess.Popen[str]) -> None:
     if sys.platform == "win32":
         taskkill = shutil.which("taskkill")
         if taskkill:

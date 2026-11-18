@@ -132,6 +132,8 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
             else:
                 page.locator('[data-workspace-view-module="market"][data-workspace-view="news"]').click()
             assert stopped.wait(8)
+            if action == "cancel":
+                expect(frame.locator("#page-skill-status")).to_contain_text("cancelled", timeout=10000)
             if action == "navigate":
                 expect(frame.locator("#page-skill-task input")).not_to_be_visible()
                 page.locator('[data-workspace-view-module="market"][data-workspace-view="quotes"]').click()

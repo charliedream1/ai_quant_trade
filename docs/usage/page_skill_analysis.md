@@ -18,6 +18,15 @@ page or the panel does not submit a model request.
 5. Use report history to reopen the saved result or download its identical HTML.
    Opening/downloading a report does not rerun generation.
 
+**Stop midway:** click **Cancel analysis** in the analysis panel. The status
+changes to **Stopping analysis** while the owned CLI process and its children
+exit, then becomes `cancelled`. Already observed events remain in history; an
+interrupted result is not shown as a completed report. After cleanup, use
+**Run Skill analysis** to start again. Stopping one run does not stop unrelated
+research or another page's independent task. Leaving its page applies the same
+owned-work cancellation. Usage already consumed by a provider is not refunded
+or undone by local cancellation.
+
 If inputs changed after data was loaded, refresh the corresponding rule data.
 Snapshots are isolated by database, browser owner, navigation revision and market.
 Another window's observations are not available to this panel. Returning after a

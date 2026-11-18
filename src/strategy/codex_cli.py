@@ -16,6 +16,7 @@ from typing import Any, cast
 
 from src.core.config import PROJECT_ROOT
 from src.core.logger import get_logger
+from src.core.process_control import stop_process_tree
 from src.core.process_env import process_environment
 
 LOG = get_logger("strategy.codex_cli")
@@ -110,6 +111,9 @@ class CodexCliRunner:
         stdin_prompt: bool = False,
         cancelled: Callable[[], bool] | None = None,
     ) -> Iterator[CodexStreamEvent]:
+        if cancelled and cancelled():
+            yield CodexStreamEvent("process", "cancelled", f"{self.display_name} cancelled before startup")
+            return
         command = self.command(
             "-" if stdin_prompt else prompt,
             model=model,
@@ -127,6 +131,8 @@ class CodexCliRunner:
             encoding="utf-8",
             errors="replace",
             env=self.environment(),
+            start_new_session=os.name != "nt",
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
         LOG.info(
             "{} started | pid={} model={} images={}",
@@ -136,12 +142,20 @@ class CodexCliRunner:
             len(image_paths),
         )
         timed_out = threading.Event()
+        was_cancelled = threading.Event()
+        termination_lock = threading.Lock()
+
+        def terminate() -> None:
+            with termination_lock:
+                if process.poll() is None:
+                    stop_process_tree(process)
+
         stderr_lines: deque[str] = deque(maxlen=STDERR_TAIL_LINES)
 
         def stop_timeout() -> None:
             if process.poll() is None:
                 timed_out.set()
-                process.kill()
+                terminate()
 
         def drain_stderr() -> None:
             if process.stderr is not None:
@@ -167,8 +181,8 @@ class CodexCliRunner:
         def watch_cancel() -> None:
             while not watcher_stop.wait(CANCELLATION_POLL_SECONDS):
                 if cancelled and cancelled():
-                    if process.poll() is None:
-                        process.kill()
+                    was_cancelled.set()
+                    terminate()
                     return
 
         cancel_thread = threading.Thread(target=watch_cancel, daemon=True)
@@ -182,7 +196,7 @@ class CodexCliRunner:
                 raise RuntimeError("Codex CLI stdout 管道不可用")
             for line in process.stdout:
                 if time.monotonic() - started > self.timeout_seconds:
-                    process.kill()
+                    terminate()
                     yield CodexStreamEvent("error", "timeout", f"{self.display_name} 执行超时")
                     return
                 parsed = _parse_json_line(line)
@@ -191,7 +205,9 @@ class CodexCliRunner:
                 yield from self.parse_events(parsed)
             return_code = process.wait(timeout=5)
             stderr_thread.join(timeout=1)
-            if timed_out.is_set():
+            if was_cancelled.is_set() or cancelled and cancelled():
+                yield CodexStreamEvent("process", "cancelled", f"{self.display_name} cancelled")
+            elif timed_out.is_set():
                 yield CodexStreamEvent("error", "timeout", f"{self.display_name} 执行超时")
             elif return_code != 0:
                 stderr = "".join(stderr_lines)
@@ -200,7 +216,7 @@ class CodexCliRunner:
             else:
                 yield CodexStreamEvent("process", "completed", f"{self.display_name} 已完成")
         except subprocess.TimeoutExpired:
-            process.kill()
+            terminate()
             yield CodexStreamEvent("error", "timeout", f"{self.display_name} 进程未在超时前结束")
         finally:
             watcher_stop.set()
@@ -208,7 +224,7 @@ class CodexCliRunner:
                 cancel_thread.join(timeout=1)
             timeout.cancel()
             if process.poll() is None:
-                process.kill()
+                terminate()
             process.wait(timeout=5)
             stderr_thread.join(timeout=1)
             if stdin_prompt:
