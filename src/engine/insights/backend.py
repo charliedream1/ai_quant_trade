@@ -16,6 +16,10 @@ from src.core.config import get_settings
 
 def validate_backend(payload: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
     backend = payload["backend"]
+    if payload.get("kind") == "page_analysis" and backend != "api":
+        from .page_generation import capability
+
+        return capability(payload["page_task"], payload)
     if backend == "api":
         client = LLMClient()
         try:
@@ -132,6 +136,11 @@ def generate_text(
     config: dict[str, Any],
     emit: Callable[..., None],
 ) -> str:
+    if payload.get("kind") == "page_analysis" and payload["backend"] == "codex":
+        from .page_generation import commentary, current_commentary
+
+        if current_commentary(payload["page_task"], payload["backend"]):
+            return commentary(prompt, payload, config, emit)
     fragments = []
     size = 0
     if payload["backend"] == "api":

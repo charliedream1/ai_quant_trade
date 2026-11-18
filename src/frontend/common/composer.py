@@ -23,10 +23,18 @@ class Composer:
     send: gr.Button
 
 
-def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Callable | None = None) -> Composer:
+def render_composer(
+    prefix: str,
+    models: list[tuple[str, str]],
+    model_loader: Callable | None = None,
+    *,
+    default_backend="generic_agent",
+    task_controls=False,
+) -> Composer:
     cfg = composer_config()
     with gr.Column(elem_id=f"{prefix}-composer", elem_classes=["flat-ai-composer"]):
         text = gr.Textbox(
+            visible=not task_controls,
             label="输入任务",
             placeholder=cfg["ui"]["placeholder"],
             lines=2,
@@ -36,6 +44,7 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
         )
         # File preview remains a full-width strip instead of squeezed inside the icon.
         attachments = gr.File(
+            visible=not task_controls,
             label="添加附件或拖入文件/图片",
             file_count="multiple",
             type="filepath",
@@ -43,7 +52,7 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
             elem_id=f"{prefix}-attachments",
             elem_classes=["composer-upload"],
         )
-        with gr.Row(elem_classes=["composer-attachment-row"]):
+        with gr.Row(elem_classes=["composer-attachment-row"], visible=not task_controls):
             gr.HTML(
                 "<button type='button' class='composer-attach' aria-label='添加附件' title='添加附件；也可拖入文件或图片'>＋</button>",
                 elem_classes=["composer-attach-slot"],
@@ -51,8 +60,12 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
         with gr.Row(elem_id=f"{prefix}-composer-footer", elem_classes=["composer-toolbar"]):
             with gr.Row(elem_classes=["composer-backend-options"]):
                 backend = gr.Dropdown(
-                    [(profile["label"], key) for key, profile in cfg["backends"].items()],
-                    value="generic_agent",
+                    [
+                        (profile["label"], key)
+                        for key, profile in cfg["backends"].items()
+                        if not task_controls or key in {"codex", "qoder", "trae", "codebuddy"}
+                    ],
+                    value=default_backend,
                     label="后台",
                     min_width=95,
                     scale=1,
@@ -61,6 +74,7 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
                 )
                 permission = gr.Dropdown(
                     [(label, key) for key, label in cfg["permissions"].items()],
+                    visible=not task_controls,
                     value="read-only",
                     label="访问权限",
                     min_width=75,
@@ -74,7 +88,8 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
                         [
                             (name + " · " + catalog_config()["labels"]["unknown"], identifier)
                             for name, identifier in models
-                        ],
+                        ]
+                        or [(catalog_config()["labels"]["default"], "")],
                         value=(models[0][1] if models else None) if prefix == "ai-chat" else "",
                         label="模型",
                         min_width=0,
@@ -101,6 +116,7 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
                 )
             send = gr.Button(
                 "发送",
+                visible=not task_controls,
                 variant="primary",
                 min_width=38,
                 scale=0,
@@ -108,11 +124,13 @@ def render_composer(prefix: str, models: list[tuple[str, str]], model_loader: Ca
                 elem_classes=["composer-send"],
             )
         note = gr.Markdown(
-            catalog_config()["messages"]["initial"],
+            catalog_config()["messages"]["initial"]
+            if default_backend == "generic_agent"
+            else cfg["backends"][default_backend]["label"] + " · " + catalog_config()["labels"]["unknown"],
             elem_id=f"{prefix}-billing",
             elem_classes=["composer-backend-note", "no-i18n"],
         )
-        state = gr.State({"backend": "generic_agent", "revision": 0, "catalog": {}})
+        state = gr.State({"backend": default_backend, "revision": 0, "catalog": {}})
 
     selection = CatalogSelection(models, model_loader)
     backend.input(

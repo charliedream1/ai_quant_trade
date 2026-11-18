@@ -60,5 +60,26 @@ class CallbackServices:
                 return original(*args, **kwargs)
 
             bound = transient
+        from src.core.page_analysis_snapshot import analysis_config, capture
+
+        if name not in policy()["read_methods"] and any(
+            name in item["reads"] for item in analysis_config()["presets"].values()
+        ):
+            observed = bound
+
+            @wraps(observed)
+            def recorded(*args, **kwargs):
+                value = observed(*args, **kwargs)
+                try:
+                    capture(name, observed, args, kwargs, value)
+                except (ValueError, TypeError, AttributeError):
+                    from src.core.logger import get_logger
+
+                    get_logger("page.analysis").warning(
+                        "Rule result retained; analysis snapshot unavailable | method={}", name
+                    )
+                return value
+
+            bound = recorded
         setattr(self, name, bound)
         return bound

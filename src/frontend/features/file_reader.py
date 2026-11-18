@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import gradio as gr
+
 from src.core.config import PROJECT_ROOT
 from src.core.exceptions import BusinessError, ErrorCode
 from src.documents.access import bounded_read
@@ -19,6 +20,11 @@ def project_reader(relative: str) -> str:
 
 
 def knowledge_reader(identifier) -> str:
+    from src.core.page_work import CURRENT_PAGE
+    from src.frontend.service_dispatch import CallbackServices
+
+    if CURRENT_PAGE.get() is not None:
+        CallbackServices().kb_document_detail(int(identifier))
     return launcher(FilePreviewService().knowledge(int(identifier)))
 
 

@@ -23,6 +23,7 @@ def render_economics(service, kind, shared_symbol=None):
             value=list(cfg["macro"]),
             multiselect=True,
             label=ui["series"],
+            elem_id=kind + "-series",
             visible=kind == "macro",
         )
         symbol = (
@@ -35,8 +36,8 @@ def render_economics(service, kind, shared_symbol=None):
                 elem_id=kind + "-symbol",
             )
         )
-        period = gr.Textbox(label=ui["period"], visible=kind != "macro")
-        peers = gr.Textbox(label=ui["peers"], visible=kind != "macro")
+        period = gr.Textbox(label=ui["period"], visible=kind != "macro", elem_id=kind + "-period")
+        peers = gr.Textbox(label=ui["peers"], visible=kind != "macro", elem_id=kind + "-peers")
     with gr.Row():
         refresh = gr.Checkbox(label=ui["refresh"], value=False)
         load = gr.Button(ui["load"], variant="primary", elem_id=kind + "-load")

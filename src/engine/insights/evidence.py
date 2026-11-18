@@ -101,6 +101,13 @@ class EvidenceCollector:
         return accepted
 
     def collect(self) -> dict[str, Any]:
+        if self.payload["kind"] == "page_analysis":
+            from .page_analysis import PAGE_EVIDENCE
+
+            captured = PAGE_EVIDENCE.get()
+            if captured is None:
+                raise ValueError("Page analysis requires server-captured evidence")
+            return captured
         if self.payload["kind"] in {"macro_analysis", "fundamental_analysis"}:
             return self._economic()
         if self.payload["kind"] == "market_review":

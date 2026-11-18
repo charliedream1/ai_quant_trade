@@ -101,3 +101,17 @@ news callback groups for SDK compatibility. Its two large read groups are exclud
 from section streaming until full-page parity is verified on both installations.
 No-op SDK updates remain control messages, and emitted update dictionaries are
 copied because postprocessing consumes their value fields.
+
+## Page-bound Skill evidence
+
+Explicit page analysis consumes bounded server-completed rule observations. It
+does not trust browser-submitted fact bundles or automatically acquire sources on
+entry. Snapshots are isolated by database, page capability/revision and market;
+matching page controls must retain their original scope. Original measurements,
+resource hashes, model selection and missing-evidence labels stay inspectable.
+
+Page-created reports own their cancellation lifetime; saved report viewers do not
+restart producers. Current-observation commentary is separate from strict
+historical research admission. HTML findings are escaped and previewed in the
+existing sandbox, and downloads use the immutable insight-artifact API. See
+[page Skill analysis](../usage/page_skill_analysis.md) for tasks and limits.

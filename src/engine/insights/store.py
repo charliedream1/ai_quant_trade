@@ -88,7 +88,7 @@ class InsightStore:
                 if (
                     self.directory(row["run_id"]) != path.parent
                     or not isinstance(row["created_at"], str)
-                    or row["status"] not in {"running", "completed", "partial", "failed"}
+                    or row["status"] not in {"running", "completed", "partial", "failed", "cancelled"}
                     or not isinstance(row["request"]["kind"], str)
                 ):
                     raise ValueError("invalid report shape")

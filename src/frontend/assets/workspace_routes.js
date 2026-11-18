@@ -31,6 +31,19 @@
     const ticket = epoch, key = `${module}/${data.view}`;
     const nonce = String(data.target_nonce || `standalone:${location.search}`);
     currentView = data.view;
+    waitFor(() => {
+      const field = document.querySelector('#page-skill-view textarea, #page-skill-view input');
+      if (!field) return false;
+      if (field.value !== data.view) {
+        const panel = document.getElementById('page-skill-panel');
+        const header = panel?.querySelector(':scope > .label-wrap');
+        const taskInput = panel?.querySelector('#page-skill-task input');
+        if (taskInput?.getClientRects().length && header) header.click();
+        field.value = data.view;
+        field.dispatchEvent(new Event('input', {bubbles: true}));
+      }
+      return true;
+    }, ticket);
     currentNonce = nonce;
     waitFor(() => {
       const tab = Array.from(document.querySelectorAll(".module-tabs > .tab-wrapper button"))

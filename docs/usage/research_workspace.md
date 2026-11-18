@@ -69,6 +69,9 @@ still apply. A hard cancellation may require a replacement worker on the next ac
 
 ## Sections appear as they become ready
 
+Suitable research views also offer explicit [CLI + Skill analysis](page_skill_analysis.md)
+with frozen page evidence, process events, cancellation and saved HTML reports.
+
 The active page and its controls appear first. Independent sections can update
 in parallel, while sections that share data follow their dependencies. For
 example, index data can be visible while sectors are still loading; search

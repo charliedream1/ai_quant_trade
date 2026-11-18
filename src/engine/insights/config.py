@@ -22,9 +22,13 @@ def load_skill(kind: str, config: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         raise ValueError(config["messages"]["bad_resource"])
     resources = {}
     content = []
-    for name in task["resources"]:
-        path = (root / name).resolve()
-        if not path.is_relative_to(root) or not path.is_file():
+    paths = [(name, (root / name).resolve(), root) for name in task["resources"]]
+    paths.extend(
+        ("method/" + name, (SKILL_ROOT / name).resolve(), SKILL_ROOT.resolve())
+        for name in task.get("method_resources", [])
+    )
+    for name, path, allowed in paths:
+        if not path.is_relative_to(allowed) or not path.is_file():
             raise ValueError(config["messages"]["bad_resource"])
         raw = path.read_bytes()
         text = raw.decode("utf-8-sig")

@@ -267,7 +267,20 @@ def read(name: str, args: tuple, kwargs: dict) -> Any:
             page.wait(policy()["poll_seconds"])
         check()
         publish()
-        return job.future.result()
+        result = job.future.result()
+        from src.core.page_analysis_snapshot import capture
+
+        from .service_dispatch import lookup_method
+
+        method = lookup_method(name)
+        if method is not None:
+            try:
+                capture(name, method, args, kwargs, result)
+            except (ValueError, TypeError, AttributeError):
+                get_logger("page.analysis").warning(
+                    "Rule result retained; analysis snapshot unavailable | method={}", name
+                )
+        return result
     finally:
         detach()
         leave()
