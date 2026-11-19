@@ -7,6 +7,7 @@ from typing import Any
 from src.agent.attachments import AttachmentBundle
 from src.agent.generic_agent_runtime import GenericAgentRuntime
 from src.agent.providers.native import NativeCliRunner
+from src.core.assistant_page_context import context_prompt
 from src.core.config import get_settings
 from src.core.repository import Repository
 from src.core.stream_control import stream_cancelled
@@ -21,7 +22,7 @@ def backend_events(repo: Repository, payload: dict[str, Any], history: list[dict
     backend = str(payload.get("backend") or "generic").lower().replace("-", "_")
     if backend in {"generic", "generic_agent", "model", "model_api", "openai"}:
         result = GenericAgentRuntime(repo=repo).run_once(
-            str(payload["message"]) + bundle.text_context,
+            str(payload["message"]) + bundle.text_context + context_prompt(),
             history=history,
             session_id=payload.get("session_id"),
             model_id=payload.get("model_id"),
@@ -70,7 +71,7 @@ def backend_events(repo: Repository, payload: dict[str, Any], history: list[dict
     text = ""
     error = ""
     status = "running"
-    prompt = str(payload["message"]) + bundle.text_context
+    prompt = str(payload["message"]) + bundle.text_context + context_prompt()
     if history:
         prompt = json.dumps({"history": history, "message": prompt}, ensure_ascii=False)
     runner: CodexCliRunner

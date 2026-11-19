@@ -16,8 +16,10 @@ from src.agent.providers.native import NativeCliRunner
 from src.agent.qoder_cli import QoderCliRunner
 from src.agent.rag import RAGService
 from src.agent.real_models import real_model, real_profile, require_real_model
+from src.core.assistant_page_context import context_identity, context_prompt
 from src.core.panel_updates import observe_references
 from src.core.repository import Repository
+from src.core.stream_control import stream_cancelled
 from src.strategy.codex_cli import CodexCliRunner
 
 from .foundation import (
@@ -45,7 +47,7 @@ class AssistantServiceMixin:
                 session, message, history, backend, attachments, model, effort, access
             )
 
-    def floating_qa(self, question, category, top_k):
+    def floating_qa(self, question, category, top_k, page_context=None):
         selected = real_model()
         from .foundation import to_frame
 
@@ -59,6 +61,8 @@ class AssistantServiceMixin:
                     "category_id": category or None,
                     "top_k": int(top_k),
                     "model_id": selected["id"],
+                    "page_context": page_context,
+                    "session_id": "floating-" + context_identity(page_context)[:40] if page_context else "default",
                 }
             )
 
@@ -137,7 +141,9 @@ def _codex_chat_events(
     started = perf_counter()
     shown = history + [{"role": "user", "content": question}]
     yield shown, "", "已接收 CLI 消息"
-    prompt = json.dumps({"history": history, "message": question}, ensure_ascii=False) if history else question
+    prompt = (
+        json.dumps({"history": history, "message": question}, ensure_ascii=False) if history else question
+    ) + context_prompt()
     text = ""
     error = ""
     status = "running"
@@ -148,7 +154,7 @@ def _codex_chat_events(
         if provider == "qoder"
         else CodexCliRunner()
     )
-    for event in runner.stream(prompt, stdin_prompt=True):
+    for event in runner.stream(prompt, stdin_prompt=True, cancelled=stream_cancelled):
         if event.kind == "message":
             text += event.text
         if event.kind == "error":

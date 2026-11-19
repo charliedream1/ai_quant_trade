@@ -7,6 +7,7 @@ from typing import Any
 import yaml
 from loguru import logger
 
+from src.core.assistant_page_context import TURN_PAGE_CONTEXT, context_prompt
 from src.core.config import PROJECT_ROOT
 from src.core.fts import FTSService, kb_document_source_scope, kb_remote_source_id
 from src.core.panel_updates import observation_ready
@@ -59,8 +60,14 @@ class RAGService:
         context_turns = _context_turns(payload.get("context_turns"), reset=bool(payload.get("reset_context")))
         history_rows = self._recent_history(context_turns, session_id=session_id, library=library, qa_scope=qa_scope)
         history_context = self._history_context(history_rows)
+        page = payload.get("page_context")
+        turn = TURN_PAGE_CONTEXT.set(page if isinstance(page, dict) else None)
+        try:
+            contextual = context_prompt()
+        finally:
+            TURN_PAGE_CONTEXT.reset(turn)
         docs, trace, retrieval_status, retrieval_meta = AnswerRetrieval(self.repo, self.llm).run(
-            question,
+            question + ("\n" + contextual if contextual else ""),
             history_context,
             backend=str(payload.get("retrieval_backend") or "local"),
             strategy=str(payload.get("retrieval_strategy") or "auto"),
@@ -106,7 +113,7 @@ class RAGService:
             for index, doc in enumerate(docs, start=1)
         ]
         observation_ready("knowledge.references", refs)
-        prompt = self._prompt(question, context, history_context)
+        prompt = self._prompt(question, context, history_context) + contextual
         config = yaml.safe_load((PROJECT_ROOT / "egs/config/knowledge/rag.yaml").read_text(encoding="utf-8"))
         completion = None
         status = retrieval_status

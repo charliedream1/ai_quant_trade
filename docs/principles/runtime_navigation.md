@@ -115,3 +115,11 @@ restart producers. Current-observation commentary is separate from strict
 historical research admission. HTML findings are escaped and previewed in the
 existing sandbox, and downloads use the immutable insight-artifact API. See
 [page Skill analysis](../usage/page_skill_analysis.md) for tasks and limits.
+
+The floating assistant reuses this snapshot boundary for per-turn context. Model
+and CLI generation share a context-local evidence envelope while visible/stored
+user questions remain unchanged; metadata retains a redacted scope digest rather
+than a duplicate evidence dump. A dedicated iterator context preserves lifetime,
+market and evidence variables across the SDK's executor-thread iterations. Scope
+changes reset the floating conversation, and document citations remain separate
+from page observations. See [page-aware questions](../usage/floating_assistant_context.md).

@@ -12,6 +12,7 @@ from src.agent.attachments import CONFIG_PATH, _limits, prepare_attachments
 from src.agent.composer_config import validate_selection
 from src.agent.image_validation import validate_images
 from src.agent.workspace_backend import backend_events
+from src.core.assistant_page_context import turn_metadata
 from src.core.config import get_settings
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.kb_importer import parse_document_bytes
@@ -122,6 +123,7 @@ class AIWorkspaceService:
                 "content": payload["message"],
                 "metadata": {
                     "backend": payload.get("backend", "generic"),
+                    "page_context": turn_metadata(),
                     "attachments": bundle.metadata(),
                     "access_mode": payload["access_mode"],
                     "model_name": payload.get("model_name"),

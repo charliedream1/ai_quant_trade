@@ -30,7 +30,11 @@
     cancel();
     const ticket = epoch, key = `${module}/${data.view}`;
     const nonce = String(data.target_nonce || `standalone:${location.search}`);
+    const contextViewChanged = Boolean(currentView && currentView !== data.view);
     currentView = data.view;
+    const contextScope = document.querySelector('#assistant-context-scope .prose');
+    const contextState = document.getElementById('assistant-context-state');
+    if (contextViewChanged && contextScope && contextState) contextScope.textContent = contextState.dataset.reset;
     waitFor(() => {
       const field = document.querySelector('#page-skill-view textarea, #page-skill-view input');
       if (!field) return false;

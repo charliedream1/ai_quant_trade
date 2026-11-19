@@ -8,6 +8,7 @@ import gradio as gr
 
 from src.core.workspace_config import workspace_config
 
+from ..common.assistant_context import ContextTurns, controls
 from ..common.callbacks import safe as _safe
 from ..common.components import supports_parameter as _supports_parameter
 from ..common.components import table as _table
@@ -26,6 +27,9 @@ def render_floating_assistant(service: DomainHandler) -> None:
             "<div class='ai-panel-header'><strong>AI 助手</strong>"
             "<button id='ai-floating-close' type='button' aria-label='关闭' title='关闭'>&times;</button></div>"
         )
+        use_page, page_inputs, collect_context, context_badge = controls()
+        turn_scope = gr.State({})
+        turns = ContextTurns(collect_context, service.floating_send, service.floating_cli_chat_stream)
         with gr.Tabs():
             with gr.Tab("模型问答"):
                 chatbot_options: dict[str, Any] = {
@@ -46,15 +50,9 @@ def render_floating_assistant(service: DomainHandler) -> None:
                 ai_chat_session = gr.State(0)
                 ai_chat_clear = gr.Button("新对话")
 
-                def _send(session, message, history, backend, attachments, model, effort, access):
-                    for result in service.floating_send(
-                        session, message, history, backend, attachments, model, effort, access
-                    ):
-                        yield result[0], result[1], result[2], result[3], result[4]
-
                 for trigger in (ai_chat_input.submit, ai_chat_send.click):
                     trigger(
-                        _safe(_send),
+                        _safe(turns.send),
                         inputs=[
                             ai_chat_session,
                             ai_chat_input,
@@ -64,8 +62,18 @@ def render_floating_assistant(service: DomainHandler) -> None:
                             composer.model,
                             composer.reasoning,
                             composer.permission,
+                            use_page,
+                            turn_scope,
+                            *page_inputs,
                         ],
-                        outputs=[ai_chat_session, ai_chat_history, ai_chat_input, composer.attachments, ai_chat_status],
+                        outputs=[
+                            ai_chat_session,
+                            ai_chat_history,
+                            ai_chat_input,
+                            composer.attachments,
+                            ai_chat_status,
+                            context_badge,
+                        ],
                     )
                 ai_chat_clear.click(
                     lambda: (0, [], "", [], "新对话，尚未调用后台"),
@@ -98,9 +106,13 @@ def render_floating_assistant(service: DomainHandler) -> None:
                     return service.floating_citation(rows, event.index[0])
 
                 ai_kb_sources.select(_safe(citation), inputs=ai_kb_sources, outputs=full_citation, queue=False)
+
+                def _ask(question, category, top_k, enabled, *values):
+                    return service.floating_qa(question, category, top_k, collect_context(enabled, *values))
+
                 ai_kb_ask.click(
-                    _safe(service.floating_qa),
-                    inputs=[ai_kb_question, ai_kb_category, ai_kb_top_k],
+                    _safe(_ask),
+                    inputs=[ai_kb_question, ai_kb_category, ai_kb_top_k, use_page, *page_inputs],
                     outputs=[ai_kb_answer, ai_kb_sources],
                 )
             with gr.Tab("CLI 助手"):
@@ -111,10 +123,12 @@ def render_floating_assistant(service: DomainHandler) -> None:
                 )
                 ai_cli_requirement = gr.Textbox(label="消息", lines=2, elem_id="ai-cli-requirement")
                 ai_cli_build = gr.Button("发送", variant="primary", elem_id="ai-cli-build")
+
                 for trigger in (ai_cli_requirement.submit, ai_cli_build.click):
                     trigger(
-                        _safe(service.floating_cli_chat_stream),
-                        inputs=[ai_cli_requirement, ai_cli_history, ai_cli_type],
+                        _safe(turns.cli_send),
+                        api_name="floating_cli_chat_stream",
+                        inputs=[ai_cli_requirement, ai_cli_history, ai_cli_type, use_page, turn_scope, *page_inputs],
                         outputs=[ai_cli_history, ai_cli_requirement, ai_cli_status],
                     )
     if _supports_parameter(gr.HTML, "js_on_load"):

@@ -180,13 +180,16 @@ def safe(fn: Callable[..., Any]) -> Callable[..., Any]:
 
         @wraps(fn)
         def streamed(*args: Any, **kwargs: Any) -> Iterator[Any]:
-            try:
-                with _callback_run(operation, source):
-                    for value in fn(*args, **kwargs):
-                        check()
-                        yield value
-            except (PageCancelled, GeneratorExit):
-                return
+            def execute():
+                try:
+                    with _callback_run(operation, source):
+                        for value in fn(*args, **kwargs):
+                            check()
+                            yield value
+                except (PageCancelled, GeneratorExit):
+                    return
+
+            yield from _context_iterator(execute())
 
         return streamed
 

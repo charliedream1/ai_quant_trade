@@ -46,6 +46,10 @@ or dismissing a card never changes the business source or deletes its history.
 
 ## Operation logs
 
+The floating assistant can use [active-page context](floating_assistant_context.md)
+for model, CLI and knowledge questions. Preview the scope and evidence or turn it
+off before sending; stale or unavailable data is explicitly excluded.
+
 INFO logs identify page selection, explicit actions, queued/started reads,
 meaningful source stages, cancellation and completion. They include operation
 identifiers and elapsed times without prompts or uploaded contents. Heartbeats,

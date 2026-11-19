@@ -175,6 +175,7 @@ nav:
         - AI CLI安装与接入: usage/cli_installation.md
         - CLI models and billing: usage/cli_model_catalog.md
         - Page Skill analysis and HTML: usage/page_skill_analysis.md
+        - Floating assistant page context: usage/floating_assistant_context.md
         - 工作台使用路线: usage/workspace.md
         - 快速上手: usage/quick_start.md
         - 导航与功能入口: usage/modules.md
