@@ -8,6 +8,20 @@ a generation request. A delayed response cannot replace a newer backend choice.
 Leaving the page cancels its owned metadata process. Discovery failures are
 bounded; use the visible refresh control after repairing login/connectivity.
 
+Each CLI/configuration automatically discovers models once per calendar day
+(Asia/Shanghai by default). Later selections, both composers, other windows and
+server restarts reuse the private daily cache. Overlapping requests share one
+discovery; waiting callbacks remain cancellable. Click **Refresh models** to
+update immediately, including after an account/login change. Configuration/profile
+changes use a separate cache scope. A new day triggers discovery on first use,
+not a background request at midnight.
+
+The billing detail marks daily reuse. If discovery fails, the last successful
+list stays available and is explicitly marked stale, with its original refresh
+time. Completed failures are also remembered for the day to prevent repeated
+slow retries; manual refresh retries immediately. Cancellation is not a cached
+failure. Cached billing can change at the provider before the next refresh.
+
 Model labels show provider-reported billing metadata. The detail below the input
 shows its source, refresh time and discovery status. Explicit free access, credit
 multipliers, subscription/quota and token billing are different categories.
@@ -31,9 +45,14 @@ models. Existing native runners validate actual installation and invocation.
 
 ## Configuration
 
-Policy, timeout, limits, cache duration and UI copy live in
+Policy, timeout, limits, daily-cache timezone and UI copy live in
 `egs/config/ui/cli_catalog.yaml`. The metadata timeout defaults to 12 seconds and
-the cache to 300 seconds. The normal CLI executable/profile settings remain as
+the cache is private under the application's ignored `data/cli_profiles/model_catalogs`
+area (relative to the configured data directory). It stores allowlisted,
+redacted model metadata and opaque configuration fingerprints, never raw
+credentials, environment variables or installation paths. Keep the runtime data
+directory private when relocating it. Read-only storage permits discovery but
+cannot guarantee persistent reuse. The normal CLI executable/profile settings remain as
 documented in [CLI installation](cli_installation.md).
 
 For a CLI without verified noninteractive discovery, set a local `.env` variable

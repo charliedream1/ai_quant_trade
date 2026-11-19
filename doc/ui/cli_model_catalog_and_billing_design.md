@@ -87,6 +87,13 @@ stop owned services. No package installation, file deletion or push is proposed.
 
 ## Implementation and verified boundaries
 
+The approved [daily reuse extension](cli_model_catalog_daily_cache_design.md)
+replaces the initial five-minute process cache with private daily persistence,
+cross-process discovery ownership, explicit refresh and labelled stale fallback.
+The cache calendar defaults to Asia/Shanghai; account changes not represented by
+observable configuration require manual refresh. This does not change discovery
+commands, generation permissions or provider billing boundaries.
+
 Codex discovery uses native app-server initialization followed only by model/list;
 Qoder uses its explicit list-models command. TRAE and CodeBuddy versions without a
 verified noninteractive command accept an explicitly configured catalogue and

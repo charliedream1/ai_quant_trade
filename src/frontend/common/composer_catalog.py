@@ -18,6 +18,10 @@ def details(catalog, identifier):
         updated=catalog.get("updated", cfg["messages"]["not_refreshed"]),
     )
     text += "\n\n" + cfg["messages"].get(catalog.get("status", "unknown"), cfg["messages"]["unknown"])
+    if catalog.get("cache_reused"):
+        text += "\n\n" + cfg["messages"]["reused"]
+    if catalog.get("stale"):
+        text += "\n\n" + cfg["messages"]["stale"]
     if catalog.get("backend") == "workbuddy":
         text += "\n\n" + cfg["messages"]["workbuddy"]
     backend = catalog.get("backend", "generic_agent")

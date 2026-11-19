@@ -7,8 +7,6 @@ import subprocess  # nosec B404
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from threading import RLock
-from time import monotonic
 
 import yaml
 from json_repair import loads
@@ -19,13 +17,11 @@ from src.core.logger import get_logger
 from src.core.page_work import check
 from src.core.process_env import process_environment
 
+from .cli_catalog_cache import reuse
 from .cli_catalog_transport import metadata
 from .composer_config import normalize_backend
 from .providers.native import executable
 from .qoder_cli import QoderCliRunner
-
-CACHE: dict = {}
-LOCK = RLock()
 
 
 @lru_cache(maxsize=1)
@@ -99,11 +95,12 @@ def discover(backend, refresh=False):
     runner = QoderCliRunner() if backend == "qoder" else None
     command = runner.executable() if runner else executable(backend) if backend != "workbuddy" else None
     environment = runner.environment() if runner else process_environment(backend)
-    key = (backend, configured, command, tuple(sorted(environment.items())))
-    with LOCK:
-        cached = CACHE.get(key)
-        if cached and not refresh and monotonic() - cached[0] < cfg["cache_seconds"]:
-            return cached[1]
+    scope = (backend, configured, command, sorted(environment.items()))
+    policy = {**cfg["cache"], "max_bytes": cfg["max_bytes"], "max_models": cfg["max_models"]}
+    return reuse(scope, backend, refresh, policy, lambda: _discover(backend, path, command, environment, cfg))
+
+
+def _discover(backend, path, command, environment, cfg):
     source = cfg["sources"][backend]
     status, rows = "ready", []
     try:
@@ -136,7 +133,5 @@ def discover(backend, refresh=False):
         "updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "available": backend != "workbuddy",
     }
-    with LOCK:
-        CACHE[key] = monotonic(), result
     get_logger("ui.catalog").info("CLI catalogue ready | backend={} status={} models={}", backend, status, len(rows))
     return result

@@ -9,6 +9,58 @@ from src.frontend.common import composer_catalog
 
 
 @pytest.mark.parametrize("prefix", ["ai-console", "ai-chat"])
+def test_daily_catalogue_reuse_and_manual_refresh(cli_command, monkeypatch, tmp_path, prefix):
+    from src.agent import cli_catalog
+
+    calls = []
+
+    def metadata(*args, **kwargs):
+        calls.append(1)
+        return {"models": [{"id": "daily", "name": "Daily " + str(len(calls)), "free": True}]}
+
+    monkeypatch.setattr(cli_catalog, "metadata", metadata)
+    monkeypatch.setattr(cli_catalog, "executable", lambda backend: "declared-cli")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": 1600, "height": 1100})
+            route = "/app/?module=ai&view=workbench" if prefix == "ai-console" else "/app/?module=market&view=quotes"
+            page.goto(cli_command.base_url + route, wait_until="domcontentloaded")
+            frame = page.frame_locator("iframe.workspace-frame.active")
+            expect(frame.locator(f"#{prefix}-backend input")).to_be_attached(timeout=90000)
+            if prefix == "ai-chat":
+                expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1")
+                frame.locator("#ai-floating-button").click()
+
+            def select(name):
+                field = frame.locator(f"#{prefix}-backend input")
+                field.click()
+                field.fill("")
+                frame.get_by_role("option", name=name, exact=True).click()
+
+            select("Codex CLI")
+            note = frame.locator(f"#{prefix}-billing")
+            expect(note).to_contain_text("Available models loaded", timeout=15000)
+            assert len(calls) == 1
+            select("CodeBuddy Code")
+            expect(note).to_contain_text("CodeBuddy Code · Billing:")
+            select("Codex CLI")
+            expect(note).to_contain_text("Daily cache reused")
+            assert len(calls) == 1
+            frame.locator(f"#{prefix}-refresh-models").click()
+            expect(note).not_to_contain_text("Daily cache reused")
+            expect(note).to_contain_text("Available models loaded")
+            assert len(calls) == 2
+            frame.locator(f"#{prefix}-model input").click()
+            expect(
+                frame.get_by_role("option", name="Daily 2 · Free (reported by provider)", exact=True)
+            ).to_be_visible()
+            page.screenshot(path=str(tmp_path / (prefix + "-daily-cache.png")), full_page=True)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("prefix", ["ai-console", "ai-chat"])
 def test_switch_refresh_billing_and_delayed_provider(cli_command, monkeypatch, tmp_path, prefix):
     started, release = Event(), Event()
     calls = []

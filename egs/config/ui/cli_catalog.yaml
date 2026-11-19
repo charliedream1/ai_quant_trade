@@ -1,6 +1,12 @@
 # File format: YAML; encoding: UTF-8
 timeout_seconds: 12
-cache_seconds: 300
+cache:
+  version: 1
+  timezone: Asia/Shanghai
+  directory: cli_profiles/model_catalogs
+  poll_seconds: 0.05
+  wait_seconds: 30
+  local_path_label: '<local path>'
 max_bytes: 2097152
 max_models: 200
 max_identifier_chars: 200
@@ -40,4 +46,6 @@ messages:
   initial: Model API · Price unknown. Configure/select a model; API billing depends on its provider.
   not_refreshed: Not refreshed
   configured: 'Configured CLI catalogue · '
+  reused: Daily cache reused; use Refresh models to discover again.
+  stale: Discovery failed; showing the previous successful catalogue and its original refresh time.
   detail: 'Billing: {billing} · Source: {source} · Refreshed: {updated}'
