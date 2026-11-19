@@ -1,5 +1,7 @@
 # Knowledge Graphs
 
+[English](../en/08-knowledge-graphs.md) | [中文](../zh/08-knowledge-graphs.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Traditional Approach
 
 - **[Financial-Knowledge-Graphs](https://github.com/jm199504/Financial-Knowledge-Graphs)** — Small financial knowledge graph construction pipeline (neo4j / python / cypher / KG).

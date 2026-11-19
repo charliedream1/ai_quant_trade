@@ -1,5 +1,7 @@
 # Basics
 
+[English](../en/00-basics.md) | [中文](../zh/00-basics.md) | [Category index](README.md) | [Language index](../README.md)
+
 - **[stock-learning](https://github.com/AdvancingStone/stock-learning)** — Stock fundamentals, technical indicators, K-line basics, chip theory, Gann theory, and trend investing.
   - Metadata: Language: HTML · Stars: 148 · License: Not specified · Maintenance: Inactive (last push 2020-07-20)
   - Docs/Homepage: https://github.com/AdvancingStone/stock-learning

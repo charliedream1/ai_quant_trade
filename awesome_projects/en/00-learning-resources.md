@@ -1,5 +1,7 @@
 # Learning Resources
 
+[English](../en/00-learning-resources.md) | [中文](../zh/00-learning-resources.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Getting Started
 
 - **[stock](https://github.com/Rockyzsu/stock)** — A comprehensive learning platform covering data collection, analysis, fund analysis, K-line patterns, ML prediction and trading.

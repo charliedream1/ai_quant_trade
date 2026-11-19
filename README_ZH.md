@@ -226,7 +226,8 @@ ai_quant_trade
 
 ## 5. 🌟 awesome_projects（重点推荐）
 
-> 📁 **目录**：[awesome_projects](awesome_projects)
+> 📁 **目录**：[awesome_projects](awesome_projects/zh/README.md)
+> **资源语言：**[简体中文](awesome_projects/zh/README.md) · [English](awesome_projects/en/README.md)
 >
 > ⭐ **本仓库精华版块**：从全网海量资料中筛选、整理、点评的优质量化资源，一站式获取！
 
@@ -245,21 +246,21 @@ ai_quant_trade
 
 | 序号 | 类别 | 核心内容 |
 |:---:|:---|:---|
-| 📚 [00-basics](awesome_projects/00-basics.md) | 入门学习 | 股票学习指南、入门教程 |
-| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学习资源 | GitHub量化资源、开源项目汇总 |
-| 📊 [01-data](awesome_projects/01-data.md) | 数据获取 | 数据获取工具、新闻数据、多模态数据 |
-| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主流量化框架 | Qlib、WonderTrader 等 |
-| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | 回测工具 | Backtrader、Zipline、RQAlpha 等 |
-| ⛏️ [04-factors](awesome_projects/04-factors.md) | 因子库 | alphalens、ta_lib 等 |
-| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 策略资源 | 传统/深度学习/强化学习/研报复现/投资组合 |
-| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 辅助工具 | K线形态识别、盯盘、办公工具 |
-| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可视化 | 量化图表与可视化 |
-| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | 知识图谱 | 传统方案与大模型方案 |
-| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高频交易 | 加密货币高频交易 |
-| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM 金融应用 | FinGPT、FinRobot、TradingAgents、Agent、RAG 等 |
-| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研平台 | 免费量化平台汇总 |
-| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 交易平台 | EasyTrader、VN.Py 等 |
-| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研报类 | 研报复现与来源 |
+| 📚 [00-basics](awesome_projects/zh/00-basics.md) | 入门学习 | 股票学习指南、入门教程 |
+| 🎓 [00-learning-resources](awesome_projects/zh/00-learning-resources.md) | 学习资源 | GitHub量化资源、开源项目汇总 |
+| 📊 [01-data](awesome_projects/zh/01-data.md) | 数据获取 | 数据获取工具、新闻数据、多模态数据 |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/zh/02-comprehensive-frameworks.md) | 主流量化框架 | Qlib、WonderTrader 等 |
+| 🔄 [03-backtesting-frameworks](awesome_projects/zh/03-backtesting-frameworks.md) | 回测工具 | Backtrader、Zipline、RQAlpha 等 |
+| ⛏️ [04-factors](awesome_projects/zh/04-factors.md) | 因子库 | alphalens、ta_lib 等 |
+| 💹 [05-trading-strategies](awesome_projects/zh/05-trading-strategies.md) | 策略资源 | 传统/深度学习/强化学习/研报复现/投资组合 |
+| 🛠️ [06-assistant-tools](awesome_projects/zh/06-assistant-tools.md) | 辅助工具 | K线形态识别、盯盘、办公工具 |
+| 📊 [07-visualization](awesome_projects/zh/07-visualization.md) | 可视化 | 量化图表与可视化 |
+| 🧠 [08-knowledge-graphs](awesome_projects/zh/08-knowledge-graphs.md) | 知识图谱 | 传统方案与大模型方案 |
+| ⚡ [09-high-frequency-trading](awesome_projects/zh/09-high-frequency-trading.md) | 高频交易 | 加密货币高频交易 |
+| 🤖 [10-llm](awesome_projects/zh/10-llm.md) | LLM 金融应用 | FinGPT、FinRobot、TradingAgents、Agent、RAG 等 |
+| 🌐 [11-research-platforms](awesome_projects/zh/11-research-platforms.md) | 投研平台 | 免费量化平台汇总 |
+| 💻 [12-trading-platforms](awesome_projects/zh/12-trading-platforms.md) | 交易平台 | EasyTrader、VN.Py 等 |
+| 📄 [13-research-reports](awesome_projects/zh/13-research-reports.md) | 研报类 | 研报复现与来源 |
 
 ### 🔥 重点推荐内容
 
@@ -269,7 +270,7 @@ ai_quant_trade
 - 🔬 **研报复现**：精选高质量券商研报并附复现代码
 - 💹 **交易策略全套**：从传统双均线到强化学习、图神经网络，覆盖各类型策略资源
 
-> 💡 **使用建议**：进入 [awesome_projects](awesome_projects) 目录按需浏览；每个项目条目已补充 Stars、License、维护状态、文档/主页和价值点评。
+> 💡 **使用建议**：进入 [awesome_projects](awesome_projects/zh/README.md) 目录按需浏览；每个项目条目已补充 Stars、License、维护状态、文档/主页和价值点评。
 
 ---
 

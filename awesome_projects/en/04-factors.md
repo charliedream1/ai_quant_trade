@@ -1,5 +1,7 @@
 # Factors
 
+[English](../en/04-factors.md) | [中文](../zh/04-factors.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Factor Analysis
 
 - **[alphalens](https://github.com/quantopian/alphalens)** — Python library for predictive (alpha) stock factor performance analysis; works with Zipline & Pyfolio.

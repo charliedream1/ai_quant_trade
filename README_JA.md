@@ -228,7 +228,8 @@ ai_quant_trade
 
 ## 5. 🌟 awesome_projects（重点推薦）
 
-> 📁 **ディレクトリ**: [awesome_projects](awesome_projects)
+> 📁 **ディレクトリ**: [awesome_projects](awesome_projects/en/README.md)
+> **対応言語:** [English](awesome_projects/en/README.md) · [简体中文](awesome_projects/zh/README.md)
 >
 > ⭐ **本リポジトリの精华セクション**：Web全体の膨大な資料から選別・整理・レビューした高品質な量化リソースをワンストップで取得！
 
@@ -247,21 +248,21 @@ ai_quant_trade
 
 | 番号 | カテゴリー | コアコンテンツ |
 |:---:|:---|:---|
-| 📚 [00-basics](awesome_projects/00-basics.md) | 入門学習 | 株式学習ガイド、入門チュートリアル |
-| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | 学習リソース | GitHub量化リソース、オープンソースプロジェクト集約 |
-| 📊 [01-data](awesome_projects/01-data.md) | データ取得 | データ取得ツール、ニュースデータ、マルチモーダルデータ |
-| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | 主要量化フレームワーク | Qlib、WonderTraderなど |
-| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | バックテストツール | Backtrader、Zipline、RQAlphaなど |
-| ⛏️ [04-factors](awesome_projects/04-factors.md) | アルファライブラリ | alphalens、ta_libなど |
-| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | 戦略リソース | 伝統/深層学習/強化学習/研報再現/ポートフォリオ |
-| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | 補助ツール | K線パターン認識、板監視、オフィスツール |
-| 📊 [07-visualization](awesome_projects/07-visualization.md) | 可視化 | 量化チャートと可視化 |
-| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | ナレッジグラフ | 従来型とLLM型ソリューション |
-| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | 高頻度取引 | 暗号通貨高頻度取引 |
-| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM金融応用 | FinGPT、FinRobot、TradingAgents、Agent、RAGなど |
-| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | 投研プラットフォーム | 無料量化プラットフォーム集約 |
-| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | 取引プラットフォーム | EasyTrader、VN.Pyなど |
-| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | 研報類 | 研報再現とソース |
+| 📚 [00-basics](awesome_projects/en/00-basics.md) | 入門学習 | 株式学習ガイド、入門チュートリアル |
+| 🎓 [00-learning-resources](awesome_projects/en/00-learning-resources.md) | 学習リソース | GitHub量化リソース、オープンソースプロジェクト集約 |
+| 📊 [01-data](awesome_projects/en/01-data.md) | データ取得 | データ取得ツール、ニュースデータ、マルチモーダルデータ |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/en/02-comprehensive-frameworks.md) | 主要量化フレームワーク | Qlib、WonderTraderなど |
+| 🔄 [03-backtesting-frameworks](awesome_projects/en/03-backtesting-frameworks.md) | バックテストツール | Backtrader、Zipline、RQAlphaなど |
+| ⛏️ [04-factors](awesome_projects/en/04-factors.md) | アルファライブラリ | alphalens、ta_libなど |
+| 💹 [05-trading-strategies](awesome_projects/en/05-trading-strategies.md) | 戦略リソース | 伝統/深層学習/強化学習/研報再現/ポートフォリオ |
+| 🛠️ [06-assistant-tools](awesome_projects/en/06-assistant-tools.md) | 補助ツール | K線パターン認識、板監視、オフィスツール |
+| 📊 [07-visualization](awesome_projects/en/07-visualization.md) | 可視化 | 量化チャートと可視化 |
+| 🧠 [08-knowledge-graphs](awesome_projects/en/08-knowledge-graphs.md) | ナレッジグラフ | 従来型とLLM型ソリューション |
+| ⚡ [09-high-frequency-trading](awesome_projects/en/09-high-frequency-trading.md) | 高頻度取引 | 暗号通貨高頻度取引 |
+| 🤖 [10-llm](awesome_projects/en/10-llm.md) | LLM金融応用 | FinGPT、FinRobot、TradingAgents、Agent、RAGなど |
+| 🌐 [11-research-platforms](awesome_projects/en/11-research-platforms.md) | 投研プラットフォーム | 無料量化プラットフォーム集約 |
+| 💻 [12-trading-platforms](awesome_projects/en/12-trading-platforms.md) | 取引プラットフォーム | EasyTrader、VN.Pyなど |
+| 📄 [13-research-reports](awesome_projects/en/13-research-reports.md) | 研報類 | 研報再現とソース |
 
 ### 🔥 重点推薦コンテンツ
 
@@ -271,7 +272,7 @@ ai_quant_trade
 - 🔬 **研報再現**：選り抜きの高品質な証券会社研報と再現コード付き
 - 💹 **取引戦略フルセット**：伝統的なダブル移動平均から強化学習、グラフニューラルネットまで、各タイプの戦略リソースをカバー
 
-> 💡 **使用建議**：[awesome_projects](awesome_projects)ディレクトリに入ってニーズに応じて閲覧してください；各プロジェクトには Stars、License、保守状況、ドキュメント/ホームページ、価値レビューを追記しています。
+> 💡 **使用建議**：[awesome_projects](awesome_projects/en/README.md)ディレクトリに入ってニーズに応じて閲覧してください；各プロジェクトには Stars、License、保守状況、ドキュメント/ホームページ、価値レビューを追記しています。
 
 ---
 

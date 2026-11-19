@@ -1,5 +1,7 @@
 # Comprehensive Frameworks
 
+[English](../en/02-comprehensive-frameworks.md) | [中文](../zh/02-comprehensive-frameworks.md) | [Category index](README.md) | [Language index](../README.md)
+
 - **[Qlib](https://github.com/microsoft/qlib)** — Microsoft AI-oriented quantitative investment platform covering data, model training, backtesting, workflow management and research automation hooks.
   - Metadata: Language: Python · Stars: 49,218 · License: MIT · Maintenance: Active (last push 2026-10-08)
   - Docs/Homepage: https://qlib.readthedocs.io/en/latest/

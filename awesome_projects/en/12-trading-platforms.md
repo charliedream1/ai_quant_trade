@@ -1,5 +1,7 @@
 # Trading Platforms
 
+[English](../en/12-trading-platforms.md) | [中文](../zh/12-trading-platforms.md) | [Category index](README.md) | [Language index](../README.md)
+
 - **[easytrader](https://github.com/shidenggui/easytrader)** — Automated programmatic stock trading (tracks JoinQuant/RiceQuant simulated trading and live portfolios).
   - Metadata: Language: Python · Stars: 10,046 · License: MIT · Maintenance: Active (last push 2026-02-28)
   - Docs/Homepage: -

@@ -1,5 +1,7 @@
 # Trading Strategies
 
+[English](../en/05-trading-strategies.md) | [中文](../zh/05-trading-strategies.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Traditional Strategies
 
 - **[Sequoia](https://github.com/sngyai/Sequoia-X)** — Uses akshare for data and ta-lib for factors; implements Turtle trading rules and Chan theory bull-market buy points; WeChat push.

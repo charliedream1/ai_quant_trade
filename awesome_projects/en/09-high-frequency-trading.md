@@ -1,5 +1,7 @@
 # High-Frequency Trading
 
+[English](../en/09-high-frequency-trading.md) | [中文](../zh/09-high-frequency-trading.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Crypto
 
 - **[hummingbot](https://github.com/hummingbot/hummingbot)** — High-frequency quant bot with market-making, cross-market arbitrage and funding-rate arbitrage strategies; asyncio-based, TUI + Streamlit dashboard.

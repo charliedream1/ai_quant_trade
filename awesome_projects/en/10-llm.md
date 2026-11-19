@@ -1,5 +1,7 @@
 # LLM Applications
 
+[English](../en/10-llm.md) | [中文](../zh/10-llm.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## General Platforms
 
 - **[FinGPT](https://github.com/AI4Finance-Foundation/FinGPT)** — Data-centric financial LLM; FinLLM full-stack framework (data source, data engineering, LLM, task, application layers); 11 fine-tuned models & 14 datasets; FinGPT-Forecaster app.

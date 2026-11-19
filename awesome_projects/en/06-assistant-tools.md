@@ -1,5 +1,7 @@
 # Assistant Tools
 
+[English](../en/06-assistant-tools.md) | [中文](../zh/06-assistant-tools.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Pattern Recognition
 
 - **[Stocks-Pattern-Analyzer](https://github.com/gaborvecsei/Stocks-Pattern-Analyzer)** — Detect and trade technical chart patterns in Python.

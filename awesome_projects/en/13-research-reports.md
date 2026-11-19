@@ -1,5 +1,7 @@
 # Research Reports
 
+[English](../en/13-research-reports.md) | [中文](../zh/13-research-reports.md) | [Category index](README.md) | [Language index](../README.md)
+
 ## Report Reproduction
 
 - **[QuantsPlaybook](https://github.com/hugo2046/QuantsPlaybook)** — 100+ quantitative strategies reproduced from authoritative broker research (Everbright, Huatai, China Merchants, Guosen, etc.) with verified backtests.

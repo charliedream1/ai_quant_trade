@@ -157,7 +157,8 @@ ai_quant_trade
 
 ## 4. 🌟 awesome_projects (Highly Recommended)
 
-> 📁 **Directory**: [awesome_projects](awesome_projects)
+> 📁 **Directory**: [awesome_projects](awesome_projects/en/README.md)
+> **Available languages:** [English](awesome_projects/en/README.md) · [简体中文](awesome_projects/zh/README.md)
 >
 > ⭐ **The Highlight Section of This Repo**: Curated, organized, and reviewed top-quality quantitative resources from across the entire web, all in one place!
 
@@ -176,21 +177,21 @@ This is the most essential "resource treasure trove" of this repo — **we spent
 
 | No. | Category | Core Content |
 |:---:|:---|:---|
-| 📚 [00-basics](awesome_projects/00-basics.md) | Beginner Learning | Stock learning guides, introductory tutorials |
-| 🎓 [00-learning-resources](awesome_projects/00-learning-resources.md) | Learning Resources | GitHub quant resources, open-source project collection |
-| 📊 [01-data](awesome_projects/01-data.md) | Data Acquisition | Data tools, news data, multimodal data |
-| 🏗️ [02-comprehensive-frameworks](awesome_projects/02-comprehensive-frameworks.md) | Mainstream Quant Frameworks | Qlib, WonderTrader, etc. |
-| 🔄 [03-backtesting-frameworks](awesome_projects/03-backtesting-frameworks.md) | Backtest Tools | Backtrader, Zipline, RQAlpha, etc. |
-| ⛏️ [04-factors](awesome_projects/04-factors.md) | Alpha Library | alphalens, ta_lib, etc. |
-| 💹 [05-trading-strategies](awesome_projects/05-trading-strategies.md) | Strategy Resources | Traditional / DL / RL / report reproduction / portfolio |
-| 🛠️ [06-assistant-tools](awesome_projects/06-assistant-tools.md) | Assistant Tools | K-line patterns, monitoring, office tools |
-| 📊 [07-visualization](awesome_projects/07-visualization.md) | Visualization | Quant charts and visualization |
-| 🧠 [08-knowledge-graphs](awesome_projects/08-knowledge-graphs.md) | Knowledge Graph | Traditional & LLM-based solutions |
-| ⚡ [09-high-frequency-trading](awesome_projects/09-high-frequency-trading.md) | High-Frequency Trading | Crypto HFT |
-| 🤖 [10-llm](awesome_projects/10-llm.md) | LLM in Finance | FinGPT, FinRobot, TradingAgents, Agent, RAG, etc. |
-| 🌐 [11-research-platforms](awesome_projects/11-research-platforms.md) | Research Platforms | Free quant platform collection |
-| 💻 [12-trading-platforms](awesome_projects/12-trading-platforms.md) | Trading Platforms | EasyTrader, VN.Py, etc. |
-| 📄 [13-research-reports](awesome_projects/13-research-reports.md) | Research Reports | Report reproduction & sources |
+| 📚 [00-basics](awesome_projects/en/00-basics.md) | Beginner Learning | Stock learning guides, introductory tutorials |
+| 🎓 [00-learning-resources](awesome_projects/en/00-learning-resources.md) | Learning Resources | GitHub quant resources, open-source project collection |
+| 📊 [01-data](awesome_projects/en/01-data.md) | Data Acquisition | Data tools, news data, multimodal data |
+| 🏗️ [02-comprehensive-frameworks](awesome_projects/en/02-comprehensive-frameworks.md) | Mainstream Quant Frameworks | Qlib, WonderTrader, etc. |
+| 🔄 [03-backtesting-frameworks](awesome_projects/en/03-backtesting-frameworks.md) | Backtest Tools | Backtrader, Zipline, RQAlpha, etc. |
+| ⛏️ [04-factors](awesome_projects/en/04-factors.md) | Alpha Library | alphalens, ta_lib, etc. |
+| 💹 [05-trading-strategies](awesome_projects/en/05-trading-strategies.md) | Strategy Resources | Traditional / DL / RL / report reproduction / portfolio |
+| 🛠️ [06-assistant-tools](awesome_projects/en/06-assistant-tools.md) | Assistant Tools | K-line patterns, monitoring, office tools |
+| 📊 [07-visualization](awesome_projects/en/07-visualization.md) | Visualization | Quant charts and visualization |
+| 🧠 [08-knowledge-graphs](awesome_projects/en/08-knowledge-graphs.md) | Knowledge Graph | Traditional & LLM-based solutions |
+| ⚡ [09-high-frequency-trading](awesome_projects/en/09-high-frequency-trading.md) | High-Frequency Trading | Crypto HFT |
+| 🤖 [10-llm](awesome_projects/en/10-llm.md) | LLM in Finance | FinGPT, FinRobot, TradingAgents, Agent, RAG, etc. |
+| 🌐 [11-research-platforms](awesome_projects/en/11-research-platforms.md) | Research Platforms | Free quant platform collection |
+| 💻 [12-trading-platforms](awesome_projects/en/12-trading-platforms.md) | Trading Platforms | EasyTrader, VN.Py, etc. |
+| 📄 [13-research-reports](awesome_projects/en/13-research-reports.md) | Research Reports | Report reproduction & sources |
 
 ### 🔥 Highlighted Recommendations
 
@@ -200,7 +201,7 @@ This is the most essential "resource treasure trove" of this repo — **we spent
 - 🔬 **Research Report Reproduction**: Selected high-quality broker research reports with reproduction code
 - 💹 **Complete Trading Strategies**: From traditional double MA to RL and GNN, covering all types of strategy resources
 
-> 💡 **Usage Tip**: Browse the [awesome_projects](awesome_projects) directory as needed; each project entry now includes Stars, License, maintenance status, documentation/homepage and a value review.
+> 💡 **Usage Tip**: Browse the [awesome_projects](awesome_projects/en/README.md) directory as needed; each project entry now includes Stars, License, maintenance status, documentation/homepage and a value review.
 
 ---
 
