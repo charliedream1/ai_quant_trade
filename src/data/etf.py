@@ -3,17 +3,16 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from pathlib import Path
 from typing import Any
 
 import yaml
 
 from src.core.exceptions import BusinessError, ErrorCode
+from src.core.paths import PROJECT_ROOT
 from src.core.timeutil import utc_now_iso
 
 from .manager import DataSourceManager
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "strategies" / "etf_universes.yaml"
 
 

@@ -38,6 +38,7 @@ from src.core.fts import FTSService, kb_document_source_scope, kb_remote_source_
 from src.core.kb_importer import import_uploaded_document
 from src.core.logger import get_logger
 from src.core.market_lake import MarketDataLake
+from src.core.paths import PROJECT_ROOT
 from src.core.repository import Repository, json_loads
 from src.core.system_settings import global_settings_payload, runtime_storage_rows, save_global_settings
 from src.core.timeutil import utc_now_iso
@@ -91,7 +92,6 @@ from .view_primitives import (
 )
 
 EMPTY_FRAME = pd.DataFrame()
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SHANGHAI_TZ = timezone(timedelta(hours=8))
 LOG = get_logger("frontend.services")
 

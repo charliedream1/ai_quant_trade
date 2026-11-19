@@ -1,0 +1,12 @@
+# File format: YAML 1.2; encoding: UTF-8
+spreadsheet:
+  code_column: 证券代码
+  name_column: 证券简称
+  rows_per_page: 48
+  columns_per_row: 3
+  sheet_name: Sheet1
+chart:
+  up_color: red
+  down_color: green
+  candle_width: 0.6
+  annotation_points: 12

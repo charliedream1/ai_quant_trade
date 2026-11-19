@@ -164,3 +164,11 @@ docs/audit/**/*.ubj
 !**/.workbuddy/skills/**
 **/.agents/memory/
 **/.agents/memories/
+
+# Local installed-application state and Python build metadata.
+.aiquant/
+.aiquant-resources.*
+*.egg-info/
+build/
+dist/
+!scripts/packaging/build_support.py

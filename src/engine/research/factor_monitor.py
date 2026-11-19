@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from src.core.paths import PROJECT_ROOT, SOURCE_ROOT
 from src.core.repository import Repository
 from src.core.timeutil import utc_now_iso
 from src.data import DataSourceManager
@@ -23,7 +24,6 @@ from .monitor_store import MonitorStore
 from .monitor_universe import MonitorUniverses
 from .qlib_signal import signal_status
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "egs/config/strategies/factor_monitor.yaml"
 
 
@@ -100,14 +100,14 @@ class FactorMonitorService:
             for path in (
                 Path(__file__),
                 Path(__file__).with_name("monitor_analysis.py"),
-                PROJECT_ROOT / "src/strategy/factors/research.py",
-                PROJECT_ROOT / "src/strategy/factors/panel.py",
+                SOURCE_ROOT / "src/strategy/factors/research.py",
+                SOURCE_ROOT / "src/strategy/factors/panel.py",
                 PROJECT_ROOT / "egs/config/strategies/factor_research.yaml",
                 Path(__file__).with_name("monitor_data.py"),
                 Path(__file__).with_name("monitor_universe.py"),
                 Path(__file__).with_name("qlib_signal.py"),
                 Path(__file__).with_name("qlib_signal_worker.py"),
-                PROJECT_ROOT / "src/strategy/factors/statistics.py",
+                SOURCE_ROOT / "src/strategy/factors/statistics.py",
             )
         )
         key = hashlib.sha256(

@@ -10,8 +10,9 @@ from typing import Any
 import yaml
 
 from src.core.exceptions import BusinessError, ErrorCode
+from src.core.paths import PROJECT_ROOT
 
-PROFILE_ROOT = Path(__file__).resolve().parents[2] / "egs" / "examples" / "strategy_params"
+PROFILE_ROOT = PROJECT_ROOT / "egs" / "examples" / "strategy_params"
 RESERVED_KEYS = {"_backtest", "_experiment"}
 
 

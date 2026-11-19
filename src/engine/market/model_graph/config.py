@@ -6,6 +6,7 @@ from hashlib import sha256
 import yaml
 
 from src.core.config import PROJECT_ROOT
+from src.core.paths import SOURCE_ROOT
 
 
 @lru_cache(maxsize=1)
@@ -14,5 +15,5 @@ def config():
 
 
 def skill():
-    text = (PROJECT_ROOT / "src/skills/quant-stock-relations/SKILL.md").read_text(encoding="utf-8")
+    text = (SOURCE_ROOT / "src/skills/quant-stock-relations/SKILL.md").read_text(encoding="utf-8")
     return text, sha256(text.encode("utf-8")).hexdigest()

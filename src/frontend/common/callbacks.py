@@ -22,6 +22,7 @@ from src.core.exceptions import BusinessError
 from src.core.logger import get_logger
 from src.core.page_work import CURRENT_PAGE, PageCancelled, check, policy
 from src.core.panel_updates import PANEL_LOADING, PANEL_UPDATE
+from src.core.paths import SOURCE_ROOT
 from src.core.stream_control import STREAM_STOP
 from src.core.workspace_config import workspace_config
 from src.data.manager import REQUEST_MARKET
@@ -31,7 +32,6 @@ from .errors import ui_error_message
 
 CALLBACK_LOG = get_logger("frontend.callback")
 SLOW_CALLBACK_MS = diagnostics_config()["callbacks"]["slow_seconds"] * 1000
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
 def callback_location(fn: Callable[..., Any]) -> tuple[str, str]:
@@ -56,7 +56,7 @@ def callback_location(fn: Callable[..., Any]) -> tuple[str, str]:
         return name, "-"
     source = Path(code.co_filename)
     try:
-        source = source.relative_to(PROJECT_ROOT)
+        source = source.relative_to(SOURCE_ROOT)
     except ValueError:
         pass
     return name, f"{source}:{code.co_firstlineno}"

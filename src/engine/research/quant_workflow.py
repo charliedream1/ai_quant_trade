@@ -9,10 +9,10 @@ from typing import Any
 import yaml
 
 from src.core.logger import get_logger
+from src.core.paths import PROJECT_ROOT
 from src.core.repository import Repository, json_loads
 from src.core.timeutil import utc_now_iso
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_SOP_PATH = PROJECT_ROOT / "egs" / "config" / "platform" / "quant_workflow_sops.yaml"
 
 SIMULATION_MODE = "simulation"

@@ -25,6 +25,7 @@ def validate_images(images: list[tuple[str, bytes]]) -> dict[str, str]:
         raise BusinessError(ErrorCode.INVALID_PARAM, "缺少独立图片校验环境，请按安装文档创建 .venv-image-secure")
     payload = {
         "limits": config,
+        "workspace": str(PROJECT_ROOT),
         "images": [{"name": name, "content": base64.b64encode(data).decode("ascii")} for name, data in images],
     }
     try:

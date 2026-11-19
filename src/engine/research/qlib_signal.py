@@ -15,6 +15,7 @@ import yaml
 from dotenv import dotenv_values
 
 from src.core.config import PROJECT_ROOT
+from src.core.paths import SOURCE_ROOT
 from src.core.process_env import process_environment
 from src.strategy.factors.research import forward_labels
 from src.strategy.factors.statistics import information_ratio
@@ -42,7 +43,7 @@ def _invoke(payload: dict[str, Any] | None, config: dict[str, Any]) -> dict[str,
     python = interpreter(config)
     if not python.is_file():
         raise ValueError("Qlib分析环境未配置，请配置项目内独立Python解释器")
-    worker = PROJECT_ROOT / "src/engine/research/qlib_signal_worker.py"
+    worker = SOURCE_ROOT / "src/engine/research/qlib_signal_worker.py"
     command = [str(python), "-B", str(worker)]
     if payload is None:
         command.append("--diagnose")

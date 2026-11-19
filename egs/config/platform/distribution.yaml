@@ -1,0 +1,53 @@
+# File format: YAML; encoding: UTF-8
+schema: 1
+directory: _distribution
+inventory: egs/config/platform/distribution_resources.txt
+asset_roots: [src]
+workspace_environment: ALL_IN_ONE_WORKSPACE
+default_workspace: .aiquant
+roots:
+  - egs/config
+  - egs/examples
+  - egs/entrypoints
+  - egs/requirements
+  - scripts/docs
+  - docs/platform
+  - docs/usage
+  - docs/principles
+  - docs/help
+  - docs/cli
+  - docs/stylesheets
+  - docs/css
+  - docs/js
+  - docs/img
+  - docs/webfonts
+files:
+  - README.md
+  - LICENSE
+  - pyproject.toml
+  - uv.lock
+  - requirements.txt
+  - requirements-models.txt
+  - mkdocs.platform.yml
+  - docs/index.md
+  - docs/index.en.md
+  - scripts/setup_project.py
+  - egs/config/platform/distribution_resources.txt
+extensions: [.lock, .ts, .svelte, .cjs, .toml, .sql, .icc, .pyi, .yaml, .yml, .json, .txt, .md, .py, .csv, .xlsx, .xcu, .html, .css, .js, .mjs, .map, .svg, .png, .jpg, .gif, .webp, .woff, .woff2, .ttf, .wasm, .bcmap, .pfb, .afm, .properties, .pdf]
+exclude:
+  - '**/__pycache__/**'
+  - '**/node_modules/**'
+  - '**/.*'
+  - '**/.*/**'
+  - '**/*.db*'
+  - '**/*.sqlite*'
+  - '**/*.log'
+  - '**/task*.md'
+  - src/typing_stubs/**
+  - src/_distribution/**
+  - egs/config/platform/config.yaml
+  - egs/config/platform/cli.yaml
+  - egs/config/models/qlib.yaml
+  - egs/config/platform/mcp_services.yaml
+  - egs/config/platform/remote_sources.yaml
+  - egs/config/operations/scheduler_executors.yaml

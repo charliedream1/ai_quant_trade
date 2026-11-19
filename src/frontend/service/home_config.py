@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from pathlib import Path
 from typing import Any
 
 import yaml
 
+from src.core.paths import PROJECT_ROOT
+
 
 @lru_cache(maxsize=1)
 def home_config() -> dict[str, Any]:
-    path = Path(__file__).resolve().parents[3] / "egs" / "config" / "ui" / "home_dashboard.yaml"
+    path = PROJECT_ROOT / "egs" / "config" / "ui" / "home_dashboard.yaml"
     return dict(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 

@@ -1,0 +1,13 @@
+# File format: YAML; encoding: UTF-8
+# Resolve the real listing and configure an available CLI before running.
+# Guide: docs/usage/model_stock_relationships.md
+skill: quant-stock-relations
+provider:
+  backend: workbuddy
+  model_name: hy3
+request:
+  symbol: '600519'
+  market: CN
+  depth: 1
+  lookback_days: 365
+  urls: []

@@ -1,0 +1,31 @@
+# File format: YAML; encoding: UTF-8
+name: Installed Python distribution
+on:
+  pull_request:
+    paths: ['src/**', 'egs/**', 'scripts/packaging/**', 'setup.py', 'pyproject.toml', 'uv.lock', 'tests/packaging/**', '.github/workflows/package-installation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  artifact:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      UV_CACHE_DIR: ${{ runner.temp }}/aiquant-cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Build wheel and source archive
+        run: |
+          python -m pip install uv==0.12.4
+          uv build --out-dir .pytest_tmp/distribution
+      - name: Install outside the checkout and exercise the runtime
+        run: python scripts/packaging/verify_install.py --output .pytest_tmp/package-acceptance

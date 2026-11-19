@@ -18,16 +18,20 @@ else:
     import tomli as tomllib
 
 from .config import PROJECT_ROOT
+from .paths import INSTALLED, RESOURCE_ROOT
 
 
 def _requirements(cfg: dict[str, Any]) -> list[str]:
     lines = []
     if cfg["project_dependencies"]:
-        lines.extend(
-            tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["dependencies"]
-        )
+        if INSTALLED:
+            lines.extend(metadata.requires("b001-all-in-one") or [])
+        else:
+            lines.extend(
+                tomllib.loads((RESOURCE_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["dependencies"]
+            )
     for name in cfg["requirements"]:
-        lines.extend((PROJECT_ROOT / name).read_text(encoding="utf-8").splitlines())
+        lines.extend((RESOURCE_ROOT / name).read_text(encoding="utf-8").splitlines())
     return [line for line in lines if line.strip() and not line.lstrip().startswith("#")]
 
 
@@ -46,6 +50,8 @@ def _environment_errors(prefix: Path, cfg: dict[str, Any], minimum: list[int]) -
     expected = Path(cfg["directory"])
     if not expected.is_absolute():
         expected = PROJECT_ROOT / expected
+    if INSTALLED and cfg.get("project_dependencies") and not cfg.get("explicit_directory"):
+        expected = prefix
     conda = _is_conda_environment(prefix, cfg)
     conda_base = conda and (
         prefix.name.lower() in cfg["conda_base_names"]
@@ -119,6 +125,10 @@ def inspect_runtime(role: str = "web", mode: str | None = None) -> dict[str, Any
     prefix = Path(sys.prefix).resolve()
     errors, inherited = _environment_errors(prefix, cfg, cfg.get("minimum_python", config["minimum_python"]))
     warnings: list[str] = []
+    location_warning = "Interpreter does not match the configured role environment"
+    if mode != "strict" and cfg.get("project_dependencies") and location_warning in errors:
+        errors.remove(location_warning)
+        warnings.append(location_warning)
     upper = config.get("maximum_python_exclusive")
     if upper and sys.version_info[: len(upper)] >= tuple(upper):
         errors.append("Python exceeds the verified support range")
@@ -136,6 +146,11 @@ def inspect_runtime(role: str = "web", mode: str | None = None) -> dict[str, Any
         dist.metadata["Name"]
         for dist in metadata.distributions()
         if not Path(str(dist.locate_file(""))).resolve().is_relative_to(prefix)
+        and not (
+            not INSTALLED
+            and dist.metadata["Name"].lower().replace("_", "-") == "b001-all-in-one"
+            and Path(str(dist.locate_file(""))).resolve() == RESOURCE_ROOT.resolve()
+        )
     ]
     if outside:
         warnings.append("External distributions are visible outside the selected environment")

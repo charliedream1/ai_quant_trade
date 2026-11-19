@@ -10,6 +10,7 @@ from uuid import UUID
 import yaml
 
 from src.core.config import PROJECT_ROOT, get_settings
+from src.core.paths import SOURCE_ROOT, relative_project_path
 from src.core.repository import Repository, json_loads
 from src.core.timeutil import utc_now_iso
 from src.strategy.strategy_store import StrategyStore
@@ -22,7 +23,7 @@ LOCK = RLock()
 
 def source_manifest() -> dict[str, str]:
     roots = [
-        PROJECT_ROOT / "src" / p
+        SOURCE_ROOT / "src" / p
         for p in (
             "strategy/composition",
             "alpha_mining",
@@ -41,19 +42,19 @@ def source_manifest() -> dict[str, str]:
         PROJECT_ROOT / "egs/config/agents/alpha_mining_prompts.yaml",
         PROJECT_ROOT / "egs/config/agents/agent_strategies.yaml",
         PROJECT_ROOT / "egs/config/agents/agent_strategy_prompts.yaml",
-        PROJECT_ROOT / "src/data/backtest_history.py",
+        SOURCE_ROOT / "src/data/backtest_history.py",
         PROJECT_ROOT / "egs/config/strategies/backtest.yaml",
-        PROJECT_ROOT / "src/agent/decision_team.py",
-        PROJECT_ROOT / "src/engine/insights/backend.py",
-        PROJECT_ROOT / "src/strategy/codex_cli.py",
-        PROJECT_ROOT / "src/data/eastmoney.py",
+        SOURCE_ROOT / "src/agent/decision_team.py",
+        SOURCE_ROOT / "src/engine/insights/backend.py",
+        SOURCE_ROOT / "src/strategy/codex_cli.py",
+        SOURCE_ROOT / "src/data/eastmoney.py",
         PROJECT_ROOT / "egs/config/models/model_strategies.yaml",
         PROJECT_ROOT / "egs/examples/strategy_entrypoints/composition.py",
     ]
-    files.extend((PROJECT_ROOT / "src/strategy/models").glob("*.py"))
+    files.extend((SOURCE_ROOT / "src/strategy/models").glob("*.py"))
     files.extend(path for root in roots for path in root.rglob("*.py"))
     result = {
-        path.relative_to(PROJECT_ROOT).as_posix(): sha256(path.read_bytes()).hexdigest()
+        relative_project_path(path).as_posix(): sha256(path.read_bytes()).hexdigest()
         for path in sorted(files)
         if path.is_file()
     }

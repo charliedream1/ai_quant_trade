@@ -15,12 +15,12 @@ from typing import Any
 import yaml
 
 from src.core.logger import get_logger
+from src.core.paths import PROJECT_ROOT
 from src.core.process_env import process_environment
 from src.core.repository import Repository, json_loads
 from src.core.timeutil import utc_now_iso
 from src.engine.backtest.engines import qlib_diagnostic
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 USER_CONFIG_PATH = PROJECT_ROOT / "egs/config/models/qlib.yaml"
 EXAMPLE_CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "models" / "qlib.example.yaml"
 

@@ -12,6 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 from src.core.config import PROJECT_ROOT, get_settings
+from src.core.paths import SOURCE_ROOT
 from src.core.process_env import process_environment
 from src.strategy.execution_policy import execution_config
 from src.strategy.ports import StrategySignal
@@ -33,6 +34,7 @@ class ProcessStrategyPort:
         env = process_environment(
             "strategy",
             supplied={
+                "ALL_IN_ONE_WORKSPACE": str(PROJECT_ROOT),
                 "ALL_IN_ONE_DATA_DIR": str(self.work / "data"),
                 "ALL_IN_ONE_DB_PATH": str(self.work / "data/platform.db"),
                 "ALL_IN_ONE_DOCUMENT_STORAGE_DIR": str(self.work / "data/documents"),
@@ -42,8 +44,11 @@ class ProcessStrategyPort:
                 "USERPROFILE": str(self.work),
             },
         )
+        # This worker uses the same interpreter; include the actual code installation,
+        # including an explicit --target installation, without copying parent state.
+        env["PYTHONPATH"] = str(SOURCE_ROOT)
         self.process = subprocess.Popen(
-            [sys.executable, "-B", "-u", str(PROJECT_ROOT / "egs/entrypoints/strategy_worker.py")],
+            [sys.executable, "-B", "-u", "-m", "src.strategy.worker_main"],
             cwd=self.work,
             env=env,
             stdin=subprocess.PIPE,

@@ -3,7 +3,8 @@ file_format: yaml
 minimum_python: [3, 10, 1]
 maximum_python_exclusive: [3, 15]
 startup:
-  mode: strict
+  # strict verifies exact pins and origins; non-strict reports differences as warnings.
+  mode: non-strict
   role: web
 isolation:
   allow_conda: true

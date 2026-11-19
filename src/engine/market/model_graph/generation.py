@@ -12,8 +12,8 @@ from src.agent.providers.config import provider_config
 from src.agent.providers.events import collect_response
 from src.agent.providers.native import runner_for
 from src.agent.providers.registry import require_native
-from src.core.config import PROJECT_ROOT
 from src.core.env_file import resolve_env_value
+from src.core.paths import SOURCE_ROOT
 from src.core.process_env import process_environment
 from src.observability.instrumentation import traced
 
@@ -100,7 +100,7 @@ class GraphGeneration:
             raise ValueError("Requested WorkBuddy model is not in its installed catalogue")
         environment = process_environment("document")
         environment["ELECTRON_RUN_AS_NODE"] = "1"
-        helper = PROJECT_ROOT / "src/agent/providers/workbuddy_login.cjs"
+        helper = SOURCE_ROOT / "src/agent/providers/workbuddy_login.cjs"
         login = subprocess.run(
             [str(installation / "WorkBuddy.exe"), str(helper), str(installation), str(authentication)],
             env=environment,

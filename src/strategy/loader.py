@@ -13,14 +13,13 @@ from typing import Any
 
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.file_storage import FileStorage
+from src.core.paths import PROJECT_ROOT
 
 from .adapters import BAR_METHODS, TICK_METHODS, FunctionStrategyAdapter, ObjectStrategyAdapter
 from .execution_policy import execution_config, execution_kind
 from .ports import MarketEvent, StrategyContext, StrategyPort
 from .process_port import ProcessStrategyPort
 from .strategy_base import StrategyBase
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 @dataclass(slots=True)

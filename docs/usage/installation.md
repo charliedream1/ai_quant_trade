@@ -1,5 +1,7 @@
 # 依赖安装与环境复现
 
+For wheel/sdist installation, editable development and runtime workspace selection, see the [installable Python package guide](python_package.md).
+
 Dedicated non-base Conda environments support direct PyCharm startup. Python
 support bounds and missing application dependencies remain mandatory; compatible
 package-version or package-origin differences are warnings. Build-tool versions

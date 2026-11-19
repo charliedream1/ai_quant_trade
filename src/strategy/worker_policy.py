@@ -5,14 +5,14 @@ import os
 import sys
 from pathlib import Path
 
-from src.core.config import PROJECT_ROOT
+from src.core.paths import SOURCE_ROOT
 
 
 def install_policy(work: Path, source: Path, memory: int):
     allowed = [
         Path(sys.prefix).resolve(),
         Path(sys.base_prefix).resolve(),
-        (PROJECT_ROOT / "src").resolve(),
+        (SOURCE_ROOT / "src").resolve(),
         work.resolve(),
     ]
     protected = {".env", ".llm_env", ".secrets", "auth.json", "config.toml"}

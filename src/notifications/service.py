@@ -7,7 +7,8 @@ from urllib.parse import quote
 from loguru import logger
 
 from src.agent.image_validation import validate_images
-from src.core.config import PROJECT_ROOT, get_settings
+from src.core.config import get_settings
+from src.core.paths import SOURCE_ROOT
 
 from .config import config
 from .sources import synchronize, task
@@ -55,7 +56,7 @@ def public_config() -> dict:
     images = {"robot": "/static/" + avatar["robot"], "icon": "/static/" + avatar["icon"]}
     if avatar["custom_image"]:
         try:
-            root = PROJECT_ROOT / "src/frontend/assets"
+            root = SOURCE_ROOT / "src/frontend/assets"
             path = (root / avatar["custom_image"]).resolve()
             if (
                 not path.is_relative_to(root.resolve())

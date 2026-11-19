@@ -10,6 +10,7 @@ from typing import Any
 import yaml
 
 from src.core.config import PROJECT_ROOT, get_settings
+from src.core.paths import SOURCE_ROOT
 
 
 @lru_cache(maxsize=1)
@@ -25,7 +26,7 @@ def help_key(label: str) -> str:
 
 
 def chart_help_js() -> str:
-    assets = PROJECT_ROOT / "src/frontend/assets"
+    assets = SOURCE_ROOT / "src/frontend/assets"
     revision = sha256(
         json.dumps(catalog(), sort_keys=True).encode()
         + (assets / "chart_help.js").read_bytes()

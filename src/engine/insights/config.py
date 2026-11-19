@@ -6,9 +6,10 @@ from typing import Any
 import yaml
 
 from src.core.config import PROJECT_ROOT
+from src.core.paths import SOURCE_ROOT
 
 CONFIG_PATH = PROJECT_ROOT / "egs" / "config" / "platform" / "insight_reports.yaml"
-SKILL_ROOT = PROJECT_ROOT / "src" / "skills"
+SKILL_ROOT = SOURCE_ROOT / "src" / "skills"
 
 
 def insight_config() -> dict[str, Any]:

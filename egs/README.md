@@ -1,5 +1,7 @@
 # Example configurations and entry points
 
+For wheel/sdist installation, editable development and runtime workspace selection, see the [installable Python package guide](../docs/usage/python_package.md).
+
 `egs/` contains runnable examples and configuration templates for the integrated
 platform. It is kept separate from `src/`, which contains reusable application
 code. Every example is UTF-8 text and uses relative paths so that a fresh clone

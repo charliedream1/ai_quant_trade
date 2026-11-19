@@ -10,6 +10,7 @@ import yaml
 
 from src.alpha_mining.config import digest
 from src.core.config import PROJECT_ROOT
+from src.core.paths import SOURCE_ROOT, relative_project_path
 
 COMPONENTS = {"cn_analysis", "cn_debate", "contest_data", "contest_research"}
 
@@ -76,7 +77,9 @@ def freeze(recipe: str, options: dict | None = None) -> dict:
         type(window) is not int or window < 1 or window > value["min_history"] for window in value["feature_windows"]
     ):
         raise ValueError("效用特征窗口不合法")
-    prompts = yaml.safe_load((PROJECT_ROOT / "egs/config/agents/agent_strategy_prompts.yaml").read_text(encoding="utf-8"))
+    prompts = yaml.safe_load(
+        (PROJECT_ROOT / "egs/config/agents/agent_strategy_prompts.yaml").read_text(encoding="utf-8")
+    )
     if not isinstance(value["role_models"], dict):
         raise ValueError("角色模型配置必须为对象")
     for role, selection in value["role_models"].items():
@@ -117,11 +120,11 @@ def freeze(recipe: str, options: dict | None = None) -> dict:
     files += [
         path
         for name in ("engine/composition", "engine/execution", "portfolio", "risk", "agent/providers")
-        for path in (PROJECT_ROOT / "src" / name).glob("*.py")
+        for path in (SOURCE_ROOT / "src" / name).glob("*.py")
     ]
     files.append(PROJECT_ROOT / "egs/config/agents/agent_providers.yaml")
     result["source_manifest"] = {
-        path.relative_to(PROJECT_ROOT).as_posix(): sha256(path.read_bytes()).hexdigest() for path in sorted(files)
+        relative_project_path(path).as_posix(): sha256(path.read_bytes()).hexdigest() for path in sorted(files)
     }
     result["version"] = digest(result)
     return result

@@ -9,9 +9,10 @@ from urllib.parse import urlsplit
 import yaml
 from dotenv import dotenv_values
 
+from src.core.paths import PROJECT_ROOT
+
 from .errors import CliError
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = PROJECT_ROOT / "egs/config/platform/cli.yaml"
 EXAMPLE_PATH = PROJECT_ROOT / "egs" / "config" / "platform" / "cli.example.yaml"
 

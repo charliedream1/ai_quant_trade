@@ -56,7 +56,7 @@ def execute(options: Any, args: Any, definition: dict[str, Any], config: dict[st
         )
         return {"code": 0, "message": "离线命令契约；具体服务可用性请用 system capabilities", "data": data}, ExitCode.OK
     if special == "serve":
-        from start import main as serve
+        from src.startup import main as serve
 
         serve(
             [

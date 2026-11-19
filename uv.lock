@@ -338,7 +338,7 @@ wheels = [
 [[package]]
 name = "b001-all-in-one"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "akshare" },
     { name = "apscheduler" },

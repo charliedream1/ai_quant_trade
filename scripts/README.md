@@ -1,4 +1,6 @@
-# Documentation build scripts
+# Project setup, packaging and documentation scripts
+
+For wheel/sdist installation, editable development and runtime workspace selection, see the [installable Python package guide](../docs/usage/python_package.md).
 
 `setup_project.py` is the fresh-clone bootstrap. It supports both `pip` and
 `uv`, creates an E-drive runtime when available, emits activation scripts, and

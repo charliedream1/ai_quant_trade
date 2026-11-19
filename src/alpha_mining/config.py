@@ -11,6 +11,7 @@ import yaml
 
 from src.core.config import PROJECT_ROOT, get_settings
 from src.core.exceptions import BusinessError, ErrorCode
+from src.core.paths import SOURCE_ROOT, relative_project_path
 
 
 def invalid(reason: str) -> BusinessError:
@@ -78,7 +79,7 @@ def contained(path: Path) -> Path:
 
 def source_manifest() -> dict[str, str]:
     roots = [
-        PROJECT_ROOT / "src" / name
+        SOURCE_ROOT / "src" / name
         for name in (
             "alpha_mining",
             "engine/composition",
@@ -96,12 +97,11 @@ def source_manifest() -> dict[str, str]:
             PROJECT_ROOT / "egs/config/strategies/execution_costs.yaml",
             PROJECT_ROOT / "egs/config/agents/alpha_mining.yaml",
             PROJECT_ROOT / "egs/config/agents/alpha_mining_prompts.yaml",
-            PROJECT_ROOT / "src/agent/llm_client.py",
+            SOURCE_ROOT / "src/agent/llm_client.py",
             PROJECT_ROOT / "egs/config/strategies/factor_research.yaml",
             PROJECT_ROOT / "egs/config/agents/agent_providers.yaml",
         ]
     )
     return {
-        path.relative_to(PROJECT_ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in sorted(files)
+        relative_project_path(path).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(files)
     }

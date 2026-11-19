@@ -9,7 +9,7 @@
 [**ENGLISH VERSION**](README.md) | [**日本語版**](README_JA.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python-Version](https://img.shields.io/badge/Python-3.11%2B%20Workspace-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
+[![Python-Version](https://img.shields.io/badge/Python-3.10%E2%80%933.14%20Workspace-brightgreen)](https://github.com/charliedream1/ai_quant_trade)
 [![Stars](https://img.shields.io/github/stars/charliedream1/ai_quant_trade?style=social)](https://github.com/charliedream1/ai_quant_trade)
 
 <p>
@@ -179,6 +179,27 @@
 ```
 
 访问`http://127.0.0.1:8000/app/`。Linux按配置创建环境，使用`.venv-secure/bin/python`。业务配置在`egs/`的YAML中，密钥只放本地`.env`或`.llm_env`。远程访问与自定义源码先看[访问和复核规则](docs/usage/access_and_execution.md)。Qlib信号分析与原生Workflow分别配置、分别验证；实盘也需实际通道和检查，不能由演示推断已可实盘。
+
+### Installable Python package
+
+The distribution is `b001-all-in-one`; the existing import namespace remains
+`src`. Build wheel and source archives with `uv build`, then install the wheel
+with pip or uv. Editable development remains supported:
+
+```text
+python -m pip install .
+# Alternative: uv sync --locked
+aiquant-server --workspace ./aiquant-workspace
+```
+
+Use `python -m src --workspace ./aiquant-workspace` for module startup;
+`aiquant` provides the client CLI. Source/PyCharm users can still run `start.py`.
+Select a workspace outside the installed package directory; `.env`, configuration,
+data and logs belong there. Non-strict startup is the default; strict checks are
+opt-in. Windows Python 3.10.1–3.14 is supported (tested patch versions are listed
+in the guide); Linux installation CI is configured but was not executed locally.
+Optional workers and external tools retain their own requirements.
+See [package installation and workspace usage](docs/usage/python_package.md).
 
 ---
 

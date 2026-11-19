@@ -70,7 +70,7 @@
 
 | **Period** | **Major capability** |
 |:---|:---|
-| 2026.11 | [**Integrated quant platform and deployment**](docs/usage/workspace.md): market research, strategy composition, fee-aware backtests, [responsive research workspace with independent homepage groups and progressive research sections](docs/usage/research_workspace.md), Python 3.10–3.14 compatibility, exact pip/uv installation, Docker runtime and Langfuse observability. |
+| 2026.11 | [**Integrated quant platform and deployment**](docs/usage/workspace.md): market research, strategy composition, fee-aware backtests, [responsive research workspace with independent homepage groups and progressive research sections](docs/usage/research_workspace.md), Python 3.10–3.14 compatibility, [installable wheel/sdist and pip/uv workflows](docs/usage/python_package.md), Docker runtime and Langfuse observability. |
 | 2026.11 | [**Research, strategies and risk**](docs/usage/economic_analysis.md): macroeconomics, [financial statements and market research](docs/usage/runtime_market_research.md), [Hong Kong HKD research](docs/usage/hong_kong_market.md), ETF and industry rotation, factor research, portfolio/risk composition and execution-aware backtests. |
 | 2026.11 | [**File knowledge and document Q&A**](docs/usage/knowledge.md): named file libraries, Markdown chunking, zvec-grep retrieval, source previews, report downloads, local SAG2 BM25 retrieval with evidence expansion and replaceable JEV/embedding/rerank selectors. |
 | 2026.11 | [**AI model and agent operations**](docs/usage/model_interfaces.md): OpenAI/LiteLLM interfaces, shared RPM controls, native Agent/CLI/Skills workflows, [page-specific Skill analysis and HTML reports](docs/usage/page_skill_analysis.md), [page-aware floating questions](docs/usage/floating_assistant_context.md), [evidence-grounded company relationship graphs](docs/usage/model_stock_relationships.md), research and safe execution controls. |
@@ -262,6 +262,27 @@ The workspace requires **Python 3.10–3.14** (current patch releases; minimum 3
 ```
 
 Open `http://127.0.0.1:8000/app/`. On Linux, create the declared environment and use `.venv-secure/bin/python`. Business settings live in YAML under `egs/`; private keys stay in local `.env` / `.llm_env`. See [access and source-review rules](docs/usage/access_and_execution.md) before remote use or custom Python execution. Qlib signal analysis and the native Qlib Workflow are separate capabilities; the latter needs its own data and configuration. Broker/live execution also requires a configured channel and checks.
+
+### Installable Python package
+
+The distribution is `b001-all-in-one`; the existing import namespace remains
+`src`. Build wheel and source archives with `uv build`, then install the wheel
+with pip or uv. Editable development remains supported:
+
+```text
+python -m pip install .
+# Alternative: uv sync --locked
+aiquant-server --workspace ./aiquant-workspace
+```
+
+Use `python -m src --workspace ./aiquant-workspace` for module startup;
+`aiquant` provides the client CLI. Source/PyCharm users can still run `start.py`.
+Select a workspace outside the installed package directory; `.env`, configuration,
+data and logs belong there. Non-strict startup is the default; strict checks are
+opt-in. Windows Python 3.10.1–3.14 is supported (tested patch versions are listed
+in the guide); Linux installation CI is configured but was not executed locally.
+Optional workers and external tools retain their own requirements.
+See [package installation and workspace usage](docs/usage/python_package.md).
 
 ---
 

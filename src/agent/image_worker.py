@@ -8,7 +8,6 @@ import warnings
 from pathlib import Path
 from typing import cast
 
-import yaml
 from PIL import Image, UnidentifiedImageError, __version__
 
 
@@ -45,15 +44,15 @@ def main() -> None:
     for stream in (sys.stdin, sys.stdout, sys.stderr):
         cast(io.TextIOWrapper, stream).reconfigure(encoding="utf-8")
     # -I ensures package imports come from this interpreter, independent of the Web sys.path.
-    project = Path(__file__).resolve().parents[2]
-    config = yaml.safe_load((project / "egs/config/models/image_validation.yaml").read_text(encoding="utf-8"))
+    payload = json.load(sys.stdin)
+    project = Path(payload["workspace"]).resolve()
+    config = payload["limits"]
     prefix = (project / config["environment"]).resolve()
     cfg = prefix / "pyvenv.cfg"
     if Path(sys.prefix).resolve() != prefix or __version__ != config["pillow_version"] or not cfg.is_file():
         raise SystemExit("图片校验必须运行于项目独立 Pillow 13 环境")
     if "include-system-site-packages = true" in cfg.read_text(encoding="utf-8").lower():
         raise SystemExit("图片校验环境不得继承基础包")
-    payload = json.load(sys.stdin)
     result = {"pillow": __version__, "images": [validate(item, config) for item in payload["images"]]}
     sys.stdout.write(json.dumps(result, ensure_ascii=False))
 

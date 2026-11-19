@@ -13,7 +13,7 @@ from typing import Any
 import yaml
 from dotenv import dotenv_values
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from .paths import PROJECT_ROOT
 
 
 @dataclass
@@ -61,8 +61,8 @@ class Settings:
             if isinstance(loaded, dict):
                 payload.update(loaded)
 
-        data_dir = Path(env("ALL_IN_ONE_DATA_DIR", payload.get("data_dir", PROJECT_ROOT / "data")))
-        db_path = Path(env("ALL_IN_ONE_DB_PATH", payload.get("db_path", data_dir / "all_in_one.db")))
+        data_dir = workspace_path(env("ALL_IN_ONE_DATA_DIR", payload.get("data_dir", PROJECT_ROOT / "data")))
+        db_path = workspace_path(env("ALL_IN_ONE_DB_PATH", payload.get("db_path", data_dir / "all_in_one.db")))
         document_storage_dir = Path(
             env(
                 "ALL_IN_ONE_DOCUMENT_STORAGE_DIR",
@@ -88,7 +88,7 @@ class Settings:
             env("ALL_IN_ONE_HELP_DOCS_SITE_DIR", payload.get("help_docs_site_dir", data_dir / "help_site"))
         )
         chan_root_value = env("ALL_IN_ONE_CHAN_ANALYZER_ROOT", payload.get("chan_analyzer_root", None))
-        chan_analyzer_root = Path(str(chan_root_value)) if chan_root_value else None
+        chan_analyzer_root = workspace_path(chan_root_value) if chan_root_value else None
         scheduler_executors_value = env(
             "ALL_IN_ONE_SCHEDULER_EXECUTORS_PATH",
             payload.get("scheduler_executors_path", None),
@@ -99,7 +99,16 @@ class Settings:
             payload.get("trading_calendar_path", None),
         )
         trading_calendar_path = Path(str(trading_calendar_value)) if trading_calendar_value else None
+        document_storage_dir = workspace_path(document_storage_dir)
+        market_parquet_dir = workspace_path(market_parquet_dir)
+        duckdb_path = workspace_path(duckdb_path)
+        help_docs_site_dir = workspace_path(help_docs_site_dir)
+        if scheduler_executors_path:
+            scheduler_executors_path = workspace_path(scheduler_executors_path)
+        if trading_calendar_path:
+            trading_calendar_path = workspace_path(trading_calendar_path)
         return cls(
+            project_root=PROJECT_ROOT,
             data_dir=data_dir,
             db_path=db_path,
             document_storage_dir=document_storage_dir,
@@ -167,6 +176,11 @@ class Settings:
                 ),
             ),
         )
+
+
+def workspace_path(value: Any) -> Path:
+    path = Path(str(value)).expanduser()
+    return path if path.is_absolute() else PROJECT_ROOT / path
 
 
 def _normalize_root_path(value: Any) -> str:

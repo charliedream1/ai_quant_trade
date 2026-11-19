@@ -7,15 +7,13 @@ import json
 import platform
 from copy import deepcopy
 from importlib.metadata import PackageNotFoundError, version
-from pathlib import Path
 from typing import Any
 
 from src.core.config import get_settings
+from src.core.paths import SOURCE_ROOT, project_file, relative_project_path
 from src.core.timeutil import utc_now_iso
 from src.data.manager import current_market
 from src.strategy.ports import MarketEvent
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
 def _dependency_versions(model_profile: str | None) -> dict[str, str]:
@@ -54,12 +52,10 @@ def experiment_snapshot(
     ]
     if resolution.get("model_profile"):
         files.extend(
-            path.relative_to(PROJECT_ROOT).as_posix() for path in (PROJECT_ROOT / "src/strategy/models").glob("*.py")
+            relative_project_path(path).as_posix() for path in (SOURCE_ROOT / "src/strategy/models").glob("*.py")
         )
         files.append("egs/config/models/model_strategies.yaml")
-    files.extend(
-        path.relative_to(PROJECT_ROOT).as_posix() for path in (PROJECT_ROOT / "src/engine/execution").glob("*.py")
-    )
+    files.extend(relative_project_path(path).as_posix() for path in (SOURCE_ROOT / "src/engine/execution").glob("*.py"))
     files.extend(
         ["src/data/backtest_history.py", "egs/config/strategies/backtest.yaml", "src/engine/backtest/capabilities.py"]
     )
@@ -103,7 +99,7 @@ def experiment_snapshot(
                 "dependencies": _dependency_versions(resolution.get("model_profile")),
             },
             "code_sha256": {
-                name: hashlib.sha256((PROJECT_ROOT / name).read_bytes()).hexdigest() for name in sorted(files)
+                name: hashlib.sha256(project_file(name).read_bytes()).hexdigest() for name in sorted(files)
             },
             "data": {"mode": get_settings().data_mode, "market": payload.get("market") or current_market()},
         }

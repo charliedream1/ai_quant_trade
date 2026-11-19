@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from src.core.config import PROJECT_ROOT
+from src.core.paths import SOURCE_ROOT
 
 from .catalog import settings
 
@@ -24,13 +25,15 @@ def export_skills(host: str) -> dict:
         raise ValueError("已有导出清单不属于本项目")
     changes, hashes = [], {}
     for skill in settings()["workflows"]:
-        source = PROJECT_ROOT / "src/skills" / skill
+        source = SOURCE_ROOT / "src/skills" / skill
         for path in sorted(source.rglob("*")):
             if not path.is_file():
                 continue
             key = (Path(skill) / path.relative_to(source)).as_posix()
             target = root / key
-            if not target.resolve().is_relative_to(root) or not path.resolve().is_relative_to(PROJECT_ROOT.resolve()):
+            if not target.resolve().is_relative_to(root) or not path.resolve().is_relative_to(
+                (SOURCE_ROOT / "src/skills").resolve()
+            ):
                 raise ValueError("Skill文件路径越界")
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             if target.is_file():
