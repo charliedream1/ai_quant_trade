@@ -1,4 +1,4 @@
-xlwings==0.37.5
+xlwings==0.37.6
 qstock==1.3.8
 backtrader==1.9.78.123
 pandas==3.0.6
