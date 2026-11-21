@@ -66,6 +66,7 @@ def test_installed_server_rule_page_and_assets(tmp_path):
                     browser.close()
         finally:
             stop_process_tree(process)
+            process.wait(timeout=10)
     with socket.socket() as listener:
         listener.settimeout(1)
         assert listener.connect_ex(("127.0.0.1", port)) != 0
