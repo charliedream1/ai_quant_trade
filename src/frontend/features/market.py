@@ -141,6 +141,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         value="全部",
                         label="新闻分类",
                         visible=False,
+                        elem_id="news-category",
                     )
                     news_region = gr.Dropdown(
                         news_policy()["ui"]["regions"], value="all", label="新闻地区", elem_id="news-region"
@@ -148,8 +149,8 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     news_topic = gr.Dropdown(
                         news_policy()["ui"]["topics"], value="all", label="新闻主题", elem_id="news-topic"
                     )
-                    news_keyword = gr.Textbox(label="关键词")
-                    news_source = gr.Textbox(label="来源")
+                    news_keyword = gr.Textbox(label="关键词", elem_id="news-keyword")
+                    news_source = gr.Textbox(label="来源", elem_id="news-source")
                     news_search = gr.Button("查询", variant="primary", elem_classes=["page-refresh-btn"])
                     news_refresh = gr.Button("同步最新")
                 news_status = gr.Markdown(elem_classes=["compact-note"])

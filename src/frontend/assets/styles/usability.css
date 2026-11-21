@@ -58,3 +58,20 @@ html.ai-console-active #main-navigation .module-tabs > .tabitem { padding: 0 !im
   #main-navigation .row > .block { min-width: 0; flex-basis: 100%; }
   #main-navigation .tab-wrapper button { padding: 8px 10px; }
 }
+html.gradio-embedded #page-skill-standalone-slot, #page-skill-panel:not(:has(> .label-wrap.open)) { display: none !important; }
+#page-skill-panel:has(> .label-wrap.open) {
+  position: fixed;
+  z-index: 9000;
+  inset: 10px auto 10px 10px;
+  width: min(calc(100% - 20px), 580px);
+  max-width: 100%;
+  padding: 14px;
+  box-sizing: border-box;
+  overflow: auto;
+  border: 1px solid var(--border-color-primary);
+  border-radius: 12px;
+  background: var(--block-background-fill);
+  box-shadow: 0 8px 28px #182c4733;
+}
+#page-skill-panel button { white-space: normal; overflow-wrap: anywhere; }
+#page-skill-standalone { padding: 7px 12px; cursor: pointer; }

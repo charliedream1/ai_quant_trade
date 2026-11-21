@@ -56,8 +56,7 @@ class CatalogSelection:
             gr.update(interactive=False),
         )
 
-    def load(self, state, refresh=False):
-        backend, revision = state["backend"], state["revision"]
+    def load_data(self, backend, refresh=False):
         if backend == "generic_agent":
             choices = self.loader() if self.loader else self.initial_choices
             catalog = {
@@ -68,8 +67,12 @@ class CatalogSelection:
                 ],
                 "status": "unknown",
             }
-        else:
-            catalog = discover(backend, refresh)
+            return catalog
+        return discover(backend, refresh)
+
+    def load(self, state, refresh=False):
+        backend, revision = state["backend"], state["revision"]
+        catalog = self.load_data(backend, refresh)
         if state["revision"] != revision or state["backend"] != backend:
             return tuple(gr.skip() for _ in range(5))
         state["catalog"] = catalog

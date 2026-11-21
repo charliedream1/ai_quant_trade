@@ -6,6 +6,37 @@
   if (!Object.keys(views).length) return;
   let epoch = 0;
   let currentView = "", currentNonce = "";
+  const reportHeader = () => document.querySelector("#page-skill-panel > .label-wrap");
+  const closeReport = () => {
+    const header = reportHeader();
+    if (header?.classList.contains("open")) header.click();
+  };
+  const setReportField = (id, value) => {
+    const field = document.querySelector(`#${id} textarea, #${id} input`);
+    if (!field) return false;
+    if (field.value !== value) {
+      field.value = value;
+      field.dispatchEvent(new Event("input", {bubbles: true}));
+      field.dispatchEvent(new Event("change", {bubbles: true}));
+    }
+    return true;
+  };
+  const setReportLanguage = () => setReportField("page-skill-language", document.documentElement.dataset.uiLang || "zh");
+  const openReport = () => {
+    const view = currentView;
+    if (!config.report_views.includes(`${module}/${view}`)) return;
+    waitFor(() => {
+      const header = reportHeader();
+      const trigger = document.getElementById("page-skill-open");
+      if (!header || !trigger || !setReportField("page-skill-view", view) || !setReportLanguage()) return false;
+      queueMicrotask(() => {
+        if (view !== currentView || !header.isConnected || window.aiquantPageWork?.active === false) return;
+        if (!header.classList.contains("open")) header.click();
+        document.getElementById("page-skill-open")?.click();
+      });
+      return true;
+    }, epoch);
+  };
   const cleanups = new Set(), applied = new Map();
   const cancel = () => {
     epoch += 1;
@@ -26,7 +57,10 @@
     const alias = config.aliases.find((row) => row.module === data.module && row.view === data.view);
     if (alias && alias.target === module) data = {...data, view: alias.target_view, tab: alias.tab || data.tab};
     if (data.module !== module || !views[data.view]) return;
-    if (currentView === data.view && currentNonce === String(data.target_nonce || `standalone:${location.search}`)) return;
+    if (currentView === data.view && currentNonce === String(data.target_nonce || `standalone:${location.search}`)) {
+      if (data.openReport) openReport();
+      return;
+    }
     cancel();
     const ticket = epoch, key = `${module}/${data.view}`;
     const nonce = String(data.target_nonce || `standalone:${location.search}`);
@@ -35,19 +69,10 @@
     const contextScope = document.querySelector('#assistant-context-scope .prose');
     const contextState = document.getElementById('assistant-context-state');
     if (contextViewChanged && contextScope && contextState) contextScope.textContent = contextState.dataset.reset;
-    waitFor(() => {
-      const field = document.querySelector('#page-skill-view textarea, #page-skill-view input');
-      if (!field) return false;
-      if (field.value !== data.view) {
-        const panel = document.getElementById('page-skill-panel');
-        const header = panel?.querySelector(':scope > .label-wrap');
-        const taskInput = panel?.querySelector('#page-skill-task input');
-        if (taskInput?.getClientRects().length && header) header.click();
-        field.value = data.view;
-        field.dispatchEvent(new Event('input', {bubbles: true}));
-      }
-      return true;
-    }, ticket);
+    if (contextViewChanged) closeReport();
+    setReportField("page-skill-view", data.view);
+    const standalone = document.getElementById("page-skill-standalone");
+    if (standalone) standalone.hidden = !config.report_views.includes(key);
     currentNonce = nonce;
     waitFor(() => {
       const tab = Array.from(document.querySelectorAll(".module-tabs > .tab-wrapper button"))
@@ -103,6 +128,7 @@
       }, ticket);
       return true;
     }, ticket);
+    if (data.openReport) openReport();
   };
   const fromUrl = () => {
     const query = new URLSearchParams(location.search);
@@ -115,7 +141,7 @@
     window.addEventListener("message", (event) => {
       if (event.origin !== location.origin || event.source !== window.parent) return;
       if (event.data?.type === "aiquant:select-view") apply(event.data);
-      if (event.data?.type === "aiquant:deactivate") cancel();
+      if (event.data?.type === "aiquant:deactivate") { closeReport(); cancel(); }
     });
     window.parent.postMessage({type: "aiquant:ready"}, location.origin);
     document.addEventListener("click", (event) => {
@@ -130,7 +156,14 @@
   } else {
     fromUrl();
     window.addEventListener("popstate", fromUrl);
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("#page-skill-standalone")) openReport();
+    });
   }
+  window.addEventListener("aiquant:language-changed", setReportLanguage);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeReport();
+  });
   document.addEventListener("input", (event) => {
     if (!event.isTrusted || !event.target.matches("input, textarea")) return;
     const key = `${module}/${currentView}`;
@@ -167,7 +200,11 @@
       window.aiquantPageWork?.deactivate();
       window.aiquantPageWork?.activate();
     }
+    closeReport();
     currentView = view;
+    setReportField("page-skill-view", view);
+    const standalone = document.getElementById("page-skill-standalone");
+    if (standalone) standalone.hidden = !config.report_views.includes(`${module}/${view}`);
     cancel();
     if (isWorkspaceEmbedded) window.parent.postMessage({type: "aiquant:view-selected", module, view}, location.origin);
     else {

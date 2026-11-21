@@ -1,31 +1,26 @@
 # Page-specific CLI and Skill analysis
 
-Supported research modules provide a **CLI + Skill analysis** panel below their
-normal rule view. Rule tables, charts and actions remain available. Opening a
-page or the panel does not submit a model request.
+Select **Page analysis** in the left sidebar of a supported research view to
+open its report drawer. Opening the drawer loads the model catalog for the
+selected CLI. Generation starts when you click **Generate HTML report**.
 
-1. Select the market and page inputs, then load the relevant rule data or open a
-   saved result. The server retains a bounded snapshot of that completed result.
-2. Open the analysis panel and choose the task for the current view. Stock pages
-   offer technical and financial interpretation; simulation offers backtest and
-   paper-account interpretation. Required observations must already be available.
-3. Choose a supported CLI, model and reasoning effort. The shared catalogue shows
-   provider-reported billing or explicitly unknown pricing. Model discovery and
-   ordinary chat access do not prove eligibility for strict research.
-4. Click **Run Skill analysis**. The page shows the frozen request, actual stages,
-   returned process events and the resulting HTML. Cancel stops the page-owned
-   work; leaving the page also cancels it and clears old-view polling.
-5. Use report history to reopen the saved result or download its identical HTML.
-   Opening/downloading a report does not rerun generation.
+1. Select the CLI and model. The catalog is shared across the workspace and
+   reused daily. Click **Refresh models** to query it again. The drawer displays
+   when a CLI is missing or its catalog is unavailable.
+   If Qoder reports that its account is signed out, run `qodercli login` and
+   refresh the model list after authentication.
+2. Click **Generate HTML report**. The drawer selects the current view's task
+   and generates the report in the current interface language. Sector and news
+   reports can load current observations from the active filters. For other
+   views, first load the relevant data or open a saved result.
+3. Preview the report in the drawer or download the same HTML. Expand **Run
+   details** to see the evidence scope and process events. **Analysis options**
+   shows the active task and other tasks available for that view.
+4. Expand **Report history** to reopen a saved report.
 
-**Stop midway:** click **Cancel analysis** in the analysis panel. The status
-changes to **Stopping analysis** while the owned CLI process and its children
-exit, then becomes `cancelled`. Already observed events remain in history; an
-interrupted result is not shown as a completed report. After cleanup, use
-**Run Skill analysis** to start again. Stopping one run does not stop unrelated
-research or another page's independent task. Leaving its page applies the same
-owned-work cancellation. Usage already consumed by a provider is not refunded
-or undone by local cancellation.
+Click **Cancel analysis** to stop an active report. The drawer shows the
+stopping state until the CLI process and its children exit. Leaving the page
+also cancels the report. Use **Generate HTML report** to start a new run.
 
 If inputs changed after data was loaded, refresh the corresponding rule data.
 Snapshots are isolated by database, browser owner, navigation revision and market.
@@ -38,9 +33,8 @@ publish a report externally or place orders.
 
 | Surface | Required completed rule observations |
 | --- | --- |
-| Overview | Account, market, news or local-task results |
-| Industry/concept sectors | Current board/ranking result |
-| News | Results with the selected geography, subject and query |
+| Industry/concept sectors | Current board/ranking result, loaded on demand |
+| News | Results with the selected geography, subject and query, loaded on demand |
 | Stock technical | Stock identity, period and deterministic result |
 | Company financials / macro | Loaded economic snapshot with its original period/scope |
 | Candidates / resource pool | Generated candidate comparison or loaded pool members |

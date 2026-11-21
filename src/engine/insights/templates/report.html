@@ -1,7 +1,7 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="{{ 'en' if run.request.language == 'en' else 'zh-CN' }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{ report.title }}</title><style>{{ css | safe }}</style></head><body><main>
-<header><small>AIQUANT · SKILL INSIGHTS</small><h1>{{ report.title }}</h1>
+<header><small>{{ ui.report_brand | default('AIQUANT · SKILL INSIGHTS') }}</small><h1>{{ report.title }}</h1>
 <p>{{ run.request.market }} · {{ run.request.end_date }} · {{ run.request.backend }} · {{ evidence.data_source }}</p>
 <p>{{ run.run_id }} · {{ run.created_at }}</p></header>
 <aside>{{ ui.verification }}{% if evidence.is_mock %}<p>{{ ui.partial }} · {{ evidence.gaps | join('；') }}</p>{% endif %}</aside>

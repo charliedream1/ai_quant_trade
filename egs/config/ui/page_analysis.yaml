@@ -1,18 +1,41 @@
 # File format: YAML; encoding: UTF-8
 limits: {snapshots: 256, rows: 80, text_chars: 12000, evidence_chars: 48000, ttl_seconds: 1800, history: 30, poll_seconds: 0.5, deadline_seconds: 600}
+cli: {default: codex, options: [codex, qoder, trae, codebuddy]}
 ui:
-  title: CLI + Skill analysis
+  sidebar: 页面分析
+  drawer_description: 选择 CLI 和模型，生成当前页面的 HTML 报告。
+  model_default: CLI 默认模型
+  model_refresh: 刷新模型
+  model_loading: 正在加载模型…
+  model_ready: 模型列表已加载
+  model_missing: 未检测到此 CLI，请检查安装和路径设置。
+  model_unsupported: 此 CLI 版本不提供模型列表。可使用 CLI 默认模型或配置本地模型目录。
+  model_failed: 模型列表暂不可用。检查 CLI 登录后可刷新，或使用默认模型。
+  model_empty: CLI 未返回模型列表，可使用默认模型。
+  model_changed: CLI 已切换，请重新选择模型。
+  options: 分析选项
+  history_tools: 报告历史
+  progress_tools: 运行详情
+  catalog_unknown: 默认模型可用性取决于 CLI 的安装和登录状态。
+  preparing: 正在核对 CLI 和当前页面数据…
+  running: 正在生成报告…
+  ready: HTML 报告已生成
+  failed: 报告生成失败
+  cancelled: 报告已取消
+  chinese_report: 请用简体中文撰写标题、摘要、正文和风险说明。章节标题必须逐字使用所列标题。
+  english_report: Write the title, summary, findings and risks in English. Use the listed section headings verbatim.
+  title: 页面报告
   intro: Rule data remains available above. Load the relevant data first, then run an evidence-bound analysis. Opening this panel never starts a model.
   task: Analysis task
-  run: Run Skill analysis
+  run: 生成 HTML 报告
   cancel: Cancel analysis
   stopping: Stopping analysis; waiting for owned CLI processes and resources to exit.
   history: Saved page reports
   refresh: Refresh report history
   open: Open saved HTML
   scope: Evidence and page scope
-  model: CLI model
-  backend: CLI backend
+  model: CLI 模型
+  backend: CLI
   effort: Reasoning effort
   waiting: Ready; no model has been called.
   missing: Load the relevant rule data for this page before running analysis.
@@ -28,9 +51,23 @@ ui:
   busy: This page already has an analysis running. Cancel it or wait before starting another.
   mock: Demonstration input is not live market evidence.
   no_real_us: A real US data source is not configured; do not label its fallback as real evidence.
-  verification: Current-observation interpretation only. This report is not independent backtest/PIT validation or authority to trade. Original source timestamps and displayed scope apply.
+  verification: 本报告基于当前页面观测，适用原始时间和取数范围。独立回测、时点数据验证和交易授权须另行完成。
   local_artifact: Local artifact path omitted from model evidence.
   bounded: 'Evidence is a bounded page snapshot (at most {rows} records per collection and {text_chars} characters per text); consult original results for complete coverage.'
+report_copy:
+  zh:
+    report_brand: AIQUANT · 页面分析
+    source: 页面规则数据快照
+    bounded: '每组最多保留 {rows} 条观测，每条文本最多 {text_chars} 个字符。完整信息请查阅页面原始数据。'
+    mock: 演示数据仅用于验证流程。
+  en:
+    report_brand: AIQUANT · PAGE ANALYSIS
+    source: Server-captured page observations
+    evidence_heading: Data and citations
+    gaps_heading: Evidence gaps and checks
+    partial: Report generated with evidence gaps
+    disclaimer: For research and education. Consult independent evidence before making investment decisions.
+    verification: This report interprets observations within their recorded time and scope. Backtest validation, point-in-time checks and trading authorization are separate tasks.
 resources:
   market: [market_review/SKILL.md, market_review/prompts/analyst.md]
   stock: [single_stock_analysis/SKILL.md, single_stock_analysis/references/a_share_technical_skill.md]
@@ -40,10 +77,11 @@ resources:
   experiment: [page_analysis/references/experiment.md]
   documents: [page_analysis/references/documents.md]
 sections: [Summary, Evidence and interpretation, Risks and invalidation, Data gaps and next steps]
+sections_zh: [摘要, 证据与解读, 风险与失效条件, 数据缺口与后续核查]
 presets:
   overview: {module: dashboard, views: [overview, custom], show_panel: false, label: Market and account review, method: market, reads: [home_account, home_market, home_news, home_operations, dashboard_account, dashboard_market], bindings: {account_mode: {id: home-account-mode}}}
-  sectors: {module: market, views: [quotes], label: Sector rotation review, method: market, reads: [market_overview], bindings: {board: {label: 板块类型}, selection: {label: 板块榜单}}}
-  news: {module: market, views: [news], label: Market and policy news analysis, method: news, reads: [news, refresh_news], bindings: {region: {id: news-region}, topic: {id: news-topic}, keyword: {label: 关键词}, source: {label: 来源}}}
+  sectors: {module: market, views: [quotes], label: Sector rotation review, method: market, reads: [market_overview], on_demand: {method: market_overview, defaults: {board: industry, limit: 20, selection: balanced}}, bindings: {board: {label: 板块类型}, selection: {label: Sector ranking}, limit: {label: 展示数量}}}
+  news: {module: market, views: [news], label: Market and policy news analysis, method: news, reads: [news, refresh_news], on_demand: {method: news, defaults: {category: 全部, keyword: '', source: '', region: all, topic: all}}, bindings: {region: {id: news-region}, topic: {id: news-topic}, keyword: {id: news-keyword}, source: {id: news-source}, category: {id: news-category}}}
   technical: {module: market, views: [stock], label: Stock technical analysis, method: stock, reads: [stock], bindings: {symbol: {id: fundamentals-symbol}, period: {label: K 线周期}}}
   financial: {module: market, views: [stock, fundamentals], label: Company financial analysis, method: economics, reads: [economic_load], match: {kind: fundamentals}, bindings: {symbol: {id: fundamentals-symbol}, period: {id: fundamentals-period}, peers: {id: fundamentals-peers}}}
   macro: {module: market, views: [macro], label: Macro evidence analysis, method: economics, reads: [economic_load], match: {kind: macro}, bindings: {series: {id: macro-series}}}

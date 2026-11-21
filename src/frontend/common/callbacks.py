@@ -138,7 +138,7 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
             REQUEST_MARKET.reset(token)
 
 
-def safe(fn: Callable[..., Any]) -> Callable[..., Any]:
+def safe(fn: Callable[..., Any], *, cancel_outputs: int = 1) -> Callable[..., Any]:
     """Preserve streaming registration and handle errors throughout iteration."""
     operation, source = callback_location(fn)
     output_count = policy()["progressive_methods"].get(operation.removeprefix("FrontendService."))
@@ -201,7 +201,7 @@ def safe(fn: Callable[..., Any]) -> Callable[..., Any]:
                 check()
                 return result
         except PageCancelled:
-            return gr.skip()
+            return gr.skip() if cancel_outputs == 1 else tuple(gr.skip() for _ in range(cancel_outputs))
 
     return wrapped
 

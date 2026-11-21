@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 import yaml
 
 from src.core.config import PROJECT_ROOT
+from src.core.page_analysis_snapshot import analysis_config
 from src.frontend.registry import MODULES
 
 
@@ -14,6 +15,14 @@ from src.frontend.registry import MODULES
 def navigation_config():
     config = yaml.safe_load((PROJECT_ROOT / "egs/config/ui/navigation.yaml").read_text(encoding="utf-8"))
     config["modules"] = {module.key: dict(module.views) for module in MODULES}
+    config["report_views"] = sorted(
+        {
+            f"{preset['module']}/{view}"
+            for preset in analysis_config()["presets"].values()
+            if preset.get("show_panel", True)
+            for view in preset["views"]
+        }
+    )
     return config
 
 

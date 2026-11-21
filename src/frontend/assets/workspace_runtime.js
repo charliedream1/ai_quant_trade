@@ -328,6 +328,11 @@
   const shouldSkipElement = (element, attributes = false) => {
     if (!element) return true;
     if (SKIP_I18N_TAGS.has(element.tagName) && !(attributes && ["INPUT", "TEXTAREA"].includes(element.tagName))) return true;
+    const modelValue = element.closest('[role="option"], input[role="listbox"]');
+    if (modelValue?.closest(".no-i18n-values")) {
+      const label = normalizeText(modelValue.value ?? modelValue.textContent);
+      if (label && !["CLI 默认模型", I18N_DICT["CLI 默认模型"]].includes(label)) return true;
+    }
     return Boolean(element.closest("pre, .no-i18n, .cm-editor, .monaco-editor, #ai-console-chat-history .message"));
   };
   const isTranslatableText = (text) => {

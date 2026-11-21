@@ -111,6 +111,8 @@ body { margin: 0 !important; }
 .workspace-shell.sidebar-collapsed .workspace-nav-icon { margin: 0 auto; }
 .workspace-sidebar-toggle { position: absolute; top: 10px; right: -13px; z-index: 3; width: 26px; height: 26px; min-height: 26px; padding: 0; border: 1px solid #bdd6e8; border-radius: 50%; color: #2d6086; background: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, .16); cursor: pointer; }
 .workspace-sidebar-toggle:hover { color: #fff; background: #2563eb; }
+.workspace-page-report { margin: 6px 8px 12px; width: calc(100% - 16px); min-height: 36px; border: 1px solid var(--shell-line); border-radius: 8px; background: var(--shell-surface); color: var(--shell-ink); font-weight: 650; cursor: pointer; overflow-wrap: anywhere; }
+.workspace-page-report[hidden] { display: none !important; }
 .workspace-nav { display: grid; gap: 3px; }
 .workspace-nav-group { display: grid; gap: 3px; }
 .workspace-nav-button {
@@ -392,6 +394,7 @@ _SHELL_JS_TEMPLATE = r"""
     const refreshButton = shell.querySelector("#workspace-refresh");
     const standaloneButton = shell.querySelector("#workspace-open-standalone");
     const sidebarToggle = shell.querySelector("#workspace-sidebar-toggle");
+    const reportButton = shell.querySelector("#workspace-page-report");
     const themeButton = shell.querySelector("#app-theme-toggle");
     const buttons = Array.from(shell.querySelectorAll("[data-workspace-module]"));
     const viewButtons = Array.from(shell.querySelectorAll("[data-workspace-view]"));
@@ -428,6 +431,7 @@ _SHELL_JS_TEMPLATE = r"""
     if (initialKey && initialView) viewSelections.set(initialKey, initialView);
     let activeKey = "";
     let activeView = "";
+    let requestedReportRevision = 0;
     const pageOwner = crypto.randomUUID().replaceAll("-", "");
     let pageRevision = 0;
     const lifetimeUrl = "__LIFETIME_URL__";
@@ -482,15 +486,20 @@ _SHELL_JS_TEMPLATE = r"""
     };
     const viewLabel = (item, viewKey) =>
       (item.views || []).find((view) => view.key === viewKey)?.label || "";
-    const postView = (frame, item) => {
+    const postView = (frame, item, openReport = false) => {
       const view = selectedView(item);
       const label = viewLabel(item, view);
       const target = targetState(item.key, view);
       if (!label) return;
       frame.contentWindow.postMessage(
-        { type: "aiquant:select-view", module: item.key, view, label, tab: target.tab, context: target.context, pipeline_version: target.pipeline_version, target_nonce: target.nonce, page_scope: window.aiquantWorkspaceLifetime },
+        { type: "aiquant:select-view", module: item.key, view, label, tab: target.tab, context: target.context, pipeline_version: target.pipeline_version, target_nonce: target.nonce, page_scope: window.aiquantWorkspaceLifetime, openReport },
         window.location.origin,
       );
+    };
+    const openRequestedReport = (frame) => {
+      if (!frame?.dataset.routesReady || requestedReportRevision !== pageRevision) return;
+      requestedReportRevision = 0;
+      postView(frame, known.get(activeKey), true);
     };
 
     const setStatus = (text) => {
@@ -546,6 +555,7 @@ _SHELL_JS_TEMPLATE = r"""
       advancePage(item.key, selectedView(item));
       activeKey = item.key;
       activeView = selectedView(item);
+      reportButton.hidden = !routing.report_views.includes(`${activeKey}/${activeView}`);
       viewSelections.set(item.key, activeView);
       buttons.forEach((button) => {
         const active = button.dataset.workspaceModule === item.key;
@@ -610,6 +620,12 @@ _SHELL_JS_TEMPLATE = r"""
       }
     });
 
+    reportButton.addEventListener("click", () => {
+      if (!reportButton.hidden) {
+        requestedReportRevision = pageRevision;
+        openRequestedReport(frames.get(activeKey));
+      }
+    });
     buttons.forEach((button) => {
       button.addEventListener("click", () => select(button.dataset.workspaceModule));
     });
@@ -632,6 +648,7 @@ _SHELL_JS_TEMPLATE = r"""
       if (!frame) return;
       const scope = advancePage(activeKey, activeView, true);
       const url = new URL(frame.src);
+      delete frame.dataset.routesReady;
       url.searchParams.set("page_revision", scope.revision);
       setStatus("正在刷新当前模块...");
       frame.src = url.href;
@@ -680,6 +697,7 @@ _SHELL_JS_TEMPLATE = r"""
         });
         const frame = frames.get(activeKey);
         if (frame) {
+          delete frame.dataset.routesReady;
           setStatus("正在切换市场...");
           frame.contentWindow.location.reload();
         }
@@ -730,9 +748,13 @@ _SHELL_JS_TEMPLATE = r"""
         const frame = Array.from(frames.values()).find((item) => item.contentWindow === event.source);
         const item = frame ? known.get(frame.dataset.moduleKey) : null;
         if (frame && item) {
+          frame.dataset.routesReady = "1";
           if (activeKey === item.key) setStatus("");
           frame.contentWindow.postMessage({ type: "aiquant:theme", theme: currentTheme }, window.location.origin);
-          if (activeKey === item.key) postView(frame, item);
+          if (activeKey === item.key) {
+            postView(frame, item);
+            openRequestedReport(frame);
+          }
         }
         return;
       }
@@ -894,6 +916,7 @@ def shell_html(theme_mode: str = "light") -> str:
         f"{language}{_theme_button()}{refresh}{standalone}</div></header>"
         "<div class='workspace-body'><aside id='workspace-sidebar' class='workspace-sidebar'>"
         f"<div class='workspace-sidebar-tools'>{sidebar_toggle}</div>"
+        "<button type='button' id='workspace-page-report' class='workspace-page-report' hidden>页面分析</button>"
         f"<nav class='workspace-nav' aria-label='主功能导航'>{navigation}</nav></aside>"
         "<main class='workspace-main'><div id='workspace-frame-status' class='workspace-frame-status' hidden></div>"
         "<div id='workspace-frame-host' class='workspace-frame-host'></div></main></div></div>"

@@ -41,19 +41,23 @@ def cancel(identifier):
     return cfg["stopping"]
 
 
-def settings(preset):
+def settings(preset, language="en"):
     cfg = insight_config()
-    cfg["defaults"]["deadline_seconds"] = analysis_config()["limits"]["deadline_seconds"]
+    page_cfg = analysis_config()
+    cfg["defaults"]["deadline_seconds"] = page_cfg["limits"]["deadline_seconds"]
     cfg["tasks"]["page_analysis"] = {
         "label": preset["label"],
         "skill_dir": "page_analysis",
         "resources": ["SKILL.md"],
-        "sections": analysis_config()["sections"],
-        "instruction": analysis_config()["methods"][preset["method"]],
-        "method_resources": analysis_config()["resources"][preset["method"]],
+        "sections": page_cfg["sections_zh" if language == "zh" else "sections"],
+        "instruction": page_cfg["methods"][preset["method"]]
+        + "\n"
+        + page_cfg["ui"]["chinese_report" if language == "zh" else "english_report"],
+        "method_resources": page_cfg["resources"][preset["method"]],
         "shared_model_client": True,
     }
-    cfg["ui"]["verification"] = analysis_config()["ui"]["verification"]
+    cfg["ui"]["verification"] = page_cfg["ui"]["verification"]
+    cfg["ui"].update(page_cfg["report_copy"][language])
     return cfg
 
 
@@ -67,6 +71,8 @@ def _start(task, provider, inputs):
     if task not in cfg["presets"]:
         raise ValueError(cfg["ui"]["invalid"])
     preset, market = cfg["presets"][task], current_market()
+    language = "zh" if provider.get("language") == "zh" else "en"
+    report_copy = {**cfg["ui"], **cfg["report_copy"][language]}
     if market == "US" and get_settings().data_mode != "mock":
         raise ValueError(cfg["ui"]["no_real_us"])
     sources = evidence(preset, inputs)
@@ -94,11 +100,11 @@ def _start(task, provider, inputs):
     deadline = monotonic() + cfg["limits"]["deadline_seconds"]
     context = {
         "market": market,
-        "data_source": "Server-captured rule observations",
+        "data_source": report_copy["source"],
         "is_mock": get_settings().data_mode == "mock",
         "sources": sources,
-        "gaps": [cfg["ui"]["bounded"].format(**cfg["limits"])]
-        + ([cfg["ui"]["mock"]] if get_settings().data_mode == "mock" else []),
+        "gaps": [report_copy["bounded"].format(**cfg["limits"])]
+        + ([report_copy["mock"]] if get_settings().data_mode == "mock" else []),
     }
     try:
         store.save(run)
@@ -112,7 +118,7 @@ def _start(task, provider, inputs):
                 execute(
                     run,
                     store,
-                    settings(preset),
+                    settings(preset, language),
                     cancelled=lambda: cancelled.is_set() or stop.is_set() or monotonic() >= deadline,
                 )
                 if cancelled.is_set() or stop.is_set() or monotonic() >= deadline:

@@ -11,15 +11,25 @@ from playwright.sync_api import expect, sync_playwright
 
 def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_command, monkeypatch, tmp_path):
     from src.engine.insights import execution
+    from src.frontend.common import composer_catalog
     from src.frontend.features import page_analysis
 
     calls = []
     entered, release = Event(), Event()
+    monkeypatch.setattr(
+        composer_catalog,
+        "discover",
+        lambda backend, refresh: {
+            "status": "ready",
+            "rows": [{"id": f"{backend}-fixture", "name": f"{backend} fixture"}],
+        },
+    )
     monkeypatch.setattr(page_analysis, "capability", lambda *args: {})
     monkeypatch.setattr(execution, "validate_backend", lambda *args: {"model_name": "declared CLI"})
 
     def generate(prompt, payload, cfg, emit):
         calls.append(payload["page_task"])
+        assert payload["model_name"] == "qoder-fixture"
         entered.set()
         assert release.wait(15)
         return json.dumps(
@@ -46,17 +56,22 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
             expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=15000)
             assert calls == []
-            frame.locator("#market-quotes-refresh").click()
-            expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
-            frame.get_by_text("CLI + Skill analysis", exact=True).click()
+            page.get_by_role("button", name="Page analysis", exact=True).click()
+            frame.locator("#page-skill-backend input").click()
+            frame.get_by_role("option", name="Qoder CLI", exact=True).click()
+            frame.locator("#page-skill-model input").click()
+            frame.get_by_role("option", name="qoder fixture", exact=True).click()
             frame.locator("#page-skill-run").click()
+            expect(frame.locator("#page-skill-cancel")).to_be_visible(timeout=60000)
             assert entered.wait(10)
+            frame.get_by_text("Run details", exact=True).click()
             expect(frame.locator("#page-skill-progress textarea")).not_to_have_value("", timeout=10000)
             release.set()
             expect(frame.locator("#page-skill-preview iframe")).to_be_visible(timeout=30000)
             expect(
                 frame.frame_locator("#page-skill-preview iframe").get_by_role("heading", name="Declared sector report")
             ).to_be_visible()
+            page.screenshot(path=str(tmp_path / "sector-skill-report.png"), full_page=True)
             assert calls == ["sectors"]
             saved = tmp_path / "downloaded-report.html"
             link = frame.locator("#page-skill-download a").first.get_attribute("href")
@@ -68,6 +83,7 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
 
             row = InsightStore().history(1)[0]
             assert saved.read_bytes() == InsightStore().artifact(row["run_id"], "report.html").read_bytes()
+            frame.get_by_text("Report history", exact=True).click()
             frame.locator("#page-skill-history-refresh").click()
             frame.locator("#page-skill-history input").click()
             frame.get_by_role("option", name=re.compile("Declared sector report")).click()
@@ -76,13 +92,14 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
                 frame.frame_locator("#page-skill-preview iframe").get_by_role("heading", name="Declared sector report")
             ).to_be_visible()
             assert calls == ["sectors"]
-            expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible()
+            frame.locator("#market-quotes-refresh").click()
+            expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
             page.locator('[data-workspace-view="news"]').click()
             expect(frame.locator("#page-skill-task input")).not_to_be_visible(timeout=10000)
-            frame.get_by_text("CLI + Skill analysis", exact=True).click()
+            page.locator("#workspace-page-report").click()
+            frame.get_by_text("Analysis options", exact=True).click()
             expect(frame.locator("#page-skill-task input")).to_have_value("Market and policy news analysis")
             assert calls == ["sectors"]
-            page.screenshot(path=str(tmp_path / "sector-skill-report.png"), full_page=True)
         except Exception:
             page.screenshot(path=str(tmp_path / "failed-page-skill.png"), full_page=True)
             (tmp_path / "panel-dom.txt").write_text(
@@ -102,9 +119,11 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
     from time import sleep
 
     from src.engine.insights import execution
+    from src.frontend.common import composer_catalog
     from src.frontend.features import page_analysis
 
     entered, stopped = Event(), Event()
+    monkeypatch.setattr(composer_catalog, "discover", lambda *args: {"status": "ready", "rows": []})
     monkeypatch.setattr(page_analysis, "capability", lambda *args: {})
     monkeypatch.setattr(execution, "validate_backend", lambda *args: {})
 
@@ -126,7 +145,7 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=90000)
             frame.locator("#market-quotes-refresh").click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
-            frame.get_by_text("CLI + Skill analysis", exact=True).click()
+            page.locator("#workspace-page-report").click()
             frame.locator("#page-skill-run").click()
             assert entered.wait(10)
             if action == "cancel":
@@ -141,5 +160,10 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
                 page.locator('[data-workspace-view-module="market"][data-workspace-view="quotes"]').click()
             frame.locator("#market-quotes-refresh").click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=15000)
+        except Exception:
+            toast = frame.get_by_test_id("toast-text").all_text_contents()
+            if toast:
+                raise AssertionError(toast) from None
+            raise
         finally:
             browser.close()

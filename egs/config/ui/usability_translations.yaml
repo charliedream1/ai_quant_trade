@@ -168,6 +168,29 @@ Hong Kong market: Hong Kong market
 依据新闻样本分词及远程 BGE 重排: News sample ranked with remote BGE
 BGE 暂不可用，已使用分词排序: BGE is unavailable. Showing lexical ranking.
 CLI 与 Skill 分析: CLI + Skill analysis
+页面分析: Page analysis
+页面报告: Page report
+选择 CLI 和模型，生成当前页面的 HTML 报告。: Choose a CLI and model to generate an HTML report for this page.
+CLI 默认模型: CLI default model
+刷新模型: Refresh models
+正在加载模型…: Loading models…
+模型列表已加载: Models loaded
+未检测到此 CLI，请检查安装和路径设置。: CLI not detected. Check its installation and path settings.
+此 CLI 版本不提供模型列表。可使用 CLI 默认模型或配置本地模型目录。: This CLI version does not expose a model list. Use its default or configure a local model catalog.
+模型列表暂不可用。检查 CLI 登录后可刷新，或使用默认模型。: The model list is unavailable. Check the CLI sign-in and refresh, or use its default model.
+CLI 未返回模型列表，可使用默认模型。: The CLI returned no models. You can use its default model.
+CLI 已切换，请重新选择模型。: The CLI changed. Please select a model again.
+分析选项: Analysis options
+报告历史: Report history
+运行详情: Run details
+默认模型可用性取决于 CLI 的安装和登录状态。: The default model depends on the CLI installation and sign-in.
+生成 HTML 报告: Generate HTML report
+正在核对 CLI 和当前页面数据…: Checking the CLI and current page data…
+正在生成报告…: Generating report…
+HTML 报告已生成: HTML report ready
+报告生成失败: Report failed
+报告已取消: Report cancelled
+'mock 数据模式默认不运行真实 Codex；需要在服务环境显式启用': Demo data mode requires explicit server authorization before it can run a real CLI.
 先加载本页规则数据，再运行基于证据的分析。展开面板不会启动模型。: Rule data remains available above. Load the relevant data first, then run an evidence-bound analysis. Opening this panel never starts a model.
 分析任务: Analysis task
 运行 Skill 分析: Run Skill analysis

@@ -2,6 +2,21 @@
 
 Date: 2026-11-17 (UTC+08:00). Status: approved and implemented; acceptance completed on 2026-11-18 with the live-provider limitations recorded below.
 
+## Report drawer revision on 2026-11-21
+
+The workspace sidebar exposes Page analysis only for registered report views.
+The drawer opens on the current view and loads the selected CLI's shared daily
+model catalog. The catalog status identifies a missing CLI, unsupported model
+discovery or a failed lookup. Refreshing explicitly requests a new lookup.
+Switching providers clears the old model selection before displaying the result.
+
+Generate HTML report submits the view's default analysis task in the interface
+language. Sector rankings and news can refresh missing or stale observations
+using the current filters. Analysis of stored results still requires the user to
+load the result that should be cited. The drawer shows progress, cancellation,
+HTML preview and download. Task choice, execution events and history are
+available under collapsed controls. Navigation retains page-owned cancellation.
+
 ## Goal and current implementation
 
 Keep deterministic page data and calculations available while adding an explicit

@@ -231,7 +231,7 @@ def build_gradio_module(module_key: str, runtime_key: tuple | None = None) -> gr
 
         from .features.page_analysis import render_page_analysis
 
-        render_page_analysis(demo, module.key)
+        render_page_analysis(demo, module.key, handler)
         render_floating_assistant(handlers.assistant)
         gr.HTML(
             "<div class='compact-note'><p>仅供学习和研究使用，不构成投资建议。"

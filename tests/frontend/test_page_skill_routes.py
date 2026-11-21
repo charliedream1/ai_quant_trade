@@ -32,8 +32,9 @@ def test_all_registered_view_tasks_mount_without_generation(cli_command, monkeyp
                     page.locator(f'[data-workspace-view-module="{module}"][data-workspace-view="{view}"]').click()
                 previous = module
                 frame = page.frame_locator("iframe.workspace-frame.active")
-                frame.get_by_text("CLI + Skill analysis", exact=True).click(timeout=90000)
-                expect(frame.locator("#page-skill-task input")).to_have_value(label, timeout=90000)
+                page.locator("#workspace-page-report").click(timeout=90000)
+                frame.get_by_text("Analysis options", exact=True).click(timeout=90000)
+                expect(frame.locator("#page-skill-task input")).to_have_value(label, timeout=20000)
                 assert called == []
             page.screenshot(path=str(tmp_path / "page-analysis-route-matrix.png"))
         finally:
