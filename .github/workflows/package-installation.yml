@@ -17,13 +17,14 @@ jobs:
     env:
       PYTHONUTF8: '1'
       PYTHONDONTWRITEBYTECODE: '1'
-      UV_CACHE_DIR: ${{ runner.temp }}/aiquant-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
       - name: Build wheel and source archive
+        env:
+          UV_CACHE_DIR: ${{ runner.temp }}/aiquant-cache
         run: |
           python -m pip install uv==0.12.4
           uv build --out-dir .pytest_tmp/distribution
