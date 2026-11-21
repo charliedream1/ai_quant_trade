@@ -29,6 +29,7 @@ markitdown[docx]==0.1.9
 # Real market data and historical fallback
 akshare==1.18.83
 baostock==0.9.3
+jieba==0.42.1
 
 # Ordinary OpenAI-compatible SDK integration
 openai==2.43.0

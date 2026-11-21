@@ -48,6 +48,7 @@ dependencies = [
     "markitdown[docx]==0.1.9",
     "akshare==1.18.83",
     "baostock==0.9.3",
+    "jieba==0.42.1",
     "openai==2.43.0",
     "filelock==3.32.3; python_version < '3.11'",
     "filelock==4.2.4; python_version >= '3.11'",
@@ -57,6 +58,7 @@ dependencies = [
 [project.scripts]
 aiquant = "src.cli.app:main"
 aiquant-server = "src.startup:main"
+aiquant-news-bge = "src.engine.market.news_bge_install:main"
 
 [tool.setuptools]
 include-package-data = false
@@ -66,6 +68,11 @@ include = ["src", "src.*"]
 exclude = ["src.typing_stubs", "src.typing_stubs.*", "*.__pycache__*"]
 
 [project.optional-dependencies]
+news-bge = [
+    "onnxruntime==1.23.2; python_version < '3.11'",
+    "onnxruntime==1.31.1; python_version >= '3.11'",
+    "tokenizers==0.23.3",
+]
 llm = ["litellm==1.101.3; python_version < '3.11'", "litellm==1.100.5; python_version >= '3.11'", "httpx==0.28.1"]
 models = [
     "numpy==2.2.6; python_version < '3.11'",
@@ -139,6 +146,7 @@ module = [
     "duckdb.*",
     "gradio",
     "gradio.*",
+    "jieba",
     "mootdx",
     "mootdx.*",
     "openpyxl",

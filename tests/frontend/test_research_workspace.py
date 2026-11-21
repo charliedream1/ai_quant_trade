@@ -57,7 +57,8 @@ def test_news_listing_and_cloud_use_same_geography(client, news_rows):
     overseas = service.list_news(None, None, None, 1, 100, region="overseas", topic="finance")
     assert len(overseas["items"]) == 1
     cloud = service.keyword_cloud("day", None, 30, region="overseas", topic="finance")
-    assert [row["keyword"] for row in cloud] == ["1"]
+    assert cloud
+    assert {row["headline"] for row in cloud} == {overseas["items"][0]["title"]}
     assert Repository().db.scalar("SELECT COUNT(*) FROM news_items") == len(news_rows)
 
 

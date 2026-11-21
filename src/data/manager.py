@@ -160,7 +160,13 @@ class MockDataSource:
         self, board: str = "industry", limit: int = 20, direction: str = "desc", refresh: bool = False
     ) -> list[dict[str, Any]]:
         return [
-            dict(item, board=board, updated_at=utc_now_iso())
+            dict(
+                item,
+                board=board,
+                data_source=self.source_name,
+                universe_total=len(self._sectors),
+                updated_at=utc_now_iso(),
+            )
             for item in sorted(self._sectors, key=lambda row: row["change_pct"], reverse=direction == "desc")[:limit]
         ]
 

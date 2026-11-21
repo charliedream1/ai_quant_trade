@@ -204,9 +204,9 @@ def test_i18n_dictionary_and_js_injection():
     assert "TECH_EN_TO_ZH" in APP_JS
     assert "all-in-one-ui-lang" in APP_JS
     assert "all-in-one-ui-market" in APP_JS
-    assert 'const LANG_MARKET = { zh: "cn", en: "us" }' in APP_JS
-    assert 'applyMarketSelection("cn", { syncLanguage: true })' in APP_JS
-    assert "applyLanguage(storedLang, { syncMarket: true })" in APP_JS
+    assert 'const MARKET_LANG = { cn: "zh", us: "en" }' in APP_JS
+    assert 'applyMarketSelection("cn")' in APP_JS
+    assert "syncMarket" not in APP_JS and "syncLanguage" not in APP_JS
 
 
 def test_header_html_contains_toggle_controls():

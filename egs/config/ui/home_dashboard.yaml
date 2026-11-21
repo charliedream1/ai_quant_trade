@@ -3,11 +3,19 @@ limits:
   sectors: 12
   contributions: 8
   actions: 4
-  news: 8
+  news: 16
+  news_candidates: 100
+  news_per_source: 4
+  news_summary_chars: 240
+  sentiment_sectors: 100
   alerts: 5
   plot_height: 300
   market_plot_height: 320
   date_ticks: 6
+ranges:
+  sentiment_momentum_neutral: 50
+  sentiment_momentum_scale: 20
+  sentiment_dispersion_scale: 10
 risk_reference:
   exposure: 0.9
   concentration: 0.35

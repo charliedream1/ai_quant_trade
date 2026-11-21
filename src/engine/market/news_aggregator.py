@@ -2,13 +2,13 @@
 
 import hashlib
 import json
-from collections import Counter
 from typing import Any
 
 from src.core.repository import Repository, make_where
 from src.data import MARKET_US, DataSourceManager
 
 from .news_policy import initialize
+from .news_topics import policy, ranked_keywords, source_time, time_range
 
 
 class NewsAggregator:
@@ -64,6 +64,9 @@ class NewsAggregator:
         region: str = "all",
         topic: str = "all",
         market_relevant: bool = True,
+        start_time: str | None = None,
+        end_time: str | None = None,
+        balanced_groups: bool = False,
     ) -> dict[str, Any]:
         if self.data.market == "HK":
             return {
@@ -76,6 +79,15 @@ class NewsAggregator:
         self.seed_if_empty(force_refresh=refresh)
         initialize(self.repo.db)
         parts: list[tuple[str, Any]] = []
+        start, end = source_time(start_time), source_time(end_time)
+        if (start_time and start is None) or (end_time and end is None):
+            raise ValueError("News date boundaries need an explicit time zone")
+        if start and end and start > end:
+            raise ValueError("News start time must precede its end time")
+        if start:
+            parts.append(("julianday(published_at) >= julianday(?)", start.isoformat()))
+        if end:
+            parts.append(("julianday(published_at) <= julianday(?)", end.isoformat()))
         if market_relevant:
             parts.append(("id IN (SELECT news_id FROM news_classification WHERE market_relevant=?)", 1))
         if region != "all":
@@ -100,11 +112,29 @@ class NewsAggregator:
                 ("source NOT IN (?,?) AND url NOT LIKE ?", ("本地模拟源", "Mock Wire", "https://example.local/%"))
             )
         where, params = make_where(parts)
-        result = self.repo.page("news_items", page, page_size, where, params, order_by="published_at DESC")
+        if balanced_groups:
+            items = self.repo.db.query(
+                "SELECT * FROM (SELECT n.*, c.metadata AS classification, "
+                "ROW_NUMBER() OVER (PARTITION BY c.region, c.topics LIKE '%\"policy\"%' "
+                "ORDER BY julianday(n.published_at) DESC, n.id DESC) AS group_rank "
+                "FROM news_items n LEFT JOIN news_classification c ON c.news_id = n.id "
+                f"WHERE {where or '1=1'}) ORDER BY group_rank, julianday(published_at) DESC, id DESC LIMIT ?",
+                (*params, page_size),
+            )
+            result: dict[str, Any] = {"items": items, "page": 1, "page_size": page_size, "total": len(items)}
+        else:
+            result = self.repo.page("news_items", page, page_size, where, params, order_by="published_at DESC")
         for item in result["items"]:
-            metadata = self.repo.db.query_one("SELECT metadata FROM news_classification WHERE news_id=?", (item["id"],))
+            if balanced_groups:
+                metadata = item.pop("classification")
+                item.pop("group_rank")
+            else:
+                record = self.repo.db.query_one(
+                    "SELECT metadata FROM news_classification WHERE news_id=?", (item["id"],)
+                )
+                metadata = record["metadata"] if record else None
             if metadata:
-                item.update(json.loads(metadata["metadata"]))
+                item.update(json.loads(metadata))
             item["keywords"] = json.loads(item["keywords"] or "[]")
             score = item.pop("sentiment", None)
             item["sentiment"] = "positive" if score and score > 0.1 else "neutral"
@@ -116,21 +146,16 @@ class NewsAggregator:
     ) -> Any:
         if self.data.market == "HK":
             return []
-        rows = self.list_news(category, keyword, source, 1, 500, region=region, topic=topic)["items"]
-        counts: Counter[str] = Counter()
-        for item in rows:
-            try:
-                value = item.get("keywords") or []
-                counts.update(json.loads(value) if isinstance(value, str) else value)
-            except (TypeError, ValueError, json.JSONDecodeError):
-                continue
-        total = max(sum(counts.values()), 1)
-        return [
-            {
-                "keyword": keyword,
-                "count": count,
-                "weight": round(count / total, 4),
-                "sentiment": "neutral",
-            }
-            for keyword, count in counts.most_common(top_n)
-        ]
+        start, end = (None, None) if scope == "all" else time_range(scope)
+        rows = self.list_news(
+            category,
+            keyword,
+            source,
+            1,
+            policy()["limits"]["sample"],
+            region=region,
+            topic=topic,
+            start_time=start,
+            end_time=end,
+        )["items"]
+        return ranked_keywords(rows, top_n)

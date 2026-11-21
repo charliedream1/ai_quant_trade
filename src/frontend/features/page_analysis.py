@@ -13,12 +13,15 @@ from src.engine.insights.service import InsightReportService
 
 from ..common.callbacks import safe
 from ..common.composer import render_composer
+from ..common.errors import ui_error_message
 from ..service.insights import _view
 
 
 def render_page_analysis(blocks, module):
     cfg = analysis_config()
-    presets = {key: row for key, row in cfg["presets"].items() if row["module"] == module}
+    presets = {
+        key: row for key, row in cfg["presets"].items() if row["module"] == module and row.get("show_panel", True)
+    }
     if not presets:
         return
     ui = cfg["ui"]
@@ -41,7 +44,7 @@ def render_page_analysis(blocks, module):
                 bound[(key, field)] = component
     inputs = list(dict.fromkeys(bound.values()))
     view = gr.Textbox(value="", elem_id="page-skill-view", elem_classes=["route-control"])
-    with gr.Accordion(ui["title"], open=False, elem_id="page-skill-panel", elem_classes=["no-i18n"]) as panel:
+    with gr.Accordion(ui["title"], open=False, elem_id="page-skill-panel") as panel:
         gr.Markdown(ui["intro"])
         task = gr.Dropdown(
             [(row["label"], key) for key, row in presets.items()],
@@ -58,7 +61,7 @@ def render_page_analysis(blocks, module):
         status = gr.Markdown(ui["waiting"], elem_id="page-skill-status")
         progress = gr.Textbox(label=ui["progress"], lines=7, max_lines=14, elem_id="page-skill-progress")
         gr.Markdown(ui["scope_warning"])
-        preview = gr.HTML(elem_id="page-skill-preview")
+        preview = gr.HTML(elem_id="page-skill-preview", elem_classes=["no-i18n"])
         download = gr.HTML(elem_id="page-skill-download")
         events = gr.File(visible=False)
         history = gr.Dropdown([], label=ui["history"], interactive=True, elem_id="page-skill-history")
@@ -92,13 +95,17 @@ def render_page_analysis(blocks, module):
 
     def submit(key, backend, model, effort, tracker, *values):
         if key not in presets:
-            raise ValueError(ui["invalid"])
-        # Discovery and normal chat eligibility do not establish strict research eligibility.
-        capability(key, {"backend": backend, "model_name": model, "reasoning_effort": effort})
+            return gr.skip(), gr.skip(), ui["invalid"], gr.skip()
+        provider = {"backend": backend, "model_name": model or "", "reasoning_effort": effort or ""}
         context = {
             field: values[inputs.index(component)] for (preset, field), component in bound.items() if preset == key
         }
-        row = start(key, {"backend": backend, "model_name": model or "", "reasoning_effort": effort or ""}, context)
+        try:
+            # Discovery and normal chat eligibility do not establish strict research eligibility.
+            capability(key, provider)
+            row = start(key, provider, context)
+        except ValueError as exc:
+            return gr.skip(), gr.skip(), escape(ui_error_message(exc)), gr.skip()
         tracker["run"] = row["run_id"]
         return tracker, row["request"], row["run_id"], gr.update(active=True)
 

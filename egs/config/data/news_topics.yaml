@@ -1,0 +1,37 @@
+# File format: YAML; encoding: UTF-8
+version: 1
+timezone: Asia/Shanghai
+window_days: {day: 1, week: 7, month: 30}
+limits:
+  sample: 100
+  title_chars: 220
+  summary_chars: 500
+  story_terms: 12
+  topic_terms: 12
+  near_duplicate_similarity: 0.86
+weights: {title: 2.0, summary: 1.0, fresh_half_life_hours: 36}
+dictionary: [城市更新, 先进封装, 半导体设备, 设备订单, 产能建设, 供应链, 出口管制, 消费补贴, 设备更新, 专项债, 国债收益率, 美联储, 资产负债表, 存款准备金率, 人民币汇率, 黄金ETF, 新能源汽车, 储能电站, 算力基础设施, 数据中心, 人工智能, 上市公司, 光伏组件, 股票回购, 净利润, 财政赤字]
+stopwords: [表示, 目前, 相关, 进行, 已经, 以及, 其中, 今日, 消息, 多地, 密集, 推进, 报道, 根据, 显示, 有关, 记者, 记者报道, 方面, 情况, 工作, 记者获悉, a, an, and, are, as, at, be, by, for, from, in, is, of, 'on', or, that, the, their, this, to, was, were, will, with, after, says, said, news]
+aliases:
+  先进封装: [advanced packaging]
+  城市更新: [urban renewal]
+  美联储: [Fed, Federal Reserve]
+  半导体设备: [semiconductor equipment]
+  出口管制: [export controls, export control]
+  股票回购: [share buyback, stock buyback]
+  供应链: [supply chain]
+topics:
+  - label: 半导体与先进封装
+    terms: [半导体, 半导体设备, 先进封装, 芯片, chip, semiconductor, advanced packaging]
+  - label: 城市更新与基建
+    terms: [城市更新, 基建, 专项债, urban renewal, infrastructure]
+  - label: 货币政策与利率
+    terms: [降息, 加息, 美联储, 央行, 利率, Fed, Federal Reserve, rates]
+  - label: 贸易与出口管制
+    terms: [关税, 出口管制, tariff, export controls]
+  - label: 能源与供应链
+    terms: [原油, 天然气, 航运, 供应链, crude oil, supply chain]
+  - label: 财报与股东回报
+    terms: [财报, 净利润, 股票回购, earnings, share buyback]
+  - label: 新能源与储能
+    terms: [新能源, 新能源汽车, 储能, 光伏组件, battery, solar]

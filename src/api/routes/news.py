@@ -24,11 +24,28 @@ def list_news(
 ):
     return ok(
         NewsAggregator().list_news(
-            category, keyword, source, page, page_size, refresh=refresh, region=region, topic=topic
+            category,
+            keyword,
+            source,
+            page,
+            page_size,
+            refresh=refresh,
+            region=region,
+            topic=topic,
+            start_time=start_time,
+            end_time=end_time,
         )
     )
 
 
 @router.get("/news/keyword-cloud")
-def keyword_cloud(scope: str = "day", category: str | None = None, top_n: int = Query(50, ge=1, le=200)):
-    return ok(NewsAggregator().keyword_cloud(scope, category, top_n))
+def keyword_cloud(
+    scope: str = "day",
+    category: str | None = None,
+    top_n: int = Query(50, ge=1, le=200),
+    region: str = "all",
+    topic: str = "all",
+    keyword: str | None = None,
+    source: str | None = None,
+):
+    return ok(NewsAggregator().keyword_cloud(scope, category, top_n, region, topic, keyword, source))

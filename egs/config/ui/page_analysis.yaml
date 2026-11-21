@@ -41,7 +41,7 @@ resources:
   documents: [page_analysis/references/documents.md]
 sections: [Summary, Evidence and interpretation, Risks and invalidation, Data gaps and next steps]
 presets:
-  overview: {module: dashboard, views: [overview, custom], label: Market and account review, method: market, reads: [home_account, home_market, home_news, home_operations, dashboard_account, dashboard_market], bindings: {account_mode: {id: home-account-mode}}}
+  overview: {module: dashboard, views: [overview, custom], show_panel: false, label: Market and account review, method: market, reads: [home_account, home_market, home_news, home_operations, dashboard_account, dashboard_market], bindings: {account_mode: {id: home-account-mode}}}
   sectors: {module: market, views: [quotes], label: Sector rotation review, method: market, reads: [market_overview], bindings: {board: {label: 板块类型}, selection: {label: 板块榜单}}}
   news: {module: market, views: [news], label: Market and policy news analysis, method: news, reads: [news, refresh_news], bindings: {region: {id: news-region}, topic: {id: news-topic}, keyword: {label: 关键词}, source: {label: 来源}}}
   technical: {module: market, views: [stock], label: Stock technical analysis, method: stock, reads: [stock], bindings: {symbol: {id: fundamentals-symbol}, period: {label: K 线周期}}}

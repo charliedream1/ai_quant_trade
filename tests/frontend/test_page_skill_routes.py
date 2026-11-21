@@ -12,10 +12,13 @@ def test_all_registered_view_tasks_mount_without_generation(cli_command, monkeyp
     monkeypatch.setattr(execution, "generate_text", lambda *args: called.append(True))
     routes = {}
     for row in analysis_config()["presets"].values():
+        if not row.get("show_panel", True):
+            continue
         routes.setdefault((row["module"], row["views"][0]), row["label"])
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 1500, "height": 1050})
+        page.add_init_script("localStorage.setItem('all-in-one-ui-lang', 'en')")
         try:
             previous = None
             for (module, view), label in routes.items():

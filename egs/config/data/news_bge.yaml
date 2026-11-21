@@ -1,0 +1,21 @@
+# File format: YAML; encoding: UTF-8
+model: Xenova/bge-small-zh-v1.5
+revision: 75c43b069aac4d136ba6bc1122f995fedcfd2781
+directory: news_models/bge-small-zh-v1.5
+assets:
+  tokenizer.json: {bytes: 439125, git_blob_sha1: cdb3043fc938fc918c06e66cf704c2ba58f88747}
+  onnx/model_quantized.onnx:
+    bytes: 24010842
+    sha256: 15b717c382bcb518ba457b93ea6850ede7f4f1cd8937454aa06972366cd19bcc
+runtime:
+  sequence_length: 192
+  cpu_threads: 1
+  timeout_seconds: 4
+  max_response_bytes: 2097152
+  keyword_limit: 12
+  semantic_weight: 0.35
+labels:
+  lexical: 依据新闻样本分词排序
+  local: 依据新闻样本分词及本地 BGE 重排
+  remote: 依据新闻样本分词及远程 BGE 重排
+  fallback: BGE 暂不可用，已使用分词排序

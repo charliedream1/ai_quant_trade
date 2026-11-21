@@ -79,10 +79,10 @@ def test_independent_market_sources_run_concurrently(client):
 
     with (
         patch("src.frontend.service.home_dashboard.QuoteService") as quotes,
-        patch("src.frontend.service.home_dashboard._news_items", read),
+        patch("src.frontend.service.home_dashboard._news_themes", read),
     ):
         quotes.return_value.indices.side_effect = read
-        quotes.return_value.sector_rankings.side_effect = read
+        quotes.return_value.sector_snapshot.side_effect = lambda *args, **kwargs: (read(), [])
         quotes.return_value.watchlist_quotes.side_effect = read
         assert _market_payload(False)["errors"] == []
 

@@ -11,6 +11,7 @@ from src.core.config import get_settings
 from src.core.panel_updates import panel_ready
 from src.core.repository import Repository
 from src.engine.market import NewsAggregator, QuoteService
+from src.engine.market.news_topics import time_range
 
 from . import home_charts, home_views
 from .home_config import label, limit
@@ -54,10 +55,27 @@ def home_account(mode: str, force_refresh: bool = False) -> tuple:
 
 def _news_items(force_refresh):
     def load():
-        result = NewsAggregator().list_news(None, None, None, 1, limit("news"), refresh=force_refresh)
-        return (result.get("items") or [])[: limit("news")]
+        start, end = time_range("week")
+        return NewsAggregator().list_news(
+            None,
+            None,
+            None,
+            1,
+            limit("news_candidates"),
+            refresh=force_refresh,
+            start_time=start,
+            end_time=end,
+            balanced_groups=True,
+        )
 
-    return shared_observation("home_shared_news", load, force_refresh)
+    return shared_observation("home_news_scope_v2", load, force_refresh)
+
+
+def _news_themes(force_refresh):
+    def load():
+        return home_views.theme_summary(_news_items(force_refresh).get("items", []))
+
+    return shared_observation("home_news_themes_v2", load, force_refresh)
 
 
 def _market_payload(force_refresh: bool) -> dict[str, Any]:
@@ -67,9 +85,9 @@ def _market_payload(force_refresh: bool) -> dict[str, Any]:
     with ThreadPoolExecutor(max_workers=policy()["home_source_workers"], thread_name_prefix="home-sources") as pool:
         methods = {
             "indices": lambda: QuoteService().indices(refresh=force_refresh),
-            "sectors": lambda: QuoteService().sector_rankings(limit=limit("sectors"), refresh=force_refresh),
+            "sectors": lambda: QuoteService().sector_snapshot(limit("sentiment_sectors"), refresh=force_refresh),
             "watchlist": lambda: QuoteService().watchlist_quotes(None),
-            "news": lambda: _news_items(force_refresh),
+            "news": lambda: _news_themes(force_refresh),
         }
         futures = {key: pool.submit(copy_context().run, method) for key, method in methods.items()}
         result: dict[str, Any] = {"errors": [], "presentations": {}}
@@ -81,9 +99,13 @@ def _market_payload(force_refresh: bool) -> dict[str, Any]:
         for future in as_completed(futures.values()):
             key = next(name for name, pending in futures.items() if pending is future)
             try:
-                result[key] = future.result()
+                if key == "sectors":
+                    rankings, result["sentiment_sectors"] = future.result()
+                    result[key] = home_views.balanced_sector_rows(rankings, limit("sectors"))
+                else:
+                    result[key] = future.result()
             except Exception:
-                result[key] = []
+                result[key] = home_views.theme_summary([]) if key == "news" else []
                 result["errors"].append(
                     {
                         "indices": "指数加载失败",
@@ -99,10 +121,10 @@ def _market_payload(force_refresh: bool) -> dict[str, Any]:
             elif key == "watchlist":
                 present(5, home_styled_frame(to_frame(result[key], WATCHLIST_COLUMNS)))
             elif key == "news":
-                present(3, home_views.theme_summary(result[key]))
+                present(3, result[key])
             if "indices" in result and "sectors" in result and 1 not in result["presentations"]:
                 present(0, home_views.market_summary(result["indices"], result["sectors"]))
-                present(1, home_charts.sentiment_radar(result["indices"], result["sectors"]))
+                present(1, home_charts.sentiment_radar(result["indices"], result.get("sentiment_sectors", [])))
         return result
 
 

@@ -23,7 +23,7 @@ def render_home(
     selection = gr.State({"market": current_market(), "mode": "paper", "revision": 0, "refresh": False})
     with gr.Column(elem_id="home-dashboard"):
         with gr.Row(elem_classes=["home-control-row"]):
-            gr.HTML("<div class='home-title'><span>PORTFOLIO OVERVIEW</span><strong>账户与市场总览</strong></div>")
+            gr.HTML("<div class='home-title'><strong>账户与市场总览</strong></div>")
             account_mode = gr.Radio(
                 ACCOUNT_MODE_CHOICES,
                 value="paper",

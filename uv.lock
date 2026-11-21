@@ -349,6 +349,7 @@ dependencies = [
     { name = "filelock", version = "4.2.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or (extra == 'extra-15-b001-all-in-one-llm' and extra == 'extra-15-b001-all-in-one-tdx')" },
     { name = "gradio" },
     { name = "huggingface-hub" },
+    { name = "jieba" },
     { name = "jinja2" },
     { name = "json-repair" },
     { name = "loguru" },
@@ -411,6 +412,11 @@ models = [
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin' or (extra == 'extra-15-b001-all-in-one-llm' and extra == 'extra-15-b001-all-in-one-tdx')" },
     { name = "xgboost" },
 ]
+news-bge = [
+    { name = "onnxruntime", version = "1.23.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' or (extra == 'extra-15-b001-all-in-one-llm' and extra == 'extra-15-b001-all-in-one-tdx')" },
+    { name = "onnxruntime", version = "1.31.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or (extra == 'extra-15-b001-all-in-one-llm' and extra == 'extra-15-b001-all-in-one-tdx')" },
+    { name = "tokenizers" },
+]
 observability = [
     { name = "langfuse" },
 ]
@@ -431,6 +437,7 @@ requires-dist = [
     { name = "gradio", specifier = "==6.16.0" },
     { name = "httpx", marker = "extra == 'llm'", specifier = "==0.28.1" },
     { name = "huggingface-hub", specifier = "==1.33.0" },
+    { name = "jieba", specifier = "==0.42.1" },
     { name = "jinja2", specifier = "==3.1.6" },
     { name = "json-repair", specifier = "==0.60.1" },
     { name = "langfuse", marker = "extra == 'observability'", specifier = "==4.17.0" },
@@ -445,6 +452,8 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = "==1.20.2" },
     { name = "numpy", marker = "python_full_version >= '3.11' and extra == 'models'", specifier = "==2.4.6" },
     { name = "numpy", marker = "python_full_version < '3.11' and extra == 'models'", specifier = "==2.2.6" },
+    { name = "onnxruntime", marker = "python_full_version >= '3.11' and extra == 'news-bge'", specifier = "==1.31.1" },
+    { name = "onnxruntime", marker = "python_full_version < '3.11' and extra == 'news-bge'", specifier = "==1.23.2" },
     { name = "openai", specifier = "==2.43.0" },
     { name = "openpyxl", specifier = "==3.1.5" },
     { name = "pandas", specifier = "==2.3.3" },
@@ -472,6 +481,7 @@ requires-dist = [
     { name = "scipy", marker = "python_full_version >= '3.11' and extra == 'models'", specifier = "==1.17.0" },
     { name = "scipy", marker = "python_full_version < '3.11' and extra == 'models'", specifier = "==1.15.3" },
     { name = "setuptools", marker = "extra == 'dev'", specifier = "==84.1.0" },
+    { name = "tokenizers", marker = "extra == 'news-bge'", specifier = "==0.23.3" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = "==2.2.1" },
     { name = "torch", marker = "extra == 'models'", specifier = "==2.13.0", index = "https://download.pytorch.org/whl/cpu" },
     { name = "tzdata", specifier = "==2026.2" },
@@ -482,7 +492,7 @@ requires-dist = [
     { name = "wheel", marker = "extra == 'dev'", specifier = "==0.46.2" },
     { name = "xgboost", marker = "extra == 'models'", specifier = "==3.1.3" },
 ]
-provides-extras = ["llm", "models", "tdx", "observability", "channels", "dev"]
+provides-extras = ["news-bge", "llm", "models", "tdx", "observability", "channels", "dev"]
 
 [[package]]
 name = "backoff"
@@ -1704,6 +1714,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/01/e1/2069291243c926a2f
 wheels = [
     { url = "https://files.pythonhosted.org/packages/56/43/4ca9e49d27a1fcf6bece6f6aec0ea46bb9112489b93d4b688fb415457bdb/iniconfig-2.3.1-py3-none-any.whl", hash = "sha256:9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7", size = 7552, upload-time = "2026-10-06T22:48:36.959Z" },
 ]
+
+[[package]]
+name = "jieba"
+version = "0.42.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c6/cb/18eeb235f833b726522d7ebed54f2278ce28ba9438e3135ab0278d9792a2/jieba-0.42.1.tar.gz", hash = "sha256:055ca12f62674fafed09427f176506079bc135638a14e23e25be909131928db2", size = 19214172, upload-time = "2020-01-20T14:27:23.5Z" }
 
 [[package]]
 name = "jinja2"

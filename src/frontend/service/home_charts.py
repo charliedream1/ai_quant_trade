@@ -167,10 +167,26 @@ def sentiment_radar(indices: list[dict[str, Any]], sectors: list[dict[str, Any]]
     if not index_changes and not sector_changes:
         return empty("市场情绪雷达", "暂无指数或板块数据")
     breadth = sum(1 for value in sector_changes if value > 0) / len(sector_changes) * 100 if sector_changes else None
-    index_score = min(max(50 + sum(index_changes) / len(index_changes) * 20, 0), 100) if index_changes else None
-    dispersion = min(max(100 - abs(max(sector_changes) - min(sector_changes)) * 10, 0), 100) if sector_changes else None
-    result = figure("市场情绪雷达 · 代理指标<br><sup>综合指数动量、板块广度与一致性，不代表买卖信号</sup>")
-    labels = ["指数动量", "板块广度", "板块一致性"]
+    ranges = home_config()["ranges"]
+    index_score = (
+        min(
+            max(
+                ranges["sentiment_momentum_neutral"]
+                + sum(index_changes) / len(index_changes) * ranges["sentiment_momentum_scale"],
+                0,
+            ),
+            100,
+        )
+        if index_changes
+        else None
+    )
+    dispersion = (
+        min(max(100 - (max(sector_changes) - min(sector_changes)) * ranges["sentiment_dispersion_scale"], 0), 100)
+        if sector_changes
+        else None
+    )
+    result = figure("市场情绪雷达 · 代理指标")
+    labels = ["日内指数动量", "板块广度", "板块一致性"]
     values = [index_score, breadth, dispersion]
     result.add_trace(
         go.Scatterpolar(
@@ -178,13 +194,53 @@ def sentiment_radar(indices: list[dict[str, Any]], sectors: list[dict[str, Any]]
             theta=labels + [labels[0]],
             fill="toself" if all(value is not None for value in values) else "none",
             name="代理情绪",
+            mode="lines+markers",
+            connectgaps=False,
             line={"color": color("cyan")},
             fillcolor="rgba(24,168,186,.18)",
         )
     )
+    for metric, value, count, rows, shade in zip(
+        labels,
+        values,
+        [len(index_changes), len(sector_changes), len(sector_changes)],
+        [indices, sectors, sectors],
+        ["blue", "cyan", "amber"],
+        strict=True,
+    ):
+        if value is None:
+            result.add_trace(go.Scatterpolar(r=[None], theta=[metric], name=f"{metric} · 未提供"))
+            continue
+        sources = sorted({str(row["data_source"]) for row in rows if row.get("data_source")})
+        times = sorted({str(row["updated_at"]) for row in rows if row.get("updated_at")})
+        result.add_trace(
+            go.Scatterpolar(
+                r=[value],
+                theta=[metric],
+                mode="markers",
+                name=f"{metric} · {value:.1f} / 100",
+                marker={"color": color(shade), "size": 9},
+                customdata=[[count, ", ".join(sources) or "—", times[-1] if times else "—"]],
+                hovertemplate="%{theta}: %{r:.1f}<br>样本 %{customdata[0]}<br>"
+                "%{customdata[1]}<br>%{customdata[2]}<extra></extra>",
+            )
+        )
+    result.data[0].showlegend = False
     result.update_layout(
-        polar={"radialaxis": {"range": [0, 100], "ticksuffix": "分"}},
+        polar={
+            "radialaxis": {"range": [0, 100]},
+            "angularaxis": {
+                "categoryorder": "array",
+                "categoryarray": labels,
+                "tickmode": "array",
+                "tickvals": labels,
+                "ticktext": [
+                    f"{metric}<br>{value:.1f} / 100" if value is not None else f"{metric}<br>未提供"
+                    for metric, value in zip(labels, values, strict=True)
+                ],
+            },
+        },
         showlegend=False,
-        margin={"l": 32, "r": 32, "t": 45, "b": 24},
+        margin={"l": 62, "r": 62, "t": 50, "b": 42},
     )
     return result

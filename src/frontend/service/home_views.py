@@ -114,21 +114,37 @@ def risk_alerts(snapshot: HomeAccount) -> str:
     )
 
 
+def balanced_sector_rows(rows: list[dict[str, Any]], count: int) -> list[dict[str, Any]]:
+    ordered = sorted(rows, key=lambda row: float(row["change_pct"]), reverse=True)
+    rising = [dict(row, ranking="Gainer") for row in ordered if float(row["change_pct"]) > 0]
+    falling = [dict(row, ranking="Decliner") for row in reversed(ordered) if float(row["change_pct"]) < 0]
+    positive_count = (count + 1) // 2
+    return rising[:positive_count] + falling[: count - positive_count]
+
+
 def theme_summary(news_items: list[dict[str, Any]]) -> str:
-    counts: dict[str, int] = {}
-    for item in news_items:
-        values = item.get("keywords") or []
-        if not isinstance(values, list):
-            values = [values]
-        for keyword in values:
-            text = str(keyword).strip()
-            if text:
-                counts[text] = counts.get(text, 0) + 1
-    ranked = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:10]
+    from src.engine.market.news_topics import grouped_topics, policy, ranked_keywords
+
+    limit = policy()["limits"]["topic_terms"]
+    ranked = ranked_keywords(news_items, limit)
     if not ranked:
         return "<section class='home-themes'><strong>热词与主题</strong><span>暂无新闻关键词</span></section>"
-    chips = "".join(f"<b>{escape(word)} <em>{count}</em></b>" for word, count in ranked)
-    return f"<section class='home-themes'><strong>热词与主题</strong><div>{chips}</div><small>来自当前新闻样本，不代表投资建议</small></section>"
+    from src.engine.market.news_bge import rerank
+
+    ranked, method = rerank(ranked)
+    chips = "".join(
+        f"<b><span class='no-i18n'>{escape(row['keyword'])}</span> <em>{row['count']}</em></b>" for row in ranked
+    )
+    topics = "".join(
+        f"<li><strong>{escape(row['label'])}</strong> · {row['count']} "
+        f"<span>篇相关报道</span> · <span class='no-i18n'>{escape(row['headline'])}</span>"
+        f"<small class='no-i18n'>{escape(str(row['published_at'] or '—'))}</small></li>"
+        for row in grouped_topics(news_items)
+    )
+    return (
+        f"<section class='home-themes'><strong>热词与主题</strong><div>{chips}</div>"
+        f"<ul class='home-topic-list'>{topics}</ul><small>{escape(method)}</small></section>"
+    )
 
 
 def module_link(module: str, text: str) -> str:

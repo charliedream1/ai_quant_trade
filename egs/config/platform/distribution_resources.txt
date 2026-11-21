@@ -293,6 +293,8 @@ egs/config/data/hong_kong.yaml
 egs/config/data/hong_kong_calendar.yaml
 egs/config/data/market_news.yaml
 egs/config/data/model_relation_graph.yaml
+egs/config/data/news_bge.yaml
+egs/config/data/news_topics.yaml
 egs/config/data/provider_logging.yaml
 egs/config/data/relation_graph.yaml
 egs/config/data/resource_import.yaml
@@ -449,6 +451,7 @@ egs/requirements/channels.txt
 egs/requirements/development.lock.txt
 egs/requirements/images.lock.txt
 egs/requirements/images.txt
+egs/requirements/news-bge.lock.txt
 egs/requirements/observability.lock.txt
 egs/requirements/observability.txt
 egs/requirements/qlib.lock.txt

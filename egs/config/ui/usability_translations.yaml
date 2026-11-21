@@ -147,3 +147,67 @@ ETF池读取失败: ETF universe could not be loaded
 发送当前任务（Enter 发送，Ctrl+Enter 换行）: Send the task (Enter to send, Ctrl+Enter for a new line)
 港股: Hong Kong
 Hong Kong market: Hong Kong market
+日内指数动量: Intraday Index Momentum
+样本: Sample
+要点新闻: Key News
+查看新闻中心: Open News Center
+来源时间未知: Source time unknown
+展开摘要: Expand summary
+本期暂无要点新闻: No key news in this period
+港股新闻源尚未配置: Hong Kong news provider is unavailable
+篇相关报道: related stories
+半导体与先进封装: Semiconductors and advanced packaging
+城市更新与基建: Urban renewal and infrastructure
+货币政策与利率: Monetary policy and rates
+贸易与出口管制: Trade and export controls
+能源与供应链: Energy and supply chains
+财报与股东回报: Earnings and shareholder returns
+新能源与储能: Clean energy and storage
+依据新闻样本分词排序: Ranked from the news sample
+依据新闻样本分词及本地 BGE 重排: News sample ranked with local BGE
+依据新闻样本分词及远程 BGE 重排: News sample ranked with remote BGE
+BGE 暂不可用，已使用分词排序: BGE is unavailable. Showing lexical ranking.
+CLI 与 Skill 分析: CLI + Skill analysis
+先加载本页规则数据，再运行基于证据的分析。展开面板不会启动模型。: Rule data remains available above. Load the relevant data first, then run an evidence-bound analysis. Opening this panel never starts a model.
+分析任务: Analysis task
+运行 Skill 分析: Run Skill analysis
+取消分析: Cancel analysis
+分析正在停止，等待 CLI 退出并释放资源。: Stopping analysis; waiting for owned CLI processes and resources to exit.
+已保存的页面报告: Saved page reports
+刷新报告历史: Refresh report history
+打开已保存 HTML: Open saved HTML
+证据与页面范围: Evidence and page scope
+已就绪，尚未调用模型。: Ready; no model has been called.
+报告使用保存时的输入范围。改变页面输入不会修改已有报告。: The report belongs to its saved input scope. Changing page inputs does not rewrite an existing report.
+实际执行事件: Actual execution events
+下载相同 HTML: Download identical HTML
+指数加载失败: Could not load indices
+自选行情加载失败: Could not load watchlist quotes
+新闻加载失败: Could not load news
+正在读取账户、行情与任务快照。: Loading account, market and task snapshots.
+按优先级排列: In priority order
+回测、运行与定时任务: Backtests, runs and scheduled jobs
+无效的页面分析任务或输入。: Invalid page analysis task or inputs.
+请先加载本页相关规则数据，再运行分析。: Load the relevant rule data for this page before running analysis.
+页面输入已变化，请先刷新相关规则数据。: Page inputs changed after data was loaded. Refresh the relevant rule data first.
+市场与账户复核: Market and account review
+板块轮动复核: Sector rotation review
+市场与政策新闻分析: Market and policy news analysis
+个股技术分析: Stock technical analysis
+公司财务分析: Company financial analysis
+宏观证据分析: Macro evidence analysis
+候选标的对比: Candidate comparison
+资源池复核: Resource pool review
+ETF 敞口复核: ETF exposure review
+因子实验解读: Factor experiment interpretation
+已保存策略组合复核: Saved composition review
+已完成回测复核: Completed backtest review
+模拟账户与归因复核: Paper account and attribution review
+已保存模拟归因复核: Saved paper attribution review
+只读实盘风险与归因复核: Read-only live risk and attribution review
+所选论文或研报复核: Selected research paper or report review
+已授权知识证据复核: Authorized knowledge evidence review
+所选知识库文档复核: Selected library document review
+市场情绪雷达: Market Sentiment Radar
+市场情绪代理雷达由指数动量、板块广度和一致性构成，不是买卖信号。: Market sentiment uses proxies for momentum, breadth and consistency.
+日内指数动量采用指数平均涨跌幅。板块广度采用完整板块快照中上涨板块的比例，平盘计入分母。板块一致性根据涨跌幅极差计算。覆盖不足时显示未提供。各轴分别解读。: Intraday momentum uses the average index change. Breadth is the rising share of the complete sector snapshot, including flat sectors in the denominator. Consistency uses the range of sector moves. Unavailable indicates insufficient coverage. Read each axis separately.

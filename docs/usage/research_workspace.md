@@ -26,6 +26,13 @@ The homepage **Sector performance overview** shows the count, source and time of
 the returned observations. Partial coverage is not fake data, but it also does
 not establish full-market breadth. Configured development data remains labelled.
 
+The **Market Sentiment Radar** shows three readings: intraday index momentum,
+sector breadth and sector consistency. A zero has a numeric label. Sector
+readings require a complete provider-reported universe, and the ranking card
+can still show a partial list. A flat sector counts in the breadth denominator.
+Use the market controls to select coverage and the language control to switch
+the interface independently.
+
 ## News and notifications
 
 News geography and topic are independent filters. A cross-border item can affect
@@ -36,6 +43,64 @@ Unknown locations and source times stay unknown. Each item includes inclusion
 reasons and affected asset tags; these rules are not price predictions or a claim
 that every relevant original has been found. Original news records are retained.
 Policy and word lists live in `egs/config/data/market_news.yaml`.
+
+Overview presents up to 16 distinct headlines from the latest seven calendar
+days, grouped by geography and subject. Expand a headline summary or open
+the News Center for filtering. News Center keywords use the selected
+market, geography, subject and current calendar day in Asia/Shanghai.
+The API also accepts `scope=week`, `month` or `all`. Unknown publication times
+remain available in unbounded news listings. Time-bounded results use verified
+source times.
+
+Hot terms use Jieba and a finance dictionary for Chinese, with English
+word boundaries and phrase aliases. The ranking uses title weight, distinct
+stories, source diversity and freshness. Topic rows group related stories and
+show their representative headline and supporting count. Dictionary, stop words,
+time windows and scoring weights are in `egs/config/data/news_topics.yaml`.
+
+### Optional BGE keyword reranking
+
+Use the lexical ranking by default, or add a local CPU model or an
+OpenAI-compatible embedding endpoint for the Overview ranking. Only bounded
+headline and phrase pairs enter the embedding request. The interface displays
+the ranking method and falls back to lexical ranking if BGE is unavailable.
+
+For local inference, install the `news-bge` extra with `uv sync --locked --extra news-bge`
+or install `egs/requirements/news-bge.lock.txt` with pip in the intended environment.
+Run the setup module from a source checkout or use the installed console command
+`aiquant-news-bge`.
+
+```text
+python -m src.engine.market.news_bge_install --target E:/aqt-runtime/models/news-bge
+```
+
+The command previews the fixed repository revision, download size and target.
+Type `y` when you approve. For automation, pass `--confirm-download` after the
+operator has approved the download. The installer verifies the pinned ONNX and
+tokenizer files, runs a CPU embedding probe and publishes the model directory.
+It then selects local mode in the current workspace's `.env`. Use
+`--download-only` to keep the existing ranking settings. The default download
+is about 24.45 MB. The model comes from the pinned
+[Xenova ONNX conversion](https://huggingface.co/Xenova/bge-small-zh-v1.5/tree/75c43b069aac4d136ba6bc1122f995fedcfd2781).
+
+An existing trusted ONNX model directory needs `tokenizer.json` and either
+`onnx/model_quantized.onnx` or `model.onnx`. Configure the mode and directory
+in the workspace's private `.env`. For a remote service, supply the base URL
+through the same file and store the API key there. Refresh Overview after
+changing the configuration.
+
+| Setting | Use |
+| --- | --- |
+| `ALL_IN_ONE_NEWS_BGE_MODE` | `auto` detects a local model, `local` requires the configured directory, `remote` connects to an endpoint and `off` uses lexical ranking |
+| `ALL_IN_ONE_NEWS_BGE_DIRECTORY` | Path to the local ONNX model directory |
+| `ALL_IN_ONE_NEWS_BGE_URL` | OpenAI-compatible API base URL including `/v1` when required by the service |
+| `ALL_IN_ONE_NEWS_BGE_API_KEY` | Optional endpoint bearer key |
+| `ALL_IN_ONE_NEWS_BGE_MODEL` | Model identifier reported by the remote service |
+
+Remote authorization uses a bearer header and requires HTTPS for non-loopback
+endpoints. An administrator should use an endpoint approved to receive public
+headlines. Provider errors are shown as a fallback state without credential or
+URL details in the interface.
 
 The inbox defaults to **today in Asia/Shanghai**. Choose a date or **View history**
 to inspect earlier records. The badge and mark-as-read action use the displayed
@@ -75,6 +140,7 @@ still apply. A hard cancellation may require a replacement worker on the next ac
 
 Suitable research views also offer explicit [CLI + Skill analysis](page_skill_analysis.md)
 with frozen page evidence, process events, cancellation and saved HTML reports.
+Overview serves account and market observations through the floating assistant.
 
 The active page and its controls appear first. Independent sections can update
 in parallel, while sections that share data follow their dependencies. For

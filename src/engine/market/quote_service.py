@@ -52,6 +52,22 @@ class QuoteService:
         unique = {row["code"]: row for row in rows}
         return list(unique.values())[:count]
 
+    def sector_snapshot(self, limit: int, *, refresh: bool = False) -> tuple[list[dict], list[dict]]:
+        """Use one bounded source read for rankings and a verified complete universe."""
+        rows = self.data.sectors(board="industry", limit=limit, direction="desc", refresh=refresh)
+        unique = {row["code"]: row for row in rows if row.get("code")}
+        valid = [
+            row for row in unique.values() if row.get("change_pct") is not None and isfinite(float(row["change_pct"]))
+        ]
+        complete = (
+            bool(valid)
+            and len(rows) == len(valid)
+            and all(str(row.get("universe_total")) == str(len(valid)) for row in valid)
+        )
+        if self.data.is_mock and valid and len(valid) < limit:
+            complete = True
+        return valid, valid if complete else []
+
     def heatmap(
         self, level: str = "industry", board: str | None = None, threshold: float = 0.0
     ) -> list[dict[str, Any]]:

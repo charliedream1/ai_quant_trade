@@ -39,6 +39,7 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 1600, "height": 1100})
+        page.add_init_script("localStorage.setItem('all-in-one-ui-lang', 'en')")
         try:
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
@@ -118,6 +119,7 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 1600, "height": 1100})
+        page.add_init_script("localStorage.setItem('all-in-one-ui-lang', 'en')")
         try:
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
