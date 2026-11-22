@@ -77,7 +77,7 @@ class ContextTurns:
         finally:
             TURN_PAGE_CONTEXT.reset(token)
 
-    def cli_send(self, message, history, backend, enabled, scopes, *values):
+    def cli_send(self, message, history, backend, enabled, scopes, *values, **options):
         envelope = self.collect(enabled, *values)
         identity = context_identity(envelope)
         if scopes.get("cli") != identity:
@@ -85,6 +85,19 @@ class ContextTurns:
         scopes["cli"] = identity
         token = TURN_PAGE_CONTEXT.set(envelope)
         try:
-            yield from self.cli(message, history, backend)
+            yield from self.cli(message, history, backend, **options)
         finally:
             TURN_PAGE_CONTEXT.reset(token)
+
+    def cli_send_with_options(self, message, history, backend, model, effort, access, enabled, scopes, *values):
+        yield from self.cli_send(
+            message,
+            history,
+            backend,
+            enabled,
+            scopes,
+            *values,
+            model_name=model,
+            reasoning_effort=effort,
+            access_mode=access,
+        )

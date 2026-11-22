@@ -119,4 +119,13 @@ workbuddy:
   authentication_env: ALL_IN_ONE_WORKBUDDY_AUTHENTICATION
   product_env: ALL_IN_ONE_WORKBUDDY_PRODUCT
   model: hy3
+  catalog_max_bytes: 2097152
+  authentication_timeout_seconds: 15
+  usage_fields: [input_tokens, output_tokens, cache_creation_input_tokens, cache_read_input_tokens]
+  messages:
+    configuration: WorkBuddy 未配置。请检查安装目录、桌面登录文件和模型目录设置。
+    catalogue: WorkBuddy 模型目录无法读取。
+    model: 请从已配置的 WorkBuddy 模型目录选择模型。
+    login: WorkBuddy 桌面登录不可用，请重新登录后重试。
+    response: WorkBuddy 未返回可用的报告正文。
   arguments: [--print, --settings, '{"permissions":{"deny":["Agent","Read","Write","Edit","Bash","Glob","Grep","PowerShell","EnterPlanMode","ExitPlanMode","TaskCreate","TaskGet","TaskUpdate","TaskList","WebFetch","WebSearch","TaskStop","TaskOutput","Skill","AskUserQuestion","StructuredOutput","ToolSearch","DeferExecuteTool","SendMessage","TeamCreate","TeamDelete","A2AGetAgentCard","A2ASendMessage","A2AGetTask","A2ACancelTask","ImageGen","ViewImage","LibraryUpload","VideoGen","AudioTranscribe","SkillManage","ListMcpResources","ReadMcpResource","MessageColleague","SpeakInChannel","ChannelTasks","CreateColleague","CreateChannel","ListColleagues"]}}', --output-format, stream-json, --verbose, --tools, '', --disallowedTools, 'Agent,Read,Write,Edit,Bash,Glob,Grep,PowerShell,WebFetch,WebSearch,Skill,StructuredOutput,ToolSearch', --strict-mcp-config, --mcp-config, '{"mcpServers":{}}', --setting-sources, '', --no-session-persistence, --max-turns, '1']

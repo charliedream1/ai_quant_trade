@@ -13,11 +13,12 @@
 | 模型 API / GenericAgent | 在系统配置登记并启用 OpenAI 兼容模型，配置对应环境密钥 | 复用项目上下文和文本 ReAct；当前在调用完成后返回动作与正文，不逐 token 更新 |
 | Codex CLI | 服务所在机器已安装并认证；必要时配置ALL_IN_ONE_CODEX_CLI | 默认只读，可显式选择项目编辑；实际sandbox参数及模型/思考强度传给CLI |
 | Qoder CLI | 在.env配置ALL_IN_ONE_QODER_CLI、ALL_IN_ONE_QODER_CONFIG_DIR，并使用同一配置目录登录 | 官方非交互事件流；默认只读工具，项目编辑增加Write/Edit；不启用Shell/MCP或绕过确认 |
-| Trae CLI / WorkBuddy CLI | 当前尚未接入真实协议 | 返回 unavailable / 未接入，不生成模拟动作或假回复 |
+| TRAE CLI / CodeBuddy Code | Available with a compatible, configured CLI | Uses the provider's native protocol |
+| WorkBuddy CLI | Available with a configured Windows desktop profile and explicit model | Uses the isolated text-only runner |
 
 先在“系统管理 → 系统配置”检查模型；命令行可执行 `python egs/entrypoints/cli.py model list --format json`。看到 mock-llm 或“测试模式回答”表示模拟回复，不代表真实模型工作。模型 API 与本地 CLI 是不同后台，启用一个不会自动启用另一个。
 
-mock数据服务默认禁止调用真实CLI。如需在mock行情下验收真实CLI，在启动服务环境中设置`ALL_IN_ONE_ENABLE_REAL_CLI=true`后重启；real行情模式也仍需程序和认证。行情模式、模型来源与CLI是否接通分别判断。Trae/WorkBuddy仍不可用；旧策略CLI产物模拟器不属于此真实对话链。
+Native CLI calls in demo mode require `ALL_IN_ONE_ENABLE_REAL_CLI=true`. Real mode requires a configured, authenticated provider. See [CLI models and billing](cli_model_catalog.md) for model selection and refresh behavior.
 
 ## Qoder在E盘的安装与登录
 
@@ -94,7 +95,7 @@ PDF/DOCX 会先提取文本，不提供扫描件 OCR。图片会传给后台，�
 
 ## 使用悬浮助手
 
-在普通业务页面点击右下角AI，选择“模型问答”“知识问答”或“CLI助手”。模型问答和CLI助手支持Enter发送；CLI助手可选已安装并认证的Codex/Qoder，Trae/WorkBuddy仍不可用。悬浮CLI按实际事件更新状态，支持多轮上下文；不要把悬浮显示历史当作主工作台的持久会话列表。
+Open the floating AI panel on a business page and select Model Chat, Knowledge Q&A, or CLI Assistant. Both chat tabs support Enter and use the shared CLI model catalog. CLI Assistant shows actual execution status and maintains its own multi-turn view. The workbench owns its saved session list.
 
 ## 从命令行使用同一工作台会话
 

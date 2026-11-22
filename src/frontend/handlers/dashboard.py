@@ -8,9 +8,10 @@ class DashboardHandler(DomainHandler):
     allowed_methods = frozenset(
         {
             "home_account",
-            "home_market",
+            "home_market_snapshot",
             "home_operations",
             "home_news",
+            "home_themes",
             "dashboard_account",
             "dashboard_market",
             "dashboard_strategy",

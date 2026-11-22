@@ -122,8 +122,8 @@ def test_switch_refresh_billing_and_delayed_provider(cli_command, monkeypatch, t
             choose("model", "codex available · 1.2× credits")
             expect(frame.locator(f"#{prefix}-billing")).to_contain_text("1.2× credits")
             choose("reasoning", "低")
-            choose("backend", "WorkBuddy（未接入）")
-            expect(frame.locator(f"#{prefix}-billing")).to_contain_text("chat is unavailable")
+            choose("backend", "WorkBuddy CLI")
+            expect(frame.locator(f"#{prefix}-billing")).to_contain_text("desktop login file")
             expect(frame.locator(f"#{prefix}-send")).to_be_disabled()
             page.screenshot(path=str(tmp_path / (prefix + "-billing.png")), full_page=True)
             assert ("codebuddy", True) in calls

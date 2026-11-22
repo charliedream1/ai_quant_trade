@@ -11,7 +11,7 @@
 | Codex CLI | `codex` | 已接入 | 原生安装或npm；ChatGPT/API认证 |
 | Qoder CLI | `qoder`，部分发行包为`qodercli` | 已接入；兼容`qorder`输入别名 | 原生安装优先；Qoder账户认证 |
 | TRAE CLI 2.0 | `traecli` | 尚未接入，页面返回不可用 | 官方安装器；首次启动引导登录 |
-| WorkBuddy / CodeBuddy Code | WorkBuddy为桌面应用；官方CodeBuddy CLI命令为`codebuddy` | WorkBuddy选项尚未接入 | 两种产品分别安装、确认账户和配置 |
+| WorkBuddy / CodeBuddy Code | WorkBuddy desktop profile / `codebuddy` command | Dedicated entries in the shared CLI selector | Configure each product's installation, account and catalog |
 
 安装CLI并不等于平台已经接通；`--version`成功也不等于登录成功。模型API/GenericAgent只需平台模型配置，不需要安装CLI。不要把 `openai` API工具、Codex桌面应用的安装或旧策略产物模拟器当作上述对话适配器。
 
@@ -173,7 +173,10 @@ traecli
 
 从[WorkBuddy官方入门](https://www.codebuddy.cn/docs/workbuddy/FirstTask)进入下载页，选择对应系统版本。在Windows安装向导选择安装位置；需要E盘时，可在向导提供目录选择的版本中设置为`E:\Tools\WorkBuddy`，再按应用指引完成扫码登录。
 
-不要假定安装桌面端后PATH里就有`workbuddy`命令，也不要复制第三方教程中的固定内部app目录。桌面程序、内置引擎与独立CodeBuddy CLI的入口和认证是否共享，应按实际发行版本确认。本项目的WorkBuddy对话后端尚未接入；复制Skill文件也不等于接入它的CLI。
+Use the configured desktop profile for WorkBuddy CLI and the installed `codebuddy`
+command for CodeBuddy Code. The [relationship graph guide](model_stock_relationships.md)
+lists the WorkBuddy installation, login file, and model catalog settings used by
+the workbench, floating assistant, and page reports.
 
 ### CodeBuddy Code CLI：单独安装和验证
 

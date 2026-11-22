@@ -2,7 +2,7 @@
   if (window.__flatComposerBound) return;
   window.__flatComposerBound = true;
   const labelControls = () => {
-    for (const prefix of ['ai-console', 'ai-chat']) {
+    for (const prefix of ['ai-console', 'ai-chat', 'ai-cli']) {
       const send = document.getElementById(`${prefix}-send`);
       send?.setAttribute('aria-label', '发送');
       send?.setAttribute('title', 'Enter 发送，Ctrl+Enter 换行');

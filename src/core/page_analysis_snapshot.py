@@ -60,6 +60,25 @@ def portable(value):
     return str(value)[: cfg["text_chars"]]
 
 
+def _economic_evidence(value, count):
+    snapshot = value[3]
+    if not isinstance(snapshot, dict) or snapshot.get("kind") != "macro":
+        return value
+    histories: dict[str, list[dict]] = {}
+    for row in snapshot.get("observations", []):
+        histories.setdefault(row.get("series"), []).append(row)
+    return {
+        **{
+            key: snapshot[key]
+            for key in ("snapshot_id", "kind", "scope", "overview", "sources", "gaps")
+            if key in snapshot
+        },
+        "recent_observations_by_series": {
+            name: sorted(rows, key=lambda row: row["observation_date"])[-count:] for name, rows in histories.items()
+        },
+    }
+
+
 def capture(name, function, args, kwargs, value):
     page = CURRENT_PAGE.get()
     if page is None or page.is_set():
@@ -84,6 +103,8 @@ def capture(name, function, args, kwargs, value):
         scope["library"] = document.get("library_name")
     if name == "rag_chat":
         value = value[2]
+    elif name == "economic_load" and isinstance(value, (list, tuple)) and len(value) > 3:
+        value = _economic_evidence(value, cfg["limits"]["macro_observations_per_series"])
     data = redact(portable(value.get("result") if name == "factor_job" else value))
     if len(json.dumps(data, ensure_ascii=False, default=str)) > cfg["limits"]["evidence_chars"]:
         return

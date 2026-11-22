@@ -8,6 +8,8 @@ import gradio as gr
 from src.agent.cli_catalog import catalog_config, discover
 from src.agent.composer_config import composer_config, normalize_backend
 
+from .callbacks import safe
+
 
 def details(catalog, identifier):
     cfg = catalog_config()
@@ -23,7 +25,8 @@ def details(catalog, identifier):
     if catalog.get("stale"):
         text += "\n\n" + cfg["messages"]["stale"]
     if catalog.get("backend") == "workbuddy":
-        text += "\n\n" + cfg["messages"]["workbuddy"]
+        key = "workbuddy_setup" if catalog.get("status") == "missing" else "workbuddy"
+        text += "\n\n" + cfg["messages"][key]
     backend = catalog.get("backend", "generic_agent")
     return escape(composer_config()["backends"][backend]["label"] + " · " + text)
 
@@ -37,6 +40,70 @@ def effort_update(backend, catalog, identifier):
     labels = {value: label for label, value in cfg["efforts"]}
     return gr.update(
         choices=[(labels.get(item, item), item) for item in supported], value="", interactive=len(supported) > 1
+    )
+
+
+def model_options(catalog, backend, default_label):
+    choices = [] if backend == "workbuddy" else [(default_label, "")]
+    for row in catalog["rows"]:
+        label = f"{row['name']} · {row['billing']}" if row.get("billing") else row["name"]
+        choices.append((label, row["id"]))
+    return choices
+
+
+def bind_cli_catalog(backend, model, refresh, note, default_backend):
+    """Reuse daily discovery in specialised research selectors."""
+    selector = CatalogSelection([])
+    state = gr.State({"backend": default_backend, "revision": 0})
+
+    def begin(provider, current):
+        current.update(backend=provider, revision=current["revision"] + 1)
+        return current, gr.update(choices=[], value=None, interactive=False), catalog_config()["messages"]["loading"]
+
+    def load(current, force=False, selected=None):
+        provider, revision = current["backend"], current["revision"]
+        if provider == "api":
+            return gr.update(choices=[], value=None, interactive=False), ""
+        result = selector.load_data(provider, force)
+        if revision != current["revision"] or provider != current["backend"]:
+            return gr.skip(), gr.skip()
+        cfg = catalog_config()
+        choices = model_options(result, provider, cfg["labels"]["default"])
+        manual = provider in cfg["manual_backends"]
+        if selected not in {value for _, value in choices}:
+            selected = None if provider == "workbuddy" else ""
+        return gr.update(
+            choices=choices,
+            value=selected,
+            allow_custom_value=manual,
+            interactive=bool(choices) or manual,
+        ), details(result, selected)
+
+    def load_fresh(current, selected):
+        current["revision"] += 1
+        return load(current, True, selected)
+
+    backend.input(
+        safe(begin, cancel_outputs=3),
+        inputs=[backend, state],
+        outputs=[state, model, note],
+        queue=False,
+        trigger_mode="multiple",
+    ).then(
+        safe(load, cancel_outputs=2),
+        inputs=state,
+        outputs=[model, note],
+        queue=True,
+        show_progress="hidden",
+        trigger_mode="multiple",
+        concurrency_limit=None,
+    )
+    refresh.click(
+        safe(load_fresh, cancel_outputs=2),
+        inputs=[state, model],
+        outputs=[model, note],
+        queue=True,
+        show_progress="hidden",
     )
 
 
@@ -68,7 +135,15 @@ class CatalogSelection:
                 "status": "unknown",
             }
             return catalog
-        return discover(backend, refresh)
+        result = discover(backend, refresh)
+        if backend == "workbuddy":
+            from src.engine.market.model_graph.generation import workbuddy_paths
+
+            try:
+                workbuddy_paths()
+            except (OSError, ValueError):
+                return {**result, "backend": backend, "status": "missing", "rows": []}
+        return result
 
     def load(self, state, refresh=False):
         backend, revision = state["backend"], state["revision"]
@@ -77,10 +152,9 @@ class CatalogSelection:
             return tuple(gr.skip() for _ in range(5))
         state["catalog"] = catalog
         cfg, profile = catalog_config(), composer_config()["backends"][backend]
-        choices = [(cfg["labels"]["default"] + " · " + cfg["labels"]["unknown"], "")]
-        choices.extend((row["name"] + " · " + row["billing"], row["id"]) for row in catalog["rows"])
+        choices = model_options(catalog, backend, cfg["labels"]["default"] + " · " + cfg["labels"]["unknown"])
         selected = state.get("selected", "")
-        selected = selected if selected in {value for _, value in choices} else ""
+        selected = selected if selected in {value for _, value in choices} else None if backend == "workbuddy" else ""
         return (
             gr.update(choices=choices, value=selected, allow_custom_value=backend in cfg["manual_backends"]),
             effort_update(backend, catalog, selected),
@@ -90,7 +164,7 @@ class CatalogSelection:
                 interactive=len(profile["permissions"]) > 1,
             ),
             details(catalog, selected),
-            gr.update(interactive=backend != "workbuddy"),
+            gr.update(interactive=backend != "workbuddy" or bool(catalog["rows"])),
         )
 
     def refresh(self, state):

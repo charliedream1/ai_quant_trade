@@ -122,18 +122,21 @@ def balanced_sector_rows(rows: list[dict[str, Any]], count: int) -> list[dict[st
     return rising[:positive_count] + falling[: count - positive_count]
 
 
-def theme_summary(news_items: list[dict[str, Any]]) -> str:
+def theme_summary(news_items: list[dict[str, Any]], mode="lexical") -> str:
     from src.engine.market.news_topics import grouped_topics, policy, ranked_keywords
 
     limit = policy()["limits"]["topic_terms"]
-    ranked = ranked_keywords(news_items, limit)
+    ranked = ranked_keywords(news_items, limit, tfidf=True)
     if not ranked:
         return "<section class='home-themes'><strong>热词与主题</strong><span>暂无新闻关键词</span></section>"
-    from src.engine.market.news_bge import rerank
+    method = policy()["modes"]["lexical_label"]
+    if mode == "semantic":
+        from src.engine.market.news_bge import extract_phrases
 
-    ranked, method = rerank(ranked)
+        ranked, method = extract_phrases(ranked, lexical_label=method)
     chips = "".join(
-        f"<b><span class='no-i18n'>{escape(row['keyword'])}</span> <em>{row['count']}</em></b>" for row in ranked
+        f"<b title='{escape(row['headline'])}'><span class='no-i18n'>{escape(row['keyword'])}</span> <em>{row['count']}</em></b>"
+        for row in ranked
     )
     topics = "".join(
         f"<li><strong>{escape(row['label'])}</strong> · {row['count']} "
@@ -144,6 +147,25 @@ def theme_summary(news_items: list[dict[str, Any]]) -> str:
     return (
         f"<section class='home-themes'><strong>热词与主题</strong><div>{chips}</div>"
         f"<ul class='home-topic-list'>{topics}</ul><small>{escape(method)}</small></section>"
+    )
+
+
+def release_calendar() -> str:
+    from .view_primitives import _local_now
+
+    calendar = home_config()["release_calendar"]
+    today = _local_now().date().isoformat()
+    rows = [row for row in calendar["events"] if row["date"] >= today][: limit("release_cards")]
+    lines = (
+        "".join(
+            f"<li><time>{escape(row['date'])} {escape(row['time'])}</time> · {escape(row['title'])}</li>"
+            for row in rows
+        )
+        or "<li>请查看官方日程</li>"
+    )
+    return (
+        f"<section class='home-release-calendar'><strong>中国宏观发布日程</strong><small>北京时间 · 以公告为准</small>"
+        f"<ul>{lines}</ul><a href='{escape(calendar['source'], quote=True)}' target='_blank' rel='noopener noreferrer'>官方日程</a></section>"
     )
 
 

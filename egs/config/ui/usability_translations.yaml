@@ -180,6 +180,11 @@ CLI 默认模型: CLI default model
 模型列表暂不可用。检查 CLI 登录后可刷新，或使用默认模型。: The model list is unavailable. Check the CLI sign-in and refresh, or use its default model.
 CLI 未返回模型列表，可使用默认模型。: The CLI returned no models. You can use its default model.
 CLI 已切换，请重新选择模型。: The CLI changed. Please select a model again.
+WorkBuddy 目前用于页面证据解读。此任务需要严格研究后端。: This task requires a strict research backend. WorkBuddy produces page evidence reports.
+请在本地配置 WorkBuddy 安装目录、桌面登录文件和模型目录后刷新。: Configure the WorkBuddy installation, desktop login file and model catalog locally, then refresh.
+请选择 WorkBuddy 模型。: Select a WorkBuddy model.
+已启动 WorkBuddy CLI: WorkBuddy CLI started
+WorkBuddy 已返回报告内容: WorkBuddy returned report content
 分析选项: Analysis options
 报告历史: Report history
 运行详情: Run details
@@ -232,5 +237,21 @@ ETF 敞口复核: ETF exposure review
 已授权知识证据复核: Authorized knowledge evidence review
 所选知识库文档复核: Selected library document review
 市场情绪雷达: Market Sentiment Radar
+中国宏观发布日程: China macro release calendar
+北京时间 · 以公告为准: Beijing time · subject to official updates
+请查看官方日程: Check the official calendar
+官方日程: Official calendar
+工业企业利润: Industrial profits
+采购经理指数: Purchasing managers' index
+CPI 与 PPI: CPI and PPI
+国民经济运行: National economic performance
+关键词提取: Keyword extraction
+分词与 TF-IDF: Tokenization and TF-IDF
+轻量 BERT 语义抽取: Lightweight BERT extraction
+本地 BGE 语义抽取: Local BGE phrase extraction
+远程 BGE 语义抽取: Remote BGE phrase extraction
+技术指标解读: Technical indicator readings
+较上期: Change from previous period
+模型 API 域名无法解析。请核对模型服务地址和网络，或从当前页面使用 CLI 报告。: The model API hostname could not be resolved. Check its address and network connection, or use the CLI report on this page.
 市场情绪代理雷达由指数动量、板块广度和一致性构成，不是买卖信号。: Market sentiment uses proxies for momentum, breadth and consistency.
 日内指数动量采用指数平均涨跌幅。板块广度采用完整板块快照中上涨板块的比例，平盘计入分母。板块一致性根据涨跌幅极差计算。覆盖不足时显示未提供。各轴分别解读。: Intraday momentum uses the average index change. Breadth is the rising share of the complete sector snapshot, including flat sectors in the denominator. Consistency uses the range of sector moves. Unavailable indicates insufficient coverage. Read each axis separately.

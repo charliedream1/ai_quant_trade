@@ -24,7 +24,7 @@ def test_floating_cli_yields_native_progress_before_final_message(client, monkey
         yield CodexStreamEvent("message", "running", "你好")
         yield CodexStreamEvent("process", "completed", "已完成")
 
-    monkeypatch.setattr("src.frontend.service.assistant.CodexCliRunner.stream", stream)
+    monkeypatch.setattr("src.agent.workspace_backend.CodexCliRunner.stream", stream)
     history = [{"role": "user", "content": [{"type": "text", "text": "第一轮"}]}]
     events = list(safe(FrontendService().floating_cli_chat_stream)("第二轮", history, "codex"))
     assert len(events) >= 4

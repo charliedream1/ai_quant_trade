@@ -1,6 +1,7 @@
 """Graph-specific text-only CLI profile; existing strict provider contracts stay intact."""
 
 import json
+import math
 import subprocess
 from pathlib import Path
 from time import perf_counter
@@ -15,6 +16,7 @@ from src.agent.providers.registry import require_native
 from src.core.env_file import resolve_env_value
 from src.core.paths import SOURCE_ROOT
 from src.core.process_env import process_environment
+from src.core.redaction import redact_text
 from src.observability.instrumentation import traced
 
 from .config import config
@@ -22,9 +24,11 @@ from .transport import text_only_process
 
 
 def availability():
-    cfg = config()
-    buddy = cfg["workbuddy"]
-    configured = all(resolve_env_value(buddy[key]) for key in ("installation_env", "authentication_env", "product_env"))
+    try:
+        workbuddy_paths()
+        configured = True
+    except (OSError, ValueError):
+        configured = False
     result = [
         {
             "backend": "workbuddy",
@@ -88,85 +92,154 @@ class GraphGeneration:
         return value
 
     def _workbuddy(self, prompt):
-        cfg, limits = config()["workbuddy"], config()["limits"]
-        installation = Path(resolve_env_value(cfg["installation_env"]))
-        authentication = Path(resolve_env_value(cfg["authentication_env"]))
-        product = Path(resolve_env_value(cfg["product_env"]))
-        if not all(path.is_absolute() and path.exists() for path in (installation, authentication, product)):
-            raise ValueError("WorkBuddy paths must be explicitly configured existing absolute paths")
-        model = self.selection.get("model_name") or cfg["model"]
-        catalogue = json.loads(product.read_text(encoding="utf-8")).get("models", [])
-        if not any(item.get("id") == model for item in catalogue):
-            raise ValueError("Requested WorkBuddy model is not in its installed catalogue")
-        environment = process_environment("document")
-        environment["ELECTRON_RUN_AS_NODE"] = "1"
-        helper = SOURCE_ROOT / "src/agent/providers/workbuddy_login.cjs"
+        cfg = config()
+        return complete_workbuddy(
+            prompt,
+            model=self.selection.get("model_name") or cfg["workbuddy"]["model"],
+            directory=self.directory,
+            cancelled=self.cancelled,
+            system_prompt=cfg["prompts"]["system"],
+        )
+
+
+def workbuddy_paths():
+    """Resolve the configured desktop profile without exposing its paths to callers."""
+    cfg = config()["workbuddy"]
+    paths = tuple(
+        Path(resolve_env_value(cfg[key])) for key in ("installation_env", "authentication_env", "product_env")
+    )
+    installation, authentication, product = paths
+    if (
+        not all(path.is_absolute() for path in paths)
+        or not (installation / "WorkBuddy.exe").is_file()
+        or not (installation / "resources/app.asar").is_file()
+        or not authentication.is_file()
+        or not product.is_file()
+    ):
+        raise ValueError(cfg["messages"]["configuration"])
+    return installation, authentication, product
+
+
+def complete_workbuddy(prompt, *, model, directory, cancelled, system_prompt, max_output_chars=None):
+    """Run the shared text-only desktop CLI with a private working profile."""
+    cfg = config()["workbuddy"]
+    limits = dict(config()["limits"])
+    if max_output_chars is not None:
+        limits["output_chars"] = min(limits["output_chars"], max_output_chars)
+    installation, authentication, product = workbuddy_paths()
+    try:
+        if product.stat().st_size > cfg["catalog_max_bytes"]:
+            raise ValueError
+        catalogue = json.loads(product.read_text(encoding="utf-8-sig"))["models"]
+        if not isinstance(catalogue, list):
+            raise ValueError
+    except (OSError, KeyError, ValueError, TypeError):
+        raise ValueError(cfg["messages"]["catalogue"]) from None
+    if (
+        not model
+        or model.startswith("-")
+        or any(ord(char) < 32 for char in model)
+        or not any(
+            isinstance(item, dict)
+            and item.get("id") == model
+            and not item.get("hidden")
+            and item.get("enabled") is not False
+            for item in catalogue
+        )
+    ):
+        raise ValueError(cfg["messages"]["model"])
+    if cancelled():
+        raise InterruptedError("WorkBuddy request cancelled")
+    environment = process_environment("document")
+    environment["ELECTRON_RUN_AS_NODE"] = "1"
+    helper = SOURCE_ROOT / "src/agent/providers/workbuddy_login.cjs"
+    try:
         login = subprocess.run(
             [str(installation / "WorkBuddy.exe"), str(helper), str(installation), str(authentication)],
             env=environment,
             capture_output=True,
-            timeout=limits["model_seconds"],
+            timeout=cfg["authentication_timeout_seconds"],
             check=False,
         )
-        if login.returncode:
-            raise ValueError("Existing WorkBuddy login could not be read using its native codec")
+    except (OSError, subprocess.SubprocessError):
+        raise ValueError(cfg["messages"]["login"]) from None
+    if login.returncode:
+        raise ValueError(cfg["messages"]["login"])
+    try:
         account = json.loads(login.stdout)
-        profile = self.directory / "cli_profile"
-        profile.mkdir(parents=True, exist_ok=True)
-        environment.update(
-            CODEBUDDY_AUTH_TOKEN=account["auth"]["accessToken"],
-            CODEBUDDY_CUSTOM_HEADERS="X-User-Id: " + account["account"]["uid"],
-            CODEBUDDY_CONFIG_DIR=str(profile),
-            WORKBUDDY_CONFIG_DIR=str(profile),
-            CODEBUDDY_FORCE_LITE_WB_BUNDLE="1",
-            DISABLE_AUTOUPDATER="1",
-            DISABLE_TELEMETRY="1",
-            ACC_PRODUCT_CONFIG_PATH=str(product),
-        )
-        environment["ALL_IN_ONE_PROVIDER_DEPTH"] = str(provider_config()["defaults"]["max_provider_depth"])
-        command = [
-            str(installation / "WorkBuddy.exe"),
-            str(installation / "resources/app.asar/cli/bin/codebuddy"),
-            *cfg["arguments"],
-            "--model",
-            model,
-            "--system-prompt",
-            config()["prompts"]["system"],
-        ]
-        started = perf_counter()
+        token, uid = account["auth"]["accessToken"], account["account"]["uid"]
+        if not isinstance(token, str) or not token or not isinstance(uid, str) or not uid:
+            raise ValueError
+    except (ValueError, TypeError, KeyError):
+        raise ValueError(cfg["messages"]["login"]) from None
+    if cancelled():
+        raise InterruptedError("WorkBuddy request cancelled")
+    profile = directory / "cli_profile"
+    profile.mkdir(parents=True, exist_ok=True)
+    environment.update(
+        CODEBUDDY_AUTH_TOKEN=token,
+        CODEBUDDY_CUSTOM_HEADERS="X-User-Id: " + uid,
+        CODEBUDDY_CONFIG_DIR=str(profile),
+        WORKBUDDY_CONFIG_DIR=str(profile),
+        CODEBUDDY_FORCE_LITE_WB_BUNDLE="1",
+        DISABLE_AUTOUPDATER="1",
+        DISABLE_TELEMETRY="1",
+        ACC_PRODUCT_CONFIG_PATH=str(product),
+    )
+    environment["ALL_IN_ONE_PROVIDER_DEPTH"] = str(provider_config()["defaults"]["max_provider_depth"])
+    command = [
+        str(installation / "WorkBuddy.exe"),
+        str(installation / "resources/app.asar/cli/bin/codebuddy"),
+        *cfg["arguments"],
+        "--model",
+        model,
+        "--system-prompt",
+        system_prompt,
+    ]
+    started = perf_counter()
 
-        def observe(event):
-            if event.get("type") == "system" and event.get("subtype") == "init":
-                (self.directory / "capabilities.json").write_text(
-                    json.dumps(
-                        {
-                            "tools": [
-                                item if isinstance(item, str) else item.get("name", "unknown")
-                                for item in event.get("tools", [])
-                            ],
-                            "model": event.get("model"),
-                            "skills_count": len(event["skills"]) if "skills" in event else None,
-                            "plugins_count": len(event["plugins"]) if "plugins" in event else None,
-                            "mcp_count": len(event.get("mcp_servers", [])),
-                        }
-                    ),
-                    encoding="utf-8",
-                )
+    def observe(event):
+        if event.get("type") == "system" and event.get("subtype") == "init":
+            if event.get("model") != model:
+                raise ValueError("WorkBuddy initialized an unexpected model")
+            (directory / "capabilities.json").write_text(
+                json.dumps(
+                    {
+                        "tools": [
+                            item if isinstance(item, str) else item.get("name", "unknown")
+                            for item in event.get("tools", [])
+                        ],
+                        "model": event.get("model"),
+                        "skills_count": len(event["skills"]) if "skills" in event else None,
+                        "plugins_count": len(event["plugins"]) if "plugins" in event else None,
+                        "mcp_count": len(event.get("mcp_servers", [])),
+                    }
+                ),
+                encoding="utf-8",
+            )
 
-        final: dict[str, Any] = text_only_process(
-            command, environment, profile, prompt, limits, self.cancelled, observe
-        )
-        if final.get("is_error") or not isinstance(final.get("result"), str):
-            raise ValueError("WorkBuddy returned no successful graph response")
-        if set(final.get("modelUsage", {})) != {model}:
-            raise ValueError("WorkBuddy returned an unexpected model identity")
-        if len(final["result"]) > limits["output_chars"]:
-            raise ValueError("Graph completion exceeds output budget")
-        return {
-            "text": final["result"],
-            "model": model,
-            "backend": "workbuddy",
-            "usage": final.get("usage"),
-            "reported_cost": final.get("total_cost_usd"),
-            "duration_ms": round((perf_counter() - started) * 1000),
-        }
+    final: dict[str, Any] = text_only_process(command, environment, profile, prompt, limits, cancelled, observe)
+    if final.get("is_error") or not isinstance(final.get("result"), str):
+        raise ValueError(cfg["messages"]["response"])
+    if set(final.get("modelUsage", {})) != {model}:
+        raise ValueError("WorkBuddy returned an unexpected model identity")
+    if len(final["result"]) > limits["output_chars"]:
+        raise ValueError("WorkBuddy completion exceeds output budget")
+    raw_usage = final.get("usage")
+    usage = {}
+    if isinstance(raw_usage, dict):
+        for key in cfg["usage_fields"]:
+            value = raw_usage.get(key)
+            if type(value) is int and value >= 0:
+                usage[key] = value
+    cost = final.get("total_cost_usd")
+    if not isinstance(cost, (int, float)) or isinstance(cost, bool) or not math.isfinite(cost) or cost < 0:
+        cost = None
+    return {
+        "text": redact_text(final["result"], secrets=(token,)),
+        "model": model,
+        "backend": "workbuddy",
+        "usage": usage,
+        "reported_cost": cost,
+        "duration_ms": round((perf_counter() - started) * 1000),
+    }

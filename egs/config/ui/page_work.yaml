@@ -20,7 +20,10 @@ section_messages:
   en: {loading: Loading…, failed: Failed — retry, cancelled: Cancelled}
   zh: {loading: 加载中…, failed: 加载失败，可重试, cancelled: 已取消}
 progressive_methods:
-  # Keep homepage groups on the stable independent callback transport on both SDK versions.
+  home_account: 9
+  home_market_snapshot: 5
+  home_news: 1
+  home_themes: 1
   market_overview: 3
   factor_monitor_summary: 7
   factor_monitor_details: 5
@@ -43,12 +46,28 @@ progressive_methods:
 # Preserve same-process snapshot reuse across the four homepage presentations.
 affinity_groups: []
 poll_seconds: 0.05
+market_refresh_cache_seconds: 20
+progress_stages:
+  Loading configured service: initializing
+  Fetching market data: market
+  Building charts: charts
+  Fetching financial statements: financials
+  Fetching macroeconomic observations: macro
+  Validating source observations: verifying
+  Reading account records: account
+  Valuing holdings: valuation
+  Loading company research: company
+  Reading headlines: headlines
+  Extracting keywords: keywords
+stage_messages:
+  en: {initializing: Preparing, market: Fetching market data, charts: Building charts, financials: Loading statements, macro: Fetching macro data, verifying: Checking source data, account: Reading account records, valuation: Valuing holdings, company: Loading company data, headlines: Reading headlines, keywords: Extracting keywords}
+  zh: {initializing: 正在准备, market: 正在获取行情, charts: 正在绘制图表, financials: 正在读取财报, macro: 正在获取宏观数据, verifying: 正在核查来源, account: 正在读取账户, valuation: 正在估算持仓净值, company: 正在获取个股数据, headlines: 正在读取新闻, keywords: 正在提取热词}
 read_deadline_seconds: 180
 worker_error_chars: 500
 shutdown_seconds: 3
 messages:
   cancelled: Previous loading was cancelled when you left this page. Refresh or retry to load data.
-share_methods: [home_market, home_news, market_overview, news, economic_load]
+share_methods: [home_market, home_market_snapshot, home_news, home_themes, market_overview, news, economic_load]
 source_methods: [graph_local, graph_read, graph_search, graph_resolve]
 read_methods:
   - models_with_stats
@@ -56,8 +75,9 @@ read_methods:
   - floating_citation
   - home_account
   - home_market
+  - home_market_snapshot
+  - home_themes
   - home_news
-  - home_operations
   - dashboard_account
   - dashboard_market
   - dashboard_strategy

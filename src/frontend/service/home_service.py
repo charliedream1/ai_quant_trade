@@ -3,7 +3,7 @@
 from src.core.repository import Repository
 
 from .home_actions import action_rows
-from .home_dashboard import home_account, home_market, home_news, home_operations
+from .home_dashboard import home_account, home_market, home_market_snapshot, home_news, home_operations, home_themes
 from .shared_observations import cached_observation
 from .view_primitives import _normalize_account_mode
 
@@ -14,6 +14,12 @@ class HomeServiceMixin:
 
     def home_market(self, account_mode="paper", force_refresh=False):
         return home_market(_normalize_account_mode(account_mode), force_refresh)
+
+    def home_market_snapshot(self, account_mode="paper", force_refresh=False):
+        return home_market_snapshot(_normalize_account_mode(account_mode), force_refresh)
+
+    def home_themes(self, force_refresh=False, keyword_mode="lexical"):
+        return home_themes(force_refresh, keyword_mode)
 
     def home_news(self, account_mode="paper", force_refresh=False):
         return home_news(_normalize_account_mode(account_mode), force_refresh)

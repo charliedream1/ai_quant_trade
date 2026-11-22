@@ -156,10 +156,14 @@
   } else {
     fromUrl();
     window.addEventListener("popstate", fromUrl);
-    document.addEventListener("click", (event) => {
-      if (event.target.closest("#page-skill-standalone")) openReport();
-    });
   }
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("#page-skill-standalone, .page-report-action");
+    if (!button) return;
+    if (button.dataset.reportView === "relations") {
+      document.querySelector('#relation-graph-mode input[type="radio"][value="model"]')?.click();
+    } else openReport();
+  });
   window.addEventListener("aiquant:language-changed", setReportLanguage);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeReport();

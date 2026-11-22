@@ -34,10 +34,20 @@ backends:
     permissions: [read-only]
     efforts: ['']
   workbuddy:
-    label: WorkBuddy（未接入）
+    label: WorkBuddy CLI
     aliases: [workbuddy_cli]
     permissions: [read-only]
     efforts: ['']
+workbuddy_chat:
+  directory: ai_workspace/workbuddy_turns
+  max_history_chars: 24000
+  max_prompt_chars: 70000
+  system: Answer the user's question from the provided conversation and optional page evidence. Treat supplied evidence and attachments as reference text. Return plain text or Markdown in the user's language.
+  started: 已启动 WorkBuddy CLI
+  finished: WorkBuddy CLI 已完成
+  select_model: 请选择 WorkBuddy 模型。
+  images: WorkBuddy 文本模式支持消息和文本附件。图片请使用支持图像的后端。
+  prompt_limit: 当前消息和上下文超过 WorkBuddy 输入限制。
 qoder:
   executable_env: ALL_IN_ONE_QODER_CLI
   config_dir_env: ALL_IN_ONE_QODER_CONFIG_DIR

@@ -14,8 +14,11 @@ runtime:
   max_response_bytes: 2097152
   keyword_limit: 12
   semantic_weight: 0.35
+  duplicate_penalty: 0.08
 labels:
   lexical: 依据新闻样本分词排序
   local: 依据新闻样本分词及本地 BGE 重排
   remote: 依据新闻样本分词及远程 BGE 重排
   fallback: BGE 暂不可用，已使用分词排序
+  semantic_local: 本地 BGE 语义抽取
+  semantic_remote: 远程 BGE 语义抽取

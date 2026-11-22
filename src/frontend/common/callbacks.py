@@ -24,6 +24,7 @@ from src.core.page_work import CURRENT_PAGE, PageCancelled, check, policy
 from src.core.panel_updates import PANEL_LOADING, PANEL_UPDATE
 from src.core.paths import SOURCE_ROOT
 from src.core.stream_control import STREAM_STOP
+from src.core.work_progress import PROGRESS
 from src.core.workspace_config import workspace_config
 from src.data.manager import REQUEST_MARKET
 
@@ -227,7 +228,9 @@ def enable_progressive_queue(blocks):
             function.queue = True
             function.show_progress = "hidden"
             function.fn.__dict__["aiquant_output_classes"] = [
-                list(component.elem_classes or []) if hasattr(component, "elem_classes") else None
+                list(component.elem_classes or [])
+                if hasattr(component, "elem_classes") and not isinstance(component, (gr.HTML, gr.Plot))
+                else None
                 for component in function.outputs
             ]
     return blocks
@@ -267,6 +270,7 @@ def _section_call(fn, args, kwargs, output_count, classes=None):
     def run():
         token = PANEL_UPDATE.set(publish)
         loading_token = PANEL_LOADING.set(lambda: events.put(("loading", None)))
+        progress_token = PROGRESS.set(lambda stage: events.put(("progress", stage)))
         cancel_token = READ_STOP.set(stop)
         try:
             result = fn(*args, **kwargs)
@@ -276,6 +280,7 @@ def _section_call(fn, args, kwargs, output_count, classes=None):
         finally:
             PANEL_UPDATE.reset(token)
             PANEL_LOADING.reset(loading_token)
+            PROGRESS.reset(progress_token)
             READ_STOP.reset(cancel_token)
 
     context = copy_context()
@@ -293,6 +298,16 @@ def _section_call(fn, args, kwargs, output_count, classes=None):
                 if not announced:
                     announced = True
                     yield _section_snapshot(visible)
+            elif kind == "progress":
+                stage = policy()["progress_stages"].get(value)
+                if stage:
+                    for index, style in enumerate(classes):
+                        if index not in completed and style is not None:
+                            visible[index] = gr.update(
+                                elem_classes=[*style, "section-loading", f"section-stage-{stage}"]
+                            )
+                    announced = True
+                    yield _section_snapshot(visible)
             elif kind == "panel":
                 index, data = value
                 completed.add(index)
@@ -308,6 +323,8 @@ def _section_call(fn, args, kwargs, output_count, classes=None):
             else:
                 if isinstance(value, tuple) and len(value) == output_count:
                     yield _section_snapshot([_section_value(item, classes[index]) for index, item in enumerate(value)])
+                elif output_count == 1:
+                    yield _section_snapshot([_section_value(value, classes[0])])
                 else:
                     yield value
                 return

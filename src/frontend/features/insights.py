@@ -1,8 +1,11 @@
 """Small, lazy report panel within AI workspace insights."""
 
 import gradio as gr
+
+from src.agent.composer_config import cli_choices
 from src.engine.insights.config import insight_config
 from src.frontend.common.callbacks import safe
+from src.frontend.common.composer_catalog import bind_cli_catalog
 from src.frontend.handlers import DomainHandler
 
 
@@ -13,7 +16,7 @@ def render_insights(service: DomainHandler) -> None:
     with gr.Row():
         with gr.Column(scale=1, min_width=250):
             backend = gr.Dropdown(
-                [(row["label"], row["id"]) for row in config["backends"]],
+                cli_choices({row["id"] for row in config["backends"]}, api="api"),
                 value=defaults["backend"],
                 label=ui["backend"],
                 interactive=True,
@@ -25,7 +28,11 @@ def render_insights(service: DomainHandler) -> None:
                 model_id = gr.Dropdown(
                     service.research_team_model_choices(), value=0, label=ui["api_model"], interactive=True
                 )
-                model_name = gr.Textbox(label=ui["cli_model"], interactive=True)
+                with gr.Row():
+                    model_name = gr.Dropdown([], label=ui["cli_model"], interactive=False)
+                    refresh_models = gr.Button("刷新模型", scale=0)
+                catalog_note = gr.Markdown()
+                bind_cli_catalog(backend, model_name, refresh_models, catalog_note, defaults["backend"])
                 effort = gr.Dropdown(
                     ui["effort_choices"], value=ui["effort_choices"][0], label=ui["effort"], interactive=True
                 )

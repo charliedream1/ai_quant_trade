@@ -10,6 +10,7 @@ from src.frontend.service.financial_views import financial_sections
 
 from ..common.callbacks import safe
 from ..common.components import plot, table
+from .page_analysis import page_report_button
 
 
 def render_economics(service, kind, shared_symbol=None):
@@ -41,6 +42,7 @@ def render_economics(service, kind, shared_symbol=None):
     with gr.Row():
         refresh = gr.Checkbox(label=ui["refresh"], value=False)
         load = gr.Button(ui["load"], variant="primary", elem_id=kind + "-load")
+        page_report_button()
     status = gr.Markdown(elem_id=kind + "-status")
     financial_outputs: list[Any] = []
     if kind != "macro":
@@ -52,7 +54,7 @@ def render_economics(service, kind, shared_symbol=None):
             with gr.Tab("Financial history"):
                 financial_outputs.append(table("Financial history", 380))
         financial_outputs.append(gr.Markdown())
-    overview = table(ui["overview"], 420)
+    overview = table(ui["overview"], 420, elem_id=kind + "-overview", elem_classes=["home-semantic-table"])
     chart = plot(label=ui["history"])
     with gr.Accordion(ui["raw"], open=False):
         raw = gr.JSON()

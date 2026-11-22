@@ -56,7 +56,7 @@ ETF 研究快照和历史回测是不同操作，快照成功不表示回测通�
 
 先执行 `python egs/entrypoints/cli.py ai session create --title 研究会话`。拿到会话 ID 后执行 `python egs/entrypoints/cli.py ai ask --session-id 8 --backend codex --message 你好 --format jsonl`，通过 `ai session show 8` 查看留档。加 `--attachment 文件路径` 上传附件，重复指定可添加多个文件；模型和思考强度通过 `--model-name`、`--reasoning-effort` 设置。
 
-GenericAgent 用 `--backend generic` 和可选 `--model-id`；只有实际可用的模型/CLI 才能返回真实结果。Trae/WorkBuddy 未接协议时返回不可用；旧策略构建模拟器不作为真实对话。
+Use `--backend generic` and an optional `--model-id` for GenericAgent. Native chat uses the installed CLI and selected model. WorkBuddy requires its local desktop profile and explicit model name. [CLI models and billing](cli_model_catalog.md)
 
 模型 API 的配置编号用 --model-id，本地 CLI 的模型名用 --model-name。mock 行情服务默认不运行真实 Codex，需要在服务环境设置 `ALL_IN_ONE_ENABLE_REAL_CLI=true` 后重启；real 仍需本地 CLI 和认证。工作台页面、Enter、附件限制和悬浮助手说明见 [AI 工作台](ai_workspace.md)。
 

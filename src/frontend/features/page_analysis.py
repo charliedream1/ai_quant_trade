@@ -5,8 +5,9 @@ from html import escape
 import gradio as gr
 
 from src.agent.cli_catalog import catalog_config
-from src.agent.composer_config import composer_config
+from src.agent.composer_config import cli_choices
 from src.core.config import get_settings
+from src.core.exceptions import BusinessError
 from src.core.page_analysis_snapshot import analysis_config, evidence
 from src.core.page_work import CURRENT_PAGE
 from src.engine.insights.page_analysis import cancel as cancel_analysis
@@ -15,9 +16,16 @@ from src.engine.insights.page_generation import capability
 from src.engine.insights.service import InsightReportService
 
 from ..common.callbacks import safe
-from ..common.composer_catalog import CatalogSelection
+from ..common.composer_catalog import CatalogSelection, model_options
 from ..common.errors import ui_error_message
 from ..service.insights import _view
+
+
+def page_report_button():
+    label = escape(analysis_config()["ui"]["run"])
+    return gr.HTML(
+        f"<button type='button' class='page-report-action'>{label}</button>", elem_classes=["page-report-slot"]
+    )
 
 
 def render_page_analysis(blocks, module, service):
@@ -29,7 +37,6 @@ def render_page_analysis(blocks, module, service):
         return
     ui = cfg["ui"]
     cli = cfg["cli"]
-    profiles = composer_config()["backends"]
     components = list(blocks.blocks.values())
     bound = {}
     for key, row in presets.items():
@@ -59,7 +66,7 @@ def render_page_analysis(blocks, module, service):
         gr.Markdown(ui["drawer_description"])
         with gr.Row():
             backend = gr.Dropdown(
-                [(profiles[name]["label"], name) for name in cli["options"]],
+                cli_choices(),
                 value=cli["default"],
                 label=ui["backend"],
                 elem_id="page-skill-backend",
@@ -125,14 +132,19 @@ def render_page_analysis(blocks, module, service):
         result = catalog.load_data(provider, force)
         if state["revision"] != revision or state["backend"] != provider:
             return (gr.skip(),) * 3
-        state["catalog"] = result
-        choices = [(ui["model_default"], "")] + [(row["name"], row["id"]) for row in result["rows"]]
         note = ui.get("model_" + result["status"], ui["catalog_unknown"])
+        if provider == "workbuddy":
+            if result["status"] == "missing":
+                note = ui["workbuddy_setup"]
+            if not result["rows"]:
+                result = {**result, "status": "missing"}
+        choices = model_options(result, provider, ui["model_default"])
+        state["catalog"] = result
         return (
             gr.update(
                 choices=choices,
-                value="",
-                interactive=True,
+                value=None if provider == "workbuddy" else "",
+                interactive=bool(choices),
                 allow_custom_value=provider in catalog_config()["manual_backends"],
             ),
             note,
@@ -218,6 +230,8 @@ def render_page_analysis(blocks, module, service):
             return gr.skip(), gr.skip(), ui["invalid"], gr.skip(), gr.skip()
         if state["backend"] != backend or not state["catalog"]:
             return gr.skip(), gr.skip(), ui["model_changed"], gr.skip(), gr.skip()
+        if backend == "workbuddy" and model not in {row["id"] for row in state["catalog"]["rows"]}:
+            return gr.skip(), gr.skip(), ui["workbuddy_pick_model"], gr.skip(), gr.skip()
         provider = {
             "backend": backend,
             "model_name": model or "",
@@ -241,7 +255,7 @@ def render_page_analysis(blocks, module, service):
                     params = {**fallback["defaults"], **context}
                     getattr(service, fallback["method"])(**params)
             row = start(key, provider, context)
-        except ValueError as exc:
+        except (ValueError, BusinessError) as exc:
             return gr.skip(), gr.skip(), escape(ui_error_message(exc)), gr.skip(), gr.skip()
         tracker["run"] = row["run_id"]
         return tracker, row["request"], ui["running"], gr.update(active=True), gr.update(visible=True)
@@ -274,6 +288,10 @@ def render_page_analysis(blocks, module, service):
                 "cancelled": "cancelled",
             }.get(row["status"], "failed")
         ]
+        if not terminal:
+            stages = [item["text"] for item in recorded if item["kind"] in {"stage", "skill", "model"}]
+            if stages:
+                result[0] += " · " + escape(stages[-1])
         if row.get("error"):
             result[0] += " · " + escape(ui_error_message(ValueError(row["error"])))
         if row["status"] == "running" and any(item["kind"] == "cancellation" for item in recorded):

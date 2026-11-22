@@ -43,12 +43,14 @@ def cached_observation(key):
     return None
 
 
-def shared_observation(key, loader, refresh=False):
+def shared_observation(key, loader, refresh=False, *, max_age_seconds=None):
     cfg = policy()
     path = observation_path(key)
     requested = time()
     with FileLock(str(path.with_suffix(".lock")), timeout=cfg["source_cache_lock_seconds"]):
-        if path.exists() and (not refresh or path.stat().st_mtime >= requested):
+        stamp = path.stat().st_mtime if path.exists() else 0
+        fresh = max_age_seconds is None or requested - stamp <= max_age_seconds
+        if stamp and fresh and (not refresh or stamp >= requested or max_age_seconds is not None):
             try:
                 if path.stat().st_size <= cfg["source_cache_max_bytes"]:
                     return json.loads(path.read_text(encoding="utf-8"))

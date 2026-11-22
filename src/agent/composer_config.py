@@ -21,6 +21,17 @@ def normalize_backend(value: str | None) -> str:
     return value
 
 
+def cli_choices(allowed=None, *, api=None) -> list[tuple[str, str]]:
+    profiles = composer_config()["backends"]
+    choices = [(profiles["generic_agent"]["label"], api)] if api else []
+    choices.extend(
+        (profile["label"], key)
+        for key, profile in profiles.items()
+        if key != "generic_agent" and (allowed is None or key in allowed)
+    )
+    return choices
+
+
 def validate_selection(payload: dict) -> dict:
     backend = normalize_backend(payload.get("backend"))
     permission = payload.get("access_mode") or "read-only"

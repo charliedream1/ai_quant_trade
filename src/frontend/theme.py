@@ -34,6 +34,10 @@ for _language, _messages in page_work_policy()["section_messages"].items():
             f"__{_name.upper()}_{_language.upper()}__", json.dumps(_message, ensure_ascii=False)
         )
 CSS += _SECTION_CSS
+for _language, _messages in page_work_policy()["stage_messages"].items():
+    for _stage, _message in _messages.items():
+        _content = json.dumps(_message, ensure_ascii=False)
+        CSS += f'\nhtml[data-ui-lang="{_language}"] .section-loading.section-stage-{_stage}::after {{ content: {_content}; }}'
 HOME_CSS = _ASSET_ROOT.joinpath("styles", "home_dashboard.css").read_text(encoding="utf-8")
 _AI_CONSOLE_JS = _ASSET_ROOT.joinpath("ai_console.js").read_text(encoding="utf-8")
 _AI_CONSOLE_JS += _ASSET_ROOT.joinpath("home_dashboard.js").read_text(encoding="utf-8")

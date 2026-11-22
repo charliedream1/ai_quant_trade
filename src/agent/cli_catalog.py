@@ -1,6 +1,7 @@
 """Provider-scoped model metadata and explicitly sourced billing classifications."""
 
 import math
+import re
 
 # Only the metadata failure type is used here.
 import subprocess  # nosec B404
@@ -65,7 +66,13 @@ def normalize_catalog(value, backend, source):
     for row in rows[: cfg["max_models"]]:
         if not isinstance(row, dict) or row.get("hidden") or row.get("enabled") is False:
             continue
-        identifier = str(row.get("model") or row.get("id") or row.get("slug") or "")[: cfg["max_identifier_chars"]]
+        identifier = str(
+            (row.get("id") if backend == "workbuddy" else None)
+            or row.get("model")
+            or row.get("id")
+            or row.get("slug")
+            or ""
+        )[: cfg["max_identifier_chars"]]
         if not identifier or identifier in identifiers:
             continue
         identifiers.add(identifier)
@@ -75,6 +82,11 @@ def normalize_catalog(value, backend, source):
             if isinstance(efforts, list)
             else None
         )
+        if backend == "workbuddy":
+            credits = re.fullmatch(r"x(\d+(?:\.\d+)?)(?:\s+credits)?", str(row.get("credits", "")).strip())
+            if credits:
+                factor = float(credits[1])
+                row = {**row, "is_free": factor == 0, "price_factor": factor}
         result.append(
             {
                 "id": identifier,

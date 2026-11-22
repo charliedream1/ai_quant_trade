@@ -10,6 +10,7 @@ from typing import Any
 from src.core.config import get_settings
 from src.core.panel_updates import panel_ready
 from src.core.repository import Repository
+from src.core.work_progress import progress
 from src.engine.market import NewsAggregator, QuoteService
 from src.engine.market.news_topics import time_range
 
@@ -33,7 +34,10 @@ def account_status(snapshot: HomeAccount) -> str:
 
 
 def home_account(mode: str, force_refresh: bool = False) -> tuple:
-    snapshot = account_snapshot(mode, force_refresh)
+    def publish_local(snapshot):
+        panel_ready(5, home_charts.account_trend(snapshot))
+
+    snapshot = account_snapshot(mode, force_refresh, publish_local)
     builders = (
         lambda: account_status(snapshot),
         lambda: home_views.account_kpis(snapshot),
@@ -55,6 +59,7 @@ def home_account(mode: str, force_refresh: bool = False) -> tuple:
 
 def _news_items(force_refresh):
     def load():
+        progress("Reading headlines")
         start, end = time_range("week")
         return NewsAggregator().list_news(
             None,
@@ -71,23 +76,29 @@ def _news_items(force_refresh):
     return shared_observation("home_news_scope_v2", load, force_refresh)
 
 
-def _news_themes(force_refresh):
+def home_themes(force_refresh=False, keyword_mode="lexical"):
     def load():
-        return home_views.theme_summary(_news_items(force_refresh).get("items", []))
+        items = _news_items(force_refresh).get("items", [])
+        progress("Extracting keywords")
+        return home_views.theme_summary(items, keyword_mode)
 
-    return shared_observation("home_news_themes_v2", load, force_refresh)
+    return shared_observation(["home_news_themes_v3", keyword_mode], load, force_refresh)
 
 
 def _market_payload(force_refresh: bool) -> dict[str, Any]:
     # Provider gates continue to bound source traffic; independent reads need not serialize here.
     from src.core.page_work import policy
 
+    progress("Fetching market data")
     with ThreadPoolExecutor(max_workers=policy()["home_source_workers"], thread_name_prefix="home-sources") as pool:
         methods = {
-            "indices": lambda: QuoteService().indices(refresh=force_refresh),
+            "indices": lambda: shared_observation(
+                "market_indices",
+                lambda: QuoteService().indices(refresh=force_refresh),
+                max_age_seconds=policy()["market_refresh_cache_seconds"],
+            ),
             "sectors": lambda: QuoteService().sector_snapshot(limit("sentiment_sectors"), refresh=force_refresh),
             "watchlist": lambda: QuoteService().watchlist_quotes(None),
-            "news": lambda: _news_themes(force_refresh),
         }
         futures = {key: pool.submit(copy_context().run, method) for key, method in methods.items()}
         result: dict[str, Any] = {"errors": [], "presentations": {}}
@@ -105,39 +116,41 @@ def _market_payload(force_refresh: bool) -> dict[str, Any]:
                 else:
                     result[key] = future.result()
             except Exception:
-                result[key] = home_views.theme_summary([]) if key == "news" else []
+                result[key] = []
                 result["errors"].append(
                     {
                         "indices": "指数加载失败",
                         "sectors": label("missing_market"),
                         "watchlist": "自选行情加载失败",
-                        "news": "新闻加载失败",
                     }[key]
                 )
             if key == "indices":
-                present(4, home_styled_frame(to_frame(result[key], INDEX_COLUMNS)))
+                present(3, home_styled_frame(to_frame(result[key], INDEX_COLUMNS)))
             elif key == "sectors":
                 present(2, home_charts.sector_heatmap(result[key]))
             elif key == "watchlist":
-                present(5, home_styled_frame(to_frame(result[key], WATCHLIST_COLUMNS)))
-            elif key == "news":
-                present(3, result[key])
+                present(4, home_styled_frame(to_frame(result[key], WATCHLIST_COLUMNS)))
             if "indices" in result and "sectors" in result and 1 not in result["presentations"]:
                 present(0, home_views.market_summary(result["indices"], result["sectors"]))
                 present(1, home_charts.sentiment_radar(result["indices"], result.get("sentiment_sectors", [])))
         return result
 
 
-def home_market(mode: str, force_refresh: bool = False) -> tuple:
+def home_market_snapshot(mode: str, force_refresh: bool = False) -> tuple:
     payload, _, _ = _daily_cached(
-        ("home_market", mode), lambda: _market_payload(force_refresh), force_refresh=force_refresh
+        ("home_market_snapshot", mode), lambda: _market_payload(force_refresh), force_refresh=force_refresh
     )
     summary = home_views.market_summary(payload["indices"], payload["sectors"])
     if payload["errors"]:
         summary += f"<p class='home-muted'>{escape('；'.join(payload['errors']))}</p>"
     panel_ready(0, summary)
     values = payload["presentations"]
-    return summary, values[1], values[2], values[3], values[4], values[5]
+    return summary, values[1], values[2], values[3], values[4]
+
+
+def home_market(mode: str, force_refresh: bool = False) -> tuple:
+    summary, sentiment, sectors, indices, watchlist = home_market_snapshot(mode, force_refresh)
+    return summary, sentiment, sectors, home_themes(force_refresh), indices, watchlist
 
 
 def operation_counts(repo: Repository) -> list[dict[str, Any]]:

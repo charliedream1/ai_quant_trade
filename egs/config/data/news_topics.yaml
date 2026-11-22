@@ -1,5 +1,9 @@
 # File format: YAML; encoding: UTF-8
 version: 1
+modes:
+  choices: [[分词与 TF-IDF, lexical], [轻量 BERT 语义抽取, semantic]]
+  lexical_label: 分词与 TF-IDF
+  idf_floor: 0.25
 timezone: Asia/Shanghai
 window_days: {day: 1, week: 7, month: 30}
 limits:

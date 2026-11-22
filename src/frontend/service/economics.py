@@ -12,17 +12,20 @@ from plotly.subplots import make_subplots
 from src.agent.model_catalog import list_models
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.panel_updates import panel_ready
+from src.core.redaction import redact_text
 from src.data import current_market
 from src.engine.economics.config import economics_config
 from src.engine.economics.service import EconomicAnalysis
 from src.engine.insights.service import InsightReportService
+
+from .home_tables import home_styled_frame
 
 
 def economic_figure(snapshot: dict):
     cfg = economics_config()
     if snapshot["kind"] == "macro":
         groups = snapshot["overview"]
-        rows = math.ceil(len(groups) / 2)
+        rows = max(1, math.ceil(len(groups) / 2))
         figure = make_subplots(
             rows=rows, cols=2, subplot_titles=[row["label"] + " (" + row["unit"] + ")" for row in groups]
         )
@@ -66,6 +69,9 @@ def economic_figure(snapshot: dict):
 
 def economic_table(snapshot):
     if snapshot["kind"] == "macro":
+        history: dict[str, dict[str, float | None]] = {}
+        for observation in snapshot["observations"]:
+            history.setdefault(observation["series"], {})[observation["observation_date"]] = observation["value"]
         return pd.DataFrame(
             [
                 {
@@ -76,6 +82,7 @@ def economic_table(snapshot):
                     "口径": r["basis"],
                     "过期": r["stale"],
                     "发布时间": r["published_at"],
+                    "较上期": _previous_change(r, history),
                 }
                 for r in snapshot["overview"]
             ]
@@ -98,11 +105,23 @@ def economic_table(snapshot):
     return pd.DataFrame(rows)
 
 
+def _previous_change(row, history):
+    values = history.get(row["series"], {})
+    earlier = [stamp for stamp in values if stamp < row["observation_date"]]
+    if not earlier or row["value"] is None:
+        return None
+    previous = values[max(earlier)]
+    return row["value"] - previous if previous is not None else None
+
+
 def report_view(service, run):
     process = "\n".join(event["text"] for event in service.store.events(run["run_id"]) if event["kind"] != "message")
     status = run["run_id"] + " · " + run["status"]
     if run.get("error"):
-        status += " · " + run["error"]
+        error = str(run["error"])
+        if any(code in error.lower() for code in ("getaddrinfo", "name resolution", "name or service not known")):
+            error = economics_config()["messages"]["report_dns"]
+        status += " · " + redact_text(error)
     path, preview = None, ""
     if run["status"] in {"completed", "partial"}:
         report = service.store.artifact(run["run_id"], "report.html")
@@ -151,6 +170,8 @@ class EconomicUIMixin:
             status += "\n\n" + "；".join(snapshot["gaps"])
         panel_ready(0, status)
         overview = economic_table(snapshot)
+        if kind == "macro" and isinstance(overview, pd.DataFrame):
+            overview = home_styled_frame(overview, extra_signed_columns=("较上期",), scale_group="单位")
         panel_ready(1, overview)
         panel_ready(3, snapshot)
         panel_ready(4, snapshot["snapshot_id"])

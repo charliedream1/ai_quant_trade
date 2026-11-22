@@ -6,6 +6,8 @@ from typing import Any
 
 import pandas as pd
 
+from src.data import current_market
+
 from .home_config import color, home_config
 from .home_data import number
 
@@ -23,19 +25,23 @@ def _cell_style(accent: str, strength: float) -> str:
     return f"--home-cell-color: {accent}; --home-cell-strength: {intensity:.1f}%;"
 
 
-def home_styled_frame(frame: pd.DataFrame) -> Any:
+def home_styled_frame(frame: pd.DataFrame, *, extra_signed_columns=(), scale_group=None) -> Any:
     if frame.empty:
         return frame
     styles = pd.DataFrame("", index=frame.index, columns=frame.columns)
+    signed_columns = SIGNED_COLUMNS | set(extra_signed_columns)
+    gain, loss = ("loss", "gain") if current_market() == "US" else ("gain", "loss")
     for column in frame.columns:
-        if column in SIGNED_COLUMNS | SIZE_COLUMNS:
-            values = frame[column].map(number)
-            maximum = max((abs(value) for value in values.dropna()), default=0)
+        if column in signed_columns | SIZE_COLUMNS:
+            values = pd.to_numeric(frame[column].map(number), errors="coerce")
+            bounds = values.abs().groupby(frame[scale_group]).transform("max") if scale_group else None
+            maximum = values.abs().max()
             for index, value in values.items():
-                if pd.isna(value) or not maximum or value == 0:
+                bound = maximum if bounds is None else bounds.loc[index]
+                if pd.isna(value) or not bound or value == 0:
                     continue
-                accent = color("gain" if value > 0 else "loss") if column in SIGNED_COLUMNS else color("blue")
-                styles.loc[index, column] = _cell_style(accent, min(abs(value) / maximum, 1))
+                accent = color(gain if value > 0 else loss) if column in signed_columns else color("blue")
+                styles.loc[index, column] = _cell_style(accent, min(abs(value) / bound, 1))
         if column in STATUS_COLUMNS:
             for index, value in frame[column].items():
                 text = str(value)
@@ -49,7 +55,7 @@ def home_styled_frame(frame: pd.DataFrame) -> Any:
     for column in frame.select_dtypes(include="number").columns:
         if column in {"change_pct", "float_pnl_pct", "turnover_rate"}:
             formats[column] = "{:+,.2f}%"
-        elif column in SIGNED_COLUMNS:
+        elif column in signed_columns:
             formats[column] = "{:+,.2f}"
         elif column in SIZE_COLUMNS | {"latest_price", "price"}:
             formats[column] = "{:,.2f}"

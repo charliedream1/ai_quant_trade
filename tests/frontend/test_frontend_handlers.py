@@ -25,6 +25,7 @@ DOMAIN_NAMES = {
 
 EXPECTED_SERVICE_MODULES = {
     "home_service",
+    "economics",
     "alpha",
     "report_library",
     "execution_costs",
@@ -65,6 +66,8 @@ def test_feature_modules_only_use_their_scoped_handler_methods():
 
     for domain in DOMAIN_NAMES:
         used_methods = _service_methods(FEATURE_DIR / f"{domain}.py")
+        if domain == "market":
+            used_methods |= _service_methods(FEATURE_DIR / "economics.py")
         if domain == "dashboard":
             used_methods |= _service_methods(FEATURE_DIR / "home.py")
         if domain == "ai":
@@ -93,6 +96,7 @@ def test_feature_modules_only_use_their_scoped_handler_methods():
         if domain == "simulation":
             used_methods |= _service_methods(FEATURE_DIR / "analysis.py")
         if domain == "strategy":
+            used_methods |= _service_methods(FEATURE_DIR / "etf.py")
             used_methods |= _service_methods(FEATURE_DIR / "alpha.py")
             used_methods |= _service_methods(FEATURE_DIR / "factor_monitor.py")
         if domain == "strategy":

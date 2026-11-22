@@ -1,10 +1,12 @@
 """Lazily rendered strategy workshop, using the shared domain execution path."""
 
+import gradio as gr
 import pandas as pd
 import yaml
 
-import gradio as gr
+from src.agent.composer_config import cli_choices
 from src.frontend.common.callbacks import safe
+from src.frontend.common.composer_catalog import bind_cli_catalog
 from src.strategy.composition.config import config, templates
 
 from .agent_strategy_controls import render_agent_controls
@@ -49,7 +51,10 @@ def render_composition(service):
             mode = gr.Dropdown([tuple(row) for row in ui["modes"]], value="screen", label=ui["mode"], interactive=True)
             symbols = gr.Textbox(label=ui["symbols"], interactive=True)
             backend = gr.Dropdown(
-                [tuple(row) for row in ui["backends"]], value="api", label=ui["backend"], interactive=True
+                cli_choices({row[1] for row in ui["backends"]}, api="api"),
+                value="api",
+                label=ui["backend"],
+                interactive=True,
             )
             with gr.Accordion(ui["definition"], open=False):
                 definition.render()
@@ -67,7 +72,11 @@ def render_composition(service):
                 end = gr.Textbox(label=ui["end"], interactive=True)
                 snapshot_id = gr.Textbox(label="行情快照ID（可选；重用已归档真实行情）", interactive=True)
                 model_id = gr.Number(label=ui["model_id"], value=0, precision=0, interactive=True)
-                model_name = gr.Textbox(label=ui["model_name"], interactive=True)
+                with gr.Row():
+                    model_name = gr.Dropdown([], label=ui["model_name"], interactive=False)
+                    refresh_models = gr.Button("刷新模型", scale=0)
+                catalog_note = gr.Markdown()
+                bind_cli_catalog(backend, model_name, refresh_models, catalog_note, "api")
                 effort = gr.Dropdown(
                     ["", "low", "medium", "high", "xhigh"], value="", label=ui["reasoning"], interactive=True
                 )

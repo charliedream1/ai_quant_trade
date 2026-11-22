@@ -1,5 +1,6 @@
 # 文件格式：UTF-8 YAML；首页展示参数，不改变交易风控规则。
 limits:
+  release_cards: 4
   sectors: 12
   contributions: 8
   actions: 4
@@ -12,6 +13,16 @@ limits:
   plot_height: 300
   market_plot_height: 320
   date_ticks: 6
+release_calendar:
+  source: https://www.stats.gov.cn/sj/fbrc/
+  issue: https://www.stats.gov.cn/english/PressRelease/ReleaseCalendar/202512/t20251226_1962154.html
+  events:
+    - {date: '2026-11-27', time: '09:30', title: 工业企业利润}
+    - {date: '2026-11-30', time: '09:30', title: 采购经理指数}
+    - {date: '2026-12-09', time: '09:30', title: CPI 与 PPI}
+    - {date: '2026-12-15', time: '10:00', title: 国民经济运行}
+    - {date: '2026-12-27', time: '09:30', title: 工业企业利润}
+    - {date: '2026-12-31', time: '09:30', title: 采购经理指数}
 ranges:
   sentiment_momentum_neutral: 50
   sentiment_momentum_scale: 20

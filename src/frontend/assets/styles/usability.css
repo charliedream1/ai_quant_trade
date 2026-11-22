@@ -75,3 +75,8 @@ html.gradio-embedded #page-skill-standalone-slot, #page-skill-panel:not(:has(> .
 }
 #page-skill-panel button { white-space: normal; overflow-wrap: anywhere; }
 #page-skill-standalone { padding: 7px 12px; cursor: pointer; }
+.page-report-action { padding: 8px 14px; border: 1px solid var(--border-color-primary); border-radius: 8px; cursor: pointer; }
+#main-navigation .home-semantic-table td[style*="--home-cell-color"] {
+  background: color-mix(in srgb, var(--home-cell-color) var(--home-cell-strength), var(--surface)) !important;
+  color: var(--ink) !important;
+}

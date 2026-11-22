@@ -70,8 +70,8 @@
       ? document.getElementById("ai-console-send")
       : target.closest("#ai-chat-input")
         ? document.getElementById("ai-chat-send")
-        : target.closest("#ai-cli-requirement")
-          ? document.getElementById("ai-cli-build")
+        : target.closest("#ai-cli-input")
+          ? document.getElementById("ai-cli-send")
           : null;
     if (!submit) return;
     if (event.isComposing || event.keyCode === 229) {

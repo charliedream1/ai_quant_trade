@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import gradio as gr
 
+from src.agent.composer_config import cli_choices
+from src.agent.providers.config import backend_names
 from src.core.diagnostics_config import diagnostics_config
 from src.engine.market.model_graph.config import config as model_graph_config
 from src.engine.market.news_policy import news_policy
@@ -13,6 +15,7 @@ from src.frontend.service.rule_graph_view import rule_graph_view
 from ..common.callbacks import safe as _safe
 from ..common.components import plot as _plot
 from ..common.components import table as _table
+from ..common.composer_catalog import bind_cli_catalog
 from ..common.navigation import workspace_link
 from ..handlers import DomainHandler
 from ..service.foundation import (
@@ -23,6 +26,7 @@ from ..service.foundation import (
 )
 from .economics import render_economics
 from .model_relation_graph import render_model_graph_panel
+from .page_analysis import page_report_button
 
 
 def render_market(service: DomainHandler, default_relation_types: list[str]) -> None:
@@ -78,9 +82,12 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         min_width=120,
                         elem_classes=["page-refresh-btn"],
                     )
-                market_indices = _table("指数行情", 280, elem_id="market-indices")
+                market_indices = _table("指数行情", 280, elem_id="market-indices", elem_classes=["home-semantic-table"])
+                page_report_button()
                 with gr.Row():
-                    market_sectors = _table("板块行情", 380, elem_id="market-sectors")
+                    market_sectors = _table(
+                        "板块行情", 380, elem_id="market-sectors", elem_classes=["home-semantic-table"]
+                    )
                     market_plot = _plot(
                         label="板块涨跌",
                         elem_id="market-sectors-plot",
@@ -154,6 +161,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     news_search = gr.Button("查询", variant="primary", elem_classes=["page-refresh-btn"])
                     news_refresh = gr.Button("同步最新")
                 news_status = gr.Markdown(elem_classes=["compact-note"])
+                page_report_button()
                 news_table = _table("新闻列表", 430, elem_classes=["no-i18n"])
                 with gr.Row():
                     news_detail_id = gr.Number(label="新闻 ID", precision=0)
@@ -188,7 +196,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 with gr.Tabs(elem_id="stock-research-tabs"):
                     with gr.Tab("Technical analysis", id="technical"):
                         stock_period = gr.Dropdown(["daily", "weekly", "monthly"], value="daily", label="K 线周期")
-                        stock_count = gr.Slider(20, 240, value=60, step=20, label="K 线数量")
+                        stock_count = gr.Slider(20, 240, value=80, step=20, label="K 线数量")
                         stock_query = gr.Button(
                             "分析",
                             variant="primary",
@@ -200,6 +208,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         stock_add_watch = gr.Button("加入自选")
                         stock_to_relation = gr.Button("同步关系图")
                         stock_summary = gr.Markdown(elem_classes=["status-strip"])
+                        page_report_button()
                         stock_watch_status = gr.Markdown(elem_classes=["status-strip"])
                         stock_watchlist = _table("自选行情", 260)
                         with gr.Row():
@@ -207,7 +216,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                                 label="综合评分",
                                 elem_classes=["chart-panel"],
                             )
-                            stock_finance = _table("Financial / Technical Indicators", 260, elem_classes=["no-i18n"])
+                            stock_finance = _table("技术指标解读", 320, elem_id="stock-indicator-readings")
                         stock_kline = _plot(
                             label="K 线",
                             elem_id="stock-kline-chart",
@@ -239,6 +248,9 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         render_economics(service, "fundamentals", shared_symbol=stock_symbol)
 
             with gr.Tab("关系图谱"):
+                gr.HTML(
+                    "<button type='button' class='page-report-action' data-report-view='relations'>生成 HTML 报告</button>"
+                )
                 relation_mode = gr.Radio(
                     model_graph_config()["ui"]["modes"],
                     value="rules",
@@ -382,6 +394,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 stock_to_relation.click(lambda: "rules", outputs=relation_mode, queue=False)
 
             with gr.Tab("资源池"):
+                page_report_button()
                 pool_pipeline_activate = gr.Button("打开方案筛选", elem_id="workspace-activate-pool-pipeline")
 
                 def _activate_pool_pipeline():
@@ -394,11 +407,16 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     with gr.Accordion("组合方案级联筛选", open=False):
                         pool_pipeline = gr.Dropdown(service.pipeline_templates(), label="策略方案", interactive=True)
                         pool_backend = gr.Dropdown(
-                            [("模型API", "api"), ("Codex CLI", "codex")],
+                            cli_choices(backend_names(), api="api"),
                             value="api",
                             label="研究后端",
                             interactive=True,
                         )
+                        with gr.Row():
+                            pool_model = gr.Dropdown([], label="CLI 模型", interactive=False)
+                            refresh_models = gr.Button("刷新模型", scale=0)
+                        catalog_note = gr.Markdown()
+                        bind_cli_catalog(pool_backend, pool_model, refresh_models, catalog_note, "api")
                         pool_pipeline_run = gr.Button("按当前资源池筛选", variant="primary")
                         pool_snapshot = gr.Textbox(label="行情快照ID（留空重新采集）", interactive=True)
                         pool_pipeline_status = gr.Textbox(label="筛选状态", interactive=False)
@@ -406,7 +424,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         pool_pipeline_report = gr.HTML()
                     pool_pipeline_run.click(
                         _safe(service.pipeline_pool_run),
-                        inputs=[pool_pipeline, resource_pool_id, pool_backend, pool_snapshot],
+                        inputs=[pool_pipeline, resource_pool_id, pool_backend, pool_snapshot, pool_model],
                         outputs=[pool_pipeline_status, pool_pipeline_process, pool_pipeline_report],
                     )
 
@@ -528,6 +546,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     queue=False,
                 )
             with gr.Tab("股票推荐"):
+                page_report_button()
                 with gr.Row():
                     recommend_plan = gr.Dropdown(RECOMMEND_PLAN_CHOICES, value="balanced", label="推荐方案")
                     recommend_path = gr.Radio(

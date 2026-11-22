@@ -3,6 +3,7 @@
 Select **Page analysis** in the left sidebar of a supported research view to
 open its report drawer. Opening the drawer loads the model catalog for the
 selected CLI. Generation starts when you click **Generate HTML report**.
+Market Research also offers this report action next to its rule controls.
 
 1. Select the CLI and model. The catalog is shared across the workspace and
    reused daily. Click **Refresh models** to query it again. The drawer displays
@@ -11,7 +12,8 @@ selected CLI. Generation starts when you click **Generate HTML report**.
    refresh the model list after authentication.
 2. Click **Generate HTML report**. The drawer selects the current view's task
    and generates the report in the current interface language. Sector and news
-   reports can load current observations from the active filters. For other
+   reports and the stock technical and macro views can load current observations
+   from the active filters. For other
    views, first load the relevant data or open a saved result.
 3. Preview the report in the drawer or download the same HTML. Expand **Run
    details** to see the evidence scope and process events. **Analysis options**
@@ -49,6 +51,7 @@ publish a report externally or place orders.
 Relationship graphs retain their existing rule and CLI/Skill workflow; see the
 [graph guide](model_stock_relationships.md). Administrative configuration, login,
 bindings and learning/navigation controls do not acquire automatic model actions.
+The graph workflow can preview and save an HTML report from a completed run.
 
 ## Evidence and execution boundaries
 
@@ -66,12 +69,19 @@ claims that an external Skill package was installed or validated. Existing marke
 stock and economic resources are reused as guidance. Native scripts, implicit
 publishing instructions and private agent memories are not imported or executed.
 
-Current-observation Codex commentary uses the existing read-only CLI runner and is
-explicitly labelled as interpretation, not independent historical/PIT validation.
-Experiment/backtest/factor/composition review preserves the existing strict native
-research admission. An installed CLI may therefore be unavailable for one task
-while ordinary commentary is available. WorkBuddy remains limited to the existing
-verified graph flow; it is not substituted for CodeBuddy or enabled as general chat.
+Current-observation reports can use Codex or **WorkBuddy CLI**. WorkBuddy uses
+the same text-only runner as relationship research. Choose an explicit model
+from the WorkBuddy catalog. The report selector displays its reported credit
+rate and marks a zero-rate entry as free. The default model for the page drawer
+belongs to Codex. Experiment, backtest, factor, and composition reviews require
+the strict research backend.
+
+For WorkBuddy, configure the installation, desktop login file, and product
+catalog using the three local environment settings described in the
+[relationship graph guide](model_stock_relationships.md). Select **WorkBuddy
+CLI**, refresh its model catalog if needed, choose the model, and generate the
+HTML report. WorkBuddy and CodeBuddy have separate entries and use their own
+provider configuration.
 
 Unknown fees remain unknown. The platform cannot infer a zero bill from missing
 CLI usage metadata. Report interpretation is not investment advice or an execution

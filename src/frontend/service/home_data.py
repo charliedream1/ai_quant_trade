@@ -8,6 +8,7 @@ from typing import Any
 
 from src.core.logger import get_logger
 from src.core.repository import Repository
+from src.core.work_progress import progress
 from src.data import DataSourceManager, current_market
 
 from .home_config import label
@@ -50,18 +51,19 @@ class HomeAccount:
     currency: str = "CNY"
 
 
-def account_snapshot(mode: str, force_refresh: bool = False) -> HomeAccount:
+def account_snapshot(mode: str, force_refresh: bool = False, on_local=None) -> HomeAccount:
     payload, _, _ = _daily_cached(
         ("home_account_snapshot", mode),
         lambda: HomeAccount(
-            **shared_observation(["account", mode], lambda: asdict(_read_account(mode)), force_refresh)
+            **shared_observation(["account", mode], lambda: asdict(_read_account(mode, on_local)), force_refresh)
         ),
         force_refresh=force_refresh,
     )
     return payload
 
 
-def _read_account(mode: str) -> HomeAccount:
+def _read_account(mode: str, on_local=None) -> HomeAccount:
+    progress("Reading account records")
     repo = Repository()
     snapshot = HomeAccount(
         mode=mode,
@@ -80,12 +82,18 @@ def _read_account(mode: str) -> HomeAccount:
         snapshot.basis = label("empty_account")
         return snapshot
     account_id = int(snapshot.account["id"])
+    snapshot.history = repo.list("paper_nav_history", "account_id = ?", (account_id,), "nav_date ASC")
+    snapshot.cash = number(snapshot.account.get("current_cash"))
+    if on_local:
+        on_local(snapshot)
     positions = repo.list("paper_positions", "account_id = ? AND quantity > 0", (account_id,), "symbol ASC")
     markets = {
         "HK" if str(row["symbol"]).upper().endswith(".HK") else "CN" if str(row["symbol"]).isdigit() else "US"
         for row in positions
     }
     manager = DataSourceManager(market=next(iter(markets)) if len(markets) == 1 else None)
+    if positions:
+        progress("Valuing holdings")
     for position in positions:
         snapshot.holdings.append(_value_holding(position, manager, snapshot.warnings))
     pnl_values = [number(row.get("float_pnl")) for row in snapshot.holdings]
@@ -94,7 +102,6 @@ def _read_account(mode: str) -> HomeAccount:
     snapshot.loss_count = sum(1 for value in pnl_values if value is not None and value < 0)
     snapshot.flat_count = sum(1 for value in pnl_values if value == 0)
     snapshot.unknown_count = sum(1 for value in pnl_values if value is None)
-    snapshot.cash = number(snapshot.account.get("current_cash"))
     valid = all(row["market_value"] is not None for row in snapshot.holdings)
     if len(markets) > 1:
         valid = False
@@ -109,7 +116,6 @@ def _read_account(mode: str) -> HomeAccount:
             snapshot.concentration = (
                 max((float(row["market_value"]) for row in snapshot.holdings), default=0) / snapshot.total_asset
             )
-    snapshot.history = repo.list("paper_nav_history", "account_id = ?", (account_id,), "nav_date ASC")
     _history_metrics(snapshot)
     snapshot.pending = int(
         repo.db.scalar(

@@ -1,4 +1,14 @@
 # File format: YAML; encoding: UTF-8
+technical_indicators:
+  moving_averages: [20, 60]
+  rsi_window: 14
+  rsi_low: 30
+  rsi_high: 70
+  macd_spans: [12, 26, 9]
+  volume_window: 20
+  unusual_volume: 1.5
+  return_windows: [20, 60]
+  cn_benchmark: sh000001
 version: 1
 defaults:
   company_symbols: {CN: '600519'}
@@ -72,6 +82,7 @@ derived:
   known_debt_components: {unit: CNY, label: 已披露借款债券小计（覆盖不全时非总有息债务）}
 financial_industries: [银行, 保险, 证券, 多元金融, 金融服务]
 messages:
+  report_dns: 模型 API 域名无法解析。请核对模型服务地址和网络，或从当前页面使用 CLI 报告。
   unsupported: 首期支持中国宏观和A股公司；当前市场尚未接入。
   empty: 来源未返回可用数据，请查看来源状态。
   invalid_symbol: 请填写A股证券代码或名称。

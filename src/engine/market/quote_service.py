@@ -37,16 +37,27 @@ class QuoteService:
         count = max(1, min(int(limit), 100))
         each = (count + 1) // 2 if selection == "balanced" else count
         rows: list[dict[str, Any]] = []
+        complete: list[dict[str, Any]] = []
         if selection != "decliners":
+            upper = self.sectors(
+                board, limit=100 if selection == "balanced" else each, direction="desc", refresh=refresh
+            )
+            if upper and all(str(row.get("universe_total")) == str(len(upper)) for row in upper):
+                complete = upper
             rows.extend(
                 dict(row, ranking="Gainer")
-                for row in self.sectors(board, limit=each, direction="desc", refresh=refresh)
+                for row in upper[:each]
                 if row.get("change_pct") is not None and float(row["change_pct"]) > 0
             )
         if selection != "gainers":
+            lower = (
+                list(reversed(complete))[:each]
+                if complete
+                else self.sectors(board, limit=each, direction="asc", refresh=refresh)
+            )
             rows.extend(
                 dict(row, ranking="Decliner")
-                for row in self.sectors(board, limit=each, direction="asc", refresh=refresh)
+                for row in lower
                 if row.get("change_pct") is not None and float(row["change_pct"]) < 0
             )
         unique = {row["code"]: row for row in rows}

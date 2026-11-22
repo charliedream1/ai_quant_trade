@@ -8,6 +8,7 @@ from typing import Any
 import gradio as gr
 
 from src.data import current_market, normalize_market
+from src.engine.market.news_topics import policy as keyword_policy
 
 from ..common.callbacks import safe
 from ..common.components import plot as _plot
@@ -15,12 +16,14 @@ from ..common.components import table
 from ..handlers import DomainHandler
 from ..service.foundation import ACCOUNT_MODE_CHOICES, switch_ui_market
 from ..service.home_tables import home_styled_frame
+from ..service.home_views import release_calendar
 
 
 def render_home(
     service: DomainHandler, market_switcher: gr.Radio, market_status: gr.Markdown, load_event: Callable[..., Any]
 ) -> None:
-    selection = gr.State({"market": current_market(), "mode": "paper", "revision": 0, "refresh": False})
+    selection = gr.State({"market": current_market(), "mode": "paper", "revision": 0})
+    market_revision = gr.State(0)
     with gr.Column(elem_id="home-dashboard"):
         with gr.Row(elem_classes=["home-control-row"]):
             gr.HTML("<div class='home-title'><strong>账户与市场总览</strong></div>")
@@ -57,6 +60,7 @@ def render_home(
                 label="风险雷达", show_label=False, elem_id="home-risk-radar", elem_classes=["home-chart"]
             )
         market_brief = gr.HTML(elem_id="home-market-summary")
+        releases = gr.HTML(release_calendar(), elem_id="home-release-calendar")
         with gr.Row(elem_classes=["home-secondary-row"]):
             sentiment = _plot(
                 label="市场情绪雷达", show_label=False, elem_id="home-sentiment", elem_classes=["home-chart"]
@@ -65,6 +69,9 @@ def render_home(
             contribution = _plot(
                 label="持仓浮动盈亏", show_label=False, elem_id="home-contribution", elem_classes=["home-chart"]
             )
+        keyword_mode = gr.Radio(
+            keyword_policy()["modes"]["choices"], value="lexical", label="关键词提取", elem_id="home-keyword-mode"
+        )
         themes = gr.HTML(elem_id="home-themes")
         with gr.Row(elem_classes=["home-actions-row"]):
             with gr.Column(scale=2, min_width=310):
@@ -93,35 +100,32 @@ def render_home(
                 actions = table("待处理事项明细", elem_classes=["home-semantic-table"])
                 strategy = table("策略与任务状态", elem_classes=["home-semantic-table"])
 
-    def bind(event: Callable[..., Any], force: bool, market_event=False) -> None:
+    def bind(event: Callable[..., Any], force: bool) -> None:
         def keep(state, revision):
             return state["revision"] == revision
 
         def account(mode, state):
             revision = state["revision"]
-            if market_event and not state["refresh"]:
-                return tuple(gr.skip() for _ in range(9))
             result = service.home_account(mode, force_refresh=force)
             return result if keep(state, revision) else tuple(gr.skip() for _ in range(9))
 
         def operations_load(mode, state):
             revision = state["revision"]
-            if market_event and not state["refresh"]:
-                return tuple(gr.skip() for _ in range(3))
             result = service.home_operations(mode, force_refresh=force)
             return result if keep(state, revision) else tuple(gr.skip() for _ in range(3))
 
         def market_load(mode, state):
             revision = state["revision"]
-            if market_event and not state["refresh"]:
-                return tuple(gr.skip() for _ in range(6))
-            result = service.home_market(mode, force_refresh=force)
-            return result if keep(state, revision) else tuple(gr.skip() for _ in range(6))
+            result = service.home_market_snapshot(mode, force_refresh=force)
+            return result if keep(state, revision) else tuple(gr.skip() for _ in range(5))
+
+        def themes_load(mode, state):
+            revision = state["revision"]
+            result = service.home_themes(force_refresh=force, keyword_mode=mode)
+            return result if keep(state, revision) else gr.skip()
 
         def news_load(mode, state):
             revision = state["revision"]
-            if market_event and not state["refresh"]:
-                return gr.skip()
             result = service.home_news(mode, force_refresh=force)
             return result if keep(state, revision) else gr.skip()
 
@@ -146,23 +150,28 @@ def render_home(
         event(
             safe(market_load),
             inputs=[account_mode, selection],
-            outputs=[market_brief, sentiment, sectors, themes, indices, watchlist],
+            outputs=[market_brief, sentiment, sectors, indices, watchlist],
             queue=False,
         )
         event(safe(news_load), inputs=[account_mode, selection], outputs=news, queue=False)
+        event(safe(themes_load), inputs=[keyword_mode, selection], outputs=themes, queue=False)
 
     def market_changed(value: str, state):
         market = normalize_market(value)
         changed = market != state["market"]
-        state.update(market=market, revision=state["revision"] + int(changed), refresh=changed)
-        if changed:
-            switch_ui_market(value)
-        return f"Market: {market}", state
+        if not changed:
+            return f"Market: {market}", gr.skip(), gr.skip()
+        state.update(market=market, revision=state["revision"] + 1)
+        switch_ui_market(value)
+        return f"Market: {market}", state, state["revision"]
 
-    market_event = market_switcher.input(
-        safe(market_changed), inputs=[market_switcher, selection], outputs=[market_status, selection], queue=False
+    market_switcher.input(
+        safe(market_changed, cancel_outputs=3),
+        inputs=[market_switcher, selection],
+        outputs=[market_status, selection, market_revision],
+        queue=False,
     )
-    bind(market_event.then, True, market_event=True)
+    bind(market_revision.change, True)
     bind(refresh.click, True)
 
     def account_changed(mode, state):
@@ -175,6 +184,14 @@ def render_home(
     )
     bind(account_event.then, False)
     bind(load_event, False)
+    load_event(release_calendar, outputs=releases, queue=False)
+    refresh.click(release_calendar, outputs=releases, queue=False)
+    keyword_mode.input(
+        safe(lambda mode: service.home_themes(keyword_mode=mode)),
+        inputs=keyword_mode,
+        outputs=themes,
+        trigger_mode="always_last",
+    )
 
     def market_details(mode: str) -> tuple:
         return tuple(home_styled_frame(frame) for frame in service.dashboard_market(mode)[:4])

@@ -23,6 +23,7 @@ from src.core.logger import get_logger
 from src.core.page_work import CURRENT_PAGE, PageCancelled, PageWork, check, on_cancel, policy
 from src.core.panel_updates import PANEL_LOADING, PANEL_UPDATE
 from src.core.process_control import stop_process_tree
+from src.core.work_progress import progress
 from src.data import current_market
 
 from .read_worker import serve
@@ -43,6 +44,7 @@ class ReadJob:
     stop: Event = field(default_factory=Event)
     consumers: dict[PageWork, int] = field(default_factory=dict)
     panels: list[tuple[int, Any]] = field(default_factory=list)
+    stage: str = ""
 
 
 JOBS: dict[str, ReadJob] = {}
@@ -146,6 +148,8 @@ def _execute(key: str, job: ReadJob) -> None:
                     )
                     continue
                 if message[0] == "progress":
+                    with LOCK:
+                        job.stage = message[1]
                     log.info(
                         "Page work progress | operation={} method={} stage={}", key[:12], job.request[0], message[1]
                     )
@@ -246,13 +250,18 @@ def read(name: str, args: tuple, kwargs: dict) -> Any:
 
     detach = on_cancel(page, leave)
     observed = 0
+    last_stage = ""
 
     def publish():
-        nonlocal observed
+        nonlocal observed, last_stage
         callback = PANEL_UPDATE.get()
         with LOCK:
             pending = job.panels[observed:]
             observed = len(job.panels)
+            stage = job.stage
+        if stage and stage != last_stage:
+            progress(stage)
+            last_stage = stage
         if callback:
             for index, value in pending:
                 callback(index, value)

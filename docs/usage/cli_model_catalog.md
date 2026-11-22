@@ -1,6 +1,7 @@
 # CLI models and billing in the composer
 
-The workbench and floating model assistant share the same backend/model controls.
+The workbench, both floating chat tabs, page analysis, relationship research,
+and the specialist research selectors share CLI labels and model catalogs.
 Selecting a CLI clears the previous provider's models and automatically discovers
 the selected catalogue. The refresh icon bypasses its cache. Discovery runs only
 after selection or refresh, never while constructing a page, and does not submit
@@ -35,13 +36,16 @@ depend on the provider. API profiles currently expose unknown prices here.
 | Codex | Native app-server initialization and `model/list` | Model listing does not establish ChatGPT-plan/API billing; missing rates stay unknown |
 | Qoder | Native `--list-models` using the configured CLI profile | A reported `price_factor` is a credit multiplier, not a fixed task price |
 | TRAE / CodeBuddy | Explicit configured catalogue; unverified native discovery is reported as unsupported | Only explicitly supplied metadata is displayed |
-| WorkBuddy | Explicit installed product catalogue, when configured | Informational only: ordinary chat remains unavailable; the graph-specific adapter is separate |
+| WorkBuddy | Configured desktop product catalog | Explicit credit rate, with zero-rate models labeled free |
 
 Model selection and sending keep the underlying model ID unchanged. Supported
 reasoning choices intersect the provider and model metadata. Refresh preserves a
-model only while it remains in that provider's list. WorkBuddy sending is disabled;
-other unavailable/unsupported states show their limitation rather than invented
-models. Existing native runners validate actual installation and invocation.
+model only while it remains in that provider's list. WorkBuddy requires a model
+choice and a configured desktop profile. It supports text chat, current-data
+page reports and relationship research through its isolated, text-only CLI.
+Use a backend with image support for image inputs. Strict research surfaces
+offer the providers allowed by their research policy. In strategy management,
+the **Simulated CLI** entry exercises the example workflow and its local artifacts.
 
 ## Configuration
 

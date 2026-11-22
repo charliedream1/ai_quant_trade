@@ -6,6 +6,7 @@ from time import monotonic, sleep
 
 import pytest
 
+from src.core.config import get_settings
 from src.core.page_analysis_snapshot import analysis_config, capture, evidence
 from src.core.page_work import PageWork, activate, context, deactivate
 from src.engine.insights import page_analysis
@@ -77,6 +78,22 @@ def test_current_commentary_does_not_relax_experiment_admission(monkeypatch):
     assert not page_generation.current_commentary("backtest", "codex")
 
 
+def test_workbuddy_requires_explicit_model_and_current_observations(monkeypatch):
+    from src.engine.insights import page_generation
+
+    checks = []
+    monkeypatch.setenv("ALL_IN_ONE_ENABLE_REAL_CLI", "1")
+    monkeypatch.setattr(page_generation, "workbuddy_paths", lambda: checks.append(True))
+    with pytest.raises(ValueError, match="严格研究后端"):
+        page_generation.capability("backtest", {"backend": "workbuddy", "model_name": "hy4flash-free"})
+    assert not checks
+    with pytest.raises(ValueError, match="请选择 WorkBuddy 模型"):
+        page_generation.capability("macro", {"backend": "workbuddy"})
+    state = page_generation.capability("macro", {"backend": "workbuddy", "model_name": "hy4flash-free"})
+    assert state["model_name"] == "hy4flash-free"
+    assert state["historical_validation"] is False
+
+
 def test_demo_data_does_not_silently_start_real_cli(client, monkeypatch):
     from src.engine.insights import page_generation
 
@@ -87,9 +104,12 @@ def test_demo_data_does_not_silently_start_real_cli(client, monkeypatch):
 
 def wait_finished(identifier):
     started = monotonic()
+    key = (str(get_settings().db_path), identifier)
     while monotonic() - started < 15:
         result = InsightStore().detail(identifier)
-        if result["status"] != "running":
+        with page_analysis.LOCK:
+            released = key not in page_analysis.STOPS
+        if released and result["status"] != "running":
             return result
         sleep(0.05)
     raise AssertionError("Report did not reach a terminal state")

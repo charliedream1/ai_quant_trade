@@ -30,7 +30,7 @@
 
 ## CLI 只有日志、没有回复
 
-截至 2026-10-21，AI 工作台和悬浮窗的 Codex 对话使用本机 `codex exec --json` 只读事件流，状态、动作和助手正文会逐步显示；mock 模式默认禁用真实调用。需验收时，在服务环境设置 `ALL_IN_ONE_ENABLE_REAL_CLI=true` 后重启，并检查可执行文件和认证。Trae/WorkBuddy 未接入真实协议时显示不可用，不生成模拟日志。策略构建页旧 `CliBuilder` 不能当作真实对话 CLI。
+For a CLI connection failure in the workbench or floating assistant, check the installed program, account and selected model, then refresh the shared model catalog. For WorkBuddy, verify the configured desktop profile and select a model explicitly. Demo mode requires `ALL_IN_ONE_ENABLE_REAL_CLI=true`. [CLI models and billing](cli_model_catalog.md)
 
 2026-10-21 已修正工作台发送回调未被 Gradio 识别为生成器的问题；Enter 和按钮均可发送，悬浮 CLI 也逐事件更新。若出现“needed: 6, returned: 1”或把生成器显示成返回值，请确认服务加载了本次修复后的安全回调，并重启服务；只刷新浏览器不能替换已挂载的 Python 回调。多轮历史现在规范化文本内容块，不应再显示 text/type 字典串。
 

@@ -3,14 +3,18 @@
 import json
 import os
 from typing import Any
+from uuid import uuid4
 
 from src.agent.attachments import AttachmentBundle
 from src.agent.generic_agent_runtime import GenericAgentRuntime
 from src.agent.providers.native import NativeCliRunner
 from src.core.assistant_page_context import context_prompt
 from src.core.config import get_settings
+from src.core.redaction import redact_text
 from src.core.repository import Repository
 from src.core.stream_control import stream_cancelled
+from src.observability.instrumentation import traced
+from src.observability.runtime import current_observation
 from src.strategy.codex_cli import CodexCliRunner
 
 from .composer_config import composer_config, validate_selection
@@ -48,7 +52,7 @@ def backend_events(repo: Repository, payload: dict[str, Any], history: list[dict
             },
         }
         return
-    if backend not in {"codex", "codex_cli", "qoder", "trae", "codebuddy"}:
+    if backend not in {"codex", "codex_cli", "qoder", "trae", "codebuddy", "workbuddy"}:
         yield {
             "type": "backend_result",
             "data": {"text": f"{backend} 未接入真实对话", "status": "unavailable", "backend": backend},
@@ -67,6 +71,9 @@ def backend_events(repo: Repository, payload: dict[str, Any], history: list[dict
                 "backend": backend,
             },
         }
+        return
+    if backend == "workbuddy":
+        yield from _workbuddy_events(payload, history, bundle)
         return
     text = ""
     error = ""
@@ -108,3 +115,58 @@ def backend_events(repo: Repository, payload: dict[str, Any], history: list[dict
             "error": error,
         },
     }
+
+
+def _workbuddy_events(payload, history, bundle):
+    cfg = composer_config()["workbuddy_chat"]
+    name = str(payload.get("model_name") or "")
+    if not name or bundle.image_paths:
+        message = cfg["images"] if bundle.image_paths else cfg["select_model"]
+        yield {"type": "backend_result", "data": {"text": message, "status": "failed", "backend": "workbuddy"}}
+        return
+    prompt = str(payload["message"]) + bundle.text_context + context_prompt()
+    if history:
+        kept, length = [], 0
+        for turn in reversed(history):
+            length += len(turn["content"])
+            if length > cfg["max_history_chars"]:
+                break
+            kept.append(turn)
+        prompt = json.dumps({"history": list(reversed(kept)), "message": prompt}, ensure_ascii=False)
+    if len(prompt) > cfg["max_prompt_chars"]:
+        yield {
+            "type": "backend_result",
+            "data": {"text": cfg["prompt_limit"], "status": "failed", "backend": "workbuddy"},
+        }
+        return
+    yield {"type": "process", "data": {"text": cfg["started"], "status": "running"}}
+    try:
+        result = _workbuddy_turn(prompt, name, cfg)
+    except (OSError, ValueError, TimeoutError) as exc:
+        message = redact_text(str(exc)) if isinstance(exc, ValueError) else "WorkBuddy CLI 调用中断或超时。"
+        yield {"type": "backend_result", "data": {"text": message, "status": "failed", "backend": "workbuddy"}}
+        return
+    text = result["text"]
+    yield {"type": "message", "data": {"text": text, "status": "running"}}
+    yield {"type": "process", "data": {"text": cfg["finished"], "status": "completed"}}
+    yield {
+        "type": "backend_result",
+        "data": {
+            **result,
+            "status": "completed",
+            "access_mode": "read-only",
+            "is_mock": False,
+        },
+    }
+
+
+@traced("llm.workbuddy_chat", "generation")
+def _workbuddy_turn(prompt, name, cfg):
+    from src.engine.market.model_graph.generation import complete_workbuddy
+
+    directory = get_settings().data_dir / cfg["directory"] / uuid4().hex
+    result = complete_workbuddy(
+        prompt, model=name, directory=directory, cancelled=stream_cancelled, system_prompt=cfg["system"]
+    )
+    current_observation().finish(model=result["model"], usage=result["usage"])
+    return result

@@ -124,7 +124,7 @@ def deduplicate(rows):
     return unique
 
 
-def ranked_keywords(rows, top_n, *, now=None):
+def ranked_keywords(rows, top_n, *, now=None, tfidf=False):
     cfg = policy()
     limits, weights = cfg["limits"], cfg["weights"]
     samples = deduplicate(rows[: limits["sample"]])
@@ -147,6 +147,8 @@ def ranked_keywords(rows, top_n, *, now=None):
             evidence.setdefault(word, title)
     for word in scores:
         scores[word] *= 1 + log(len(sources[word]))
+        if tfidf:
+            scores[word] *= cfg["modes"]["idf_floor"] + log((1 + len(samples)) / (1 + counts[word]))
     total = sum(scores.values()) or 1
     return [
         {

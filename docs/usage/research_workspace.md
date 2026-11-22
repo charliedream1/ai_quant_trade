@@ -20,6 +20,11 @@ analysis**. Enter the company once, then explicitly load the desired data.
 Switching sections cancels unfinished transient reads. Existing fundamentals
 URLs open the financial section. Macroeconomic research remains independent.
 Financial coverage restrictions, such as unavailable HK statements, still apply.
+The technical view shows moving averages, RSI, MACD and recent volume with a
+short interpretation for each reading. A-shares can display 20- and 60-bar
+performance relative to the Shanghai Composite when both endpoint dates match.
+The price chart and related news or research publish independently when their
+respective sources finish.
 
 **Industry and Concept Sectors** shows sector rankings with indices for context.
 The homepage **Sector performance overview** shows the count, source and time of
@@ -32,6 +37,12 @@ readings require a complete provider-reported universe, and the ranking card
 can still show a partial list. A flat sector counts in the breadth denominator.
 Use the market controls to select coverage and the language control to switch
 the interface independently.
+
+Sector tables use market-specific gain and loss colors, with one zero-centered
+scale per signed metric and a separate magnitude scale for traded amount.
+The macro table colors changes from the previous observation within unit groups.
+The Overview also shows scheduled Chinese releases in Beijing time and links to
+the official calendar when the included schedule is exhausted.
 
 ## News and notifications
 
@@ -52,18 +63,19 @@ The API also accepts `scope=week`, `month` or `all`. Unknown publication times
 remain available in unbounded news listings. Time-bounded results use verified
 source times.
 
-Hot terms use Jieba and a finance dictionary for Chinese, with English
-word boundaries and phrase aliases. The ranking uses title weight, distinct
-stories, source diversity and freshness. Topic rows group related stories and
-show their representative headline and supporting count. Dictionary, stop words,
-time windows and scoring weights are in `egs/config/data/news_topics.yaml`.
+Overview offers **Tokenization and TF-IDF** and **Lightweight BERT extraction**.
+The default combines Jieba, the finance dictionary, TF-IDF, headline weight,
+distinct stories, source diversity and freshness. Keyword chips carry their
+supporting headline. Topic rows group related stories and show a representative
+headline and count. The dictionary and ranking policy live in
+`egs/config/data/news_topics.yaml`.
 
-### Optional BGE keyword reranking
+### Optional BGE phrase extraction
 
-Use the lexical ranking by default, or add a local CPU model or an
-OpenAI-compatible embedding endpoint for the Overview ranking. Only bounded
-headline and phrase pairs enter the embedding request. The interface displays
-the ranking method and falls back to lexical ranking if BGE is unavailable.
+Choose the BERT mode to use a local quantized CPU model or an OpenAI-compatible
+embedding endpoint. The model compares phrases with a bounded set of headline
+embeddings and reduces duplication among the selected phrases. The interface
+displays the effective method and uses the lexical result if BGE is unavailable.
 
 For local inference, install the `news-bge` extra with `uv sync --locked --extra news-bge`
 or install `egs/requirements/news-bge.lock.txt` with pip in the intended environment.
@@ -71,7 +83,7 @@ Run the setup module from a source checkout or use the installed console command
 `aiquant-news-bge`.
 
 ```text
-python -m src.engine.market.news_bge_install --target E:/aqt-runtime/models/news-bge
+python -m src.engine.market.news_bge_install --target ./data/news_models/bge-small-zh-v1.5
 ```
 
 The command previews the fixed repository revision, download size and target.
@@ -142,20 +154,16 @@ Suitable research views also offer explicit [CLI + Skill analysis](page_skill_an
 with frozen page evidence, process events, cancellation and saved HTML reports.
 Overview serves account and market observations through the floating assistant.
 
-The active page and its controls appear first. Independent sections can update
-in parallel, while sections that share data follow their dependencies. For
-example, index data can be visible while sectors are still loading; search
-results appear before their chart; retrieved citations appear while the model
-answer is pending. The homepage uses independent account, market, local-task and
-news groups. Each group retains the established complete-result transport on
-both supported Gradio installations; its eight account metrics and six plots
-must remain available after initialization, refresh and return navigation.
+The active page and its controls appear first. The homepage loads account,
+market, local-task, headlines and keyword sections independently. Stored NAV
+can appear before live holdings valuation, and index or sector results appear
+while the other request is pending. Board refreshes can reuse a short-lived
+provider observation. The page keeps its eight account metrics and six plots.
 
-Loading markers belong to individual sections. A failed section is marked for
-retry and does not erase completed sections. Use the view's refresh/query control
-to retry. Switching pages cancels unfinished work and marks pending sections
-cancelled. Financial tables and charts continue to reference one saved snapshot;
-display timing does not authorize mixing reporting periods or unfinished ratios.
+Pending tables can show stages such as fetching data and building charts. A
+failed section offers retry while completed content remains visible. Switching
+pages cancels unfinished work. Financial tables and charts use one saved
+snapshot per selection.
 
 The application uses cumulative streamed updates for eligible read callbacks.
 Ordinary service/API return values and independent accepted-job lifecycles remain

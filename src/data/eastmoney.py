@@ -12,7 +12,7 @@ import socket
 import threading
 import time
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from typing import Any, TypeVar
@@ -28,6 +28,7 @@ from src.core.config import get_settings
 from src.core.env_file import resolve_env_value
 from src.core.exceptions import BusinessError, ErrorCode
 from src.core.logger import get_logger
+from src.core.panel_updates import OBSERVATION_READY, observation_ready
 from src.core.timeutil import utc_now_iso
 from src.data.normalization import _number, _optional_number
 from src.data.provider_gate import eastmoney_gate
@@ -1077,15 +1078,31 @@ class EastmoneyDataSource:
             except BusinessError:
                 return []
 
-        with ThreadPoolExecutor(max_workers=4, thread_name_prefix="stock-detail") as executor:
-            kline_future = executor.submit(self._kline, parsed.qualified, kline_period, kline_count, adjustment)
-            industry_future = executor.submit(load_industry)
-            reports_future = executor.submit(load_reports)
-            news_future = executor.submit(load_news)
-            kline = kline_future.result()
-            industry = industry_future.result()
-            reports = reports_future.result()
-            news = news_future.result()
+        from src.engine.economics.config import economics_config
+
+        def load_benchmark():
+            try:
+                benchmark = economics_config()["technical_indicators"]["cn_benchmark"]
+                return self._kline(benchmark, kline_period, kline_count, "none")
+            except (BusinessError, ValueError, OSError):
+                return []
+
+        results: dict[str, Any] = {}
+        with ThreadPoolExecutor(max_workers=5, thread_name_prefix="stock-detail") as executor:
+            pending: dict[Future[Any], str] = {
+                executor.submit(self._kline, parsed.qualified, kline_period, kline_count, adjustment): "bars",
+                executor.submit(load_industry): "industry",
+                executor.submit(load_reports): "reports",
+                executor.submit(load_news): "news",
+            }
+            if OBSERVATION_READY.get() is not None:
+                pending[executor.submit(load_benchmark)] = "benchmark_bars"
+            for future in as_completed(pending):
+                name = pending[future]
+                results[name] = future.result()
+                observation_ready("stock." + name, results[name])
+        kline = results["bars"]
+        industry = results["industry"]
         if industry and not quote.get("industry"):
             quote = dict(quote, industry=industry)
         finance = {
@@ -1100,9 +1117,10 @@ class EastmoneyDataSource:
             "quote": quote,
             "kline": kline,
             "finance": finance,
-            "news": news,
+            "news": results["news"],
             "score": self._score(kline, quote),
-            "reports": reports,
+            "reports": results["reports"],
+            **({"benchmark_bars": results["benchmark_bars"]} if "benchmark_bars" in results else {}),
         }
 
     def strategy_snapshot(

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import gradio as gr
 
 from src.agent.cli_catalog import catalog_config
-from src.agent.composer_config import composer_config
+from src.agent.composer_config import cli_choices, composer_config
 
 from .callbacks import safe
 from .composer_catalog import CatalogSelection
@@ -30,6 +30,8 @@ def render_composer(
     *,
     default_backend="generic_agent",
     task_controls=False,
+    cli_only=False,
+    load_event=None,
 ) -> Composer:
     cfg = composer_config()
     with gr.Column(elem_id=f"{prefix}-composer", elem_classes=["flat-ai-composer"]):
@@ -44,7 +46,7 @@ def render_composer(
         )
         # File preview remains a full-width strip instead of squeezed inside the icon.
         attachments = gr.File(
-            visible=not task_controls,
+            visible=not task_controls and not cli_only,
             label="添加附件或拖入文件/图片",
             file_count="multiple",
             type="filepath",
@@ -52,7 +54,7 @@ def render_composer(
             elem_id=f"{prefix}-attachments",
             elem_classes=["composer-upload"],
         )
-        with gr.Row(elem_classes=["composer-attachment-row"], visible=not task_controls):
+        with gr.Row(elem_classes=["composer-attachment-row"], visible=not task_controls and not cli_only):
             gr.HTML(
                 "<button type='button' class='composer-attach' aria-label='添加附件' title='添加附件；也可拖入文件或图片'>＋</button>",
                 elem_classes=["composer-attach-slot"],
@@ -60,11 +62,7 @@ def render_composer(
         with gr.Row(elem_id=f"{prefix}-composer-footer", elem_classes=["composer-toolbar"]):
             with gr.Row(elem_classes=["composer-backend-options"]):
                 backend = gr.Dropdown(
-                    [
-                        (profile["label"], key)
-                        for key, profile in cfg["backends"].items()
-                        if not task_controls or key in {"codex", "qoder", "trae", "codebuddy"}
-                    ],
+                    cli_choices(api=None if cli_only or task_controls else "generic_agent"),
                     value=default_backend,
                     label="后台",
                     min_width=95,
@@ -154,4 +152,10 @@ def render_composer(
         trigger_mode="multiple",
     )
     model.input(safe(selection.select), inputs=[model, backend, state], outputs=[note, reasoning], queue=False)
+    if load_event is not None:
+
+        def initialize(current):
+            return selection.load(current) if not current["catalog"] else (gr.skip(),) * 5
+
+        load_event(safe(initialize), inputs=state, outputs=[model, reasoning, permission, note, send], queue=False)
     return Composer(text, attachments, backend, permission, model, reasoning, send)

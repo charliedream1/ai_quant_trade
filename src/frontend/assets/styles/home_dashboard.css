@@ -124,6 +124,9 @@ html[data-theme="dark"] #home-dashboard .home-chart .slicetext { fill: var(--ink
 #main-navigation .home-semantic-table td[style*="--home-cell-color"],
 #main-navigation .home-semantic-table td[style*="--home-cell-color"] * { color: var(--ink) !important; }
 #main-navigation .home-semantic-table td[style*="--home-cell-color"] * { background: transparent !important; }
+.home-release-calendar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; }
+.home-release-calendar ul { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; }
+.home-release-calendar small, .home-release-calendar time { color: var(--muted); }
 #main-navigation .home-semantic-table td[style*="--home-cell-color"] { background: color-mix(in srgb, var(--home-cell-color) var(--home-cell-strength), var(--surface)) !important; }
 html[data-theme="dark"] #main-navigation .home-semantic-table td[style*="--home-cell-color"] { background: color-mix(in srgb, var(--home-cell-color) var(--home-cell-strength), var(--surface)) !important; color: var(--ink) !important; }
 @media (max-width: 1050px) {

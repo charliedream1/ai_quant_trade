@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from pathlib import Path
 from threading import Event
 from time import sleep
@@ -40,7 +41,7 @@ def test_model_graph_switch_history_preview_and_export(client, cli_command, monk
             frame = page.frame_locator("iframe.workspace-frame.active")
             mode = frame.locator("#relation-graph-mode")
             expect(mode).to_be_visible(timeout=90000)
-            mode.locator('label:has(input[value="model"])').click()
+            frame.locator('.page-report-action[data-report-view="relations"]').click()
             expect(frame.locator("#model-graph-generate")).to_be_visible()
             for record in records:
                 run = record["run"]
@@ -65,6 +66,11 @@ def test_model_graph_switch_history_preview_and_export(client, cli_command, monk
                 pending.value.save_as(str(saved))
                 assert saved.read_bytes() == original
                 assert (service.store.directory(run["run_id"]) / "graph.json").read_bytes() == original
+                frame.locator("#model-graph-html-export").click()
+                report = frame.frame_locator("#model-graph-html-preview iframe")
+                expect(report.get_by_role("heading", name=re.compile("Relationship report"))).to_be_visible()
+                html_path = service.store.directory(run["run_id"]) / "report.html"
+                assert expected in html_path.read_text(encoding="utf-8")
             page.locator("#app-language-toggle").click()
             expect(evidence).to_contain_text(expected)
             page.locator("#app-language-toggle").click()

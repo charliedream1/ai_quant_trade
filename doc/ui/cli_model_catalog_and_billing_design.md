@@ -87,6 +87,20 @@ stop owned services. No package installation, file deletion or push is proposed.
 
 ## Implementation and verified boundaries
 
+### Unified selectors and WorkBuddy chat
+
+The 2026-11-22 revision shares provider labels and model metadata across page
+reports, relationship graphs, the workbench, both floating chat tabs and
+specialised research controls. Each action draws its eligible providers from
+the registry and its execution policy. Cover the existing strategy simulation
+entry with the same labels and identify the simulation action in its UI.
+
+The floating CLI assistant uses the same workspace backend as the workbench.
+The WorkBuddy adapter requires an explicit model, sends only bounded text and
+reuses the isolated desktop runner already exercised in relationship research.
+It validates the selected model and native capability events and emits observed
+progress and model metadata. Existing demo-mode and permission checks apply.
+
 The approved [daily reuse extension](cli_model_catalog_daily_cache_design.md)
 replaces the initial five-minute process cache with private daily persistence,
 cross-process discovery ownership, explicit refresh and labelled stale fallback.

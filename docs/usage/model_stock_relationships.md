@@ -52,7 +52,9 @@ set these absolute local paths without copying credentials into the repository:
 | `ALL_IN_ONE_WORKBUDDY_AUTHENTICATION` | Existing encrypted desktop authentication file |
 | `ALL_IN_ONE_WORKBUDDY_PRODUCT` | Existing CLI product JSON containing the installed model catalogue |
 
-The WorkBuddy adapter was exercised on Windows with the free `hy3` model.
+The WorkBuddy adapter was exercised on Windows with the free `hy3` and
+`hy4flash-free` models. The same local settings support WorkBuddy in eligible
+[page reports](page_skill_analysis.md).
 WorkBuddy desktop layout/codec changes fail explicitly and may require an adapter
 update. Linux uses the existing Qoder path; WorkBuddy Linux desktop execution has
 not been verified. Authentication is decoded by the installed native codec only

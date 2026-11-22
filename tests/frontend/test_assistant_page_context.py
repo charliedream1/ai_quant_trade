@@ -160,6 +160,7 @@ def test_scope_change_resets_chat_session_and_cli_history():
 
 
 def test_legacy_cli_assistant_receives_same_page_envelope(client, monkeypatch):
+    from src.agent import workspace_backend
     from src.frontend.service import assistant
     from src.strategy.codex_cli import CodexStreamEvent
 
@@ -168,16 +169,20 @@ def test_legacy_cli_assistant_receives_same_page_envelope(client, monkeypatch):
     class Cli:
         display_name = "Declared CLI"
 
+        def __init__(self, **kwargs):
+            assert kwargs["access_mode"] == "read-only"
+
         def stream(self, prompt, **kwargs):
             seen.append(prompt)
             yield CodexStreamEvent("message", "completed", "Declared reply")
 
-    monkeypatch.setattr(assistant, "CodexCliRunner", Cli)
+    monkeypatch.setenv("ALL_IN_ONE_ENABLE_REAL_CLI", "1")
+    monkeypatch.setattr(workspace_backend, "CodexCliRunner", Cli)
     token = TURN_PAGE_CONTEXT.set(
         {"enabled": True, "module": "market", "view": "stock", "sources": [{"id": "P1", "data": stock()}]}
     )
     try:
-        result = list(assistant._codex_chat_events("What is this ratio?", [], "codex"))
+        result = list(assistant._cli_chat_events("What is this ratio?", [], "codex", "", "", "read-only"))
     finally:
         TURN_PAGE_CONTEXT.reset(token)
     assert "123.45" in seen[0] and "P1" in seen[0]

@@ -1,14 +1,23 @@
 """Research provider metadata is lazy; never authenticate or generate on page load."""
 
 import gradio as gr
+
+from src.agent.composer_config import cli_choices
 from src.agent.providers import provider_catalog
-from src.agent.providers.config import backend_choices
+from src.agent.providers.config import backend_names
+
+from .composer_catalog import bind_cli_catalog
 
 
 def provider_controls(prefix: str):
     with gr.Row():
-        backend = gr.Dropdown(backend_choices(), value="api", label="Agent生成后端", elem_id=prefix + "-backend")
-        model_name = gr.Textbox(label="CLI模型名称（留空使用宿主默认）", elem_id=prefix + "-cli-model")
+        backend = gr.Dropdown(
+            cli_choices(backend_names(), api="api"), value="api", label="Agent生成后端", elem_id=prefix + "-backend"
+        )
+        model_name = gr.Dropdown([], label="CLI 模型", elem_id=prefix + "-cli-model", interactive=False)
+        refresh = gr.Button("刷新模型", scale=0)
+    note = gr.Markdown()
+    bind_cli_catalog(backend, model_name, refresh, note, "api")
     with gr.Accordion("CLI可用性与研究约束", open=False):
         gr.Markdown(
             "安装、登录、模型可用和严格研究是不同状态。没有通过工具/扩展禁用核验的版本会在研究生成前阻断；普通AI会话仍可使用。"

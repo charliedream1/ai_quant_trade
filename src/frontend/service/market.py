@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextvars import copy_context
 from typing import cast
 
 import gradio as gr
 
-from src.core.panel_updates import panel_ready, panel_values
+from src.core.page_work import policy
+from src.core.panel_updates import OBSERVATION_READY, panel_ready, panel_values
+from src.core.work_progress import progress
 
 from .contracts import CrossDomainCallbacks
 from .dashboard_views import (
@@ -73,7 +77,10 @@ from .foundation import (
     uploaded_file_path,
     utc_now_iso,
 )
+from .home_tables import home_styled_frame
 from .relation_layout import evidence_html, plot_metadata
+from .shared_observations import shared_observation
+from .stock_indicators import indicator_rows
 from .visuals import (
     _format_display_time,
     _safe_float,
@@ -129,14 +136,42 @@ class MarketServiceMixin:
     def market_overview(self, board: str, limit: Any, selection="balanced") -> tuple[Any, Any, go.Figure]:
         quotes = QuoteService()
         limit_value = max(1, min(int(limit or 20), 100))
-        indices = quotes.indices(refresh=True)
-        index_table = styled_frame(indices, INDEX_COLUMNS, gradient=["change_pct"])
-        panel_ready(0, index_table)
-        sectors = quotes.sector_rankings(
-            board=board or "industry", limit=limit_value, selection=selection, refresh=True
-        )
-        sector_table = styled_frame(sectors, ["ranking", *SECTOR_COLUMNS], gradient=["change_pct"])
-        panel_ready(1, sector_table)
+        max_age = policy()["market_refresh_cache_seconds"]
+        progress("Fetching market data")
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            index_future = pool.submit(
+                copy_context().run,
+                shared_observation,
+                "market_indices",
+                lambda: quotes.indices(refresh=True),
+                max_age_seconds=max_age,
+            )
+            sector_future = pool.submit(
+                copy_context().run,
+                shared_observation,
+                ["market_rankings", board, limit_value, selection],
+                lambda: quotes.sector_rankings(
+                    board=board or "industry", limit=limit_value, selection=selection, refresh=True
+                ),
+                max_age_seconds=max_age,
+            )
+            results = {}
+            failures = []
+            for future in as_completed((index_future, sector_future)):
+                index = int(future is sector_future)
+                try:
+                    results[index] = future.result()
+                except Exception as exc:
+                    failures.append(exc)
+                    continue
+                columns = ["ranking", *SECTOR_COLUMNS] if index else INDEX_COLUMNS
+                panel_ready(index, home_styled_frame(to_frame(results[index], columns)))
+        if failures:
+            raise failures[0]
+        indices, sectors = results[0], results[1]
+        index_table = home_styled_frame(to_frame(indices, INDEX_COLUMNS))
+        sector_table = home_styled_frame(to_frame(sectors, ["ranking", *SECTOR_COLUMNS]))
+        progress("Building charts")
         chart = market_bar_figure(sectors)
         panel_ready(2, chart)
         return index_table, sector_table, chart
@@ -502,7 +537,22 @@ class MarketServiceMixin:
         except Exception:
             # The complete analyzer retains its source fallbacks and public failure handling.
             pass
-        result = StockAnalyzer().detail(symbol_value, "", period or "daily", int(count or 60))
+        progress("Loading company research")
+
+        def present(kind, value):
+            if kind == "stock.bars":
+                panel_ready(3, kline_figure(value, symbol_value))
+                panel_ready(2, to_frame(indicator_rows(value), ["指标", "数值", "解读"]))
+            elif kind == "stock.news":
+                panel_ready(4, to_frame(value, NEWS_COLUMNS))
+            elif kind == "stock.reports":
+                panel_ready(5, to_frame(value))
+
+        token = OBSERVATION_READY.set(present)
+        try:
+            result = StockAnalyzer().detail(symbol_value, "", period or "daily", int(count or 60))
+        finally:
+            OBSERVATION_READY.reset(token)
         quote = result.get("quote") or {}
         change = float(quote.get("change_pct") or 0)
         summary = (
@@ -510,18 +560,19 @@ class MarketServiceMixin:
             f"现价 **{quote.get('latest_price', '-')}**　涨跌幅 **{change:.2f}%**　"
             f"换手率 **{quote.get('turnover_rate', '-')}%**　数据源 `{quote.get('data_source', '-')}`"
         )
-        finance = [{"指标": key, "数值": value} for key, value in (result.get("finance") or {}).items()]
+        benchmark = result.get("benchmark_bars") or []
+        finance = indicator_rows(result.get("kline") or [], benchmark)
+        finance.extend(
+            {"指标": key, "数值": value, "解读": "报价估值与成交口径"}
+            for key, value in (result.get("finance") or {}).items()
+        )
         if quote.get("market") == "HK":
             summary += "\n\nCurrency: HKD. Technical research only; financial statements and news are unavailable."
-            finance = [
-                {"指标": key.replace("sma_", "SMA / "), "数值": f"{value:.4f}" if value is not None else "—"}
-                for key, value in result.get("technical", {}).items()
-            ]
         return panel_values(
             (
                 lambda: summary,
                 lambda: score_figure(result.get("score") or {}),
-                lambda: to_frame(finance, ["指标", "数值"]),
+                lambda: to_frame(finance, ["指标", "数值", "解读"]),
                 lambda: kline_figure(result.get("kline") or [], symbol_value),
                 lambda: to_frame(result.get("news") or [], NEWS_COLUMNS),
                 lambda: to_frame(result.get("reports") or []),

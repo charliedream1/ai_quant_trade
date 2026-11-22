@@ -15,7 +15,6 @@ from ..common.components import table as _table
 from ..common.composer import render_composer
 from ..common.runtime_loader import runtime_loader_js
 from ..handlers import DomainHandler
-from ..service.foundation import CLI_TYPE_CHOICES
 
 
 def render_floating_assistant(service: DomainHandler) -> None:
@@ -115,21 +114,33 @@ def render_floating_assistant(service: DomainHandler) -> None:
                     inputs=[ai_kb_question, ai_kb_category, ai_kb_top_k, use_page, *page_inputs],
                     outputs=[ai_kb_answer, ai_kb_sources],
                 )
-            with gr.Tab("CLI 助手"):
-                ai_cli_type = gr.Dropdown([*CLI_TYPE_CHOICES, ("Qoder CLI", "qoder")], value="codex", label="CLI")
+            with gr.Tab("CLI 助手") as cli_tab:
                 ai_cli_history = gr.Chatbot(label="CLI 会话", height=300, elem_id="ai-cli-history")
-                ai_cli_status = gr.Markdown(
-                    "支持 Codex/Qoder CLI；需本机安装及认证。Trae/WorkBuddy尚未接入真实CLI。", elem_id="ai-cli-status"
+                ai_cli_status = gr.Markdown(elem_id="ai-cli-status")
+                cli = render_composer(
+                    "ai-cli",
+                    [],
+                    default_backend="codex",
+                    cli_only=True,
+                    load_event=cli_tab.select,
                 )
-                ai_cli_requirement = gr.Textbox(label="消息", lines=2, elem_id="ai-cli-requirement")
-                ai_cli_build = gr.Button("发送", variant="primary", elem_id="ai-cli-build")
 
-                for trigger in (ai_cli_requirement.submit, ai_cli_build.click):
+                for trigger in (cli.text.submit, cli.send.click):
                     trigger(
-                        _safe(turns.cli_send),
+                        _safe(turns.cli_send_with_options),
                         api_name="floating_cli_chat_stream",
-                        inputs=[ai_cli_requirement, ai_cli_history, ai_cli_type, use_page, turn_scope, *page_inputs],
-                        outputs=[ai_cli_history, ai_cli_requirement, ai_cli_status],
+                        inputs=[
+                            cli.text,
+                            ai_cli_history,
+                            cli.backend,
+                            cli.model,
+                            cli.reasoning,
+                            cli.permission,
+                            use_page,
+                            turn_scope,
+                            *page_inputs,
+                        ],
+                        outputs=[ai_cli_history, cli.text, ai_cli_status],
                     )
     if _supports_parameter(gr.HTML, "js_on_load"):
         gr.HTML("", js_on_load=runtime_loader_js(), elem_id="ai-runtime-init")

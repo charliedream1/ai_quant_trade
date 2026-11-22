@@ -121,3 +121,39 @@ def rerank(rows):
             "News embedding fallback | provider={} error_type={}", mode, type(exc).__name__
         )
         return rows, cfg["labels"]["fallback"]
+
+
+def extract_phrases(rows, *, lexical_label):
+    """Select source phrases nearest to the normalized headline centroid."""
+    cfg = config()
+    mode, provider = _provider()
+    if not rows:
+        return rows, lexical_label
+    if provider is None:
+        return rows, cfg["labels"]["fallback"]
+    phrases = [row["keyword"] for row in rows]
+    headlines = list(dict.fromkeys(row["headline"] for row in rows))
+    try:
+        vectors = np.asarray(provider(phrases + headlines), dtype=np.float64)
+        if vectors.ndim != 2 or len(vectors) != len(phrases) + len(headlines) or not np.isfinite(vectors).all():
+            raise ValueError("Invalid embedding matrix")
+        lengths = np.linalg.norm(vectors, axis=1)
+        if not np.isfinite(lengths).all() or np.any(lengths == 0):
+            raise ValueError("Invalid embedding norms")
+        vectors = vectors / lengths[:, None]
+        centroid = vectors[len(phrases) :].mean(axis=0)
+        scores = vectors[: len(phrases)] @ centroid
+        penalty = cfg["runtime"]["duplicate_penalty"]
+        available = set(range(len(rows)))
+        result: list[dict] = []
+        while available and len(result) < cfg["runtime"]["keyword_limit"]:
+            index = max(available, key=lambda i: (scores[i], -i))
+            available.remove(index)
+            result.append(rows[index])
+            scores -= penalty * np.maximum(vectors[: len(phrases)] @ vectors[index], 0)
+        return result, cfg["labels"][f"semantic_{mode}"]
+    except Exception as exc:
+        get_logger("market.news").warning(
+            "News phrase extraction fallback | provider={} error_type={}", mode, type(exc).__name__
+        )
+        return rows, cfg["labels"]["fallback"]

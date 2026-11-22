@@ -24,5 +24,9 @@ protection._({policy:"fields", symmetricKey:material.symmetric.value, asymmetric
 const codec = protection.v({purpose:"workbuddy-auth-session", resourceId:"auth/"+path.basename(authentication)});
 try {
   const result = codec.decode(JSON.parse(fs.readFileSync(authentication,"utf8")), protection.l);
-  process.stdout.write(JSON.stringify(result.value));
+  const account = result.value;
+  process.stdout.write(JSON.stringify({
+    auth: {accessToken: account.auth.accessToken},
+    account: {uid: account.account.uid},
+  }));
 } finally { codec.dispose(); protection.b(); }

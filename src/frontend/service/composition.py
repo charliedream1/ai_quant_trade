@@ -4,9 +4,9 @@ import json
 from html import escape
 from typing import Any
 
+import gradio as gr
 import yaml
 
-import gradio as gr
 from src.data.manager import current_market
 from src.engine.market.resource_pool import ResourcePoolService
 from src.strategy.composition.accounts import PipelineAccounts
@@ -218,7 +218,7 @@ class CompositionServiceMixin(CompositionGraphMixin):
     def pipeline_account_reset(self, account_id):
         return str(PipelineAccounts().reset_risk(int(account_id))["id"])
 
-    def pipeline_pool_run(self, template_id, pool_id, backend, snapshot_id=""):
+    def pipeline_pool_run(self, template_id, pool_id, backend, snapshot_id="", model_name=""):
         service = PipelineService()
         run = service.start(
             {
@@ -231,6 +231,7 @@ class CompositionServiceMixin(CompositionGraphMixin):
                 "market": current_market(),
                 "mode": "screen",
                 "backend": backend,
+                "model_name": model_name or "",
                 "snapshot_id": (snapshot_id or "").strip() or None,
             }
         )

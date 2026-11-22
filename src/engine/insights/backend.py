@@ -136,7 +136,7 @@ def generate_text(
     config: dict[str, Any],
     emit: Callable[..., None],
 ) -> str:
-    if payload.get("kind") == "page_analysis" and payload["backend"] == "codex":
+    if payload.get("kind") == "page_analysis" and payload["backend"] in {"codex", "workbuddy"}:
         from .page_generation import commentary, current_commentary
 
         if current_commentary(payload["page_task"], payload["backend"]):

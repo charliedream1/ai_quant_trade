@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import gradio as gr
 
+from src.agent.composer_config import cli_choices
 from src.engine.backtest.config import backtest_config
 
 from ..common.callbacks import safe as _safe
@@ -463,7 +464,9 @@ def render_strategy(service: DomainHandler, strategy_examples: list[tuple[str, s
 
                     with gr.Tab("CLI 工作台"):
                         with gr.Row():
-                            cli_type = gr.Dropdown(CLI_TYPE_CHOICES, value="trae", label="CLI")
+                            cli_type = gr.Dropdown(
+                                cli_choices({key for _, key in CLI_TYPE_CHOICES}), value="trae", label="模拟 CLI"
+                            )
                             cli_requirement = gr.Textbox(label="策略需求", lines=5, scale=4)
                         cli_build = gr.Button("生成策略", variant="primary")
                         cli_session = gr.Code(language="json", label="会话状态")

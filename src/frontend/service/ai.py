@@ -6,7 +6,8 @@ from itertools import chain
 from typing import cast
 
 import gradio as gr
-from src.agent.composer_config import normalize_backend
+
+from src.agent.composer_config import composer_config, normalize_backend
 from src.agent.workspace import AIWorkspaceService
 from src.core.config import get_settings
 from src.core.exceptions import BusinessError
@@ -29,7 +30,6 @@ from .foundation import (
     AI_TEAM_COLUMNS,
     AI_WORKSPACE_NAV_COLUMNS,
     AI_WORKSPACE_SESSION_COLUMNS,
-    CLI_PROVIDERS,
     PROJECT_ROOT,
     QUANT_WORKFLOW_ADVICE_COLUMNS,
     QUANT_WORKFLOW_ARTIFACT_COLUMNS,
@@ -409,7 +409,7 @@ class AIServiceMixin(ResearchTeamServiceMixin, InsightsServiceMixin):
         }
         base_history = self._ai_console_history(value)
         partial = ""
-        label = "GenericAgent" if backend == AI_CONSOLE_GENERIC_BACKEND else CLI_PROVIDERS.get(backend, backend)
+        label = composer_config()["backends"].get(backend, {}).get("label", backend)
         stream = AIWorkspaceService().send_stream(value, payload, local_attachments=attachments)
         try:
             first = next(stream)

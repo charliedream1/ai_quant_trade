@@ -666,6 +666,8 @@
     ],
     "home_account": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "home_market": ["src.frontend.service.home_service", "HomeServiceMixin"],
+    "home_market_snapshot": ["src.frontend.service.home_service", "HomeServiceMixin"],
+    "home_themes": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "home_news": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "home_operations": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "import_cli_artifact": [

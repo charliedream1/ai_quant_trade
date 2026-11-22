@@ -130,7 +130,9 @@ CLI 本地覆盖顺序为 --file → --params-file → --set → 显式业务字
 
 `aiquant ai session show 8` 读取持久消息；`aiquant ai session list` 查看会话。后台的模型参数为 `--model-name`，模型 API 配置 ID 为 `--model-id`，思考强度为 `--reasoning-effort`。Codex 的状态、消息和动作来源于本地真实进程；GenericAgent 当前仅提供已完成阶段和最终消息，不承诺逐 token。多 Agent 复核同样可以加 `--format jsonl`。
 
-mock 服务默认不启动真实 Codex；如需显式验收，在启动服务的环境中设置 `ALL_IN_ONE_ENABLE_REAL_CLI=true`。真实模型缺失、Trae/WorkBuddy 未接协议、Qlib 环境不完整均如实失败。断流先查会话/报告，不重发原消息。
+Demo mode requires `ALL_IN_ONE_ENABLE_REAL_CLI=true` for native CLI calls. The
+configured CLI and model determine availability. Consult the session or report
+record after a disconnected stream. [CLI models and billing](cli_model_catalog.md)
 
 ## 数据来源和操作边界
 
@@ -140,6 +142,8 @@ mock 服务默认不启动真实 Codex；如需显式验收，在启动服务的
 
 删除、重置和覆盖需要确认精确对象，非交互调用通过 `--yes --confirm-id 对象标识` 明确确认；普通查询不需要确认。实盘启动和恢复还需开启允许交易操作的上下文，并通过服务端验证；停止和暂停直接执行。
 
-`model chat` 是普通模型问答，`ai ask` 才使用 AI 工作台后台与会话。旧策略生成模拟器不能当作真实 Codex 后台，Trae/WorkBuddy 在没有真实协议时继续报告不可用。
+`model chat` uses the model API. `ai ask` uses the workbench backend and session
+history. WorkBuddy takes an explicit model ID from its configured catalog. The
+strategy simulator has its own session and artifact history.
 
 配置凭证来自项目 .env，密钥不放在普通请求文件、命令行参数或日志中。服务端返回的文件路径不代表客户端已下载文件，导出要通过明确 output 生成客户端产物。
