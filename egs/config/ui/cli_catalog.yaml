@@ -34,6 +34,17 @@ labels:
   credits: '{factor}× credits'
   subscription: Subscription / quota; account terms apply
   tokens: Token billed
+  other: Other models
+families:
+  GPT: '(?:^|[/_-])(?:gpt|codex|o[134])'
+  Claude: '(?:^|[/_-])claude'
+  Gemini: '(?:^|[/_-])gemini'
+  Hunyuan: '(?:^|[/_-])(?:hy[0-9]|hunyuan)'
+  DeepSeek: '(?:^|[/_-])deepseek'
+  Qwen: '(?:^|[/_-])(?:qwen|tongyi)'
+  GLM: '(?:^|[/_-])(?:glm|zhipu)'
+  Kimi: '(?:^|[/_-])(?:kimi|moonshot)'
+  MiniMax: '(?:^|[/_-])minimax'
 messages:
   loading: Loading selected backend models…
   ready: Available models loaded. Rates are provider metadata, not a final bill.

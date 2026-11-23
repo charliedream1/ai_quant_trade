@@ -4,11 +4,11 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
+import gradio as gr
 from fastapi import FastAPI
 from packaging.version import Version
 from starlette.staticfiles import StaticFiles
 
-import gradio as gr
 from src.frontend.service.graph_documents import graph_config
 
 ROOT = Path(__file__).resolve().parent
@@ -23,6 +23,7 @@ class StrategyGraph(gr.HTML):
             apply_default_css=False,
             patch=patch,
             assets_path=graph_config()["assets_path"],
+            load_failed=graph_config()["ui"]["load_failed"],
             assets_version=sha256((ROOT / "assets/graph.js").read_bytes()).hexdigest()[:16],
             **kwargs,
         )
@@ -32,7 +33,7 @@ class StrategyGraph(gr.HTML):
 
 
 def supported() -> bool:
-    return Version(gr.__version__) >= Version("6.16.0")
+    return Version(gr.__version__) >= Version("6.3.0")
 
 
 def mount_graph_assets(app: FastAPI) -> None:

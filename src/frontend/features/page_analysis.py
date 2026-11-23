@@ -21,10 +21,11 @@ from ..common.errors import ui_error_message
 from ..service.insights import _view
 
 
-def page_report_button():
-    label = escape(analysis_config()["ui"]["run"])
+def page_report_button(view=""):
+    label = escape(analysis_config()["ui"]["sidebar"])
     return gr.HTML(
-        f"<button type='button' class='page-report-action'>{label}</button>", elem_classes=["page-report-slot"]
+        f"<button type='button' class='page-report-action' data-report-view='{escape(view)}'>{label}</button>",
+        elem_classes=["page-report-slot"],
     )
 
 

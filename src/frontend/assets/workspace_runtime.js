@@ -99,31 +99,42 @@
     });
   };
   const colorizeTables = () => {
-    document.querySelectorAll(".data-table td").forEach((cell) => {
-      const text = (cell.innerText || "").trim();
-      const rowText = (cell.closest("tr")?.innerText || "").trim();
+    document.querySelectorAll(".data-table tr").forEach((row) => {
+      if (!row.getClientRects().length) return;
+      const rowText = (row.textContent || "").trim();
       const riskMetric = /回撤|波动|VaR|夏普|索提诺|Calmar|超额收益|亏损|手续费|风险/.test(rowText);
-      cell.classList.remove("value-positive", "value-negative", "value-warning", "value-strong", "value-safe");
-      if (!text) return;
-      const numeric = Number(text.replace(/[%￥,]/g, ""));
-      if (!Number.isNaN(numeric) && /%|\+|-/.test(text)) {
-        if (numeric > 0) cell.classList.add(riskMetric ? "value-warning" : "value-positive");
-        if (numeric < 0) cell.classList.add(riskMetric ? "value-positive" : "value-negative");
-        return;
-      }
-      if (/高风险|异常|失败|错误|降级|停用/.test(text)) {
-        cell.classList.add("value-warning");
-      } else if (/关注|待配置|可选配置|待启动/.test(text)) {
-        cell.classList.add("value-strong");
-      } else if (/正常|启用|已成交|可用|已完成/.test(text)) {
-        cell.classList.add("value-safe");
-      }
+      row.querySelectorAll("td").forEach((cell) => {
+        const text = (cell.textContent || "").trim();
+        cell.classList.remove("value-positive", "value-negative", "value-warning", "value-strong", "value-safe");
+        if (!text) return;
+        const numeric = Number(text.replace(/[%￥,]/g, ""));
+        if (!Number.isNaN(numeric) && /%|\+|-/.test(text)) {
+          if (numeric > 0) cell.classList.add(riskMetric ? "value-warning" : "value-positive");
+          if (numeric < 0) cell.classList.add(riskMetric ? "value-positive" : "value-negative");
+          return;
+        }
+        if (/高风险|异常|失败|错误|降级|停用/.test(text)) {
+          cell.classList.add("value-warning");
+        } else if (/关注|待配置|可选配置|待启动/.test(text)) {
+          cell.classList.add("value-strong");
+        } else if (/正常|启用|已成交|可用|已完成/.test(text)) {
+          cell.classList.add("value-safe");
+        }
+      });
     });
     normalizeLinks();
   };
-  const tableObserver = new MutationObserver(() => colorizeTables());
+  let tableFrame = 0;
+  const scheduleTableColors = () => {
+    if (tableFrame) return;
+    tableFrame = requestAnimationFrame(() => { tableFrame = 0; colorizeTables(); });
+  };
+  const tableObserver = new MutationObserver(scheduleTableColors);
   tableObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
-  setTimeout(colorizeTables, 600);
+  document.addEventListener("click", (event) => {
+    if (event.target.closest?.('[role="tab"]')) scheduleTableColors();
+  });
+  setTimeout(scheduleTableColors, 600);
   setTimeout(normalizeLinks, 800);
   const findVisibleControl = (selector, text, exact = false) => Array.from(document.querySelectorAll(selector))
     .find((button) => {

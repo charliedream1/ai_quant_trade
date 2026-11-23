@@ -24,6 +24,7 @@ from src.core.page_work import CURRENT_PAGE, PageCancelled, PageWork, check, on_
 from src.core.panel_updates import PANEL_LOADING, PANEL_UPDATE
 from src.core.process_control import stop_process_tree
 from src.core.work_progress import progress
+from src.core.workspace_log_labels import action_label, event_label, stage_label
 from src.data import current_market
 
 from .read_worker import serve
@@ -131,16 +132,17 @@ def _execute(key: str, job: ReadJob) -> None:
     try:
         deadline = monotonic() + policy()["read_deadline_seconds"]
         log = get_logger("ui.work")
-        log.info("Page work queued | operation={} method={}", key[:12], job.request[0])
+        label = action_label(job.request[0])
+        log.info("{} · {} | {}", label, event_label("queued"), key[:12])
         index, slot = _slot(job, deadline)
         process, connection = slot
-        log.info("Page work assigned | operation={} method={} worker={}", key[:12], job.request[0], process.pid)
+        log.debug("Page work assigned | operation={} method={} worker={}", key[:12], job.request[0], process.pid)
         connection.send(job.request)
         while not STOP.is_set() and not job.stop.is_set():
             if connection.poll(policy()["poll_seconds"]):
                 message = connection.recv()
                 if message[0] == "ready":
-                    log.info(
+                    log.debug(
                         "Page worker ready | operation={} worker={} wait_ms={:.0f}",
                         key[:12],
                         message[1],
@@ -149,17 +151,17 @@ def _execute(key: str, job: ReadJob) -> None:
                     continue
                 if message[0] == "progress":
                     with LOCK:
+                        changed = job.stage != message[1]
                         job.stage = message[1]
-                    log.info(
-                        "Page work progress | operation={} method={} stage={}", key[:12], job.request[0], message[1]
-                    )
+                    if changed:
+                        log.info("{} · {} | {}", label, stage_label(message[1]), key[:12])
                     continue
                 if message[0] == "panel":
                     with LOCK:
                         if len(job.panels) >= policy()["max_panel_updates"]:
                             raise ValueError("Too many section updates")
                         job.panels.append((message[1], message[2]))
-                    log.info(
+                    log.debug(
                         "Page section ready | operation={} method={} section={}", key[:12], job.request[0], message[1]
                     )
                     continue
@@ -196,10 +198,11 @@ def _execute(key: str, job: ReadJob) -> None:
             _terminate(slot)
             release_worker_slots(job.request[3].db_path, pid)
         get_logger("ui.work").info(
-            "Page work ended | operation={} method={} status={}",
+            "{} · {} | {:.1f} 秒 · {}",
+            action_label(job.request[0]),
+            event_label("cancelled" if job.stop.is_set() or STOP.is_set() else outcome),
+            monotonic() - started,
             key[:12],
-            job.request[0],
-            "cancelled" if job.stop.is_set() or STOP.is_set() else outcome,
         )
         if index is not None:
             with CAPACITY:

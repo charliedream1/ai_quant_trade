@@ -21,3 +21,35 @@ logging:
   progress_interval_seconds: 2
   automatic_methods: [poll_rules, poll, home_operations, settings, report_library_catalog]
   automatic_path_parts: [/heartbeat/, /workspace/lifetime, /notifications]
+  actions:
+    home_account: 读取总览账户与持仓
+    home_market_snapshot: 更新总览行情
+    home_operations: 读取总览任务状态
+    home_news: 读取总览新闻
+    home_news_bundle: 读取总览新闻并计算关键词
+    home_themes: 提取总览关键词
+    market_overview: 刷新行业与概念行情
+    news: 查询新闻和关键词
+    refresh_news: 同步新闻和关键词
+    economic_load: 读取宏观或财务数据
+    stock: 读取个股行情和研究资料
+    enqueue_rules: 提交规则关系图谱
+    poll_rules: 读取图谱进度
+    pipeline_run: 运行组合策略
+    pipeline_graph_save: 保存策略版本
+  stages:
+    Reading account records: 读取本地账户记录
+    Valuing holdings: 获取持仓价格并计算估值
+    Fetching market data: 获取指数、板块和自选行情
+    Reading headlines: 读取新闻列表
+    Extracting keywords: 计算关键词强度
+    Loading company research: 加载公司研究数据
+  console:
+    generic_action: 处理页面操作
+    generic_stage: 正在处理数据
+    started: 开始
+    completed: 完成
+    cancelled: 已取消
+    failed: 失败
+    queued: 等待后台处理
+    running: 正在执行

@@ -23,6 +23,7 @@ progressive_methods:
   home_account: 9
   home_market_snapshot: 5
   home_news: 1
+  home_news_bundle: 2
   home_themes: 1
   market_overview: 3
   factor_monitor_summary: 7
@@ -67,7 +68,7 @@ worker_error_chars: 500
 shutdown_seconds: 3
 messages:
   cancelled: Previous loading was cancelled when you left this page. Refresh or retry to load data.
-share_methods: [home_market, home_market_snapshot, home_news, home_themes, market_overview, news, economic_load]
+share_methods: [home_market, home_market_snapshot, home_news, home_news_bundle, home_themes, market_overview, news, economic_load]
 source_methods: [graph_local, graph_read, graph_search, graph_resolve]
 read_methods:
   - models_with_stats
@@ -78,12 +79,18 @@ read_methods:
   - home_market_snapshot
   - home_themes
   - home_news
+  - home_news_bundle
   - dashboard_account
   - dashboard_market
   - dashboard_strategy
   - dashboard_trade_history
   - market_overview
   - stock
+  - stock_profile
+  - stock_disclosures
+  - stock_relationships
+  - stock_risk
+  - stock_events
   - news
   - refresh_news
   - news_detail

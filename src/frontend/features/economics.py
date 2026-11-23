@@ -16,6 +16,8 @@ from .page_analysis import page_report_button
 def render_economics(service, kind, shared_symbol=None):
     cfg = economics_config()
     ui = cfg["ui"]
+    if shared_symbol is None:
+        page_report_button()
     gr.Markdown(ui["intro"])
     kind_state = gr.State(kind)
     with gr.Row():
@@ -42,7 +44,6 @@ def render_economics(service, kind, shared_symbol=None):
     with gr.Row():
         refresh = gr.Checkbox(label=ui["refresh"], value=False)
         load = gr.Button(ui["load"], variant="primary", elem_id=kind + "-load")
-        page_report_button()
     status = gr.Markdown(elem_id=kind + "-status")
     financial_outputs: list[Any] = []
     if kind != "macro":

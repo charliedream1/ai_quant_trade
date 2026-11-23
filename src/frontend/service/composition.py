@@ -76,12 +76,15 @@ class CompositionServiceMixin(CompositionGraphMixin):
     def pipeline_templates(self):
         choices = [("预置 / " + row["definition"]["name"], row["id"]) for row in templates()]
         rows = PipelineService().store.repo.db.query(
-            "SELECT v.id,v.version,v.pipeline_id,p.name FROM strategy_pipeline_versions v JOIN strategy_pipelines p ON p.id=v.pipeline_id WHERE p.status!='disabled' ORDER BY v.id DESC LIMIT ?",
+            "SELECT v.id,v.version,v.pipeline_id,v.created_at,v.strategy_id,p.name "
+            "FROM strategy_pipeline_versions v JOIN strategy_pipelines p ON p.id=v.pipeline_id "
+            "WHERE p.status!='disabled' ORDER BY v.id DESC LIMIT ?",
             (config()["defaults"]["history_limit_runs"],),
         )
         return choices + [
             (
-                f"已发布 / {row['name']} · 方案#{row['pipeline_id']} v{row['version']} · 版本#{row['id']}",
+                f"{'已发布' if row['strategy_id'] else '已保存'} / {row['name']} · "
+                f"方案#{row['pipeline_id']} v{row['version']} · {row['created_at']}",
                 f"version:{row['id']}",
             )
             for row in rows

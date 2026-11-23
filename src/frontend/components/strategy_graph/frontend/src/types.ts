@@ -107,6 +107,8 @@ export type GraphData = {
   status: string;
   selected: boolean;
   context?: boolean;
+  expand?: (side: string) => void;
+  expandLabel?: string;
 };
 export type VisualNode = Node<GraphData>;
 export type Send = (

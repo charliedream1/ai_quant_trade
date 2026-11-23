@@ -17,7 +17,11 @@ def render_factor_monitor(service: DomainHandler, strategy: bool = False) -> Non
         controls, start = _controls(service, settings)
         outputs = _outputs()
         job_id, rendered = gr.State(""), gr.State("")
-        events = gr.Markdown("选择股票池后运行；切页不会自动拉取全市场行情。", label="实际过程")
+        events = gr.Markdown(
+            "选择股票池后运行；切页不会自动拉取全市场行情。",
+            label="实际过程",
+            elem_classes=["factor-event-log"],
+        )
         timer = gr.Timer(settings["ui_poll_seconds"], active=False)
         _bind(service, controls, start, outputs, events, timer, job_id, rendered, settings)
 

@@ -38,8 +38,11 @@ depend on the provider. API profiles currently expose unknown prices here.
 | TRAE / CodeBuddy | Explicit configured catalogue; unverified native discovery is reported as unsupported | Only explicitly supplied metadata is displayed |
 | WorkBuddy | Configured desktop product catalog | Explicit credit rate, with zero-rate models labeled free |
 
-Model selection and sending keep the underlying model ID unchanged. Supported
-reasoning choices intersect the provider and model metadata. Refresh preserves a
+Model selection and sending keep the underlying model ID unchanged. Model
+families appear together in the chooser. Within each family, free models
+come first. Credit multipliers and comparable token rates appear in ascending
+order within their billing units and currencies. Unknown prices appear last.
+Supported reasoning choices intersect the provider and model metadata. Refresh preserves a
 model only while it remains in that provider's list. WorkBuddy requires a model
 choice and a configured desktop profile. It supports text chat, current-data
 page reports and relationship research through its isolated, text-only CLI.

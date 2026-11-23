@@ -44,6 +44,11 @@ class MarketHandler(DomainHandler):
             "resource_template",
             "security_master_search",
             "stock",
+            "stock_profile",
+            "stock_disclosures",
+            "stock_relationships",
+            "stock_risk",
+            "stock_events",
             "watchlist_groups",
         }
     )

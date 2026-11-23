@@ -26,6 +26,7 @@ from src.core.paths import SOURCE_ROOT
 from src.core.stream_control import STREAM_STOP
 from src.core.work_progress import PROGRESS
 from src.core.workspace_config import workspace_config
+from src.core.workspace_log_labels import action_label, event_label
 from src.data.manager import REQUEST_MARKET
 
 from ..service_dispatch import callback_registry, lookup_method
@@ -77,6 +78,7 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
     headers = getattr(request, "headers", None) or {}
     query = {key: [value] for key, value in (getattr(request, "query_params", None) or {}).items()}
     page = request_page(headers, query) or CURRENT_PAGE.get()
+    action = action_label(operation)
     page_token = CURRENT_PAGE.set(page)
     stop_token = STREAM_STOP.set(page.stopped) if page else None
     market = str((getattr(request, "headers", None) or {}).get("x-aiquant-market", "")).upper()
@@ -89,11 +91,11 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
     )
     try:
         check()
-        action_log.log(level, "Action started | operation={} action={}", operation_id[:12], operation)
+        action_log.log(level, "{} · {} | {}", action, event_label("started"), operation_id[:12])
         yield
         check()
     except PageCancelled:
-        action_log.log(level, "Action cancelled | operation={} action={}", operation_id[:12], operation)
+        action_log.log(level, "{} · {} | {}", action, event_label("cancelled"), operation_id[:12])
         raise
     except Exception as exc:
         message = ui_error_message(exc)
@@ -109,15 +111,17 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
             exc.__class__.__name__,
             message,
         )
+        action_log.warning("{} · {} | {}", action, event_label("failed"), operation_id[:12])
         raise gr.Error(message, print_exception=False) from None
     else:
         duration_ms = (perf_counter() - started) * 1000
         action_log.log(
             level,
-            "Action completed | operation={} action={} duration_ms={:.0f}",
-            operation_id[:12],
-            operation,
+            "{} · {} | {:.0f} 毫秒 · {}",
+            action,
+            event_label("completed"),
             duration_ms,
+            operation_id[:12],
         )
         policy = diagnostics_config()["callbacks"]
         finish_level = policy["slow_success_level"] if duration_ms >= SLOW_CALLBACK_MS else policy["success_level"]

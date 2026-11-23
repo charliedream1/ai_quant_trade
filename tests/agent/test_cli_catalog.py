@@ -49,6 +49,10 @@ def test_workbuddy_catalog_preserves_model_identity_and_credit_rate():
         "workbuddy",
         "declared source",
     )
+    assert [choice for _, choice in composer_catalog.model_options({"rows": rows[::-1]}, "workbuddy", "")] == [
+        "hy4flash-free",
+        "hy4flash",
+    ]
     assert [(row["id"], row["billing"]) for row in rows] == [
         ("hy4flash-free", cli_catalog.catalog_config()["labels"]["free"]),
         ("hy4flash", "0.03× credits"),
@@ -77,7 +81,8 @@ def test_delayed_result_cannot_override_new_provider(monkeypatch):
 
     monkeypatch.setattr(composer_catalog, "discover", discover)
     selection = composer_catalog.CatalogSelection([])
-    state, result = {}, []
+    state: dict = {}
+    result: list = []
     selection.begin("qoder", state)
     thread = Thread(target=lambda: result.append(selection.load(state)))
     thread.start()
@@ -103,7 +108,7 @@ def test_model_efforts_are_intersected_and_unconfigured_workbuddy_is_unavailable
     monkeypatch.setattr(composer_catalog, "discover", lambda *args: catalog)
     for name in ("INSTALLATION", "AUTHENTICATION", "PRODUCT"):
         monkeypatch.setenv("ALL_IN_ONE_WORKBUDDY_" + name, "")
-    state = {}
+    state: dict = {}
     selection = composer_catalog.CatalogSelection([])
     selection.begin("workbuddy", state)
     assert selection.load(state)[-1]["interactive"] is False

@@ -9,7 +9,7 @@ from datetime import datetime
 from functools import partial
 from pathlib import Path
 from threading import RLock, Thread
-from time import monotonic, sleep
+from time import monotonic, sleep, time
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
@@ -18,6 +18,7 @@ from src.core.diagnostics_config import diagnostics_config
 from src.core.logger import get_logger
 from src.core.page_work import finish_run, own_run
 from src.core.process_control import stop_process_tree
+from src.core.repository import Repository
 from src.core.task_control import TaskEvent, lease_alive
 from src.core.timeutil import utc_now_iso
 from src.data import current_market, normalize_market
@@ -63,11 +64,18 @@ class RuleGraphJobs:
         }
         fingerprint = hashlib.sha256(json.dumps(request, sort_keys=True).encode()).hexdigest()
         with LOCK:
-            for existing in self.store.history():
+            active = Repository().db.query(
+                "SELECT task_key FROM task_leases WHERE kind=? AND status='running' AND expires>?",
+                ("rule_graph", time()),
+            )
+            for lease_row in active:
+                try:
+                    existing = self.store.get(lease_row["task_key"])
+                except ValueError:
+                    continue
                 if existing.get("fingerprint") == fingerprint and existing["status"] in {"queued", "running"}:
-                    if lease_alive("rule_graph", existing["run_id"]):
-                        own_run("rule_graph", existing["run_id"], partial(self.store.cancel, existing["run_id"]))
-                        return existing
+                    own_run("rule_graph", existing["run_id"], partial(self.store.cancel, existing["run_id"]))
+                    return existing
             key = uuid4().hex
             lease = TaskEvent("rule_graph", key, limit=diagnostics_config()["rules"]["active_runs"])
             row = {

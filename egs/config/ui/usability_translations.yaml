@@ -190,6 +190,31 @@ WorkBuddy 已返回报告内容: WorkBuddy returned report content
 运行详情: Run details
 默认模型可用性取决于 CLI 的安装和登录状态。: The default model depends on the CLI installation and sign-in.
 生成 HTML 报告: Generate HTML report
+AI 分析: Analyze with AI
+运行 AI 分析: Run AI analysis
+当前页面 AI 分析: AI analysis for this page
+选择 CLI 和模型，让大模型分析当前页面的数据。完成后可预览和下载 HTML 报告。: Select a CLI and model to analyze this page. Preview or download the HTML report when it is ready.
+刷新规则数据: Refresh rule data
+候选对比: Candidate comparison
+新闻与公告: News and disclosures
+事件与风险: Events and risk
+上市公司概况: Company overview
+最近保存的关系: Recently saved relationships
+读取上市公司概况: Load company overview
+读取公司资讯: Load company news
+计算风险指标: Calculate risk metrics
+读取历史财报公告日期: Load historical statement announcement dates
+历史财报公告日期: Historical statement announcement dates
+为当前标的构建规则图谱: Build a rule graph for this security
+查看该标的已保存的关系: Show saved relationships for this security
+回测已保存版本: Backtest saved version
+编辑: Edit
+取消编辑: Cancel editing
+保存版本: Save version
+已保存策略版本: Strategy version saved
+扩展节点: Add a connected node
+基本面: Fundamentals
+风险指标: Risk metrics
 正在核对 CLI 和当前页面数据…: Checking the CLI and current page data…
 正在生成报告…: Generating report…
 HTML 报告已生成: HTML report ready
@@ -254,4 +279,11 @@ CPI 与 PPI: CPI and PPI
 较上期: Change from previous period
 模型 API 域名无法解析。请核对模型服务地址和网络，或从当前页面使用 CLI 报告。: The model API hostname could not be resolved. Check its address and network connection, or use the CLI report on this page.
 市场情绪代理雷达由指数动量、板块广度和一致性构成，不是买卖信号。: Market sentiment uses proxies for momentum, breadth and consistency.
+更多操作: More actions
+运行策略: Run strategy
+历史运行: Run history
+运行结果: Run results
+策略定义与发布: Definition and publishing
+高级编辑: Advanced editing
+画布加载失败。请刷新工坊，或在高级编辑中继续。: The canvas failed to load. Refresh the workshop or use advanced editing.
 日内指数动量采用指数平均涨跌幅。板块广度采用完整板块快照中上涨板块的比例，平盘计入分母。板块一致性根据涨跌幅极差计算。覆盖不足时显示未提供。各轴分别解读。: Intraday momentum uses the average index change. Breadth is the rising share of the complete sector snapshot, including flat sectors in the denominator. Consistency uses the range of sector moves. Unavailable indicates insufficient coverage. Read each axis separately.

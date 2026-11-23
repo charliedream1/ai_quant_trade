@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextvars import copy_context
+from dataclasses import replace
 from html import escape
 from typing import Any
 
@@ -16,7 +17,7 @@ from src.engine.market.news_topics import time_range
 
 from . import home_charts, home_views
 from .home_config import label, limit
-from .home_data import HomeAccount, account_snapshot
+from .home_data import HomeAccount, account_snapshot, number
 from .home_news_view import _dashboard_news_html
 from .home_tables import home_styled_frame
 from .shared_observations import shared_observation
@@ -35,6 +36,16 @@ def account_status(snapshot: HomeAccount) -> str:
 
 def home_account(mode: str, force_refresh: bool = False) -> tuple:
     def publish_local(snapshot):
+        latest = snapshot.history[-1] if snapshot.history else {}
+        recorded_asset = number(latest.get("total_asset"))
+        provisional = replace(
+            snapshot,
+            total_asset=recorded_asset,
+            valued_at=str(latest.get("nav_date") or snapshot.valued_at),
+            basis="本地账户快照，正在更新行情估值",
+        )
+        panel_ready(0, account_status(provisional))
+        panel_ready(1, home_views.account_kpis(provisional))
         panel_ready(5, home_charts.account_trend(snapshot))
 
     snapshot = account_snapshot(mode, force_refresh, publish_local)
@@ -76,9 +87,9 @@ def _news_items(force_refresh):
     return shared_observation("home_news_scope_v2", load, force_refresh)
 
 
-def home_themes(force_refresh=False, keyword_mode="lexical"):
+def home_themes(force_refresh=False, keyword_mode="lexical", *, reuse_news=False):
     def load():
-        items = _news_items(force_refresh).get("items", [])
+        items = _news_items(force_refresh and not reuse_news).get("items", [])
         progress("Extracting keywords")
         return home_views.theme_summary(items, keyword_mode)
 
@@ -186,3 +197,10 @@ def home_news(mode: str, force_refresh: bool = False) -> str:
 
     payload, _, _ = _daily_cached(("home_news", mode), load, force_refresh=force_refresh)
     return payload
+
+
+def home_news_bundle(mode: str, keyword_mode: str, force_refresh: bool = False) -> tuple[str, str]:
+    headlines = home_news(mode, force_refresh)
+    panel_ready(0, headlines)
+    # Headline refresh already acquired the shared corpus. Reuse it for keywords.
+    return headlines, home_themes(force_refresh, keyword_mode, reuse_news=True)

@@ -38,12 +38,29 @@ def safe_result(value, policy):
     fields = ("backend", "rows", "status", "source", "updated", "available", "stale", "last_attempt")
     result = {key: value[key] for key in fields if key in value}
     result["rows"] = [
-        {key: row[key] for key in ("id", "name", "billing", "source", "efforts") if key in row} for row in value["rows"]
+        {key: row[key] for key in ("id", "name", "billing", "source", "efforts") if key in row}
+        | {"rate": safe_rate(row.get("rate"))}
+        for row in value["rows"]
     ]
     encoded = json.dumps(redact(result), ensure_ascii=False)
     # Paths can occur inside labels, not just as an entire field value.
     encoded = re.sub(r"[A-Za-z]:[\\/][^\s\"<>]+|/(?:home|Users)/[^\s\"<>]+", policy["local_path_label"], encoded)
     return json.loads(encoded)
+
+
+def safe_rate(rate):
+    if not isinstance(rate, dict):
+        return {}
+    from .cli_catalog import billing_rate
+
+    return billing_rate(
+        {
+            "is_free": rate.get("kind") == "free",
+            "price_factor": rate.get("factor") if rate.get("kind") == "credits" else None,
+            "billing_type": rate.get("kind"),
+            "pricing": rate,
+        }
+    )
 
 
 def read(path, backend, policy):

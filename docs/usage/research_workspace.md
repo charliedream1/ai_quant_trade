@@ -15,8 +15,15 @@ and original-file preview; large answers and references scroll separately.
 
 ## Company and sector research
 
-**Stock Analysis** shares one code between **Technical analysis** and **Financial
-analysis**. Enter the company once, then explicitly load the desired data.
+**Stock Analysis** shares one security between **Fundamentals**, **Technical
+analysis**, **Financial analysis**, **News and disclosures**, **Relationships**,
+and **Events and risk**. Enter the company once, then load the relevant section.
+The company overview includes the sector and valuation fields reported by the
+quote provider. The risk view reports daily volatility, maximum drawdown over
+the available history, and the latest reported turnover. The relationships
+view lists matching saved graphs and opens the relationship workspace.
+The events view uses the announcement dates supplied with available mainland
+financial statements and shows the source for each date.
 Switching sections cancels unfinished transient reads. Existing fundamentals
 URLs open the financial section. Macroeconomic research remains independent.
 Financial coverage restrictions, such as unavailable HK statements, still apply.
@@ -25,6 +32,20 @@ short interpretation for each reading. A-shares can display 20- and 60-bar
 performance relative to the Shanghai Composite when both endpoint dates match.
 The price chart and related news or research publish independently when their
 respective sources finish.
+
+Use **Analyze with AI** at the top of an eligible page, select a CLI and model,
+and choose **Run AI analysis**. The panel shows progress and opens the saved
+HTML for preview and download. The quote, financial and news controls load
+their data independently.
+
+The news list and keyword strength chart use the selected filters and the same
+seven-day window. The status shows the window and the size of the bounded
+keyword sample. The chart uses TF-IDF with title, source and recency weighting.
+The factor progress pane scrolls within a fixed height.
+
+Stock recommendations open on the candidate list. **Candidate comparison**
+compares factors and configurations. **Backtesting** uses the current
+recommendation results and displays performance, attribution and trades.
 
 **Industry and Concept Sectors** shows sector rankings with indices for context.
 The homepage **Sector performance overview** shows the count, source and time of

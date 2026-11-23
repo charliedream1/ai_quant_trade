@@ -60,7 +60,7 @@ def render_home(
                 label="风险雷达", show_label=False, elem_id="home-risk-radar", elem_classes=["home-chart"]
             )
         market_brief = gr.HTML(elem_id="home-market-summary")
-        releases = gr.HTML(release_calendar(), elem_id="home-release-calendar")
+        releases = gr.HTML(elem_id="home-release-calendar")
         with gr.Row(elem_classes=["home-secondary-row"]):
             sentiment = _plot(
                 label="市场情绪雷达", show_label=False, elem_id="home-sentiment", elem_classes=["home-chart"]
@@ -100,7 +100,7 @@ def render_home(
                 actions = table("待处理事项明细", elem_classes=["home-semantic-table"])
                 strategy = table("策略与任务状态", elem_classes=["home-semantic-table"])
 
-    def bind(event: Callable[..., Any], force: bool) -> None:
+    def bind(event: Callable[..., Any], force: bool, *, account_only: bool = False) -> None:
         def keep(state, revision):
             return state["revision"] == revision
 
@@ -119,28 +119,25 @@ def render_home(
             result = service.home_market_snapshot(mode, force_refresh=force)
             return result if keep(state, revision) else tuple(gr.skip() for _ in range(5))
 
-        def themes_load(mode, state):
+        def news_load(mode, keywords, state):
             revision = state["revision"]
-            result = service.home_themes(force_refresh=force, keyword_mode=mode)
-            return result if keep(state, revision) else gr.skip()
+            result = service.home_news_bundle(mode, keywords, force_refresh=force)
+            return result if keep(state, revision) else (gr.skip(), gr.skip())
 
-        def news_load(mode, state):
-            revision = state["revision"]
-            result = service.home_news(mode, force_refresh=force)
-            return result if keep(state, revision) else gr.skip()
-
-        event(
+        account_read = event(
             safe(account),
             inputs=[account_mode, selection],
             outputs=[status, kpis, risk, risk_alerts, risk_radar, trend, allocation, contribution, holdings],
             queue=False,
-        ).then(
-            safe(operations_load),
-            inputs=[account_mode, selection],
-            outputs=[alerts, actions_summary, operations],
-            queue=False,
         )
-        # Local task state is useful before account valuation; the chained update adds final valuation status.
+        if account_only:
+            account_read.then(
+                safe(operations_load),
+                inputs=[account_mode, selection],
+                outputs=[alerts, actions_summary, operations],
+                queue=False,
+            )
+            return
         event(
             safe(operations_load),
             inputs=[account_mode, selection],
@@ -153,8 +150,9 @@ def render_home(
             outputs=[market_brief, sentiment, sectors, indices, watchlist],
             queue=False,
         )
-        event(safe(news_load), inputs=[account_mode, selection], outputs=news, queue=False)
-        event(safe(themes_load), inputs=[keyword_mode, selection], outputs=themes, queue=False)
+        event(
+            safe(news_load), inputs=[account_mode, keyword_mode, selection], outputs=[news, themes], queue=False
+        )
 
     def market_changed(value: str, state):
         market = normalize_market(value)
@@ -182,7 +180,7 @@ def render_home(
     account_event = account_mode.input(
         account_changed, inputs=[account_mode, selection], outputs=selection, queue=False
     )
-    bind(account_event.then, False)
+    bind(account_event.then, False, account_only=True)
     bind(load_event, False)
     load_event(release_calendar, outputs=releases, queue=False)
     refresh.click(release_calendar, outputs=releases, queue=False)

@@ -11,6 +11,8 @@ import gradio as gr
 from src.core.page_work import policy
 from src.core.panel_updates import OBSERVATION_READY, panel_ready, panel_values
 from src.core.work_progress import progress
+from src.engine.market.news_topics import policy as news_topic_policy
+from src.engine.market.news_topics import ranked_keywords, time_range
 
 from .contracts import CrossDomainCallbacks
 from .dashboard_views import (
@@ -81,6 +83,7 @@ from .home_tables import home_styled_frame
 from .relation_layout import evidence_html, plot_metadata
 from .shared_observations import shared_observation
 from .stock_indicators import indicator_rows
+from .stock_research import StockResearchMixin
 from .visuals import (
     _format_display_time,
     _safe_float,
@@ -102,7 +105,7 @@ from .visuals import (
 )
 
 
-class MarketServiceMixin:
+class MarketServiceMixin(StockResearchMixin):
     """Callbacks owned by the market frontend domain."""
 
     def relation_evidence_options(self, figure: Any) -> dict[str, Any]:
@@ -455,7 +458,7 @@ class MarketServiceMixin:
         region="all",
         topic="all",
     ) -> tuple[pd.DataFrame, go.Figure, str]:
-        cache_parts = ("news", category or "", keyword or "", source or "", bool(refresh), region, topic)
+        cache_parts = ("news_window_v1", category or "", keyword or "", source or "", region, topic)
         if not refresh:
             payload, cache_hit, refreshed_at = _daily_cached(
                 cache_parts,
@@ -478,29 +481,32 @@ class MarketServiceMixin:
         category_value = None if category in (None, "", "全部") else category
         source_value = str(source or "").strip() or None
         aggregator = NewsAggregator()
+        start, end = time_range(news_topic_policy()["news_center_scope"])
+        page_size = news_topic_policy()["limits"]["news_center_page_size"]
         result = aggregator.list_news(
             category_value,
             str(keyword or "").strip() or None,
             source_value,
             1,
-            30,
+            news_topic_policy()["limits"]["sample"],
             refresh=refresh,
             region=region,
             topic=topic,
+            start_time=start,
+            end_time=end,
         )
         frame = to_frame(
-            result, [*NEWS_COLUMNS, "region", "topics", "relevance_reasons", "affected_markets", "time_status"]
+            result["items"][:page_size],
+            [*NEWS_COLUMNS, "region", "topics", "relevance_reasons", "affected_markets", "time_status"],
         )
+        status = result.get("availability") or f"共找到 {result['total']} 条新闻 · {start[:10]} — {end[:10]}"
         panel_ready(0, frame)
-        panel_ready(2, f"共找到 {result.get('total', 0)} 条新闻")
-        cloud = aggregator.keyword_cloud(
-            "day", category_value, 30, region=region, topic=topic, keyword=keyword or None, source=source or None
-        )
-        return (
-            frame,
-            keyword_figure(cloud),
-            f"共找到 {result.get('total', 0)} 条新闻",
-        )
+        panel_ready(2, status)
+        progress("Extracting keywords")
+        cloud = ranked_keywords(result["items"], page_size, tfidf=True)
+        if result["items"]:
+            status += f" · 关键词样本 {len(result['items'])} 条 · TF-IDF"
+        return frame, keyword_figure(cloud), status
 
     def refresh_news(
         self, category: str, keyword: str, source: str, region="all", topic="all"

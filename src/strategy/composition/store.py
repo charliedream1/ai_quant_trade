@@ -107,8 +107,8 @@ class PipelineStore:
             row = self.repo.insert("strategy_pipelines", {**values, "created_at": now})
         return {**row, "definition": definition}
 
-    def publish(self, pipeline_id: int) -> dict[str, Any]:
-        with LOCK:
+    def publish(self, pipeline_id: int, *, register: bool = True) -> dict[str, Any]:
+        with LOCK, self.repo.db.transaction():
             row = self.repo.get("strategy_pipelines", pipeline_id)
             definition = json_loads(row["definition"], {})
             compiled = compile_plan(definition)
@@ -133,6 +133,8 @@ class PipelineStore:
                     "created_at": utc_now_iso(),
                 },
             )
+            if not register:
+                return self.version(value["id"])
             source = (PROJECT_ROOT / config()["defaults"]["entrypoint"]).read_text(encoding="utf-8")
             strategy = StrategyStore(repo=self.repo).create(
                 {

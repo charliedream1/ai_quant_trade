@@ -70,6 +70,32 @@ def test_invalid_news_time_stays_unknown():
     assert classify({"title": "央行利率", "published_at": ""})["time_status"] == "unknown"
 
 
+def test_news_center_includes_previous_day_in_table_and_keyword_chart(client, monkeypatch, news_rows):
+    from types import SimpleNamespace
+
+    from src.engine.market.news_aggregator import NewsAggregator
+    from src.frontend.service import market
+
+    timestamp = (datetime.fromisoformat(utc_now_iso()) - timedelta(days=1)).isoformat()
+    sample = next(row for row in news_rows if row["region"] == "overseas" and row["topic"] == "finance")
+    rows = [
+        {
+            **sample,
+            "summary": "",
+            "source": "Declared fixture",
+            "url": "https://example.org/news",
+            "published_at": timestamp,
+            "fetched_at": timestamp,
+            "keywords": [],
+            "sentiment": "neutral",
+        }
+    ]
+    source = SimpleNamespace(market="CN", is_mock=False, list_news=lambda: rows)
+    monkeypatch.setattr(market, "NewsAggregator", lambda: NewsAggregator(data=source))
+    table, chart, status = market.MarketServiceMixin().news("全部", "", "", region="overseas", topic="finance")
+    assert len(table) == 1 and chart.data and "TF-IDF" in status
+
+
 def test_inbox_uses_local_day_occurrence_and_retains_history(client):
     from src.notifications.dates import window
     from src.notifications.store import NotificationStore
@@ -152,6 +178,6 @@ def test_operation_logs_exclude_action_payload(client):
         assert safe(lambda value: True)("private-body-" + uuid4().hex)
     finally:
         logger.remove(sink)
-    assert any("Action started" in message for message in messages)
-    assert any("Action completed" in message for message in messages)
+    assert any("处理页面操作 · 开始" in message for message in messages)
+    assert any("处理页面操作 · 完成" in message for message in messages)
     assert all("private-body" not in message for message in messages)

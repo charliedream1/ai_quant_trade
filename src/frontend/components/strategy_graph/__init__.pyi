@@ -25,6 +25,7 @@ class StrategyGraph(gr.HTML):
             apply_default_css=False,
             patch=patch,
             assets_path=graph_config()["assets_path"],
+            load_failed=graph_config()["ui"]["load_failed"],
             assets_version=sha256((ROOT / "assets/graph.js").read_bytes()).hexdigest()[:16],
             **kwargs,
         )

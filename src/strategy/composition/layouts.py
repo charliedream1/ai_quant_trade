@@ -24,7 +24,7 @@ class GraphLayouts:
 
     @staticmethod
     def key(value: str) -> str:
-        if not re.fullmatch(r"(?:draft:[0-9a-f]{32}|pipeline:[1-9][0-9]*)", value):
+        if not re.fullmatch(r"(?:draft:[0-9a-f]{32}|(?:pipeline|version):[1-9][0-9]*)", value):
             raise ValueError("Invalid layout identity")
         return value
 

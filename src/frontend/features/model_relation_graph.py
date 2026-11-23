@@ -2,12 +2,15 @@
 
 from datetime import date
 from html import escape
+from time import monotonic, sleep
 from uuid import uuid4
 
 import gradio as gr
 
 from src.agent.cli_catalog import catalog_config
 from src.agent.composer_config import cli_choices
+from src.core.diagnostics_config import diagnostics_config
+from src.core.page_work import check as check_page
 from src.data import current_market
 from src.engine.market.model_graph.config import config
 from src.engine.market.model_graph.generation import availability
@@ -75,7 +78,7 @@ def evidence_markup(graph):
 def render_model_graph_panel():
     service = GraphResearchService()
     # Keep original citations and English workflow labels out of substring translation.
-    with gr.Group(visible=False, elem_id="model-relation-panel", elem_classes=["no-i18n"]) as panel:
+    with gr.Group(elem_id="model-relation-panel", elem_classes=["no-i18n"]) as panel:
         with gr.Column(elem_classes=["no-i18n"]):
             gr.Markdown(config()["ui"]["help"])
             with gr.Row():
@@ -168,7 +171,23 @@ def render_model_graph_panel():
 
             polling.tick(safe(poll), inputs=identifier, outputs=[status, events, polling], queue=False)
             check.click(safe(availability), outputs=providers)
-            cancel.click(safe(lambda key: service.store.cancel(key)["status"]), inputs=identifier, outputs=status)
+
+            def cancel_run(key):
+                if not key:
+                    return
+                policy = diagnostics_config()["rules"]
+                service.store.cancel(key)
+                deadline = monotonic() + policy["shutdown_seconds"]
+                yield "Cancellation requested"
+                while monotonic() < deadline:
+                    check_page()
+                    row = service.detail(key)
+                    if row["status"] not in {"queued", "running"}:
+                        yield describe_status(row)
+                        return
+                    sleep(policy["poll_seconds"])
+
+            cancel.click(safe(cancel_run), inputs=identifier, outputs=status, show_progress="hidden")
             refresh.click(
                 safe(lambda key: (describe_status(service.detail(key)), service.store.events(key))),
                 inputs=identifier,

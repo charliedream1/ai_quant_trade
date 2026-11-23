@@ -25,3 +25,5 @@ rules:
   poll_seconds: 0.25
   active_runs: 2
   shutdown_seconds: 5
+  preview_nodes: 65
+  preview_edges: 120

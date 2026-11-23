@@ -1,11 +1,26 @@
 const host = element.querySelector('aiquant-strategy-graph');
 let controller;
 const pending = [];
-watch('patch', () => {
-  if (!props.patch) return;
-  if (controller) controller.update(props.patch);
-  else pending.push(props.patch);
-});
+const deliver = (patch) => {
+  if (!patch) return;
+  if (controller) controller.update(patch);
+  else pending.push(patch);
+};
+if (typeof watch === 'function') {
+  watch('patch', () => deliver(props.patch));
+} else {
+  // Gradio 6.3 forwards custom props through its component proxy.
+  let patch = props.patch;
+  Object.defineProperty(props, 'patch', {
+    enumerable: true,
+    get: () => patch,
+    set: (next) => {
+      patch = next;
+      queueMicrotask(() => deliver(next));
+    },
+  });
+}
+deliver(props.patch);
 const base = props.assets_path;
 if (!document.querySelector(`link[data-strategy-graph="${base}"]`)) {
   const css = document.createElement('link');
@@ -23,4 +38,4 @@ import(`${base}/graph.js?v=${props.assets_version}`).then(module => {
   });
   for (const patch of pending.splice(0)) controller.update(patch);
   trigger('load');
-}).catch(error => { host.textContent = String(error); host.setAttribute('role', 'alert'); });
+}).catch(() => { host.textContent = props.load_failed; host.setAttribute('role', 'alert'); });

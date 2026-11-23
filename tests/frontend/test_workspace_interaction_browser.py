@@ -101,7 +101,8 @@ def compatible_model():
     worker.start()
 
     class Endpoint(str):
-        pass
+        answer_started: Event
+        release_answer: Event
 
     endpoint = Endpoint(f"http://127.0.0.1:{server.server_port}/v1")
     endpoint.answer_started = answer_started
@@ -183,11 +184,13 @@ def test_assistant_resize_and_daily_inbox(cli_command, tmp_path):
             handle.scroll_into_view_if_needed()
             before = panel.bounding_box()
             point = handle.bounding_box()
+            assert before is not None and point is not None
             page.mouse.move(point["x"] + 12, point["y"] + 12)
             page.mouse.down()
             page.mouse.move(point["x"] + 110, point["y"] + 65, steps=8)
             page.mouse.up()
             after = panel.bounding_box()
+            assert after is not None
             assert after["width"] > before["width"] + 50
             panel.get_by_role("tab", name="来源与完整引用", exact=True).click()
             expect(panel.locator("#floating-kb-sources")).to_be_visible()
@@ -203,7 +206,8 @@ def test_assistant_resize_and_daily_inbox(cli_command, tmp_path):
             page.set_viewport_size({"width": 420, "height": 900})
             center.get_by_role("button", name="关闭", exact=True).click()
             frame.locator('#ai-floating-button[data-drag-ready="1"]').click()
-            assert panel.bounding_box()["width"] <= 420
+            mobile = panel.bounding_box()
+            assert mobile is not None and mobile["width"] <= 420
             page.screenshot(path=str(tmp_path / "assistant-mobile.png"))
         finally:
             browser.close()
@@ -237,5 +241,48 @@ def test_financial_subview_cancels_without_blocking_graph(cli_command, monkeypat
                 json.dumps({"cleanup_and_navigation_seconds": monotonic() - began}), encoding="utf-8"
             )
             page.screenshot(path=str(tmp_path / "responsive-graph.png"))
+        finally:
+            browser.close()
+
+
+def test_stock_recommendation_and_factor_workspace_controls(cli_command):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 940})
+            page.add_init_script("localStorage.setItem('all-in-one-ui-lang','zh')")
+            page.goto(cli_command.base_url + "/app/?module=market&view=stock", wait_until="domcontentloaded")
+            frame = page.frame_locator("iframe.workspace-frame.active")
+            stock = frame.locator("#stock-research-tabs")
+            expect(stock).to_be_visible(timeout=90000)
+            stock.get_by_role("button", name="读取上市公司概况", exact=True).click()
+            expect(stock.get_by_text("600519", exact=True).last).to_be_visible(timeout=30000)
+            stock.get_by_role("tab", name="事件与风险", exact=True).click()
+            stock.get_by_role("button", name="计算风险指标", exact=True).click()
+            expect(stock.get_by_text("区间最大回撤（%）", exact=True)).to_be_visible(timeout=30000)
+            expect(page.locator("#workspace-page-report")).to_have_text("AI 分析")
+
+            page.locator('[data-workspace-view="recommendations"]').click()
+            recommendations = frame.locator("#recommendation-workspace")
+            recommendations.get_by_role("tab", name="候选对比", exact=True).click()
+            expect(recommendations.get_by_role("button", name="多组参数对比", exact=True)).to_be_visible()
+            recommendations.get_by_role("tab", name="回测", exact=True).click()
+            expect(recommendations.get_by_role("button", name="用前 5 只候选创建回测", exact=True)).to_be_visible()
+
+            page.locator('[data-workspace-module="strategy"]').click()
+            page.locator('[data-workspace-view="factors"]').click()
+            log = frame.locator(".block.factor-event-log")
+            expect(log).to_be_visible(timeout=30000)
+            assert log.evaluate(
+                """element => {
+                    for (let index = 0; index < 50; index += 1) {
+                        const line = document.createElement("p");
+                        line.textContent = "Progress " + index;
+                        element.append(line);
+                    }
+                    return element.scrollHeight > element.clientHeight &&
+                           getComputedStyle(element).overflowY === "auto";
+                }"""
+            )
         finally:
             browser.close()

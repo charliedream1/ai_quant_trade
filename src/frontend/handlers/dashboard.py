@@ -11,6 +11,7 @@ class DashboardHandler(DomainHandler):
             "home_market_snapshot",
             "home_operations",
             "home_news",
+            "home_news_bundle",
             "home_themes",
             "dashboard_account",
             "dashboard_market",

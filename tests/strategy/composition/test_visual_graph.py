@@ -102,7 +102,8 @@ def test_layout_api_does_not_change_published_definition(client):
     )
 
 
-def test_actual_run_events_are_readable_by_visual_node_without_rerunning(client):
+def test_actual_run_events_are_readable_by_visual_node_without_rerunning(client, monkeypatch):
+    _use_isolated_run_root(monkeypatch)
     service = PipelineService()
     job = service.start(
         {
@@ -178,7 +179,8 @@ def test_failed_component_is_identified_in_actual_stage_events(monkeypatch):
     assert failure["node"] == "eligibility" and failure["as_of"] == "2026-10-22"
 
 
-def test_cli_layout_and_node_evidence_use_the_registered_http_contract(cli_command):
+def test_cli_layout_and_node_evidence_use_the_registered_http_contract(cli_command, monkeypatch):
+    _use_isolated_run_root(monkeypatch)
     service = PipelineService()
     draft = service.store.save_draft(template("rule_trend"))
     first = cli_command("pipeline", "layout", "show", draft["id"])["data"]
@@ -200,6 +202,41 @@ def test_cli_layout_and_node_evidence_use_the_registered_http_contract(cli_comma
     assert list(service.follow(job["id"]))[-1]["run"]["status"] == "finished"
     nodes = cli_command("pipeline", "nodes", job["id"], "--after", 0)["data"]
     assert "main/trend" in nodes["nodes"] and nodes["cursor"] > 0
+
+
+def _use_isolated_run_root(monkeypatch):
+    from src.core.config import get_settings
+    from src.engine.composition import data
+    from src.strategy.composition import model_artifacts
+
+    monkeypatch.setattr(data, "PROJECT_ROOT", get_settings().data_dir.parent)
+    monkeypatch.setattr(model_artifacts, "PROJECT_ROOT", get_settings().data_dir.parent)
+
+
+def test_save_two_graph_versions_and_backtest_the_original(client, monkeypatch):
+    _use_isolated_run_root(monkeypatch)
+    service = CompositionServiceMixin()
+    text = yaml.safe_dump(template("rule_trend"))
+    first_value = document_payload(text)
+    first_value["layout"] = {"main": {"positions": {"trend": {"x": 80, "y": 160}}}}
+    saved_text, _, pipeline_id, first_id, response = service.pipeline_graph_save(first_value, text, None, None)
+    first = response["patch"]["payload"]
+    assert service.pipeline_graph_save(first, saved_text, pipeline_id, first_id)[3] == first_id
+    revised = deepcopy(first)
+    revised["document"]["risk"]["max_exposure"] = 0.5
+    revised["layout"]["main"]["positions"]["trend"]["x"] = 160
+    _, _, same_pipeline, second_id, _ = service.pipeline_graph_save(revised, saved_text, pipeline_id, first_id)
+    assert same_pipeline == pipeline_id and second_id != first_id
+    loaded = service.pipeline_graph_load(f"version:{first_id}", revised)[-1]["patch"]["payload"]
+    assert loaded["layout"]["main"]["positions"]["trend"]["x"] == 80
+    engine = PipelineService()
+    assert len(engine.store.versions(pipeline_id)) == 2
+    job = engine.start(
+        {"version_id": first_id, "mode": "backtest", "start_date": "2026-04-01", "end_date": "2026-10-22"}
+    )
+    run = list(engine.follow(job["id"]))[-1]["run"]
+    assert run["status"] == "finished", run.get("result")
+    assert run["version_id"] == first_id
 
 
 def test_explicit_load_separates_template_layouts_and_resets_only_editable_drafts(client):

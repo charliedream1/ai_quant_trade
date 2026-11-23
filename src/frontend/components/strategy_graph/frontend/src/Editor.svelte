@@ -47,10 +47,14 @@
     selectedEdge = $state("");
   let undo = $state<Definition[]>([]),
     redo = $state<Definition[]>([]),
-    menu = $state(true),
+    menu = $state(false),
     fullscreen = $state(false);
+  let editing = $state(false), saving = $state(false);
+  let baseline: Payload | undefined;
+  let anchor = $state<{ id: string; side: string } | undefined>();
   let root: HTMLDivElement;
   let canvas: HTMLDivElement;
+  let actions: HTMLDetailsElement;
   let fitter: ReturnType<typeof viewportFitter> | undefined;
   const navigationTimes: number[] = [];
   function recordNavigation(start: number) {
@@ -86,7 +90,13 @@
   }
   function refresh(fit = false) {
     const next = graph(payload, path);
-    nodes = next.nodes.map((n) => ({ ...n, selected: n.id === selected }));
+    nodes = next.nodes.map((n) => ({
+      ...n, selected: n.id === selected, data: {
+        ...n.data, expandLabel: ui.add_next,
+        expand: editing && (n.id === "universe" || plan.nodes?.some((stage) => stage.id === n.id))
+          ? (side: string) => { anchor = { id: n.id, side }; menu = true; } : undefined,
+      },
+    }));
     if (selected && !nodes.some((n) => n.id === selected)) selected = "";
     edges = next.edges;
     highlight();
@@ -104,6 +114,7 @@
     message = ui.modified;
   }
   function edit(action: () => void) {
+    if (!editing || saving) return;
     remember();
     try {
       action();
@@ -218,6 +229,7 @@
     edit(() => connect(plan, payload, connection));
   }
   function undoRedo(back: boolean) {
+    if (!editing || saving) return;
     capture();
     const stack = back ? undo : redo;
     if (!stack.length) return;
@@ -237,8 +249,61 @@
     send("draft", copy(payload));
   }
   function submit(kind: "apply" | "layout") {
+    if (!editing || saving) return;
     capture();
+    saving = true;
     send(kind, copy(payload));
+  }
+  function enterEdit() {
+    baseline = copy(payload);
+    editing = true;
+    refresh();
+  }
+  function leaveEdit(restore: boolean) {
+    if (restore && baseline) {
+      payload = baseline;
+      send("draft", copy(payload));
+    }
+    editing = false;
+    saving = false;
+    dirty = false;
+    anchor = undefined;
+    menu = false;
+    undo = [];
+    redo = [];
+    baseline = undefined;
+    refresh();
+  }
+  function compatible(component: string) {
+    if (!anchor) return !plan.sleeves?.length;
+    const copyPlan = copy(plan);
+    try {
+      const node = addStage(copyPlan, payload, component);
+      node.inputs = [];
+      return canConnect(copyPlan, payload, { source: anchor.id, target: node.id });
+    } catch {
+      return false;
+    }
+  }
+  function add(component: string) {
+    if (!compatible(component)) return;
+    edit(() => {
+      const node = addStage(plan, payload, component);
+      const origin = nodes.find((item) => item.id === anchor?.id);
+      if (anchor && origin) {
+        node.inputs = [anchor.id];
+        const { x, y } = origin.position;
+        const offsets: Record<string, [number, number]> = {
+          top: [0, -150], right: [260, 0], bottom: [0, 150], left: [-260, 0],
+        };
+        const [dx, dy] = offsets[anchor.side];
+        const layout = payload.layout[scopeKey(path)];
+        layout.positions = { ...layout.positions, [node.id]: { x: x + dx, y: y + dy } };
+      }
+      selected = node.id;
+      anchor = undefined;
+      menu = false;
+    });
   }
   export function update(next: GraphPatch) {
     const merged = mergeGraphUpdate(payload, next, dirty);
@@ -246,6 +311,7 @@
     payload = merged.value;
     dirty = merged.dirty;
     if (merged.reset) {
+      leaveEdit(false);
       path = [];
       selected = "";
       selectedEdge = "";
@@ -253,7 +319,11 @@
       undo = [];
       redo = [];
       message = ui.no_execute;
-    } else if (next.kind === "applied") message = ui.applied;
+    } else if (next.kind === "applied") {
+      message = ui.version_saved;
+      if (!merged.dirty) leaveEdit(false);
+    }
+    else if (next.kind === "issues") saving = false;
     else if (next.kind === "layout") message = ui.saved;
     refresh(merged.reset);
     send("draft", copy(payload));
@@ -334,8 +404,8 @@
   }
   function onKeys(e: KeyboardEvent) {
     if (
-      ["INPUT", "TEXTAREA", "SELECT"].includes(
-        (e.target as HTMLElement).tagName,
+      (e.target as HTMLElement).closest(
+        "input, textarea, select, button, summary, [contenteditable]",
       )
     )
       return;
@@ -410,7 +480,11 @@
   bind:this={root}
 >
   <div class="graph-toolbar">
-    <button onclick={() => (menu = !menu)} aria-label={ui.add}>☷</button>
+    {#if editing}<button
+      onclick={() => { anchor = undefined; menu = !menu; }}
+      aria-expanded={menu}
+      aria-controls="strategy-graph-palette">{ui.add}</button
+    >{/if}
     <input
       class="graph-search"
       aria-label={ui.search}
@@ -422,31 +496,61 @@
     />
     <button onclick={() => flow.fitView({ padding: 0.15, duration: 0 })}
       >{ui.fit}</button
-    ><button onclick={arrange}>{ui.arrange}</button>
-    <button disabled={!undo.length} onclick={() => undoRedo(true)}
-      >{ui.undo}</button
-    ><button disabled={!redo.length} onclick={() => undoRedo(false)}
-      >{ui.redo}</button
     >
-    <button onclick={() => submit("layout")}>{ui.save_layout}</button><button
-      class="graph-primary"
-      onclick={() => submit("apply")}>{ui.apply}</button
-    >
-    <button
-      onclick={() =>
-        (fullscreen
-          ? document.exitFullscreen()
-          : root.requestFullscreen()
-        ).catch((e) => (message = String(e)))}
-      >{fullscreen ? ui.leave_fullscreen : ui.fullscreen}</button
-    ><button onclick={exportFile}>{ui.export}</button><label
-      class="graph-import"
-      >{ui.import}<input
-        type="file"
-        accept="application/json,.json"
-        onchange={importFile}
-      /></label
-    >
+    {#if editing}<button class="graph-primary" disabled={saving} onclick={() => submit("apply")}
+      >{ui.apply}</button
+    ><button disabled={saving} onclick={() => leaveEdit(true)}>{ui.cancel_edit}</button>
+    {:else}<button class="graph-primary" onclick={enterEdit}>{ui.edit}</button>{/if}
+    <details class="graph-more" bind:this={actions}>
+      <summary>{ui.more_actions}</summary>
+      <div class="graph-action-list">
+        <button
+          disabled={!editing} onclick={() => {
+            arrange();
+            actions.open = false;
+          }}>{ui.arrange}</button
+        >
+        <button
+          disabled={!undo.length}
+          onclick={() => {
+            undoRedo(true);
+            actions.open = false;
+          }}>{ui.undo}</button
+        >
+        <button
+          disabled={!redo.length}
+          onclick={() => {
+            undoRedo(false);
+            actions.open = false;
+          }}>{ui.redo}</button
+        >
+        <button
+          onclick={() => {
+            actions.open = false;
+            (fullscreen
+              ? document.exitFullscreen()
+              : root.requestFullscreen()
+            ).catch((e) => (message = String(e)));
+          }}>{fullscreen ? ui.leave_fullscreen : ui.fullscreen}</button
+        >
+        <button
+          onclick={() => {
+            exportFile();
+            actions.open = false;
+          }}>{ui.export}</button
+        >
+        {#if editing}<label class="graph-import"
+          >{ui.import}<input
+            type="file"
+            accept="application/json,.json"
+            onchange={(event) => {
+              void importFile(event);
+              actions.open = false;
+            }}
+          /></label
+        >{/if}
+      </div>
+    </details>
   </div>
   <div class="graph-breadcrumb">
     <button onclick={() => navigate([])}>{payload.document.name}</button
@@ -456,27 +560,28 @@
   </div>
   <div
     class="graph-body"
-    class:hide-menu={!menu}
+    class:show-palette={menu}
+    class:show-properties={Boolean(selected)}
     style:--canvas-height={`min(${payload.config.limits.canvas_height}px, max(${payload.config.limits.canvas_min_height}px, calc(100dvh - ${payload.config.limits.canvas_viewport_offset}px)))`}
   >
-    {#if menu}<aside class="graph-palette">
-        <h4>{ui.add}</h4>
+    {#if menu}<aside
+        class="graph-palette"
+        id="strategy-graph-palette"
+        aria-label={ui.add}
+      >
         {#each Object.entries(payload.config.groups).filter( ([key]) => ["filter", "factor", "scorer", "ensemble", "agent"].includes(key) ) as [kind, group]}
           <details open>
             <summary>{group.label}</summary
             >{#each Object.entries(payload.schema.components).filter(([, spec]) => spec.kind === kind) as [key, spec]}<button
-                draggable="true"
+                draggable={!anchor}
                 ondragstart={(event) =>
                   event.dataTransfer?.setData(
                     "application/aiquant-component",
                     key,
                   )}
                 title={payload.config.help[kind]}
-                disabled={Boolean(plan.sleeves?.length)}
-                onclick={() =>
-                  edit(() => {
-                    selected = addStage(plan, payload, key).id;
-                  })}><i style:background={group.color}></i>{spec.label}</button
+                disabled={!compatible(key)}
+                onclick={() => add(key)}><i style:background={group.color}></i>{spec.label}</button
               >{/each}
           </details>
         {/each}
@@ -493,6 +598,8 @@
         bind:nodes
         bind:edges
         {nodeTypes}
+        nodesDraggable={editing && !saving}
+        nodesConnectable={editing && !saving}
         fitView
         minZoom={Number(payload.config.limits.min_zoom)}
         maxZoom={Number(payload.config.limits.max_zoom)}
@@ -506,7 +613,7 @@
         onedgeclick={({ edge }) => {
           selectedEdge = edge.data?.protected ? "" : edge.id;
         }}
-        onnodedragstop={() => capture()}
+        onnodedragstop={() => { capture(); dirty = true; }}
       >
         <Background /><Controls /><MiniMap
           pannable
@@ -514,7 +621,7 @@
           nodeColor={(node) => String(node.data.color || "#64748b")}
         />
       </SvelteFlow>
-      {#if selectedEdge}<button
+      {#if editing && selectedEdge}<button
           class="remove-edge"
           onclick={() => {
             const edge = edges.find((e) => e.id === selectedEdge);
@@ -529,22 +636,22 @@
           {payload.evidence.error}
         </div>{/if}
     </div>
-    <Properties
-      {payload}
-      {path}
-      {selected}
-      onselect={select}
-      onupdate={updateNode}
-      onremove={remove}
-      onduplicate={duplicate}
-      onoutput={() => edit(() => (plan.output = selected))}
-      onenter={enter}
-      onbudget={(value) =>
-        edit(() => {
-          const sleeve = plan.sleeves?.find((s) => "s:" + s.id === selected);
-          if (sleeve) sleeve.budget = value;
-        })}
-    />
+    {#if selected}<fieldset class="graph-properties-gate" disabled={!editing || saving}><Properties
+        {payload}
+        {path}
+        {selected}
+        onselect={select}
+        onupdate={updateNode}
+        onremove={remove}
+        onduplicate={duplicate}
+        onoutput={() => edit(() => (plan.output = selected))}
+        onenter={enter}
+        onbudget={(value) =>
+          edit(() => {
+            const sleeve = plan.sleeves?.find((s) => "s:" + s.id === selected);
+            if (sleeve) sleeve.budget = value;
+          })}
+      /></fieldset>{/if}
   </div>
   <div class="graph-footer">
     <span class:graph-warning={Boolean(stale)}

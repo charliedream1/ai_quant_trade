@@ -3,8 +3,8 @@ limits: {snapshots: 256, rows: 80, text_chars: 12000, evidence_chars: 48000, mac
 cli:
   default: codex
 ui:
-  sidebar: 页面分析
-  drawer_description: 选择 CLI 和模型，生成当前页面的 HTML 报告。
+  sidebar: AI 分析
+  drawer_description: 选择 CLI 和模型，让大模型分析当前页面的数据。完成后可预览和下载 HTML 报告。
   model_default: CLI 默认模型
   model_refresh: 刷新模型
   model_loading: 正在加载模型…
@@ -30,10 +30,10 @@ ui:
   cancelled: 报告已取消
   chinese_report: 请用简体中文撰写标题、摘要、正文和风险说明。章节标题必须逐字使用所列标题。
   english_report: Write the title, summary, findings and risks in English. Use the listed section headings verbatim.
-  title: 页面报告
+  title: 当前页面 AI 分析
   intro: Rule data remains available above. Load the relevant data first, then run an evidence-bound analysis. Opening this panel never starts a model.
   task: Analysis task
-  run: 生成 HTML 报告
+  run: 运行 AI 分析
   cancel: Cancel analysis
   stopping: Stopping analysis; waiting for owned CLI processes and resources to exit.
   history: Saved page reports
@@ -85,7 +85,7 @@ resources:
 sections: [Summary, Evidence and interpretation, Risks and invalidation, Data gaps and next steps]
 sections_zh: [摘要, 证据与解读, 风险与失效条件, 数据缺口与后续核查]
 presets:
-  overview: {module: dashboard, views: [overview, custom], show_panel: false, label: Market and account review, method: market, reads: [home_account, home_market, home_news, home_operations, dashboard_account, dashboard_market], bindings: {account_mode: {id: home-account-mode}}}
+  overview: {module: dashboard, views: [overview, custom], show_panel: false, label: Market and account review, method: market, reads: [home_account, home_market, home_market_snapshot, home_news, home_news_bundle, home_operations, dashboard_account, dashboard_market], bindings: {account_mode: {id: home-account-mode}}}
   sectors: {module: market, views: [quotes], label: Sector rotation review, method: market, reads: [market_overview], on_demand: {method: market_overview, defaults: {board: industry, limit: 20, selection: balanced}}, bindings: {board: {label: 板块类型}, selection: {label: Sector ranking}, limit: {label: 展示数量}}}
   news: {module: market, views: [news], label: Market and policy news analysis, method: news, reads: [news, refresh_news], on_demand: {method: news, defaults: {category: 全部, keyword: '', source: '', region: all, topic: all}}, bindings: {region: {id: news-region}, topic: {id: news-topic}, keyword: {id: news-keyword}, source: {id: news-source}, category: {id: news-category}}}
   technical: {module: market, views: [stock], label: Stock technical analysis, method: stock, reads: [stock], on_demand: {method: stock, defaults: {symbol: '600519', period: daily, count: 60}}, bindings: {symbol: {id: fundamentals-symbol}, period: {label: K 线周期}, count: {label: K 线数量}}}

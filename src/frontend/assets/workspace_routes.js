@@ -78,13 +78,13 @@
       const tab = Array.from(document.querySelectorAll(".module-tabs > .tab-wrapper button"))
         .find((button) => !button.closest(".visually-hidden") && (window.aiquantUiSource?.(button) || button.textContent.trim()) === views[data.view]);
       if (!tab) return false;
-      tab.click();
+      if (tab.getAttribute("aria-selected") !== "true") tab.click();
       if (config.tabs.includes(data.tab)) {
         waitFor(() => {
           const nested = Array.from(document.querySelectorAll('[role="tab"]'))
             .find((item) => item.offsetParent !== null && (window.aiquantUiSource?.(item) || item.textContent.trim()) === data.tab);
           if (!nested) return false;
-          nested.click();
+          if (nested.getAttribute("aria-selected") !== "true") nested.click();
           return true;
         }, ticket);
       }
@@ -184,11 +184,24 @@
     }
   });
   document.addEventListener("click", (event) => {
-    const button = event.target.closest?.("#stock-research-tabs [role='tab']");
-    if (button && !/Technical analysis|Financial analysis|技术分析|财务分析/.test(window.aiquantUiSource?.(button) || button.textContent)) return;
+    const button = event.target.closest?.("#stock-research-tabs > .tab-wrapper [role='tab']");
     if (!event.isTrusted || !button || button.getAttribute("aria-selected") === "true") return;
-    const subview = button.id.includes("financial") || /Financial|财务|基本面/.test(window.aiquantUiSource?.(button) || button.textContent) ? "financials" : "technical";
+    const label = (window.aiquantUiSource?.(button) || button.textContent).trim();
+    const subview = {
+      "基本面": "fundamentals", "Fundamentals": "fundamentals",
+      "Technical analysis": "technical", "技术分析": "technical",
+      "Financial analysis": "financials", "财务分析": "financials",
+      "新闻与公告": "disclosures", "News and disclosures": "disclosures",
+      "关系图谱": "relationships", "Relation Graph": "relationships",
+      "事件与风险": "events-risk", "Events and risk": "events-risk",
+    }[label];
+    if (!subview) return;
     if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(subview);
+    else { window.aiquantPageWork?.deactivate(); window.aiquantPageWork?.activate(); }
+  }, true);
+  document.addEventListener("change", (event) => {
+    if (!event.isTrusted || currentView !== "stock" || !event.target.closest?.("#fundamentals-symbol")) return;
+    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.("security");
     else { window.aiquantPageWork?.deactivate(); window.aiquantPageWork?.activate(); }
   }, true);
   // Keep the shell's independent-window target aligned with genuine in-page tab clicks.

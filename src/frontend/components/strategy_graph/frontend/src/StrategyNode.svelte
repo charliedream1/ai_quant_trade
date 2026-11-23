@@ -25,6 +25,13 @@
   <div class="node-component">{data.component}</div>
   <small>{data.summary}</small>
   {#if data.status}<span class="node-status">{data.status}</span>{/if}
+  {#if data.expand}
+    {#each ["top", "right", "bottom", "left"] as side}
+      <button type="button" class="node-expand nodrag nopan {side}"
+        aria-label={data.expandLabel} title={data.expandLabel}
+        onclick={(event) => { event.stopPropagation(); data.expand?.(side); }}>+</button>
+    {/each}
+  {/if}
   {#if data.component !== "execution"}<Handle
       type="source"
       position={Position.Right}

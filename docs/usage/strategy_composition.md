@@ -1,10 +1,25 @@
 # 策略工坊：级联、组合与风控
 
+2026-11-23. The workshop opens in view mode. Choose **Edit** to change node
+properties, move nodes, or drag from an output handle to a compatible input.
+Choose a plus button on a node to place a compatible downstream component on
+that side. The inspector displays the selected node's properties on the right.
+Choose **Save version** to record the definition and layout as a new revision,
+or **Cancel editing** to discard the working copy.
+
+Use the strategy selector to load a previously saved revision. Choose
+**Backtest saved version**, enter your execution parameters, and run.
+Below the canvas, open **Run strategy** to set other execution modes.
+**Run results** opens for a new run or when you reopen an item from
+**Run history**. Use **Definition and publishing** for the YAML draft,
+validation and frozen versions. **Advanced editing** contains the
+structured editor and component catalog.
+
 2026-10-26：图形策略工坊为“策略构建”的默认二级入口，策略管理提供快捷链接；ETF和统一因子研究也已列入同级导航。界面整合、结果与实际截图见[统一入口指南](navigation_and_environment.md)。
 
 2026-10-25更新：纯量化回测的费用可在全宽“交易成本与执行假设”区覆盖，单独冻结本次执行配置，保留原策略版本。结构、模型和风控变化仍需重新发布；前向模拟沿用冻结执行条件。操作与配图见[交易成本指南](backtest_execution.md)。
 
-2026-10-23。入口为左侧 **策略构建 → 策略工坊**。工坊按需加载；进入其他模块再切回时保留当前表单。它使用独立的组合批次引擎，已有单策略导入和回测继续可用。图形编辑器需要 Gradio 6.16，旧环境保留步骤表和 YAML 编辑。
+2026-10-23。入口为左侧 **策略构建 → 策略工坊**。工坊按需加载；进入其他模块再切回时保留当前表单。它使用独立的组合批次引擎，已有单策略导入和回测继续可用。The interactive canvas is verified with Gradio 6.3 and 6.16.
 
 ![策略工坊与实际运行结果](assets/screenshots/18-strategy-workshop.jpg)
 
@@ -25,8 +40,8 @@
 这些是研究起点，不是收益推荐。默认模板、组件参数及固定提示词位于 `egs/examples/strategy_pipelines/` 与 `egs/config/strategies/strategy_components.yaml`。模型需要额外的 `requirements-models.txt` 依赖；缺失时明确失败，不生成替代评分。
 
 1. 选择预置或已发布版本，点击“载入方案”。股票池留空使用方案默认；填写代码时覆盖单层方案母池，多子策略仍保留各自范围。
-2. 在画布点击阶段，在右侧编辑参数并点击“更新节点”，再点“应用到策略草稿”。也可展开“步骤、组合与风控编辑”使用原有表单。应用计算修改后，发布版本ID会清空；未应用的图形变更会阻止运行旧 YAML。
-3. 展开“方案定义”，选择参数方案或本次覆盖，点击“校验与预览”。预览展示完整生效值，不请求行情、不训练、不调用 Agent。
+2. Choose **Edit**, select a node and update its properties in the inspector. Choose **Save version** to persist the changes. The advanced editor exposes the existing form and YAML controls.
+3. 展开“策略定义与发布”，选择参数方案或本次覆盖，点击“校验与预览”。预览展示完整生效值，不请求行情、不训练、不调用 Agent。
 4. 点击“保存发布版本”。发布会生成不可变版本，并登记为标准组合策略；后续修改应再次发布。
 
 ![步骤、组合与风险编辑](assets/screenshots/19-composition-editor.jpg)

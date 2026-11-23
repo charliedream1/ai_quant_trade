@@ -9,7 +9,6 @@ from src.agent.providers.config import backend_names
 from src.core.diagnostics_config import diagnostics_config
 from src.engine.market.model_graph.config import config as model_graph_config
 from src.engine.market.news_policy import news_policy
-from src.engine.market.rule_graph_jobs import RuleGraphJobs
 from src.frontend.service.rule_graph_view import rule_graph_view
 
 from ..common.callbacks import safe as _safe
@@ -30,18 +29,22 @@ from .page_analysis import page_report_button
 
 
 def render_market(service: DomainHandler, default_relation_types: list[str]) -> None:
-    rule_jobs = RuleGraphJobs()
+    def rule_jobs():
+        from src.engine.market.rule_graph_jobs import RuleGraphJobs
+
+        return RuleGraphJobs()
 
     def enqueue_rules(symbol, depth, types):
-        row = rule_jobs.start(symbol, depth, types)
+        row = rule_jobs().start(symbol, depth, types)
         return row["run_id"], f"{row['run_id']} · {row['status']}", gr.update(active=True)
 
     def poll_rules(key):
         if not key:
             return *(gr.skip() for _ in range(6)), gr.update(active=False)
-        row = rule_jobs.detail(key)
+        jobs = rule_jobs()
+        row = jobs.detail(key)
         if row["status"] in {"completed", "partial"}:
-            return *rule_graph_view(rule_jobs.store.result(key)), gr.update(active=False)
+            return *rule_graph_view(jobs.store.result(key)), gr.update(active=False)
         if row["status"] in {"cancelled", "failed", "interrupted"}:
             return (f"{key} · {row['status']} · {row.get('reason', '')}", [], [], [], [], None, gr.update(active=False))
         return (
@@ -62,6 +65,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
     with gr.Tab("市场研究"):
         with gr.Tabs(elem_classes=["module-tabs"]):
             with gr.Tab("行业与概念板块"):
+                page_report_button()
                 with gr.Row():
                     market_board = gr.Dropdown(["industry", "concept"], value="industry", label="板块类型")
                     market_limit = gr.Slider(5, 100, value=20, step=5, label="展示数量")
@@ -75,7 +79,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         label="Sector ranking",
                     )
                     market_refresh = gr.Button(
-                        "刷新行情",
+                        "刷新规则数据",
                         elem_id="market-quotes-refresh",
                         variant="primary",
                         scale=0,
@@ -83,7 +87,6 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         elem_classes=["page-refresh-btn"],
                     )
                 market_indices = _table("指数行情", 280, elem_id="market-indices", elem_classes=["home-semantic-table"])
-                page_report_button()
                 with gr.Row():
                     market_sectors = _table(
                         "板块行情", 380, elem_id="market-sectors", elem_classes=["home-semantic-table"]
@@ -139,6 +142,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 gr.HTML(workspace_link("打开因子研究与监控", "strategy", "factors"))
 
             with gr.Tab("新闻中心"):
+                page_report_button()
                 gr.Markdown(
                     "Market and policy relevant news · geography and topic are independent; inclusion is not a price forecast."
                 )
@@ -161,7 +165,6 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     news_search = gr.Button("查询", variant="primary", elem_classes=["page-refresh-btn"])
                     news_refresh = gr.Button("同步最新")
                 news_status = gr.Markdown(elem_classes=["compact-note"])
-                page_report_button()
                 news_table = _table("新闻列表", 430, elem_classes=["no-i18n"])
                 with gr.Row():
                     news_detail_id = gr.Number(label="新闻 ID", precision=0)
@@ -191,9 +194,14 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
             with gr.Tab("宏观经济"):
                 render_economics(service, "macro")
             with gr.Tab("个股分析"):
+                page_report_button()
                 with gr.Row():
                     stock_symbol = gr.Textbox(value="600519", label="股票代码/名称", elem_id="fundamentals-symbol")
                 with gr.Tabs(elem_id="stock-research-tabs"):
+                    with gr.Tab("基本面", id="fundamentals"):
+                        read_profile = gr.Button("读取上市公司概况", variant="primary")
+                        profile = _table("上市公司概况", 340)
+                        read_profile.click(_safe(service.stock_profile), inputs=stock_symbol, outputs=profile)
                     with gr.Tab("Technical analysis", id="technical"):
                         stock_period = gr.Dropdown(["daily", "weekly", "monthly"], value="daily", label="K 线周期")
                         stock_count = gr.Slider(20, 240, value=80, step=20, label="K 线数量")
@@ -206,9 +214,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         )
                         stock_watch_group = gr.Number(label="自选分组 ID", precision=0)
                         stock_add_watch = gr.Button("加入自选")
-                        stock_to_relation = gr.Button("同步关系图")
                         stock_summary = gr.Markdown(elem_classes=["status-strip"])
-                        page_report_button()
                         stock_watch_status = gr.Markdown(elem_classes=["status-strip"])
                         stock_watchlist = _table("自选行情", 260)
                         with gr.Row():
@@ -222,22 +228,6 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                             elem_id="stock-kline-chart",
                             elem_classes=["chart-panel", "no-i18n"],
                         )
-                        with gr.Row():
-                            stock_news = _table("相关资讯", 300)
-                            stock_reports = _table("相关研报", 300)
-                        stock_query.click(
-                            _safe(service.stock),
-                            inputs=[stock_symbol, stock_period, stock_count],
-                            outputs=[
-                                stock_summary,
-                                stock_score,
-                                stock_finance,
-                                stock_kline,
-                                stock_news,
-                                stock_reports,
-                            ],
-                            queue=False,
-                        )
                         stock_add_watch.click(
                             _safe(service.add_stock_to_watchlist),
                             inputs=[stock_symbol, stock_watch_group],
@@ -246,11 +236,61 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
 
                     with gr.Tab("Financial analysis", id="financials"):
                         render_economics(service, "fundamentals", shared_symbol=stock_symbol)
+                    with gr.Tab("新闻与公告", id="disclosures"):
+                        stock_news_status = gr.Markdown()
+                        stock_news_query = gr.Button("读取公司资讯", variant="primary")
+                        stock_news = _table("相关资讯", 300)
+                        stock_reports = _table("相关研报", 300)
+                        stock_news_query.click(
+                            _safe(service.stock_disclosures),
+                            inputs=stock_symbol,
+                            outputs=[stock_news_status, stock_news, stock_reports],
+                        )
+                    with gr.Tab("关系图谱", id="relationships"):
+                        stock_to_relation = gr.Button("为当前标的构建规则图谱")
+                        saved_relations = gr.Button("查看该标的已保存的关系")
+                        saved_relation_rows = _table("最近保存的关系", 300)
+                        saved_relations.click(
+                            _safe(service.stock_relationships), inputs=stock_symbol, outputs=saved_relation_rows
+                        )
+                        gr.HTML(workspace_link("打开关系图谱", "market", "relations"))
+                    with gr.Tab("事件与风险", id="events-risk"):
+                        risk_query = gr.Button("计算风险指标", variant="primary")
+                        stock_risk = _table("风险指标", 260)
+                        risk_query.click(_safe(service.stock_risk), inputs=stock_symbol, outputs=stock_risk)
+                        event_query = gr.Button("读取历史财报公告日期")
+                        event_status = gr.Markdown()
+                        stock_events = _table("历史财报公告日期", 300)
+                        event_query.click(
+                            _safe(service.stock_events), inputs=stock_symbol, outputs=[event_status, stock_events]
+                        )
+                stock_query.click(
+                    _safe(service.stock),
+                    inputs=[stock_symbol, stock_period, stock_count],
+                    outputs=[stock_summary, stock_score, stock_finance, stock_kline, stock_news, stock_reports],
+                    queue=False,
+                )
+                stock_symbol.input(
+                    lambda: ("", None, [], None, "", [], [], [], [], [], "", []),
+                    outputs=[
+                        stock_summary,
+                        stock_score,
+                        stock_finance,
+                        stock_kline,
+                        stock_news_status,
+                        stock_news,
+                        stock_reports,
+                        profile,
+                        saved_relation_rows,
+                        stock_risk,
+                        event_status,
+                        stock_events,
+                    ],
+                    queue=False,
+                )
 
             with gr.Tab("关系图谱"):
-                gr.HTML(
-                    "<button type='button' class='page-report-action' data-report-view='relations'>生成 HTML 报告</button>"
-                )
+                page_report_button("relations")
                 relation_mode = gr.Radio(
                     model_graph_config()["ui"]["modes"],
                     value="rules",
@@ -343,9 +383,9 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                     relation_export.click(
                         _safe(
                             lambda key: (
-                                rule_jobs.store.result(key) and "Saved graph exported",
-                                str(rule_jobs.store.directory(key) / "graph.json"),
-                                str(rule_jobs.store.directory(key) / "graph.json"),
+                                rule_jobs().store.result(key) and "Saved graph exported",
+                                str(rule_jobs().store.directory(key) / "graph.json"),
+                                str(rule_jobs().store.directory(key) / "graph.json"),
                             )
                         ),
                         inputs=rule_run_id,
@@ -365,7 +405,7 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         queue=False,
                     )
                     rule_cancel.click(
-                        _safe(lambda key: rule_jobs.store.cancel(key)["status"]),
+                        _safe(lambda key: rule_jobs().store.cancel(key)["status"]),
                         inputs=rule_run_id,
                         outputs=relation_summary,
                         queue=False,
@@ -384,13 +424,18 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                         ],
                         queue=False,
                     )
-                model_graph_panel = render_model_graph_panel()
                 relation_mode.change(
-                    lambda mode: (gr.update(visible=mode == "rules"), gr.update(visible=mode == "model")),
+                    lambda mode: gr.update(visible=mode == "rules"),
                     inputs=relation_mode,
-                    outputs=[rule_graph_panel, model_graph_panel],
+                    outputs=rule_graph_panel,
                     queue=False,
                 )
+
+                @gr.render(inputs=relation_mode, triggers=[relation_mode.change], queue=False)
+                def _render_selected_relation_mode(mode):
+                    if mode == "model":
+                        render_model_graph_panel()
+
                 stock_to_relation.click(lambda: "rules", outputs=relation_mode, queue=False)
 
             with gr.Tab("资源池"):
@@ -547,128 +592,130 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
                 )
             with gr.Tab("股票推荐"):
                 page_report_button()
-                with gr.Row():
-                    recommend_plan = gr.Dropdown(RECOMMEND_PLAN_CHOICES, value="balanced", label="推荐方案")
-                    recommend_path = gr.Radio(
-                        choices=[("快速", "quick"), ("深度", "deep")],
-                        value="quick",
-                        label="分析路径",
-                    )
-                    recommend_limit = gr.Slider(5, 30, value=10, step=1, label="推荐数量")
-                    recommend_universe = gr.Textbox(
-                        label="股票池（逗号分隔，留空取市场热门领涨股）",
-                        placeholder="如：600519,300750,688981",
-                        scale=2,
-                    )
-                recommend_run = gr.Button("生成推荐", variant="primary", elem_classes=["page-refresh-btn"])
-                with gr.Row():
-                    recommend_watch_group = gr.Number(
-                        label="加入自选分组 ID（留空默认）",
-                        precision=0,
-                    )
-                    recommend_add_watch = gr.Button("批量加入自选", variant="primary")
-                    recommend_to_relation = gr.Button("首只候选看关系")
-                with gr.Row():
-                    recommend_resource_pool_id = gr.Number(
-                        label="资源池 ID（留空默认）",
-                        precision=0,
-                    )
-                    recommend_add_resource = gr.Button("批量加入资源池", variant="primary")
-                    recommend_load_resource = gr.Button("载入资源池到股票池")
-                recommend_status = gr.Markdown(elem_classes=["status-strip"])
-                with gr.Accordion("推荐模板库", open=False):
-                    with gr.Row():
-                        recommend_template_name = gr.Textbox(
-                            label="模板名称",
-                            value="默认推荐模板",
-                            scale=2,
-                        )
-                        recommend_template_save = gr.Button("保存推荐模板", variant="primary")
-                        recommend_template_refresh = gr.Button("刷新模板")
-                    with gr.Row():
-                        recommend_template_id = gr.Number(label="模板 ID", precision=0)
-                        recommend_template_load = gr.Button("加载模板")
-                    recommend_templates = _table("推荐模板库", 240)
-                recommend_table = _table("推荐结果", 430)
-                with gr.Accordion("推荐候选验证", open=True):
-                    with gr.Row():
-                        recommend_template_btn = gr.Button("生成条件模板")
-                        recommend_compare_btn = gr.Button("候选对比", variant="primary")
-                    recommend_template = gr.Markdown(elem_classes=["compact-note"])
-                    recommend_compare_plot = _plot(
-                        label="因子对比",
-                        elem_classes=["chart-panel"],
-                    )
-                    recommend_compare_table = _table("候选对比", 280)
-                    gr.Markdown("#### 多组参数横向对比")
-                    with gr.Row():
-                        recommend_group_plans = gr.CheckboxGroup(
-                            RECOMMEND_PLAN_CHOICES,
-                            value=["balanced", "momentum", "quality"],
-                            label="对比方案",
-                            scale=2,
-                        )
-                        recommend_group_path = gr.Radio(
-                            choices=[("快速", "quick"), ("深度", "deep")],
-                            value="quick",
-                            label="对比路径",
-                        )
-                        recommend_group_limit = gr.Slider(
-                            3,
-                            20,
-                            value=8,
-                            step=1,
-                            label="每组数量",
-                        )
-                    recommend_group_compare_btn = gr.Button("多组参数对比", variant="primary")
-                    recommend_group_status = gr.Markdown(elem_classes=["status-strip"])
-                    recommend_group_plot = _plot(
-                        label="多组对比图",
-                        elem_classes=["chart-panel"],
-                    )
-                    with gr.Row():
-                        recommend_group_summary = _table("方案对比摘要", 260)
-                        recommend_group_symbols = _table("共识候选", 260)
-                    gr.Markdown("#### 推荐一键回测")
-                    with gr.Row():
-                        recommend_backtest_strategy_id = gr.Number(label="策略 ID", precision=0)
-                        recommend_backtest_engine = gr.Dropdown(
-                            BACKTEST_ENGINE_CHOICES,
-                            value="simple",
-                            label="回测引擎",
-                        )
-                        recommend_backtest_capital = gr.Number(value=1000000, label="初始资金")
-                    with gr.Row():
-                        recommend_backtest_start = gr.Textbox(value="2026-01-01", label="开始日期")
-                        recommend_backtest_end = gr.Textbox(value="2026-06-30", label="结束日期")
-                        recommend_backtest_params = gr.Code(
-                            value="{}",
-                            language="json",
-                            label="策略参数",
-                        )
-                    recommend_backtest_run = gr.Button("用前 5 只候选创建回测", variant="primary")
-                    with gr.Row():
-                        recommend_backtest_status = gr.Markdown(elem_classes=["status-strip"])
-                        recommend_backtest_task_id = gr.Number(
-                            label="回测任务 ID",
-                            precision=0,
-                            interactive=False,
-                        )
-                    with gr.Tabs():
-                        with gr.Tab("绩效"):
-                            recommend_backtest_metrics = _table("推荐回测绩效", 240)
-                            recommend_backtest_plot = _plot(
-                                label="净值曲线",
-                                elem_classes=["chart-panel"],
+                with gr.Tabs(elem_id="recommendation-workspace"):
+                    with gr.Tab("推荐", id="recommendation"):
+                        with gr.Row():
+                            recommend_plan = gr.Dropdown(RECOMMEND_PLAN_CHOICES, value="balanced", label="推荐方案")
+                            recommend_path = gr.Radio(
+                                choices=[("快速", "quick"), ("深度", "deep")],
+                                value="quick",
+                                label="分析路径",
                             )
-                        with gr.Tab("归因"):
-                            recommend_backtest_attribution_plot = _plot(
-                                label="归因摘要",
-                                elem_classes=["chart-panel"],
+                            recommend_limit = gr.Slider(5, 30, value=10, step=1, label="推荐数量")
+                            recommend_universe = gr.Textbox(
+                                label="股票池（逗号分隔，留空取市场热门领涨股）",
+                                placeholder="如：600519,300750,688981",
+                                scale=2,
                             )
-                            recommend_backtest_attribution = _table("推荐回测归因明细", 240)
-                        with gr.Tab("交易"):
-                            recommend_backtest_trades = _table("推荐回测交易明细", 260)
+                        recommend_run = gr.Button("生成推荐", variant="primary", elem_classes=["page-refresh-btn"])
+                        with gr.Row():
+                            recommend_watch_group = gr.Number(
+                                label="加入自选分组 ID（留空默认）",
+                                precision=0,
+                            )
+                            recommend_add_watch = gr.Button("批量加入自选", variant="primary")
+                            recommend_to_relation = gr.Button("首只候选看关系")
+                        with gr.Row():
+                            recommend_resource_pool_id = gr.Number(
+                                label="资源池 ID（留空默认）",
+                                precision=0,
+                            )
+                            recommend_add_resource = gr.Button("批量加入资源池", variant="primary")
+                            recommend_load_resource = gr.Button("载入资源池到股票池")
+                        recommend_status = gr.Markdown(elem_classes=["status-strip"])
+                        with gr.Accordion("推荐模板库", open=False):
+                            with gr.Row():
+                                recommend_template_name = gr.Textbox(
+                                    label="模板名称",
+                                    value="默认推荐模板",
+                                    scale=2,
+                                )
+                                recommend_template_save = gr.Button("保存推荐模板", variant="primary")
+                                recommend_template_refresh = gr.Button("刷新模板")
+                            with gr.Row():
+                                recommend_template_id = gr.Number(label="模板 ID", precision=0)
+                                recommend_template_load = gr.Button("加载模板")
+                            recommend_templates = _table("推荐模板库", 240)
+                        recommend_table = _table("推荐结果", 430)
+                    with gr.Tab("候选对比", id="candidate-comparison"):
+                        with gr.Row():
+                            recommend_template_btn = gr.Button("生成条件模板")
+                            recommend_compare_btn = gr.Button("候选对比", variant="primary")
+                        recommend_template = gr.Markdown(elem_classes=["compact-note"])
+                        recommend_compare_plot = _plot(
+                            label="因子对比",
+                            elem_classes=["chart-panel"],
+                        )
+                        recommend_compare_table = _table("候选对比", 280)
+                        gr.Markdown("#### 多组参数横向对比")
+                        with gr.Row():
+                            recommend_group_plans = gr.CheckboxGroup(
+                                RECOMMEND_PLAN_CHOICES,
+                                value=["balanced", "momentum", "quality"],
+                                label="对比方案",
+                                scale=2,
+                            )
+                            recommend_group_path = gr.Radio(
+                                choices=[("快速", "quick"), ("深度", "deep")],
+                                value="quick",
+                                label="对比路径",
+                            )
+                            recommend_group_limit = gr.Slider(
+                                3,
+                                20,
+                                value=8,
+                                step=1,
+                                label="每组数量",
+                            )
+                        recommend_group_compare_btn = gr.Button("多组参数对比", variant="primary")
+                        recommend_group_status = gr.Markdown(elem_classes=["status-strip"])
+                        recommend_group_plot = _plot(
+                            label="多组对比图",
+                            elem_classes=["chart-panel"],
+                        )
+                        with gr.Row():
+                            recommend_group_summary = _table("方案对比摘要", 260)
+                            recommend_group_symbols = _table("共识候选", 260)
+                    with gr.Tab("回测", id="recommendation-backtest"):
+                        with gr.Row():
+                            recommend_backtest_strategy_id = gr.Number(label="策略 ID", precision=0)
+                            recommend_backtest_engine = gr.Dropdown(
+                                BACKTEST_ENGINE_CHOICES,
+                                value="simple",
+                                label="回测引擎",
+                            )
+                            recommend_backtest_capital = gr.Number(value=1000000, label="初始资金")
+                        with gr.Row():
+                            recommend_backtest_start = gr.Textbox(value="2026-01-01", label="开始日期")
+                            recommend_backtest_end = gr.Textbox(value="2026-06-30", label="结束日期")
+                            recommend_backtest_params = gr.Code(
+                                value="{}",
+                                language="json",
+                                label="策略参数",
+                            )
+                        recommend_backtest_run = gr.Button("用前 5 只候选创建回测", variant="primary")
+                        with gr.Row():
+                            recommend_backtest_status = gr.Markdown(elem_classes=["status-strip"])
+                            recommend_backtest_task_id = gr.Number(
+                                label="回测任务 ID",
+                                precision=0,
+                                interactive=False,
+                            )
+                        with gr.Tabs():
+                            with gr.Tab("绩效"):
+                                recommend_backtest_metrics = _table("推荐回测绩效", 240)
+                                recommend_backtest_plot = _plot(
+                                    label="净值曲线",
+                                    elem_classes=["chart-panel"],
+                                )
+                            with gr.Tab("归因"):
+                                recommend_backtest_attribution_plot = _plot(
+                                    label="归因摘要",
+                                    elem_classes=["chart-panel"],
+                                )
+                                recommend_backtest_attribution = _table("推荐回测归因明细", 240)
+                            with gr.Tab("交易"):
+                                recommend_backtest_trades = _table("推荐回测交易明细", 260)
                 recommend_run.click(
                     _safe(service.recommend),
                     inputs=[recommend_plan, recommend_path, recommend_limit, recommend_universe],

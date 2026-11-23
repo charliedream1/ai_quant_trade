@@ -30,13 +30,12 @@ def catalog_config():
     return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/cli_catalog.yaml").read_text(encoding="utf-8"))
 
 
-def billing(row):
-    cfg = catalog_config()
+def billing_rate(row):
     if row.get("is_free") is True or row.get("free") is True:
-        return cfg["labels"]["free"]
+        return {"kind": "free"}
     factor = row.get("price_factor")
     if isinstance(factor, (int, float)) and not isinstance(factor, bool) and math.isfinite(factor) and factor >= 0:
-        return cfg["labels"]["credits"].format(factor=factor)
+        return {"kind": "free"} if factor == 0 else {"kind": "credits", "factor": factor}
     kind = row.get("billing_type")
     pricing = row.get("pricing")
     if kind == "tokens" and isinstance(pricing, dict):
@@ -49,12 +48,25 @@ def billing(row):
             and pricing.get("currency") in {"USD", "CNY", "EUR"}
             and pricing.get("unit") in {"per_million_tokens", "per_thousand_tokens"}
         ):
-            return f"{cfg['labels']['tokens']} · {rates[0]}/{rates[1]} {pricing['currency']} {pricing['unit']} (input/output)"
-    return (
-        cfg["labels"].get(kind, cfg["labels"]["unknown"])
-        if kind in {"subscription", "tokens"}
-        else cfg["labels"]["unknown"]
-    )
+            return {
+                "kind": "tokens",
+                "input": rates[0],
+                "output": rates[1],
+                "currency": pricing["currency"],
+                "unit": pricing["unit"],
+            }
+    return {"kind": "subscription" if kind == "subscription" else "unknown"}
+
+
+def billing(row):
+    labels = catalog_config()["labels"]
+    rate = billing_rate(row)
+    kind = rate["kind"]
+    if kind == "tokens":
+        return f"{labels[kind]} · {rate['input']}/{rate['output']} {rate['currency']} {rate['unit']} (input/output)"
+    if kind == "credits":
+        return labels[kind].format(factor=rate["factor"])
+    return labels["tokens"] if row.get("billing_type") == "tokens" and kind == "unknown" else labels[kind]
 
 
 def normalize_catalog(value, backend, source):
@@ -92,6 +104,7 @@ def normalize_catalog(value, backend, source):
                 "id": identifier,
                 "name": str(row.get("displayName") or row.get("name") or identifier)[: cfg["max_name_chars"]],
                 "billing": billing(row),
+                "rate": billing_rate(row),
                 "source": source,
                 "efforts": efforts,
             }

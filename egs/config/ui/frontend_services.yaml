@@ -669,6 +669,7 @@
     "home_market_snapshot": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "home_themes": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "home_news": ["src.frontend.service.home_service", "HomeServiceMixin"],
+    "home_news_bundle": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "home_operations": ["src.frontend.service.home_service", "HomeServiceMixin"],
     "import_cli_artifact": [
       "src.frontend.service.strategy",
@@ -962,6 +963,7 @@
       "src.frontend.service.composition_graph",
       "CompositionGraphMixin"
     ],
+    "pipeline_graph_save": ["src.frontend.service.composition_graph", "CompositionGraphMixin"],
     "pipeline_graph_binding": [
       "src.frontend.service.composition_graph",
       "CompositionGraphMixin"
@@ -1281,6 +1283,11 @@
       "src.frontend.service.market",
       "MarketServiceMixin"
     ],
+    "stock_profile": ["src.frontend.service.stock_research", "StockResearchMixin"],
+    "stock_disclosures": ["src.frontend.service.stock_research", "StockResearchMixin"],
+    "stock_relationships": ["src.frontend.service.stock_research", "StockResearchMixin"],
+    "stock_risk": ["src.frontend.service.stock_research", "StockResearchMixin"],
+    "stock_events": ["src.frontend.service.stock_research", "StockResearchMixin"],
     "stock_to_relations": [
       "src.frontend.service.market",
       "MarketServiceMixin"

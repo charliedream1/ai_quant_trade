@@ -1,11 +1,12 @@
 """Graph component binding using supported Gradio value and event contracts."""
 
 import gradio as gr
+
 from src.frontend.components.strategy_graph import StrategyGraph, supported
 from src.frontend.service.graph_documents import document_payload, graph_config
 
 
-def render_graph(service, definition, version_id, pipeline_id, run_id, template_id=""):
+def render_graph(service, definition, version_id, pipeline_id, run_id, preset, template_id=""):
     cfg = graph_config()
     if not supported():
         gr.Markdown(cfg["ui"]["min_version"])
@@ -30,12 +31,14 @@ def render_graph(service, definition, version_id, pipeline_id, run_id, template_
     )
     # Initialize the session's layout identity only after this lazy component is mounted.
     graph.load(service.pipeline_graph_sync, inputs=[definition, graph, pipeline_id, run_id], outputs=graph, queue=False)
-    graph.submit(
-        service.pipeline_graph_apply,
-        inputs=[graph, definition],
-        outputs=[definition, status, version_id, graph],
+    save = graph.submit(
+        service.pipeline_graph_save,
+        inputs=[graph, definition, pipeline_id, version_id],
+        outputs=[definition, status, pipeline_id, version_id, graph],
         queue=False,
+        trigger_mode="once",
     )
+    save.then(lambda: gr.update(choices=service.pipeline_templates()), outputs=preset, queue=False)
     graph.input(service.pipeline_graph_layout, inputs=graph, outputs=[graph, status], queue=False)
     refresh.click(service.pipeline_graph_results, inputs=[run_id, graph], outputs=graph, queue=False)
     return graph

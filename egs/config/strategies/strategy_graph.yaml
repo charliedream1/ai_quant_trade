@@ -40,7 +40,11 @@ ui:
   arrange: 自动布局
   undo: 撤销
   redo: 重做
-  apply: 应用到策略草稿
+  apply: 保存版本
+  edit: 编辑
+  cancel_edit: 取消编辑
+  version_saved: 已保存策略版本
+  add_next: 扩展节点
   save_layout: 保存布局
   up: 返回父图
   add: 添加组件
@@ -78,7 +82,9 @@ ui:
   date: 结果日期
   select_result: 查看当前步骤
   retry_unsupported: 此处只查看已存证据；重新执行请使用运行入口
-  min_version: 图形组件需要Gradio 6.16；当前环境保留步骤表与YAML编辑
+  min_version: 图形编辑器需要 Gradio 6.3 或更新版本。可在高级编辑中使用步骤表和 YAML。
+  more_actions: 更多操作
+  load_failed: 画布加载失败。请刷新工坊，或在高级编辑中继续。
   error: 图形变更未应用
   position_not_saved: 布局尚未保存
   metadata_missing: 参数说明未配置，请核对生效预览

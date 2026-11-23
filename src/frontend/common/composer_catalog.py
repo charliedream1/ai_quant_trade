@@ -1,5 +1,6 @@
 """Per-browser catalogue revisions prevent delayed backend responses overwriting controls."""
 
+import re
 from html import escape
 from typing import Any
 
@@ -45,9 +46,34 @@ def effort_update(backend, catalog, identifier):
 
 def model_options(catalog, backend, default_label):
     choices = [] if backend == "workbuddy" else [(default_label, "")]
-    for row in catalog["rows"]:
+    cfg = catalog_config()
+    families = cfg["families"]
+    other = cfg["labels"]["other"]
+
+    def order(row):
+        family = next(
+            (label for label, pattern in families.items() if re.search(pattern, row["id"], re.IGNORECASE)), other
+        )
+        rate = row.get("rate") or {}
+        kind = rate.get("kind", "unknown")
+        if row.get("billing") == cfg["labels"]["free"]:
+            kind = "free"
+        unit = 1000 if rate.get("unit") == "per_thousand_tokens" else 1
+        return (
+            family == other,
+            family.casefold(),
+            ("free", "credits", "tokens", "subscription", "unknown").index(kind),
+            rate.get("currency", ""),
+            rate.get("factor", rate.get("input", 0) * unit),
+            rate.get("output", 0) * unit,
+            row["name"].casefold(),
+            row["id"],
+            family,
+        )
+
+    for row in sorted(catalog["rows"], key=order):
         label = f"{row['name']} · {row['billing']}" if row.get("billing") else row["name"]
-        choices.append((label, row["id"]))
+        choices.append((f"{order(row)[-1]} / {label}", row["id"]))
     return choices
 
 

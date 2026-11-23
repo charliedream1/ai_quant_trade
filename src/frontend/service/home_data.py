@@ -84,9 +84,10 @@ def _read_account(mode: str, on_local=None) -> HomeAccount:
     account_id = int(snapshot.account["id"])
     snapshot.history = repo.list("paper_nav_history", "account_id = ?", (account_id,), "nav_date ASC")
     snapshot.cash = number(snapshot.account.get("current_cash"))
+    positions = repo.list("paper_positions", "account_id = ? AND quantity > 0", (account_id,), "symbol ASC")
+    snapshot.position_count = len(positions)
     if on_local:
         on_local(snapshot)
-    positions = repo.list("paper_positions", "account_id = ? AND quantity > 0", (account_id,), "symbol ASC")
     markets = {
         "HK" if str(row["symbol"]).upper().endswith(".HK") else "CN" if str(row["symbol"]).isdigit() else "US"
         for row in positions

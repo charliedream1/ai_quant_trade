@@ -111,7 +111,7 @@ body { margin: 0 !important; }
 .workspace-shell.sidebar-collapsed .workspace-nav-icon { margin: 0 auto; }
 .workspace-sidebar-toggle { position: absolute; top: 10px; right: -13px; z-index: 3; width: 26px; height: 26px; min-height: 26px; padding: 0; border: 1px solid #bdd6e8; border-radius: 50%; color: #2d6086; background: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, .16); cursor: pointer; }
 .workspace-sidebar-toggle:hover { color: #fff; background: #2563eb; }
-.workspace-page-report { margin: 6px 8px 12px; width: calc(100% - 16px); min-height: 36px; border: 1px solid var(--shell-line); border-radius: 8px; background: var(--shell-surface); color: var(--shell-ink); font-weight: 650; cursor: pointer; overflow-wrap: anywhere; }
+.workspace-page-report { padding: 5px 12px; min-height: 36px; border: 1px solid var(--shell-line); border-radius: 8px; background: var(--shell-surface); color: var(--shell-ink); font-weight: 650; cursor: pointer; overflow-wrap: anywhere; }
 .workspace-page-report[hidden] { display: none !important; }
 .workspace-nav { display: grid; gap: 3px; }
 .workspace-nav-group { display: grid; gap: 3px; }
@@ -913,10 +913,10 @@ def shell_html(theme_mode: str = "light") -> str:
         "<button id='app-market-cn' type='button' data-workspace-market='cn'>A股</button>"
         "<button id='app-market-hk' type='button' data-workspace-market='hk'>港股</button>"
         "<button id='app-market-us' type='button' data-workspace-market='us'>美股</button></div>"
+        "<button type='button' id='workspace-page-report' class='workspace-page-report' hidden>AI 分析</button>"
         f"{language}{_theme_button()}{refresh}{standalone}</div></header>"
         "<div class='workspace-body'><aside id='workspace-sidebar' class='workspace-sidebar'>"
         f"<div class='workspace-sidebar-tools'>{sidebar_toggle}</div>"
-        "<button type='button' id='workspace-page-report' class='workspace-page-report' hidden>页面分析</button>"
         f"<nav class='workspace-nav' aria-label='主功能导航'>{navigation}</nav></aside>"
         "<main class='workspace-main'><div id='workspace-frame-status' class='workspace-frame-status' hidden></div>"
         "<div id='workspace-frame-host' class='workspace-frame-host'></div></main></div></div>"

@@ -44,6 +44,7 @@ class StrategyHandler(DomainHandler):
             "pipeline_edit_sleeves",
             "pipeline_editor_state",
             "pipeline_graph_apply",
+            "pipeline_graph_save",
             "pipeline_graph_binding",
             "pipeline_graph_layout",
             "pipeline_graph_load",

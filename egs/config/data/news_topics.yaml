@@ -6,8 +6,10 @@ modes:
   idf_floor: 0.25
 timezone: Asia/Shanghai
 window_days: {day: 1, week: 7, month: 30}
+news_center_scope: week
 limits:
   sample: 100
+  news_center_page_size: 30
   title_chars: 220
   summary_chars: 500
   story_terms: 12
