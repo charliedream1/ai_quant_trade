@@ -6,7 +6,27 @@ Chinese macroeconomic series and A-share financial statements now have dedicated
 
 ## 入口与前置条件
 
-左侧“市场研究”提供行情看盘、因子监控、新闻中心、个股分析、关系图谱、资源池和股票推荐。顶部市场切换会影响后续查询；mock 行情仅用于流程演示。
+**Market Research** in the sidebar opens two pages. Use the tabs at the top of
+each page to choose a research view.
+
+| Page | Tabs |
+| --- | --- |
+| Market Analysis | Quotes and Sectors, Macroeconomics, Market News, Resource Pools, Screening and Validation |
+| Stock Analysis | Fundamentals, Technical Analysis, Financial Analysis, News and Disclosures, Relationships, Events and Risk |
+
+Market Analysis opens on Quotes and Sectors. Stock Analysis opens on
+Fundamentals and shares the current security across its tabs. Click a row in
+Screening and Validation and choose **Open selected stock** to inspect its
+company data. Use Relationships for the rule-based graph and the CLI graph,
+including progress, saved evidence and exports.
+In Financial Analysis, use the statement selector to view the balance sheet,
+income statement, cash flow statement and history from the same loaded snapshot.
+
+The page toolbar exposes the current tab's data and AI actions. Returning to a
+page restores the selected tab and its inputs in the same workspace. Existing
+links to quotes, news, macroeconomics, resources, recommendations, company
+financials and the relationship graph open the corresponding tabs.
+Factor research is available under **Strategy Construction**.
 
 ![市场研究与因子监控入口](assets/screenshots/02-market-research.jpg)
 

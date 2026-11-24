@@ -3,6 +3,7 @@
 from playwright.sync_api import expect, sync_playwright
 
 from src.core.page_analysis_snapshot import analysis_config
+from src.frontend.common.navigation import navigation_config
 
 
 def test_all_registered_view_tasks_mount_without_generation(cli_command, monkeypatch, tmp_path):
@@ -21,18 +22,27 @@ def test_all_registered_view_tasks_mount_without_generation(cli_command, monkeyp
         page.add_init_script("localStorage.setItem('all-in-one-ui-lang', 'en')")
         try:
             previous = None
-            for (module, view), label in routes.items():
+            for (module, scope), label in routes.items():
+                view, _, tab = scope.partition("/")
+                group = navigation_config()["tab_groups"].get(f"{module}/{view}")
                 if previous is None:
                     page.goto(
-                        cli_command.base_url + f"/app/?module={module}&view={view}", wait_until="domcontentloaded"
+                        cli_command.base_url + f"/app/?module={module}&view={view}&tab={tab}",
+                        wait_until="domcontentloaded",
                     )
-                else:
-                    if previous != module:
+                elif previous != (module, view):
+                    if previous[0] != module:
                         page.locator(f'[data-workspace-module="{module}"]').click()
                     page.locator(f'[data-workspace-view-module="{module}"][data-workspace-view="{view}"]').click()
-                previous = module
+                previous = (module, view)
                 frame = page.frame_locator("iframe.workspace-frame.active")
-                page.locator("#workspace-page-report").click(timeout=90000)
+                if group:
+                    selected_tab = frame.locator(f'#{group["id"]} > .tab-wrapper [data-tab-id="{tab}"]')
+                    selected_tab.click(timeout=90000)
+                    expect(selected_tab).to_have_attribute("aria-selected", "true")
+                    frame.locator("#research-workspace-actions .page-report-action").click(timeout=90000)
+                else:
+                    page.locator("#workspace-page-report").click(timeout=90000)
                 frame.get_by_text("Analysis options", exact=True).click(timeout=90000)
                 expect(frame.locator("#page-skill-task input")).to_have_value(label, timeout=20000)
                 assert called == []

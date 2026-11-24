@@ -5,10 +5,10 @@ from html import escape
 import gradio as gr
 
 from src.agent.cli_catalog import catalog_config
-from src.agent.composer_config import cli_choices
+from src.agent.composer_config import cli_choices, composer_config
 from src.core.config import get_settings
 from src.core.exceptions import BusinessError
-from src.core.page_analysis_snapshot import analysis_config, evidence
+from src.core.page_analysis_snapshot import analysis_config, evidence, preset_matches_view
 from src.core.page_work import CURRENT_PAGE
 from src.engine.insights.page_analysis import cancel as cancel_analysis
 from src.engine.insights.page_analysis import start
@@ -59,10 +59,11 @@ def render_page_analysis(blocks, module, service):
     view = gr.Textbox(value="", elem_id="page-skill-view", elem_classes=["route-control"])
     language = gr.Textbox(value="zh", elem_id="page-skill-language", elem_classes=["route-control"])
     open_drawer = gr.Button(ui["sidebar"], elem_id="page-skill-open", elem_classes=["route-control"])
-    gr.HTML(
-        f"<button type='button' id='page-skill-standalone'>{escape(ui['sidebar'])}</button>",
-        elem_id="page-skill-standalone-slot",
-    )
+    if module != "market":
+        gr.HTML(
+            f"<button type='button' id='page-skill-standalone'>{escape(ui['sidebar'])}</button>",
+            elem_id="page-skill-standalone-slot",
+        )
     with gr.Accordion(ui["title"], open=False, elem_id="page-skill-panel"):
         gr.Markdown(ui["drawer_description"])
         with gr.Row():
@@ -109,18 +110,12 @@ def render_page_analysis(blocks, module, service):
         actual_module, actual_view = scope.view_label if scope and scope.view_label else (module, page_view)
         if actual_view == "unknown" and actual_module == module:
             actual_view = page_view
-        base, _, section = actual_view.partition("/")
         if actual_module != module:
             return []
-        return [
-            (row["label"], key)
-            for key, row in presets.items()
-            if base in row["views"]
-            and (not section or base != "stock" or key == ("financial" if section == "financials" else "technical"))
-        ]
+        return [(row["label"], key) for key, row in presets.items() if preset_matches_view(row, actual_view)]
 
     def begin(provider, state):
-        state.update(backend=provider, revision=state["revision"] + 1, catalog={})
+        state.update(backend=provider, revision=state["revision"] + 1, catalog={}, reload=False)
         return (
             state,
             gr.update(choices=[], value=None, interactive=False),
@@ -148,11 +143,11 @@ def render_page_analysis(blocks, module, service):
                 interactive=bool(choices),
                 allow_custom_value=provider in catalog_config()["manual_backends"],
             ),
-            note,
+            f"{composer_config()['backends'][provider]['label']} · {note}",
             gr.update(interactive=state["task_available"] and result["status"] != "missing"),
         )
 
-    def selected(page_view, tracker, current, provider, state):
+    def selected(page_view, tracker, current, state):
         values = available_tasks(page_view)
         scope = CURRENT_PAGE.get()
         identity = (scope.owner, scope.revision) if scope else page_view
@@ -160,10 +155,10 @@ def render_page_analysis(blocks, module, service):
         if not same:
             tracker.update(run="", scope=identity)
         state["task_available"] = bool(values)
-        initialized = bool(state["catalog"]) and state["backend"] == provider
-        state["reload"] = not initialized
+        initialized = bool(state["catalog"])
+        state["reload"] = not initialized and state["revision"] == 0
         if not initialized:
-            state, model_update, note, enabled = begin(provider, state)
+            model_update, note, enabled = gr.skip(), gr.skip(), gr.update(interactive=False)
         else:
             model_update, note = gr.skip(), gr.skip()
             enabled = gr.update(interactive=bool(values) and state["catalog"]["status"] != "missing")
@@ -185,7 +180,7 @@ def render_page_analysis(blocks, module, service):
     model_outputs = [model, catalog_note, run]
     opening = open_drawer.click(
         safe(selected, cancel_outputs=11),
-        inputs=[view, identifier, task, backend, selection],
+        inputs=[view, identifier, task, selection],
         outputs=[task, selection, model, catalog_note, run, timer, preview, status, progress, download, cancel],
         queue=True,
         show_progress="hidden",

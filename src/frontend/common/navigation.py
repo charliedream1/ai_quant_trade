@@ -8,6 +8,7 @@ import yaml
 
 from src.core.config import PROJECT_ROOT
 from src.core.page_analysis_snapshot import analysis_config
+from src.engine.economics.config import economics_config
 from src.frontend.registry import MODULES
 
 
@@ -15,6 +16,7 @@ from src.frontend.registry import MODULES
 def navigation_config():
     config = yaml.safe_load((PROJECT_ROOT / "egs/config/ui/navigation.yaml").read_text(encoding="utf-8"))
     config["modules"] = {module.key: dict(module.views) for module in MODULES}
+    config["stock_defaults"] = economics_config()["defaults"]["company_symbols"]
     config["report_views"] = sorted(
         {
             f"{preset['module']}/{view}"

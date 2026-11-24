@@ -48,7 +48,7 @@ def inspect_pages(base, output, data_dir=None, log_offsets=None):
             frame.locator("#fundamentals-load").click()
             expect(frame.locator("#fundamentals-snapshot textarea")).not_to_have_value("", timeout=90000)
             results["financial_snapshot"] = frame.locator("#fundamentals-snapshot textarea").input_value()
-            frame.locator("#financial-analysis-tabs").get_by_role("tab").nth(2).click()
+            frame.locator("#financial-analysis-sections").get_by_role("radio", name="现金流量表").check()
             page.screenshot(path=str(output / "financials.png"))
             symbol.fill("")
             frame.locator("#fundamentals-load").click()

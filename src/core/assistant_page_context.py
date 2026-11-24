@@ -8,7 +8,7 @@ from functools import lru_cache
 import yaml
 
 from src.core.config import PROJECT_ROOT
-from src.core.page_analysis_snapshot import analysis_config, evidence, portable
+from src.core.page_analysis_snapshot import analysis_config, evidence, portable, preset_matches_view
 from src.core.page_work import CURRENT_PAGE, check
 from src.core.redaction import redact
 from src.data import current_market
@@ -50,7 +50,7 @@ def page_context(enabled=True, selections=None):
     presets = {
         key: value
         for key, value in analysis_config()["presets"].items()
-        if value["module"] == module and view in value["views"]
+        if value["module"] == module and preset_matches_view(value, view)
     }
     stale, bounded = False, False
     methods = set()

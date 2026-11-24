@@ -4,7 +4,13 @@ reports_history_limit: 50
 route_wait_ms: 5000
 analysis_sops: {simulation: simulation_research_loop, live: live_observation_loop}
 aliases:
-  - {module: market, view: fundamentals, target: market, target_view: stock, tab: Financial analysis}
+  - {module: market, view: quotes, target: market, target_view: analysis, tab: quotes}
+  - {module: market, view: news, target: market, target_view: analysis, tab: news}
+  - {module: market, view: macro, target: market, target_view: analysis, tab: macro}
+  - {module: market, view: recommendations, target: market, target_view: analysis, tab: recommendations}
+  - {module: market, view: resources, target: market, target_view: analysis, tab: resources}
+  - {module: market, view: fundamentals, target: market, target_view: stock, tab: financials}
+  - {module: market, view: relations, target: market, target_view: stock, tab: relationships}
   - {module: strategy, view: etf, target: strategy, target_view: management, tab: ETF研究}
   - {module: knowledge, view: sources, target: knowledge, target_view: library}
   - {module: research, view: reports, target: knowledge, target_view: research, tab: 研报检索}
@@ -20,12 +26,39 @@ context_fields:
   analysis_account_id: route-analysis-account-id
   live_run_id: route-analysis-live-run-id
   analysis_mode: route-analysis-mode
+  symbol: fundamentals-symbol
+  graph_mode: relation-graph-mode
 context_values:
   analysis_mode: [simulation, live]
+  graph_mode: [model, rules]
+context_patterns:
+  symbol: '^[A-Za-z0-9][A-Za-z0-9._-]{0,19}$'
 context_targets:
   simulation/backtest: [task_id, strategy_id, account_id]
   simulation/attribution: [analysis_strategy_id, analysis_backtest_id, analysis_account_id, live_run_id, analysis_mode]
   live/attribution: [analysis_strategy_id, analysis_backtest_id, analysis_account_id, live_run_id, analysis_mode]
+  market/stock: [symbol, graph_mode]
+tab_groups:
+  market/analysis:
+    id: market-analysis-tabs
+    default: quotes
+    tabs:
+      quotes: {label: 行情与板块, action: market-quotes-refresh}
+      macro: {label: 宏观经济, action: macro-load}
+      news: {label: 市场新闻, action: market-news-query}
+      resources: {label: 资源池}
+      recommendations: {label: 选股与验证}
+  market/stock:
+    id: stock-research-tabs
+    default: fundamentals
+    aliases: {Technical analysis: technical, Financial analysis: financials}
+    tabs:
+      fundamentals: {label: 基本面, action: stock-profile-load}
+      technical: {label: Technical analysis, action: stock-technical-load}
+      financials: {label: Financial analysis, action: fundamentals-load}
+      disclosures: {label: 新闻与公告, action: stock-news-load}
+      relationships: {label: 关系图谱}
+      events-risk: {label: 事件与风险, action: stock-risk-load}
 pipeline_target: strategy/workshop
 report_library:
   catalog_height: 280

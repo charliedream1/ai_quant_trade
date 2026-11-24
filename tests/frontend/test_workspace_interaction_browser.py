@@ -1,6 +1,7 @@
 """Real pointer interaction and dated inbox behavior in the embedded workspace."""
 
 import json
+import re
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -235,7 +236,7 @@ def test_financial_subview_cancels_without_blocking_graph(cli_command, monkeypat
             began = monotonic()
             frame.get_by_role("tab", name=re.compile("Technical analysis|技术分析")).click()
             wait_for(lambda: not page_reads.BUSY, 8)
-            page.locator('[data-workspace-view="relations"]').click()
+            frame.locator("#stock-research-tabs").get_by_role("tab", name=re.compile("关系图谱|Relation Graph")).click()
             expect(frame.locator("#rule-graph-start")).to_be_visible(timeout=3000)
             (tmp_path / "subview-navigation.json").write_text(
                 json.dumps({"cleanup_and_navigation_seconds": monotonic() - began}), encoding="utf-8"
@@ -260,10 +261,25 @@ def test_stock_recommendation_and_factor_workspace_controls(cli_command):
             stock.get_by_role("tab", name="事件与风险", exact=True).click()
             stock.get_by_role("button", name="计算风险指标", exact=True).click()
             expect(stock.get_by_text("区间最大回撤（%）", exact=True)).to_be_visible(timeout=30000)
-            expect(page.locator("#workspace-page-report")).to_have_text("AI 分析")
+            expect(frame.locator("#research-workspace-actions [data-research-refresh]")).to_be_visible()
 
-            page.locator('[data-workspace-view="recommendations"]').click()
+            page.locator('[data-workspace-view="analysis"]').click()
+            frame.locator("#market-analysis-tabs").get_by_role(
+                "tab", name=re.compile("选股与验证|Screening and Validation")
+            ).click()
             recommendations = frame.locator("#recommendation-workspace")
+            recommendations.get_by_role("button", name="生成推荐", exact=True).click()
+            candidate = recommendations.locator('#market-recommendation-results [data-row="0"][data-col="1"]')
+            expect(candidate).to_be_visible(timeout=60000)
+            candidate.click()
+            link = recommendations.locator("#recommend-stock-link a")
+            expect(link).to_have_attribute("href", re.compile(r"view=stock.*symbol="))
+            symbol = re.search(r"symbol=([0-9]{6})", link.get_attribute("href") or "")
+            assert symbol is not None
+            link.click()
+            expect(frame.locator("#fundamentals-symbol textarea")).to_have_value(symbol.group(1))
+            page.go_back()
+            expect(candidate).to_be_visible()
             recommendations.get_by_role("tab", name="候选对比", exact=True).click()
             expect(recommendations.get_by_role("button", name="多组参数对比", exact=True)).to_be_visible()
             recommendations.get_by_role("tab", name="回测", exact=True).click()
@@ -284,5 +300,45 @@ def test_stock_recommendation_and_factor_workspace_controls(cli_command):
                            getComputedStyle(element).overflowY === "auto";
                 }"""
             )
+        finally:
+            browser.close()
+
+
+def test_grouped_market_routes_and_history(cli_command):
+    from urllib.parse import parse_qs, urlparse
+
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 940})
+            page.add_init_script("localStorage.setItem('all-in-one-ui-lang','zh')")
+            page.goto(
+                cli_command.base_url + "/app/?module=market&view=fundamentals&symbol=600036",
+                wait_until="domcontentloaded",
+            )
+            frame = page.frame_locator("iframe.workspace-frame.active")
+            expect(frame.locator("#fundamentals-load")).to_be_visible(timeout=90000)
+            expect(frame.locator("#fundamentals-symbol textarea")).to_have_value("600036")
+            sidebar = page.locator('[data-workspace-view-module="market"]')
+            expect(sidebar).to_have_count(2)
+
+            page.locator('[data-workspace-view="analysis"]').click()
+            tabs = frame.locator("#market-analysis-tabs > .tab-wrapper")
+            expect(tabs.get_by_role("tab")).to_have_count(5)
+            tabs.locator('[data-tab-id="quotes"]').focus()
+            page.keyboard.press("ArrowRight")
+            expect(frame.locator("#macro-load")).to_be_visible()
+            assert parse_qs(urlparse(page.url).query)["tab"] == ["macro"]
+            page.locator('[data-workspace-view="stock"]').click()
+            expect(frame.locator("#fundamentals-load")).to_be_visible()
+            expect(frame.locator("#fundamentals-symbol textarea")).to_have_value("600036")
+            page.go_back()
+            expect(frame.locator("#macro-load")).to_be_visible()
+            page.go_back()
+            expect(frame.locator("#market-quotes-refresh")).to_be_visible()
+            page.go_forward()
+            expect(frame.locator("#macro-load")).to_be_visible()
+            page.set_viewport_size({"width": 390, "height": 840})
+            assert tabs.evaluate("element => element.scrollWidth >= element.clientWidth")
         finally:
             browser.close()

@@ -13,6 +13,7 @@ from starlette.responses import Response
 from src.core.async_work import blocking_call
 from src.core.logger import get_logger
 from src.core.page_work import PageCancelled, activate, context, deactivate, policy, resolve
+from src.frontend.common.navigation import navigation_config
 from src.frontend.registry import MODULES
 
 router = APIRouter(prefix="/workspace", tags=["workspace"])
@@ -43,9 +44,14 @@ async def lifetime(request: Request):
             page = await blocking_call(activate, payload["owner"], payload["revision"], group="page_lifetime")
             if getattr(page, "view_label", None) != (module, view) and not page.is_set():
                 page.view_label = (module, view)
+                base, _, tab = view.partition("/")
                 label = next(
-                    (dict(item.views).get(view, item.title) for item in MODULES if item.key == module), "工作区"
+                    (dict(item.views).get(base, item.title) for item in MODULES if item.key == module), "工作区"
                 )
+                group = navigation_config()["tab_groups"].get(f"{module}/{base}", {})
+                section = group.get("tabs", {}).get(tab, {}).get("label")
+                if section:
+                    label = f"{label} / {section}"
                 get_logger("ui.navigation").info("打开页面 · {}", label)
             return {"active": not page.is_set()}
         if payload["action"] == "deactivate":

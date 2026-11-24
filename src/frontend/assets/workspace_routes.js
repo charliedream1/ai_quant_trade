@@ -6,11 +6,24 @@
   if (!Object.keys(views).length) return;
   let epoch = 0;
   let currentView = "", currentNonce = "";
+  let currentTab = "";
+  let preparedMarket = "";
+  const viewKey = () => currentTab ? currentView + "/" + currentTab : currentView;
+  const validContext = (name, value) => config.context_values[name] ? config.context_values[name].includes(value)
+    : new RegExp(config.context_patterns?.[name] || "^[0-9]+$").test(String(value || ""));
+  const tabButtons = (group) => Array.from(document.querySelectorAll(`#${group.id} > .tab-wrapper [role="tab"]`));
+  const setTextInput = (input, value) => {
+    if (input.value === String(value)) return;
+    input.value = String(value);
+    input.dispatchEvent(new Event("input", {bubbles: true}));
+    input.dispatchEvent(new Event("change", {bubbles: true}));
+  };
   const reportHeader = () => document.querySelector("#page-skill-panel > .label-wrap");
   const closeReport = () => {
     const header = reportHeader();
     if (header?.classList.contains("open")) header.click();
   };
+  const reportSupported = () => config.report_views.includes(`${module}/${viewKey()}`);
   const setReportField = (id, value) => {
     const field = document.querySelector(`#${id} textarea, #${id} input`);
     if (!field) return false;
@@ -23,19 +36,53 @@
   };
   const setReportLanguage = () => setReportField("page-skill-language", document.documentElement.dataset.uiLang || "zh");
   const openReport = () => {
-    const view = currentView;
-    if (!config.report_views.includes(`${module}/${view}`)) return;
+    const view = viewKey();
+    if (!reportSupported()) return;
     waitFor(() => {
       const header = reportHeader();
       const trigger = document.getElementById("page-skill-open");
       if (!header || !trigger || !setReportField("page-skill-view", view) || !setReportLanguage()) return false;
       queueMicrotask(() => {
-        if (view !== currentView || !header.isConnected || window.aiquantPageWork?.active === false) return;
+        if (view !== viewKey() || !header.isConnected || window.aiquantPageWork?.active === false) return;
+        const group = config.tab_groups[`${module}/${currentView}`];
+        const tabs = group && document.querySelector(`#${group.id} > .tab-wrapper`);
+        if (tabs) {
+          const height = Math.max(0, tabs.getBoundingClientRect().bottom);
+          header.parentElement.style.setProperty("--research-tab-bottom", `${Math.ceil(height) + 8}px`);
+        }
         if (!header.classList.contains("open")) header.click();
         document.getElementById("page-skill-open")?.click();
       });
       return true;
     }, epoch);
+  };
+  const updateActions = () => {
+    const group = config.tab_groups[`${module}/${currentView}`];
+    setReportField("page-skill-view", viewKey());
+    const standalone = document.getElementById("page-skill-standalone");
+    if (standalone) standalone.hidden = Boolean(group) || !reportSupported();
+    const actions = document.querySelector("#research-workspace-actions .research-actions");
+    if (!actions || !group) return;
+    const refresh = actions.querySelector("[data-research-refresh]");
+    const ai = actions.querySelector(".page-report-action");
+    refresh.dataset.researchRefresh = group.tabs[currentTab]?.action || "";
+    refresh.hidden = !refresh.dataset.researchRefresh;
+    ai.dataset.reportView = currentTab === "relationships" ? "relations" : "";
+    ai.hidden = !ai.dataset.reportView && !reportSupported();
+    actions.hidden = refresh.hidden && ai.hidden;
+  };
+  const resetContext = () => {
+    closeReport();
+    const badge = document.querySelector("#assistant-context-scope .prose");
+    const state = document.getElementById("assistant-context-state");
+    if (badge && state) badge.textContent = state.dataset.reset;
+  };
+  const standaloneScope = () => {
+    const work = window.aiquantPageWork;
+    if (!work || work.state.view === viewKey() && work.active) return;
+    const scope = work.state;
+    work.deactivate();
+    work.activate({...scope, revision: scope.revision + 1, view: viewKey()});
   };
   const cleanups = new Set(), applied = new Map();
   const cancel = () => {
@@ -57,29 +104,45 @@
     const alias = config.aliases.find((row) => row.module === data.module && row.view === data.view);
     if (alias && alias.target === module) data = {...data, view: alias.target_view, tab: alias.tab || data.tab};
     if (data.module !== module || !views[data.view]) return;
+    const key = `${module}/${data.view}`, group = config.tab_groups[key];
+    const requested = group?.aliases?.[data.tab] || data.tab;
+    const section = group ? (Object.hasOwn(group.tabs, requested) ? requested : group.default) : "";
     if (currentView === data.view && currentNonce === String(data.target_nonce || `standalone:${location.search}`)) {
       if (data.openReport) openReport();
       return;
     }
     cancel();
-    const ticket = epoch, key = `${module}/${data.view}`;
+    const ticket = epoch;
     const nonce = String(data.target_nonce || `standalone:${location.search}`);
-    const contextViewChanged = Boolean(currentView && currentView !== data.view);
+    const contextViewChanged = currentView !== data.view || currentTab !== section;
     currentView = data.view;
-    const contextScope = document.querySelector('#assistant-context-scope .prose');
-    const contextState = document.getElementById('assistant-context-state');
-    if (contextViewChanged && contextScope && contextState) contextScope.textContent = contextState.dataset.reset;
-    if (contextViewChanged) closeReport();
-    setReportField("page-skill-view", data.view);
-    const standalone = document.getElementById("page-skill-standalone");
-    if (standalone) standalone.hidden = !config.report_views.includes(key);
+    currentTab = section;
+    if (contextViewChanged) resetContext();
+    if (!isWorkspaceEmbedded && group) standaloneScope();
+    updateActions();
     currentNonce = nonce;
     waitFor(() => {
       const tab = Array.from(document.querySelectorAll(".module-tabs > .tab-wrapper button"))
-        .find((button) => !button.closest(".visually-hidden") && (window.aiquantUiSource?.(button) || button.textContent.trim()) === views[data.view]);
-      if (!tab) return false;
-      if (tab.getAttribute("aria-selected") !== "true") tab.click();
-      if (config.tabs.includes(data.tab)) {
+        .find((button) => !button.closest(".visually-hidden") &&
+          (group ? button.dataset.tabId === data.view
+            : (window.aiquantUiSource?.(button) || button.textContent.trim()) === views[data.view]));
+      if (group) {
+        const research = document.getElementById("market-research-views");
+        if (!research) return false;
+        research.dataset.activeResearch = data.view;
+      } else {
+        if (!tab) return false;
+        if (tab.getAttribute("aria-selected") !== "true") tab.click();
+      }
+      if (group) {
+        waitFor(() => {
+          const nested = tabButtons(group).find((button) => button.dataset.tabId === section);
+          if (!nested) return false;
+          if (nested.getAttribute("aria-selected") !== "true") nested.click();
+          updateActions();
+          return true;
+        }, ticket);
+      } else if (config.tabs.includes(data.tab)) {
         waitFor(() => {
           const nested = Array.from(document.querySelectorAll('[role="tab"]'))
             .find((item) => item.offsetParent !== null && (window.aiquantUiSource?.(item) || item.textContent.trim()) === data.tab);
@@ -90,24 +153,39 @@
       }
       const pending = new Map(Object.entries(data.context || {}).filter(([name,value]) =>
         (config.context_targets[key] || []).includes(name) &&
-        (config.context_values[name] ? config.context_values[name].includes(value) : /^[0-9]+$/.test(String(value)))));
+        validContext(name, value)));
       waitFor(() => {
         pending.forEach((value, name) => {
           const identity = `${key}/${name}`;
           if (applied.get(identity) === nonce) { pending.delete(name); return; }
-          const input = document.querySelector(`#${config.context_fields[name]} input, #${config.context_fields[name]} textarea`);
+          if (name === "graph_mode" && section !== "relationships") { pending.delete(name); return; }
+          const input = name === "graph_mode"
+            ? document.querySelector(`#relation-graph-mode input[value="${value}"]`)
+            : document.querySelector(`#${config.context_fields[name]} input, #${config.context_fields[name]} textarea`);
           if (!input) return;
           pending.delete(name);
           applied.set(identity, nonce);
-          input.value = String(value);
-          input.dispatchEvent(new Event("input", {bubbles: true}));
-          input.dispatchEvent(new Event("change", {bubbles: true}));
+          if (name === "graph_mode") {
+            if (!input.checked) input.click();
+          } else setTextInput(input, value);
           if (name === "task_id") requestAnimationFrame(() => requestAnimationFrame(() => {
             if (ticket === epoch) document.getElementById("route-backtest-open")?.click();
           }));
         });
         return pending.size === 0;
       }, ticket);
+      if (key === "market/stock") {
+        const market = (data.page_scope?.market || new URLSearchParams(location.search).get("market")
+          || localStorage.getItem("all-in-one-ui-market") || "cn").toUpperCase();
+        if (market !== preparedMarket) waitFor(() => {
+          const field = document.querySelector("#fundamentals-symbol textarea, #fundamentals-symbol input");
+          if (!field) return false;
+          const requestedSymbol = data.context?.symbol;
+          if (!validContext("symbol", requestedSymbol)) setTextInput(field, config.stock_defaults[market] || "");
+          preparedMarket = market;
+          return true;
+        }, ticket);
+      }
       if (key === config.pipeline_target && /^[0-9]+$/.test(String(data.pipeline_version || ""))) {
         waitFor(() => {
           if (applied.get(key + "/version") === nonce) return true;
@@ -119,7 +197,7 @@
           return true;
         }, ticket);
       }
-      const id = {workshop: "workspace-activate-composition", resources: "workspace-activate-pool-pipeline"}[data.view];
+      const id = data.view === "workshop" ? "workspace-activate-composition" : "";
       if (id) waitFor(() => {
         const button = document.getElementById(id);
         if (!button) return false;
@@ -150,7 +228,7 @@
       event.preventDefault();
       const url = new URL(link.href, location.origin), query = url.searchParams;
       window.parent.postMessage({type: "aiquant:navigate", module: link.dataset.moduleKey || query.get("module"),
-        view: query.get("view"), tab: query.get("tab"), pipeline_version: query.get("pipeline_version"),
+        view: query.get("view"), tab: query.get("tab"), market: query.get("market"), pipeline_version: query.get("pipeline_version"),
         context: Object.fromEntries(Object.keys(config.context_fields).map((name) => [name,query.get(name)]))}, location.origin);
     });
   } else {
@@ -158,6 +236,11 @@
     window.addEventListener("popstate", fromUrl);
   }
   document.addEventListener("click", (event) => {
+    const refresh = event.target.closest("[data-research-refresh]");
+    if (refresh) {
+      document.querySelector(`#${refresh.dataset.researchRefresh} button, button#${refresh.dataset.researchRefresh}`)?.click();
+      return;
+    }
     const button = event.target.closest("#page-skill-standalone, .page-report-action");
     if (!button) return;
     if (button.dataset.reportView === "relations") {
@@ -174,7 +257,7 @@
     const name = (config.context_targets[key] || []).find((name) => event.target.closest(`#${config.context_fields[name]}`));
     if (!name) return;
     const value = event.target.value;
-    if (value && !(config.context_values[name] ? config.context_values[name].includes(value) : /^[0-9]+$/.test(value))) return;
+    if (value && !validContext(name, value)) return;
     applied.set(`${key}/${name}`, currentNonce);
     if (isWorkspaceEmbedded) window.parent.postMessage({type: "aiquant:context-edited", module, view: currentView, name, value}, location.origin);
     else {
@@ -183,32 +266,59 @@
       history.replaceState({}, "", url);
     }
   });
+  const selectTab = (button) => {
+    const group = config.tab_groups[`${module}/${currentView}`];
+    if (!group || !button) return;
+    if (!tabButtons(group).includes(button)) return;
+    const next = button.dataset.tabId;
+    if (!Object.hasOwn(group.tabs, next) || next === currentTab) return;
+    currentTab = next;
+    cancel();
+    resetContext();
+    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(next);
+    else {
+      standaloneScope();
+      const url = new URL(location.href);
+      url.searchParams.set("view", currentView);
+      url.searchParams.set("tab", next);
+      history.pushState({}, "", url);
+    }
+    updateActions();
+    button.scrollIntoView({block: "nearest", inline: "nearest"});
+  };
   document.addEventListener("click", (event) => {
-    const button = event.target.closest?.("#stock-research-tabs > .tab-wrapper [role='tab']");
-    if (!event.isTrusted || !button || button.getAttribute("aria-selected") === "true") return;
-    const label = (window.aiquantUiSource?.(button) || button.textContent).trim();
-    const subview = {
-      "基本面": "fundamentals", "Fundamentals": "fundamentals",
-      "Technical analysis": "technical", "技术分析": "technical",
-      "Financial analysis": "financials", "财务分析": "financials",
-      "新闻与公告": "disclosures", "News and disclosures": "disclosures",
-      "关系图谱": "relationships", "Relation Graph": "relationships",
-      "事件与风险": "events-risk", "Events and risk": "events-risk",
-    }[label];
-    if (!subview) return;
-    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(subview);
-    else { window.aiquantPageWork?.deactivate(); window.aiquantPageWork?.activate(); }
+    if (event.isTrusted) selectTab(event.target.closest?.("[role='tab']"));
+  }, true);
+  document.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const group = config.tab_groups[`${module}/${currentView}`];
+    if (!group) return;
+    const buttons = tabButtons(group);
+    const index = buttons.indexOf(event.target);
+    if (index === -1) return;
+    event.preventDefault();
+    const offset = event.key === "ArrowLeft" ? -1 : 1;
+    const next = buttons[event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1
+      : (index + offset + buttons.length) % buttons.length];
+    selectTab(next);
+    next.click();
+    next.focus();
   }, true);
   document.addEventListener("change", (event) => {
     if (!event.isTrusted || currentView !== "stock" || !event.target.closest?.("#fundamentals-symbol")) return;
-    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.("security");
-    else { window.aiquantPageWork?.deactivate(); window.aiquantPageWork?.activate(); }
+    resetContext();
+    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(currentTab, true);
+    else {
+      window.aiquantPageWork?.deactivate();
+      window.aiquantPageWork?.activate();
+    }
   }, true);
   // Keep the shell's independent-window target aligned with genuine in-page tab clicks.
   document.addEventListener("click", (event) => {
     if (!event.isTrusted) return;
     const button = event.target.closest(".module-tabs > .tab-wrapper button");
-    const view = Object.keys(views).find((key) => views[key] === (window.aiquantUiSource?.(button) || button?.textContent.trim()));
+    const view = Object.hasOwn(views, button?.dataset.tabId) ? button.dataset.tabId
+      : Object.keys(views).find((key) => views[key] === (window.aiquantUiSource?.(button) || button?.textContent.trim()));
     if (!view || view === currentView) return;
     if (isWorkspaceEmbedded) {
       const scope = parent.aiquantSelectView?.(module, view);
@@ -235,4 +345,5 @@
       history.pushState({}, "", url);
     }
   }, true);
+  if (!isWorkspaceEmbedded && module === "market") requestAnimationFrame(fromUrl);
 })();

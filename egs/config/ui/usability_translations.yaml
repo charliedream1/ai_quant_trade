@@ -191,6 +191,12 @@ WorkBuddy 已返回报告内容: WorkBuddy returned report content
 默认模型可用性取决于 CLI 的安装和登录状态。: The default model depends on the CLI installation and sign-in.
 生成 HTML 报告: Generate HTML report
 AI 分析: Analyze with AI
+市场分析: Market Analysis
+行情与板块: Quotes and Sectors
+市场新闻: Market News
+选股与验证: Screening and Validation
+查看所选股票: Open selected stock
+财务明细: Financial statement details
 运行 AI 分析: Run AI analysis
 当前页面 AI 分析: AI analysis for this page
 选择 CLI 和模型，让大模型分析当前页面的数据。完成后可预览和下载 HTML 报告。: Select a CLI and model to analyze this page. Preview or download the HTML report when it is ready.

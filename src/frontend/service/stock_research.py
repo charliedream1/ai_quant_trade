@@ -5,10 +5,24 @@ from html import escape
 import pandas as pd
 
 from src.data import DataSourceManager, current_market
+from src.data.symbols import parse_symbol
 from src.engine.market.model_graph.store import GraphStore
 
 from .foundation import NEWS_COLUMNS, resolve_stock_symbol, to_frame
 from .home_data import number
+
+
+def matches_security(request, symbol, market):
+    if request.get("market") != market or not symbol:
+        return False
+    target = str(request.get("symbol", "")).strip()
+    symbol = str(symbol).strip()
+    if target.casefold() == symbol.casefold():
+        return True
+    try:
+        return parse_symbol(target) == parse_symbol(symbol)
+    except ValueError:
+        return False
 
 
 class StockResearchMixin:
@@ -45,12 +59,18 @@ class StockResearchMixin:
         for scope, label in (("rule_graph_runs", "规则"), ("relation_graph_runs", "模型")):
             for run in GraphStore(scope).history():
                 request = run["request"]
-                if run["status"] not in {"completed", "partial"} or request.get("market") != current_market():
-                    continue
-                if str(request.get("symbol", "")).upper() not in {code.upper(), code.upper().split(".")[0]}:
+                if run["status"] not in {"completed", "partial"} or not matches_security(
+                    request, code, current_market()
+                ):
                     continue
                 rows.append(
-                    {"构建方式": label, "时间": run["created_at"], "状态": run["status"], "编号": run["run_id"]}
+                    {
+                        "构建方式": label,
+                        "截至日期": request.get("as_of") or request.get("date"),
+                        "时间": run["created_at"],
+                        "状态": run["status"],
+                        "编号": run["run_id"],
+                    }
                 )
         return to_frame(sorted(rows, key=lambda row: row["时间"], reverse=True))
 

@@ -113,7 +113,7 @@ def test_browser_starts_and_cancels_research(client, cli_command, monkeypatch):
             mode = frame.locator("#relation-graph-mode")
             expect(mode).to_be_visible(timeout=90000)
             mode.locator('label:has(input[value="model"])').click()
-            frame.get_by_label("Target stock", exact=True).fill(values["target"])
+            frame.locator("#fundamentals-symbol textarea").fill(values["target"])
             frame.get_by_text("Authorized knowledge evidence", exact=True).click()
             frame.get_by_label("Knowledge library (optional)", exact=True).fill(values["library"])
             frame.get_by_label("Selected document IDs (comma separated, optional)", exact=True).fill(

@@ -56,11 +56,12 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
             expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=15000)
             assert calls == []
-            page.get_by_role("button", name="Page analysis", exact=True).click()
+            frame.locator("#research-workspace-actions .page-report-action").click()
             frame.locator("#page-skill-backend input").click()
             frame.get_by_role("option", name="Qoder CLI", exact=True).click()
+            expect(frame.locator("#page-skill-model-status")).to_contain_text("Qoder CLI")
             frame.locator("#page-skill-model input").click()
-            frame.get_by_role("option", name="qoder fixture", exact=True).click()
+            frame.get_by_role("option", name=re.compile(r"qoder fixture")).click()
             frame.locator("#page-skill-run").click()
             expect(frame.locator("#page-skill-cancel")).to_be_visible(timeout=60000)
             assert entered.wait(10)
@@ -92,11 +93,11 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
                 frame.frame_locator("#page-skill-preview iframe").get_by_role("heading", name="Declared sector report")
             ).to_be_visible()
             assert calls == ["sectors"]
-            frame.locator("#market-quotes-refresh").click()
+            frame.locator("#research-workspace-actions [data-research-refresh]").click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
-            page.locator('[data-workspace-view="news"]').click()
+            frame.locator("#market-analysis-tabs").get_by_role("tab", name=re.compile("市场新闻|Market News")).click()
             expect(frame.locator("#page-skill-task input")).not_to_be_visible(timeout=10000)
-            page.locator("#workspace-page-report").click()
+            frame.locator("#research-workspace-actions .page-report-action").click()
             frame.get_by_text("Analysis options", exact=True).click()
             expect(frame.locator("#page-skill-task input")).to_have_value("Market and policy news analysis")
             assert calls == ["sectors"]
@@ -145,19 +146,23 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=90000)
             frame.locator("#market-quotes-refresh").click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
-            page.locator("#workspace-page-report").click()
+            frame.locator("#research-workspace-actions .page-report-action").click()
             frame.locator("#page-skill-run").click()
             assert entered.wait(10)
             if action == "cancel":
                 frame.locator("#page-skill-cancel").click()
             else:
-                page.locator('[data-workspace-view-module="market"][data-workspace-view="news"]').click()
+                frame.locator("#market-analysis-tabs").get_by_role(
+                    "tab", name=re.compile("市场新闻|Market News")
+                ).click()
             assert stopped.wait(8)
             if action == "cancel":
                 expect(frame.locator("#page-skill-status")).to_contain_text("cancelled", timeout=10000)
             if action == "navigate":
                 expect(frame.locator("#page-skill-task input")).not_to_be_visible()
-                page.locator('[data-workspace-view-module="market"][data-workspace-view="quotes"]').click()
+                frame.locator("#market-analysis-tabs").get_by_role(
+                    "tab", name=re.compile("行情与板块|Quotes and Sectors")
+                ).click()
             frame.locator("#market-quotes-refresh").click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=15000)
         except Exception:

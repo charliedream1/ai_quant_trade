@@ -39,13 +39,8 @@ MODULES: tuple[GradioModule, ...] = (
         "行情、因子、个股与推荐",
         20,
         (
-            ("quotes", "行业与概念板块"),
-            ("news", "新闻中心"),
+            ("analysis", "市场分析"),
             ("stock", "个股分析"),
-            ("macro", "宏观经济"),
-            ("relations", "关系图谱"),
-            ("resources", "资源池"),
-            ("recommendations", "股票推荐"),
         ),
     ),
     GradioModule(

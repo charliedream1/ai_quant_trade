@@ -26,6 +26,10 @@ def analysis_config():
     return yaml.safe_load((PROJECT_ROOT / "egs/config/ui/page_analysis.yaml").read_text(encoding="utf-8"))
 
 
+def preset_matches_view(preset, view):
+    return view in preset["views"] or view in preset.get("legacy_views", ())
+
+
 def portable(value):
     cfg = analysis_config()["limits"]
     if hasattr(value, "to_plotly_json"):

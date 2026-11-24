@@ -42,10 +42,15 @@
   }
   const isWorkspaceEmbedded = new URLSearchParams(window.location.search).get("embedded") === "1";
   __WORKSPACE_ROUTES__
+  let tabResizeTimer;
   document.addEventListener("click", (event) => {
     if (event.target.closest('[role="tab"]')) {
-      setTimeout(() => window.dispatchEvent(new Event("resize")), 100);
-      setTimeout(() => window.dispatchEvent(new Event("resize")), 360);
+      clearTimeout(tabResizeTimer);
+      tabResizeTimer = setTimeout(() => {
+        if (Array.from(document.querySelectorAll(".js-plotly-plot")).some((chart) => chart.getClientRects().length)) {
+          window.dispatchEvent(new Event("resize"));
+        }
+      }, 100);
     }
   });
   const bindHeaderRefresh = () => {
@@ -99,8 +104,9 @@
     });
   };
   const colorizeTables = () => {
-    document.querySelectorAll(".data-table tr").forEach((row) => {
-      if (!row.getClientRects().length) return;
+    const tables = Array.from(document.querySelectorAll(".data-table"))
+      .filter((table) => table.getClientRects().length && !table.parentElement?.closest(".data-table"));
+    tables.flatMap((table) => Array.from(table.querySelectorAll("tr"))).forEach((row) => {
       const rowText = (row.textContent || "").trim();
       const riskMetric = /回撤|波动|VaR|夏普|索提诺|Calmar|超额收益|亏损|手续费|风险/.test(rowText);
       row.querySelectorAll("td").forEach((cell) => {
@@ -169,11 +175,12 @@
     run();
   };
   const bindAiWorkbenchEntry = () => {
+    const entries = document.querySelectorAll(".ai-workbench-entry-action:not([data-ai-bound='1'])");
+    if (!entries.length) return true;
     const tab = findVisibleTab("AI工作台");
     const aiRoute = document.querySelector("#module-navigation [data-module-key='ai']")?.href || "";
     if (!tab && !aiRoute) return false;
-    document.querySelectorAll(".ai-workbench-entry-action").forEach((button) => {
-      if (button.dataset.aiBound === "1") return;
+    entries.forEach((button) => {
       button.dataset.aiBound = "1";
       button.addEventListener("click", () => {
         const target = findVisibleTab("AI工作台");
@@ -286,12 +293,15 @@
   const I18N_TECHNICAL_TEXTS = __I18N_TECHNICAL_TEXTS__;
   const I18N_STORAGE_KEY = "all-in-one-ui-lang";
   const MARKET_STORAGE_KEY = "all-in-one-ui-market";
+  let urlMarket = new URLSearchParams(location.search).get("market");
+  const selectedMarket = () => window.aiquantPageWork?.state?.market
+    || (["cn", "hk", "us"].includes(urlMarket) ? urlMarket : localStorage.getItem(MARKET_STORAGE_KEY)) || "cn";
   const marketFetch = window.fetch.bind(window);
   window.fetch = (input, init = {}) => {
     const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url, location.href);
     if (url.origin === location.origin && (url.pathname.includes("/gradio_api/") || url.pathname.startsWith("/api/"))) {
       const headers = new Headers(init.headers || (input instanceof Request ? input.headers : {}));
-      const selected = String(localStorage.getItem(MARKET_STORAGE_KEY) || "cn").toUpperCase();
+      const selected = selectedMarket().toUpperCase();
       if (["CN", "HK", "US"].includes(selected)) headers.set("X-AIQuant-Market", selected);
       return marketFetch(input, {...init, headers});
     }
@@ -476,8 +486,9 @@
     const label = market === "hk" ? "港股" : market === "us" ? "美股" : "A股";
     return document.querySelector(`#market-switcher input[type="radio"][value="${label}"]`);
   };
-  const applyMarketSelection = (market) => {
+  const applyMarketSelection = (market, edited = false) => {
     const normalizedMarket = normalizeMarketValue(market);
+    if (edited) urlMarket = normalizedMarket;
     localStorage.setItem(MARKET_STORAGE_KEY, normalizedMarket);
     updateMarketButtons(normalizedMarket);
     const radio = findMarketRadio(normalizedMarket);
@@ -506,7 +517,7 @@
     const hkButton = document.getElementById("app-market-hk");
     if (hkButton && hkButton.dataset.marketBound !== "1") {
       hkButton.dataset.marketBound = "1";
-      hkButton.addEventListener("click", () => applyMarketSelection("hk"));
+      hkButton.addEventListener("click", () => applyMarketSelection("hk", true));
     }
     if (!langButton || !cnButton || !usButton) return false;
     if (langButton.dataset.i18nBound !== "1") {
@@ -515,11 +526,11 @@
     }
     if (cnButton.dataset.marketBound !== "1") {
       cnButton.dataset.marketBound = "1";
-      cnButton.addEventListener("click", () => applyMarketSelection("cn"));
+      cnButton.addEventListener("click", () => applyMarketSelection("cn", true));
     }
     if (usButton.dataset.marketBound !== "1") {
       usButton.dataset.marketBound = "1";
-      usButton.addEventListener("click", () => applyMarketSelection("us"));
+      usButton.addEventListener("click", () => applyMarketSelection("us", true));
     }
     return true;
   };
@@ -529,12 +540,12 @@
     });
     toggleObserver.observe(document.body, { childList: true, subtree: true });
   }
-  const storedMarket = normalizeMarketValue(localStorage.getItem(MARKET_STORAGE_KEY) || "cn");
+  const storedMarket = normalizeMarketValue(selectedMarket());
   const storedLangValue = localStorage.getItem(I18N_STORAGE_KEY);
   const storedLang = storedLangValue ? normalizeLang(storedLangValue) : MARKET_LANG[storedMarket];
   applyLanguage(storedLang);
   const applyCurrentLanguage = () => {
-    applyMarketSelection(localStorage.getItem(MARKET_STORAGE_KEY) || storedMarket);
+    applyMarketSelection(selectedMarket());
     applyLanguage(localStorage.getItem(I18N_STORAGE_KEY) || storedLang);
   };
   setTimeout(applyCurrentLanguage, 300);

@@ -10,6 +10,7 @@ import gradio as gr
 from src.agent.cli_catalog import catalog_config
 from src.agent.composer_config import cli_choices
 from src.core.diagnostics_config import diagnostics_config
+from src.core.page_work import CURRENT_PAGE
 from src.core.page_work import check as check_page
 from src.data import current_market
 from src.engine.market.model_graph.config import config
@@ -18,6 +19,7 @@ from src.engine.market.model_graph.service import GraphResearchService
 from src.frontend.common.callbacks import safe
 from src.frontend.common.composer_catalog import bind_cli_catalog
 from src.frontend.service.model_relation_visuals import model_relation_figure
+from src.frontend.service.stock_research import matches_security
 
 
 def describe_status(row):
@@ -75,14 +77,15 @@ def evidence_markup(graph):
     return "".join(parts) or "<p>No supported edges in the current filter.</p>"
 
 
-def render_model_graph_panel():
+def render_model_graph_panel(symbol=None):
     service = GraphResearchService()
     # Keep original citations and English workflow labels out of substring translation.
     with gr.Group(elem_id="model-relation-panel", elem_classes=["no-i18n"]) as panel:
         with gr.Column(elem_classes=["no-i18n"]):
             gr.Markdown(config()["ui"]["help"])
             with gr.Row():
-                symbol = gr.Textbox(label="Target stock", value="")
+                if symbol is None:
+                    symbol = gr.Textbox(label="Target stock", value="")
                 backend = gr.Dropdown(
                     cli_choices(config()["providers"]), value=config()["default_backend"], label="Graph CLI backend"
                 )
@@ -160,6 +163,13 @@ def render_model_graph_panel():
             )
 
             def poll(key):
+                page = CURRENT_PAGE.get()
+                if (
+                    page
+                    and page.view_label
+                    and page.view_label not in {("market", "stock/relationships"), ("market", "relations")}
+                ):
+                    return gr.skip(), gr.skip(), gr.update(active=False)
                 if not key:
                     return "", [], gr.update(active=False)
                 row = service.detail(key)
@@ -195,13 +205,19 @@ def render_model_graph_panel():
             )
             history_refresh.click(
                 safe(
-                    lambda: gr.update(
+                    lambda target: gr.update(
                         choices=[
-                            (f"{row['request']['symbol']} · {row['status']} · {row['created_at']}", row["run_id"])
+                            (
+                                f"{row['request']['symbol']} · {row['status']} · "
+                                f"{row['request']['as_of']} · {row['created_at']}",
+                                row["run_id"],
+                            )
                             for row in service.store.history()
+                            if matches_security(row["request"], target, current_market())
                         ]
                     )
                 ),
+                inputs=symbol,
                 outputs=history,
             )
             history.change(lambda key: key, inputs=history, outputs=identifier)
@@ -234,4 +250,33 @@ def render_model_graph_panel():
                 )
 
             html_export.click(safe(save_html), inputs=[identifier, include], outputs=[html_preview, html_file])
+            symbol.change(
+                lambda: (
+                    "",
+                    "",
+                    [],
+                    None,
+                    "",
+                    {},
+                    gr.update(choices=[], value=None),
+                    gr.update(active=False),
+                    "",
+                    None,
+                    None,
+                ),
+                outputs=[
+                    identifier,
+                    status,
+                    events,
+                    plot,
+                    evidence,
+                    result,
+                    history,
+                    polling,
+                    html_preview,
+                    html_file,
+                    artifact,
+                ],
+                queue=False,
+            )
     return panel

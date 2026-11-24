@@ -12,9 +12,10 @@
     try { return embedded && parent.aiquantWorkspaceLifetime; } catch { return null; }
   };
   let state = preview ? {owner: randomOwner(), revision: 1, view: "preview"} : query.get("page_owner")
-    ? {owner: query.get("page_owner"), revision: Number(query.get("page_revision")) || 1, view: query.get("view")}
+    ? {owner: query.get("page_owner"), revision: Number(query.get("page_revision")) || 1, view: query.get("view"), market: query.get("market")}
     : parentScope() || {owner: randomOwner(), revision: 1};
   let active = true;
+  let activation;
   const controllers = new Map(), streams = new Set(), queued = new Map();
   const cancelledViews = new Set();
   const banner = () => {
@@ -64,7 +65,7 @@
       abort(); state = {...next};
     } else if (!active && !next) state = {...state, revision: state.revision + 1};
     active = true;
-    signal("activate");
+    activation = signal("activate");
     banner();
     window.dispatchEvent(new Event("aiquant:page-resumed"));
   };
@@ -77,6 +78,8 @@
     if (!isWork(url)) return nativeFetch(input, options);
     if (!active) throw new DOMException("Page navigation cancelled the request", "AbortError");
     const ticket = state.revision, controller = new AbortController();
+    if (activation) await activation;
+    if (!active || ticket !== state.revision) throw new DOMException("Stale page request", "AbortError");
     cancelledViews.delete(state.view); banner();
     controllers.set(controller, url);
     const original = options.signal || (input instanceof Request ? input.signal : null);

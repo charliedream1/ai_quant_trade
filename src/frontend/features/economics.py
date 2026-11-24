@@ -1,7 +1,5 @@
 """On-demand macroeconomic and financial views with optional model research."""
 
-from typing import Any
-
 import gradio as gr
 
 from src.data import current_market
@@ -13,10 +11,10 @@ from ..common.components import plot, table
 from .page_analysis import page_report_button
 
 
-def render_economics(service, kind, shared_symbol=None):
+def render_economics(service, kind, shared_symbol=None, *, show_report=True):
     cfg = economics_config()
     ui = cfg["ui"]
-    if shared_symbol is None:
+    if show_report and shared_symbol is None:
         page_report_button()
     gr.Markdown(ui["intro"])
     kind_state = gr.State(kind)
@@ -45,23 +43,36 @@ def render_economics(service, kind, shared_symbol=None):
         refresh = gr.Checkbox(label=ui["refresh"], value=False)
         load = gr.Button(ui["load"], variant="primary", elem_id=kind + "-load")
     status = gr.Markdown(elem_id=kind + "-status")
-    financial_outputs: list[Any] = []
     if kind != "macro":
         gr.Markdown("Company financial analysis: mainland statement coverage; load once to inspect all sections.")
-        with gr.Tabs(elem_id="financial-analysis-tabs"):
-            for title in ui["financial_sections"]:
-                with gr.Tab(title):
-                    financial_outputs.append(table(title, 360))
-            with gr.Tab("Financial history"):
-                financial_outputs.append(table("Financial history", 380))
-        financial_outputs.append(gr.Markdown())
+        titles = [*ui["financial_sections"], ui.get("financial_history", "Financial history")]
+        section = gr.Radio(
+            [(title, index) for index, title in enumerate(titles)],
+            value=0,
+            label="财务明细",
+            elem_id="financial-analysis-sections",
+        )
+        statement = table("财务明细", 360, elem_id="financial-statement-details")
+        finance_note = gr.Markdown()
     overview = table(ui["overview"], 420, elem_id=kind + "-overview", elem_classes=["home-semantic-table"])
     chart = plot(label=ui["history"])
     with gr.Accordion(ui["raw"], open=False):
         raw = gr.JSON()
         snapshot = gr.Textbox(label=ui["snapshot"], interactive=False, elem_id=kind + "-snapshot")
-    if financial_outputs:
-        raw.change(safe(financial_sections), inputs=raw, outputs=financial_outputs, queue=False)
+    if kind != "macro":
+
+        def show_statement(data, index):
+            *sections, note = financial_sections(data)
+            return sections[int(index or 0)], note
+
+        for event in (raw.change, section.input):
+            event(safe(show_statement), inputs=[raw, section], outputs=[statement, finance_note], queue=False)
+    if shared_symbol is not None:
+        shared_symbol.change(
+            lambda: ("", [], None, {}, ""),
+            outputs=[status, overview, chart, raw, snapshot],
+            queue=False,
+        )
     with gr.Row():
         model = gr.Dropdown(service.economic_models(), value=0, label=ui["model"])
         generate = gr.Button(ui["report"], elem_id=kind + "-report")

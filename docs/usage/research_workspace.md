@@ -15,13 +15,19 @@ and original-file preview; large answers and references scroll separately.
 
 ## Company and sector research
 
+Use **Market Research** in the sidebar to choose **Market Analysis** or
+**Stock Analysis**. Each page has its own row of tabs and restores the last
+selection within the workspace. Existing links to the earlier market views open
+the corresponding tab directly.
+
 **Stock Analysis** shares one security between **Fundamentals**, **Technical
 analysis**, **Financial analysis**, **News and disclosures**, **Relationships**,
 and **Events and risk**. Enter the company once, then load the relevant section.
 The company overview includes the sector and valuation fields reported by the
 quote provider. The risk view reports daily volatility, maximum drawdown over
 the available history, and the latest reported turnover. The relationships
-view lists matching saved graphs and opens the relationship workspace.
+view contains rule-based and CLI-assisted graphs, history scoped to the
+selected security, evidence and exports.
 The events view uses the announcement dates supplied with available mainland
 financial statements and shows the source for each date.
 Switching sections cancels unfinished transient reads. Existing fundamentals

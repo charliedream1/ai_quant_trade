@@ -1,6 +1,7 @@
 """Actual Gradio navigation cancels blocked reads without dropping drafts or other windows."""
 
 import json
+import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Event, Thread
 from time import monotonic
@@ -74,14 +75,20 @@ def test_two_window_navigation_cancels_last_read(cli_command, monkeypatch, tmp_p
             first_frame = first.frame_locator("iframe.workspace-frame.active")
             first_frame.locator("#fundamentals-symbol textarea").fill("600036")
             started = monotonic()
-            first.locator('[data-workspace-view="quotes"]').click()
+            first.locator('[data-workspace-view="analysis"]').click()
+            first_frame.locator("#market-analysis-tabs").get_by_role(
+                "tab", name=re.compile("行情与板块|Quotes and Sectors")
+            ).click()
             expect(first_frame.locator("#market-quotes-refresh")).to_be_visible(timeout=3000)
             switch_seconds = monotonic() - started
             assert switch_seconds < 3
             wait_for(lambda: any(len(job.consumers) == 1 for job in page_reads.JOBS.values()), 3)
             assert page_reads.BUSY
             assert not closed.is_set()
-            second.locator('[data-workspace-view="quotes"]').click()
+            second.locator('[data-workspace-view="analysis"]').click()
+            second.frame_locator("iframe.workspace-frame.active").locator("#market-analysis-tabs").get_by_role(
+                "tab", name=re.compile("行情与板块|Quotes and Sectors")
+            ).click()
             wait_for(lambda: not page_reads.BUSY, 8)
             assert closed.wait(3), "Cancelling the last consumer must close its actual source connection"
             with FileLock(str(folder / "source.lock"), timeout=0.1):
@@ -167,7 +174,10 @@ def test_preview_draft_survives_view_navigation(client, cli_command, tmp_path):
             expect(reader.locator("#file-title")).to_have_text("draft.md", timeout=15000)
             reader.locator("#edit-file").click()
             reader.locator("#markdown-editor").fill("# Unsaved draft retained")
-            page.locator('[data-workspace-view="quotes"]').click()
+            page.locator('[data-workspace-view="analysis"]').click()
+            frame.locator("#market-analysis-tabs").get_by_role(
+                "tab", name=re.compile("行情与板块|Quotes and Sectors")
+            ).click()
             expect(frame.locator(".file-reader-panel")).to_be_hidden()
             expect(frame.locator("#market-quotes-refresh")).to_be_visible()
             page.locator('[data-workspace-view="stock"]').click()

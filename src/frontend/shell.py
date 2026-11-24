@@ -405,20 +405,34 @@ _SHELL_JS_TEMPLATE = r"""
     const known = new Map(modules.map((item) => [item.key, item]));
     const viewSelections = new Map();
     const initialUrl = new URL(window.location.href);
+    const readMarket = (value) => ["cn", "hk", "us"].includes(String(value).toLowerCase()) ? String(value).toLowerCase() : "";
+    let currentMarket = readMarket(initialUrl.searchParams.get("market")) || readMarket(localStorage.getItem(marketStorageKey)) || "cn";
     const initial = resolveTarget(initialUrl.searchParams.get("module") || modules[0]?.key, initialUrl.searchParams.get("view"));
     const initialKey = initial.module;
     const initialView = initial.view;
-    const validContext = (key, value) => routing.context_values?.[key] ? routing.context_values[key].includes(value) : /^[0-9]+$/.test(value || "");
+    const validContext = (key, value) => routing.context_values?.[key]
+      ? routing.context_values[key].includes(value)
+      : new RegExp(routing.context_patterns?.[key] || "^[0-9]+$").test(value || "");
     const targets = new Map();
     let routeSequence = 0;
     const targetKey = (module, view) => `${module}/${view}`;
     const targetState = (module, view) => targets.get(targetKey(module, view)) || {context: {}, tab: "", pipeline_version: "", nonce: `plain:${module}/${view}`};
+    const validTab = (key, tab) => {
+      const group = routing.tab_groups[key];
+      const name = group?.aliases?.[tab] || tab;
+      if (group) return Object.hasOwn(group.tabs, name) ? name : group.default;
+      return routing.tabs.includes(tab) ? tab : "";
+    };
+    const scopedView = (module, view) => {
+      const key = targetKey(module, view);
+      return routing.tab_groups[key] ? `${view}/${validTab(key, targetState(module, view).tab)}` : view;
+    };
     const remember = (module, view, data) => {
       const key = targetKey(module, view);
       const fields = routing.context_targets[key] || [];
       targets.set(key, {
         context: Object.fromEntries(Object.entries(data.context || {}).filter(([name,value]) => fields.includes(name) && validContext(name,value))),
-        tab: routing.tabs.includes(data.tab) ? data.tab : "",
+        tab: validTab(key, data.tab),
         pipeline_version: key === routing.pipeline_target && /^[0-9]+$/.test(String(data.pipeline_version || "")) ? String(data.pipeline_version) : "",
         nonce: `route:${++routeSequence}`,
       });
@@ -447,7 +461,7 @@ _SHELL_JS_TEMPLATE = r"""
         // Backend revision invalidation is independent of the old frame's rendering work.
         frames.get(old.module)?.contentWindow.postMessage({type: "aiquant:deactivate", revision: old.revision}, location.origin);
       }
-      const scope = {owner: pageOwner, revision: ++pageRevision, module, view};
+      const scope = {owner: pageOwner, revision: ++pageRevision, module, view, market: currentMarket};
       window.aiquantWorkspaceLifetime = scope;
       lifetime("activate", scope);
       return scope;
@@ -476,7 +490,7 @@ _SHELL_JS_TEMPLATE = r"""
     const appBase = appMatch ? `${appMatch[1]}/` : "/app/";
     const moduleUrl = (item, embedded = true) => {
       const scope = window.aiquantWorkspaceLifetime;
-      return `${appBase}${item.slug}/${embedded ? `?embedded=1&page_owner=${scope.owner}&page_revision=${scope.revision}&view=${encodeURIComponent(scope.view)}` : ""}`;
+      return `${appBase}${item.slug}/?market=${currentMarket}${embedded ? `&embedded=1&page_owner=${scope.owner}&page_revision=${scope.revision}&view=${encodeURIComponent(scope.view)}` : ""}`;
     };
     const selectedView = (item) => {
       const views = item.views || [];
@@ -552,10 +566,11 @@ _SHELL_JS_TEMPLATE = r"""
         dirtyModules.delete(activeKey);
         frames.get(activeKey)?.contentWindow.postMessage({type:"aiquant:preview-discard"}, location.origin);
       }
-      advancePage(item.key, selectedView(item));
+      advancePage(item.key, scopedView(item.key, selectedView(item)));
       activeKey = item.key;
       activeView = selectedView(item);
-      reportButton.hidden = !routing.report_views.includes(`${activeKey}/${activeView}`);
+      reportButton.hidden = Boolean(routing.tab_groups[targetKey(activeKey, activeView)])
+        || !routing.report_views.includes(`${activeKey}/${activeView}`);
       viewSelections.set(item.key, activeView);
       buttons.forEach((button) => {
         const active = button.dataset.workspaceModule === item.key;
@@ -587,10 +602,13 @@ _SHELL_JS_TEMPLATE = r"""
       if (options.history !== false) {
         const url = new URL(window.location.href);
         url.searchParams.set("module", item.key);
+        if (item.key === "market") url.searchParams.set("market", currentMarket);
         if (activeView) url.searchParams.set("view", activeView);
         else url.searchParams.delete("view");
         const target = targetState(item.key, activeView);
-        if (target.tab) url.searchParams.set("tab", target.tab);
+        if (target.tab || routing.tab_groups[targetKey(item.key, activeView)]) {
+          url.searchParams.set("tab", validTab(targetKey(item.key, activeView), target.tab));
+        }
         else url.searchParams.delete("tab");
         if (target.pipeline_version) url.searchParams.set("pipeline_version", target.pipeline_version);
         else url.searchParams.delete("pipeline_version");
@@ -608,14 +626,27 @@ _SHELL_JS_TEMPLATE = r"""
       select(module);
       return window.aiquantWorkspaceLifetime;
     };
-    window.aiquantSelectSubview = (subview) => {
-      const scope = advancePage(activeKey, `${activeView}/${subview}`, true);
+    window.aiquantSelectSubview = (subview, contextChanged = false) => {
+      const key = targetKey(activeKey, activeView), group = routing.tab_groups[key];
+      const target = targetState(activeKey, activeView);
+      if (!group || !Object.hasOwn(group.tabs, subview)) return null;
+      const scope = advancePage(activeKey, `${activeView}/${subview}`, contextChanged);
+      if (!contextChanged) {
+        targets.set(key, {...target, tab: subview, nonce: `route:${++routeSequence}`});
+        const url = new URL(location.href);
+        url.searchParams.set("module", activeKey);
+        url.searchParams.set("view", activeView);
+        url.searchParams.set("tab", subview);
+        url.searchParams.set("market", currentMarket);
+        history.pushState({}, "", url);
+        activeUrl = url.href;
+      }
       frames.get(activeKey)?.contentWindow.aiquantPageWork?.activate(scope);
       return scope;
     };
     window.addEventListener("pageshow", (event) => {
       if (event.persisted && activeKey) {
-        advancePage(activeKey, activeView, true);
+        advancePage(activeKey, scopedView(activeKey, activeView), true);
         postView(frames.get(activeKey), known.get(activeKey));
       }
     });
@@ -646,10 +677,12 @@ _SHELL_JS_TEMPLATE = r"""
     refreshButton.addEventListener("click", () => {
       const frame = frames.get(activeKey);
       if (!frame) return;
-      const scope = advancePage(activeKey, activeView, true);
+      const scope = advancePage(activeKey, scopedView(activeKey, activeView), true);
       const url = new URL(frame.src);
       delete frame.dataset.routesReady;
       url.searchParams.set("page_revision", scope.revision);
+      url.searchParams.set("view", scope.view);
+      url.searchParams.set("market", currentMarket);
       setStatus("正在刷新当前模块...");
       frame.src = url.href;
     });
@@ -687,27 +720,47 @@ _SHELL_JS_TEMPLATE = r"""
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       applyShellTheme(next);
     });
+    const applyMarket = (market) => {
+      if (!market || currentMarket === market) return;
+      currentMarket = market;
+      if (activeKey === "market") {
+        for (const view of ["analysis", "stock"]) {
+          targets.set(targetKey("market", view), {...targetState("market", view), context: {}});
+        }
+        const locationUrl = new URL(location.href);
+        locationUrl.searchParams.set("market", currentMarket);
+        locationUrl.searchParams.delete("symbol");
+        locationUrl.searchParams.delete("graph_mode");
+        history.replaceState({}, "", locationUrl);
+      }
+      shell.querySelectorAll("[data-workspace-market]").forEach((item) => {
+        item.classList.toggle("active", item.dataset.workspaceMarket === currentMarket);
+      });
+      const frame = frames.get(activeKey);
+      if (frame) {
+        delete frame.dataset.routesReady;
+        setStatus("正在切换市场...");
+        const scope = advancePage(activeKey, scopedView(activeKey, activeView), true);
+        const url = new URL(frame.src);
+        url.searchParams.set("page_revision", scope.revision);
+        url.searchParams.set("view", scope.view);
+        url.searchParams.set("market", currentMarket);
+        frame.src = url.href;
+      }
+    };
     shell.querySelectorAll("[data-workspace-market]").forEach((button) => {
       const market = button.dataset.workspaceMarket;
-      button.classList.toggle("active", (localStorage.getItem(marketStorageKey) || "cn") === market);
+      button.classList.toggle("active", currentMarket === market);
       button.addEventListener("click", () => {
         localStorage.setItem(marketStorageKey, market);
-        shell.querySelectorAll("[data-workspace-market]").forEach((item) => {
-          item.classList.toggle("active", item.dataset.workspaceMarket === market);
-        });
-        const frame = frames.get(activeKey);
-        if (frame) {
-          delete frame.dataset.routesReady;
-          setStatus("正在切换市场...");
-          frame.contentWindow.location.reload();
-        }
+        applyMarket(market);
       });
     });
     const languageButton = shell.querySelector("#app-language-toggle");
     if (languageButton) {
       languageButton.addEventListener("click", () => {
         requestAnimationFrame(() => {
-        const market = localStorage.getItem(marketStorageKey) || "cn";
+        const market = currentMarket;
         shell.querySelectorAll("[data-workspace-market]").forEach((item) => {
           item.classList.toggle("active", item.dataset.workspaceMarket === market);
         });
@@ -762,6 +815,7 @@ _SHELL_JS_TEMPLATE = r"""
         if (sender.dataset.moduleKey !== activeKey) return;
         const destination = resolveTarget(event.data.module, event.data.view);
         if (!known.has(destination.module)) return;
+        if (destination.module === "market") applyMarket(readMarket(event.data.market));
         const requested = String(destination.view || "");
         if (known.get(destination.module).views.some((item) => item.key === requested)) viewSelections.set(destination.module, requested);
         remember(destination.module, selectedView(known.get(destination.module)), {...event.data, tab: destination.tab || event.data.tab});
@@ -773,6 +827,7 @@ _SHELL_JS_TEMPLATE = r"""
     window.addEventListener("popstate", () => {
       const url = new URL(window.location.href);
       const destination = resolveTarget(url.searchParams.get("module") || modules[0]?.key, url.searchParams.get("view"));
+      applyMarket(readMarket(url.searchParams.get("market")));
       const key = destination.module;
       const view = destination.view;
       readUrl(url, destination);
@@ -787,7 +842,7 @@ _SHELL_JS_TEMPLATE = r"""
       const item = known.get(destination.module);
       if (!item || !item.views.some(view => view.key === destination.view)) return;
       viewSelections.set(item.key, destination.view);
-      remember(item.key, destination.view, {context: {task_id: String(data.task_id || "")}});
+      remember(item.key, destination.view, {tab: destination.tab, context: {task_id: String(data.task_id || "")}});
       select(item.key);
     });
 
