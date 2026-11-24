@@ -37,7 +37,7 @@ def test_all_registered_view_tasks_mount_without_generation(cli_command, monkeyp
                 previous = (module, view)
                 frame = page.frame_locator("iframe.workspace-frame.active")
                 if group:
-                    selected_tab = frame.locator(f'#{group["id"]} > .tab-wrapper [data-tab-id="{tab}"]')
+                    selected_tab = frame.locator(f'#{group["id"]} [data-tab-id="{tab}"]')
                     selected_tab.click(timeout=90000)
                     expect(selected_tab).to_have_attribute("aria-selected", "true")
                     frame.locator("#research-workspace-actions .page-report-action").click(timeout=90000)

@@ -197,6 +197,21 @@ AI 分析: Analyze with AI
 选股与验证: Screening and Validation
 查看所选股票: Open selected stock
 财务明细: Financial statement details
+正在切换标的…: Changing security…
+重试切换标的: Retry changing security
+模型报告设置与历史: Model report settings and history
+图谱历史与证据: Graph history and evidence
+正在提交回测…: Submitting backtest…
+回测策略: Backtest strategy
+筛选资源池: Screening resource pool
+刷新资源池选项: Refresh resource pools
+刷新策略选项: Refresh strategies
+公司新闻: Company news
+历史财报公告: Historical financial disclosures
+点击刷新规则数据查看指数和板块。各区结果独立更新。: Refresh rule data to load indices and sectors. Each section updates as results arrive.
+设置筛选条件后查询新闻。: Select filters and search for news.
+公司新闻与研报按来源展示。发行人公告覆盖见下方说明。: Company news and research show their sources. See the coverage note for issuer disclosures.
+当前页面提供新闻与研报。已收录财报公告日期可在「事件与风险」查看。: This view includes news and research. See Events and Risk for available financial announcement dates.
 运行 AI 分析: Run AI analysis
 当前页面 AI 分析: AI analysis for this page
 选择 CLI 和模型，让大模型分析当前页面的数据。完成后可预览和下载 HTML 报告。: Select a CLI and model to analyze this page. Preview or download the HTML report when it is ready.

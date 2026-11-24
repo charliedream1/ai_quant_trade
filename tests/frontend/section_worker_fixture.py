@@ -5,6 +5,7 @@ import sys
 from functools import partial
 from pathlib import Path
 from threading import Event
+from unittest.mock import patch
 
 
 class Quotes:
@@ -27,9 +28,8 @@ def serve(connection):
     if sys.platform != "win32":
         os.setsid()
     from src.frontend.read_worker import invoke, transferable
-    from src.frontend.service import market
+    from src.frontend.service import market_quotes
 
-    original = market.QuoteService
     while True:
         try:
             request = connection.recv()
@@ -38,12 +38,9 @@ def serve(connection):
         if request is None:
             return
         root = Path(request[3].data_dir)
-        if request[0] == "market_overview":
-            market.QuoteService = partial(Quotes, root)
-        try:
+        factory = partial(Quotes, root) if request[0] == "market_overview" else market_quotes.QuoteService
+        with patch.object(market_quotes, "QuoteService", factory):
             success, value = invoke(
                 request, lambda index, value: connection.send(("panel", index, transferable(value)))
             )
             connection.send((success, value))
-        finally:
-            market.QuoteService = original

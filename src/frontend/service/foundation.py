@@ -74,6 +74,8 @@ from src.strategy import StrategyStore, StrategyValidator
 from src.strategy.cli_builder import CLI_PROVIDER_ALIASES, CLI_PROVIDERS, CliBuilder
 
 from .chat_content import chat_content_text
+from .figure_styles import COLORS, FONT_FAMILY
+from .market_quotes import SECTOR_COLUMNS
 from .view_primitives import (
     _DAILY_UI_CACHE,
     _DAILY_UI_CACHE_LOCK,
@@ -129,18 +131,6 @@ LEARNING_FILES = [
     *sorted((PROJECT_ROOT / "docs" / "research").rglob("*.md")),
 ]
 
-FONT_FAMILY = "Microsoft YaHei, Segoe UI, Arial, sans-serif"
-COLORS = {
-    "ink": "#111a20",
-    "muted": "#60727b",
-    "grid": "#d8e7eb",
-    "positive": "#d94c62",
-    "negative": "#0b9f8f",
-    "strategy": "#0b8f86",
-    "benchmark": "#c2892d",
-    "blue": "#2f74d0",
-    "violet": "#805ad5",
-}
 RELATION_TYPE_LABELS = {
     "industry": "行业",
     "concept": "概念",
@@ -266,18 +256,6 @@ AI_WORKBENCH_PRESET_FILE = PROJECT_ROOT / "egs" / "config" / "platform" / "ai_wo
 QUANT_WORKFLOW_SOP_FILE = PROJECT_ROOT / "egs" / "config" / "platform" / "quant_workflow_sops.yaml"
 LEARNING_CATEGORY_KEY_BY_LABEL = dict(LEARNING_CATEGORY_CHOICES)
 WATCHLIST_GROUP_COLUMNS = ["id", "name", "symbol_count", "sort_order", "created_at", "updated_at"]
-SECTOR_COLUMNS = [
-    "code",
-    "name",
-    "change_pct",
-    "leader",
-    "amount",
-    "up_count",
-    "down_count",
-    "board",
-    "data_source",
-    "updated_at",
-]
 ACTION_COLUMNS = ["priority", "category", "item", "status", "next_step", "updated_at"]
 MONITOR_COLUMNS = ["module", "signal", "status", "evidence", "updated_at"]
 MARKET_STYLE_COLUMNS = ["dimension", "leader", "score", "evidence", "monitor_point"]

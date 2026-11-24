@@ -53,7 +53,7 @@ def test_loaded_page_prompt_preview_and_context_off(cli_command, client, monkeyp
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=90000)
-            frame.locator("#market-quotes-refresh").click()
+            frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]').click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
             frame.locator("#ai-floating-button").click()
             panel = frame.locator("#ai-floating-panel")

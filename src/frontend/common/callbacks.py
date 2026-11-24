@@ -143,7 +143,7 @@ def _callback_run(operation: str, source: str) -> Iterator[None]:
             REQUEST_MARKET.reset(token)
 
 
-def safe(fn: Callable[..., Any], *, cancel_outputs: int = 1) -> Callable[..., Any]:
+def safe(fn: Callable[..., Any], *, cancel_outputs: int = 1, section_styles: bool = True) -> Callable[..., Any]:
     """Preserve streaming registration and handle errors throughout iteration."""
     operation, source = callback_location(fn)
     output_count = policy()["progressive_methods"].get(operation.removeprefix("FrontendService."))
@@ -179,6 +179,7 @@ def safe(fn: Callable[..., Any], *, cancel_outputs: int = 1) -> Callable[..., An
             yield from _context_iterator(execute())
 
         sections.__dict__["aiquant_progressive"] = True
+        sections.__dict__["aiquant_section_styles"] = section_styles
         return sections
 
     if isgeneratorfunction(fn):
@@ -230,10 +231,11 @@ def enable_progressive_queue(blocks):
     for function in blocks.fns.values():
         if getattr(function.fn, "aiquant_progressive", False):
             function.queue = True
-            function.show_progress = "hidden"
+            use_styles = getattr(function.fn, "aiquant_section_styles", True)
+            function.show_progress = "hidden" if use_styles else "minimal"
             function.fn.__dict__["aiquant_output_classes"] = [
                 list(component.elem_classes or [])
-                if hasattr(component, "elem_classes") and not isinstance(component, (gr.HTML, gr.Plot))
+                if use_styles and hasattr(component, "elem_classes") and not isinstance(component, (gr.HTML, gr.Plot))
                 else None
                 for component in function.outputs
             ]

@@ -58,8 +58,8 @@ def test_installed_server_rule_page_and_assets(tmp_path):
                     page = browser.new_page(viewport={"width": 1600, "height": 1100})
                     page.goto(base + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
                     frame = page.frame_locator("iframe.workspace-frame.active")
-                    expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
-                    frame.locator("#market-quotes-refresh").click()
+                    expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=90000)
+                    frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]').click()
                     expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
                     page.screenshot(path=str(tmp_path / "installed-market.png"), full_page=True)
                 finally:

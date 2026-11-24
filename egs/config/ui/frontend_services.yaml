@@ -840,8 +840,8 @@
       "DashboardServiceMixin"
     ],
     "market_overview": [
-      "src.frontend.service.market",
-      "MarketServiceMixin"
+      "src.frontend.service.market_quotes",
+      "MarketQuotesMixin"
     ],
     "mcp_action": [
       "src.frontend.service.admin",

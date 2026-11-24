@@ -79,7 +79,7 @@ def test_two_window_navigation_cancels_last_read(cli_command, monkeypatch, tmp_p
             first_frame.locator("#market-analysis-tabs").get_by_role(
                 "tab", name=re.compile("行情与板块|Quotes and Sectors")
             ).click()
-            expect(first_frame.locator("#market-quotes-refresh")).to_be_visible(timeout=3000)
+            expect(first_frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=3000)
             switch_seconds = monotonic() - started
             assert switch_seconds < 3
             wait_for(lambda: any(len(job.consumers) == 1 for job in page_reads.JOBS.values()), 3)
@@ -139,7 +139,7 @@ def test_cold_module_build_releases_queue_on_navigation(cli_command, monkeypatch
             began = monotonic()
             page.locator('[data-workspace-module="market"]').click()
             expect(page.locator('iframe.workspace-frame.active[data-module-key="market"]')).to_be_visible(timeout=3000)
-            expect(page.frame_locator("iframe.workspace-frame.active").locator("#market-quotes-refresh")).to_be_visible(
+            expect(page.frame_locator("iframe.workspace-frame.active").locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(
                 timeout=20000
             )
             wait_for(lambda: not page_reads.BUSY, 8)
@@ -179,7 +179,7 @@ def test_preview_draft_survives_view_navigation(client, cli_command, tmp_path):
                 "tab", name=re.compile("行情与板块|Quotes and Sectors")
             ).click()
             expect(frame.locator(".file-reader-panel")).to_be_hidden()
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible()
+            expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible()
             page.locator('[data-workspace-view="stock"]').click()
             expect(frame.locator(".file-reader-panel")).to_be_visible()
             expect(reader.locator("#markdown-editor")).to_have_value("# Unsaved draft retained")

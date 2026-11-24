@@ -46,7 +46,7 @@ def test_full_homepage_survives_initial_market_sync_refresh_and_return(cli_comma
             expect(frame.locator("#home-data-status")).not_to_have_text(original, timeout=60000)
             complete_home(frame)
             page.locator('[data-workspace-module="market"]').click()
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=60000)
+            expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=60000)
             began = monotonic()
             page.locator('[data-workspace-module="dashboard"]').click()
             complete_home(frame)

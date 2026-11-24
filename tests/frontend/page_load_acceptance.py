@@ -44,7 +44,7 @@ def inspect(base, output):
             page.screenshot(path=str(output / "cold-home.png"))
             start = monotonic()
             page.locator('[data-workspace-module="market"]').click()
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
+            expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=90000)
             results["cold_market_module_seconds"] = round(monotonic() - start, 3)
             start = monotonic()
             page.locator('[data-workspace-module="dashboard"]').click()

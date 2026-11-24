@@ -449,11 +449,20 @@
     if (!scope || i18nApplying) return;
     i18nApplying = true;
     try {
-      const elements = scope === document.body ? Array.from(scope.querySelectorAll("*")) : [scope, ...Array.from(scope.querySelectorAll("*"))];
-      elements.forEach((element) => translateElementAttributes(element));
-      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+      const hiddenResearch = ".research-page:not([data-research-visible]), .research-native-tabs > .tab-wrapper";
+      if (scope.matches(hiddenResearch)) return;
+      if (scope !== document.body) translateElementAttributes(scope);
+      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+        acceptNode: (node) => node.nodeType === Node.ELEMENT_NODE && node.matches(hiddenResearch)
+          ? NodeFilter.FILTER_REJECT
+          : NodeFilter.FILTER_ACCEPT,
+      });
       let node = walker.nextNode();
-      while (node) { translateTextNode(node); node = walker.nextNode(); }
+      while (node) {
+        if (node.nodeType === Node.ELEMENT_NODE) translateElementAttributes(node);
+        else translateTextNode(node);
+        node = walker.nextNode();
+      }
     } finally {
       i18nApplying = false;
     }
@@ -467,6 +476,7 @@
     if (previous && event.target.value === previous.rendered) event.target.value = previous.source;
   });
   document.addEventListener("focusout", scheduleTranslate);
+  document.addEventListener("aiquant:research-page-shown", scheduleTranslate);
   const i18nObserver = new MutationObserver((mutations) => {
     if (i18nApplying) return;
     for (const mutation of mutations) {

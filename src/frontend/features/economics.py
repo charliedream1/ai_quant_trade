@@ -67,23 +67,18 @@ def render_economics(service, kind, shared_symbol=None, *, show_report=True):
 
         for event in (raw.change, section.input):
             event(safe(show_statement), inputs=[raw, section], outputs=[statement, finance_note], queue=False)
-    if shared_symbol is not None:
-        shared_symbol.change(
-            lambda: ("", [], None, {}, ""),
-            outputs=[status, overview, chart, raw, snapshot],
-            queue=False,
-        )
-    with gr.Row():
-        model = gr.Dropdown(service.economic_models(), value=0, label=ui["model"])
-        generate = gr.Button(ui["report"], elem_id=kind + "-report")
-    process = gr.Textbox(label=ui["report_status"], lines=5, max_lines=8, elem_id=kind + "-report-status")
-    preview = gr.HTML(elem_id=kind + "-report-preview")
-    download = gr.File(label=ui["download"])
-    with gr.Row():
-        previous = gr.Textbox(label=ui["previous"], elem_id=kind + "-run-id")
-        reopen = gr.Button(ui["reopen"])
+    with gr.Accordion("模型报告设置与历史", open=False):
+        with gr.Row():
+            model = gr.Dropdown(service.economic_models(), value=0, label=ui["model"])
+            generate = gr.Button(ui["report"], elem_id=kind + "-report")
+        process = gr.Textbox(label=ui["report_status"], lines=5, max_lines=8, elem_id=kind + "-report-status")
+        preview = gr.HTML(elem_id=kind + "-report-preview")
+        download = gr.File(label=ui["download"])
+        with gr.Row():
+            previous = gr.Textbox(label=ui["previous"], elem_id=kind + "-run-id")
+            reopen = gr.Button(ui["reopen"])
     load.click(
-        safe(service.economic_load),
+        safe(service.economic_load, section_styles=False),
         inputs=[kind_state, series, symbol, period, peers, refresh],
         outputs=[status, overview, chart, raw, snapshot],
     )
@@ -93,3 +88,18 @@ def render_economics(service, kind, shared_symbol=None, *, show_report=True):
         outputs=[process, preview, download, previous],
     )
     reopen.click(safe(service.economic_open), inputs=previous, outputs=[process, preview, download, previous])
+    if kind == "macro":
+        return []
+    return [
+        (status, ""),
+        (overview, []),
+        (chart, None),
+        (raw, {}),
+        (snapshot, ""),
+        (statement, []),
+        (finance_note, ""),
+        (process, ""),
+        (preview, ""),
+        (download, None),
+        (previous, ""),
+    ]

@@ -93,7 +93,6 @@ read_methods:
   - stock_events
   - news
   - refresh_news
-  - news_detail
   - economic_load
   - economic_open
   - security_master_search

@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from contextvars import copy_context
+from html import escape
 from typing import cast
+from urllib.parse import urlsplit
 
 import gradio as gr
 
-from src.core.page_work import policy
 from src.core.panel_updates import OBSERVATION_READY, panel_ready, panel_values
 from src.core.work_progress import progress
 from src.engine.market.news_topics import policy as news_topic_policy
@@ -22,7 +21,6 @@ from .foundation import (
     FACTOR_ALERT_COLUMNS,
     FACTOR_METRIC_COLUMNS,
     FACTOR_SNAPSHOT_COLUMNS,
-    INDEX_COLUMNS,
     NEWS_COLUMNS,
     QLIB_CONFIG_COLUMNS,
     QLIB_RUN_COLUMNS,
@@ -40,7 +38,6 @@ from .foundation import (
     RELATION_PATH_COLUMNS,
     RESOURCE_POOL_COLUMNS,
     RESOURCE_POOL_ITEM_COLUMNS,
-    SECTOR_COLUMNS,
     SECURITY_MASTER_COLUMNS,
     WATCHLIST_COLUMNS,
     WATCHLIST_GROUP_COLUMNS,
@@ -79,9 +76,8 @@ from .foundation import (
     uploaded_file_path,
     utc_now_iso,
 )
-from .home_tables import home_styled_frame
+from .market_quotes import MarketQuotesMixin
 from .relation_layout import evidence_html, plot_metadata
-from .shared_observations import shared_observation
 from .stock_indicators import indicator_rows
 from .stock_research import StockResearchMixin
 from .visuals import (
@@ -95,7 +91,6 @@ from .visuals import (
     factor_style_exposure_figure,
     keyword_figure,
     kline_figure,
-    market_bar_figure,
     recommend_factor_figure,
     recommend_group_compare_figure,
     relation_analysis_frame,
@@ -105,7 +100,7 @@ from .visuals import (
 )
 
 
-class MarketServiceMixin(StockResearchMixin):
+class MarketServiceMixin(StockResearchMixin, MarketQuotesMixin):
     """Callbacks owned by the market frontend domain."""
 
     def relation_evidence_options(self, figure: Any) -> dict[str, Any]:
@@ -135,49 +130,6 @@ class MarketServiceMixin(StockResearchMixin):
         edges = (meta or {}).get("relation_edges") or []
         center = next((str(row["id"]) for row in nodes if row.get("is_center")), str(nodes[0]["id"]) if nodes else "")
         return relation_figure(nodes, edges, center)
-
-    def market_overview(self, board: str, limit: Any, selection="balanced") -> tuple[Any, Any, go.Figure]:
-        quotes = QuoteService()
-        limit_value = max(1, min(int(limit or 20), 100))
-        max_age = policy()["market_refresh_cache_seconds"]
-        progress("Fetching market data")
-        with ThreadPoolExecutor(max_workers=2) as pool:
-            index_future = pool.submit(
-                copy_context().run,
-                shared_observation,
-                "market_indices",
-                lambda: quotes.indices(refresh=True),
-                max_age_seconds=max_age,
-            )
-            sector_future = pool.submit(
-                copy_context().run,
-                shared_observation,
-                ["market_rankings", board, limit_value, selection],
-                lambda: quotes.sector_rankings(
-                    board=board or "industry", limit=limit_value, selection=selection, refresh=True
-                ),
-                max_age_seconds=max_age,
-            )
-            results = {}
-            failures = []
-            for future in as_completed((index_future, sector_future)):
-                index = int(future is sector_future)
-                try:
-                    results[index] = future.result()
-                except Exception as exc:
-                    failures.append(exc)
-                    continue
-                columns = ["ranking", *SECTOR_COLUMNS] if index else INDEX_COLUMNS
-                panel_ready(index, home_styled_frame(to_frame(results[index], columns)))
-        if failures:
-            raise failures[0]
-        indices, sectors = results[0], results[1]
-        index_table = home_styled_frame(to_frame(indices, INDEX_COLUMNS))
-        sector_table = home_styled_frame(to_frame(sectors, ["ranking", *SECTOR_COLUMNS]))
-        progress("Building charts")
-        chart = market_bar_figure(sectors)
-        panel_ready(2, chart)
-        return index_table, sector_table, chart
 
     def factor_default_universe(self) -> str:
         return FactorMonitorService().default_universe_text()
@@ -497,7 +449,7 @@ class MarketServiceMixin(StockResearchMixin):
         )
         frame = to_frame(
             result["items"][:page_size],
-            [*NEWS_COLUMNS, "region", "topics", "relevance_reasons", "affected_markets", "time_status"],
+            ["title", "source", "published_at", "region", "topics", "id"],
         )
         status = result.get("availability") or f"共找到 {result['total']} 条新闻 · {start[:10]} — {end[:10]}"
         panel_ready(0, frame)
@@ -516,14 +468,22 @@ class MarketServiceMixin(StockResearchMixin):
     def news_detail(self, news_id: Any) -> str:
         row = Repository().get("news_items", require_id(news_id, "新闻 ID"))
         keywords = json_loads(row.get("keywords"), [])
+        address = str(row.get("url") or "")
+        try:
+            parsed = urlsplit(address)
+            external = parsed.scheme in {"http", "https"} and bool(parsed.hostname)
+        except ValueError:
+            external = False
+        link = (
+            f'<a href="{escape(address, quote=True)}" target="_blank" rel="noopener noreferrer">查看原文</a>'
+            if external
+            else ""
+        )
         return (
-            f"### {row.get('title', '-')}\n\n"
-            f"- 来源：{row.get('source', '-')}\n"
-            f"- 分类：{row.get('category', '-')}\n"
-            f"- 发布时间：{row.get('published_at', '-')}\n"
-            f"- 关键词：{', '.join(keywords) if keywords else '-'}\n"
-            f"- 链接：{row.get('url', '-')}\n\n"
-            f"{row.get('summary') or '暂无摘要'}"
+            f"<article><h3>{escape(str(row.get('title') or ''))}</h3>"
+            f"<p>{escape(str(row.get('source') or ''))} · {escape(str(row.get('published_at') or ''))}</p>"
+            f"<p>{escape(str(row.get('summary') or '暂无摘要'))}</p>"
+            f"<p>{escape(', '.join(keywords))}</p>{link}</article>"
         )
 
     def stock(

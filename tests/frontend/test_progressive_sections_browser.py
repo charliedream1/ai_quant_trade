@@ -38,8 +38,10 @@ def test_completed_indices_are_visible_while_sectors_are_blocked(cli_command, mo
             page = browser.new_page(viewport={"width": 1500, "height": 1050})
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
-            frame.locator("#market-quotes-refresh").click()
+            refresh = frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')
+            expect(refresh).to_be_visible(timeout=90000)
+            expect(frame.locator("#market-news-results, #stock-kline-chart")).to_have_count(0)
+            refresh.click()
             wait_for((root / "sector-waiting").exists, 60)
             expect(
                 frame.locator("#market-indices")
@@ -69,7 +71,7 @@ def test_completed_indices_are_visible_while_sectors_are_blocked(cli_command, mo
                     .last
                 ).to_be_visible()
                 (root / "fail-sector").write_text("retry", encoding="utf-8")
-                frame.locator("#market-quotes-refresh").click()
+                refresh.click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=15000)
             wait_for(lambda: not page_reads.BUSY, 5)
             assert monotonic() - began < 15
@@ -102,7 +104,7 @@ def test_citations_are_visible_before_model_answer(client, cli_command, compatib
             page = browser.new_page(viewport={"width": 1500, "height": 1050})
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
+            expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=90000)
             frame.locator('#ai-floating-button[data-drag-ready="1"]').click()
             panel = frame.locator("#ai-floating-panel")
             panel.get_by_role("tab", name="知识问答", exact=True).click()

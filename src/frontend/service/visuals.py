@@ -7,11 +7,11 @@ from html import escape
 from src.data.relation_evidence import graph_config
 
 from .execution_costs import cost_markdown
+from .figure_styles import _base_figure, _style_figure, empty_figure
 from .foundation import (
     BACKTEST_ATTRIBUTION_COLUMNS,
     BACKTEST_METRIC_EXPLANATIONS,
     COLORS,
-    FONT_FAMILY,
     METRIC_LABELS,
     RELATION_ANALYSIS_COLUMNS,
     RELATION_TYPE_COLORS,
@@ -31,120 +31,9 @@ from .foundation import (
     timezone,
     to_frame,
 )
+from .market_quotes import market_bar_figure as market_bar_figure
 from .relation_layout import bounds as graph_bounds
 from .relation_layout import positions as graph_positions
-
-
-def _style_figure(figure: go.Figure, title: str, height: int = 380) -> go.Figure:
-    figure.update_layout(
-        title={"text": f"<b>{title}</b>", "x": 0.02, "xanchor": "left", "font": {"size": 16, "color": COLORS["ink"]}},
-        height=height,
-        autosize=True,
-        margin={"l": 58, "r": 28, "t": 72, "b": 48},
-        paper_bgcolor="#ffffff",
-        plot_bgcolor="#ffffff",
-        font={"family": FONT_FAMILY, "size": 12, "color": COLORS["ink"]},
-        hovermode="x unified",
-        hoverlabel={
-            "bgcolor": "#18221f",
-            "bordercolor": "#18221f",
-            "font": {"family": FONT_FAMILY, "color": "#ffffff"},
-        },
-        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "right", "x": 1, "font": {"size": 11}},
-        transition={"duration": 220},
-    )
-    figure.update_xaxes(
-        gridcolor=COLORS["grid"],
-        zerolinecolor="#bcc6c1",
-        linecolor="#cfd6d3",
-        tickfont={"color": COLORS["muted"]},
-        fixedrange=False,
-    )
-    figure.update_yaxes(
-        gridcolor=COLORS["grid"],
-        zerolinecolor="#bcc6c1",
-        linecolor="#cfd6d3",
-        tickfont={"color": COLORS["muted"]},
-        fixedrange=False,
-    )
-    return figure
-
-
-def _base_figure(title: str, height: int = 380) -> go.Figure:
-    return _style_figure(go.Figure(), title, height)
-
-
-def empty_figure(title: str, message: str, height: int = 360) -> go.Figure:
-    figure = go.Figure()
-    figure.update_layout(
-        title={
-            "text": f"<b>{title}</b>",
-            "x": 0.02,
-            "xanchor": "left",
-            "font": {"size": 15, "color": COLORS["ink"]},
-        },
-        height=height,
-        autosize=True,
-        margin={"l": 24, "r": 24, "t": 58, "b": 24},
-        paper_bgcolor="#ffffff",
-        plot_bgcolor="#ffffff",
-        font={"family": FONT_FAMILY, "size": 12, "color": COLORS["ink"]},
-    )
-    figure.add_annotation(
-        text=f"<b>{message}</b>",
-        x=0.5,
-        y=0.52,
-        xref="paper",
-        yref="paper",
-        showarrow=False,
-        font={"family": FONT_FAMILY, "size": 14, "color": COLORS["muted"]},
-        bgcolor="#f5f7f6",
-        bordercolor="#dce3df",
-        borderpad=12,
-    )
-    figure.update_xaxes(visible=False, fixedrange=True)
-    figure.update_yaxes(visible=False, fixedrange=True)
-    return figure
-
-
-def market_bar_figure(sectors: Sequence[dict[str, Any]]) -> go.Figure:
-    if not sectors:
-        return empty_figure("板块强弱排名", "暂无板块行情")
-    ranked = sorted(sectors, key=lambda item: float(item.get("change_pct") or 0))
-    names = [str(item.get("name") or item.get("code") or "-") for item in ranked]
-    values = [float(item.get("change_pct") or 0) for item in ranked]
-    colors = [COLORS["positive"] if value >= 0 else COLORS["negative"] for value in values]
-    custom = [
-        [
-            item.get("leader") or "-",
-            float(item.get("amount") or 0) / 100000000,
-            item.get("up_count") or 0,
-            item.get("down_count") or 0,
-        ]
-        for item in ranked
-    ]
-    figure = _base_figure("板块强弱排名", max(340, min(540, 150 + len(ranked) * 38)))
-    figure.add_bar(
-        x=values,
-        y=names,
-        orientation="h",
-        marker={"color": colors, "line": {"color": "rgba(255,255,255,.7)", "width": 1}},
-        text=[f"{value:+.2f}%" for value in values],
-        textposition="outside",
-        cliponaxis=False,
-        customdata=custom,
-        hovertemplate=(
-            "<b>%{y}</b><br>涨跌幅 %{x:+.2f}%<br>领涨股 %{customdata[0]}"
-            "<br>成交额 %{customdata[1]:,.1f} 亿<br>上涨 / 下跌 %{customdata[2]} / %{customdata[3]}<extra></extra>"
-        ),
-    )
-    padding = max(max(abs(value) for value in values) * 0.28, 0.5)
-    figure.update_xaxes(
-        title="涨跌幅 (%)", range=[min(values + [0]) - padding, max(values + [0]) + padding], ticksuffix="%"
-    )
-    figure.update_yaxes(title=None, showgrid=False, automargin=True)
-    figure.update_layout(showlegend=False, bargap=0.34)
-    return figure
 
 
 def keyword_figure(items: Sequence[dict[str, Any]]) -> go.Figure:

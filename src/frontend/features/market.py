@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import gradio as gr
+import pandas as pd
 
 from src.agent.composer_config import cli_choices
 from src.agent.providers.config import backend_names
 from src.data import current_market
 from src.engine.economics.config import economics_config
 from src.engine.market.news_policy import news_policy
+from src.strategy import StrategyStore
 
 from ..common.callbacks import safe as _safe
 from ..common.components import plot as _plot
@@ -18,10 +20,13 @@ from ..common.navigation import workspace_link
 from ..handlers import DomainHandler
 from ..service.foundation import (
     BACKTEST_ENGINE_CHOICES,
+    INDEX_COLUMNS,
     RECOMMEND_PLAN_CHOICES,
+    SECTOR_COLUMNS,
     parse_stock_symbols,
 )
 from .economics import render_economics
+from .research_layout import research_panel, research_panels, research_tabs
 from .stock_analysis import render_stock_analysis
 
 
@@ -44,11 +49,26 @@ def _render_quotes(service):
             variant="primary",
             scale=0,
             min_width=120,
-            elem_classes=["page-refresh-btn"],
+            elem_classes=["page-refresh-btn", "route-control"],
         )
-    market_indices = _table("指数行情", 280, elem_id="market-indices", elem_classes=["home-semantic-table"])
+    gr.Markdown("点击刷新规则数据查看指数和板块。各区结果独立更新。", elem_classes=["compact-note"])
+    market_indices = _table(
+        "指数行情",
+        280,
+        elem_id="market-indices",
+        elem_classes=["home-semantic-table"],
+        value=pd.DataFrame(columns=INDEX_COLUMNS),
+        compact=True,
+    )
     with gr.Row():
-        market_sectors = _table("板块行情", 380, elem_id="market-sectors", elem_classes=["home-semantic-table"])
+        market_sectors = _table(
+            "板块行情",
+            380,
+            elem_id="market-sectors",
+            elem_classes=["home-semantic-table"],
+            value=pd.DataFrame(columns=["ranking", *SECTOR_COLUMNS]),
+            compact=True,
+        )
         market_plot = _plot(
             label="板块涨跌",
             elem_id="market-sectors-plot",
@@ -120,12 +140,15 @@ def _render_news(service):
             elem_id="market-news-query",
         )
         news_refresh = gr.Button("同步最新")
-    news_status = gr.Markdown(elem_classes=["compact-note"])
-    news_table = _table("新闻列表", 430, elem_classes=["no-i18n"])
-    with gr.Row():
-        news_detail_id = gr.Number(label="新闻 ID", precision=0)
-        news_detail_btn = gr.Button("查看详情")
-    news_detail = gr.Markdown(label="新闻详情")
+    news_status = gr.Markdown("设置筛选条件后查询新闻。", elem_classes=["compact-note"])
+    news_table = _table(
+        "新闻列表",
+        360,
+        elem_id="market-news-results",
+        compact=True,
+        value=pd.DataFrame(columns=["title", "source", "published_at", "region", "topics", "id"]),
+    )
+    news_detail = gr.HTML(elem_id="market-news-detail")
     news_cloud = _plot(
         label="关键词强度",
         elem_classes=["chart-panel"],
@@ -134,18 +157,29 @@ def _render_news(service):
         _safe(
             lambda category, keyword, source, region, topic: service.news(
                 category, keyword, source, force_refresh=True, region=region, topic=topic
-            )
+            ),
+            section_styles=False,
         ),
         inputs=[news_category, news_keyword, news_source, news_region, news_topic],
         outputs=[news_table, news_cloud, news_status],
         queue=False,
     )
     news_refresh.click(
-        _safe(service.refresh_news),
+        _safe(service.refresh_news, section_styles=False),
         inputs=[news_category, news_keyword, news_source, news_region, news_topic],
         outputs=[news_table, news_cloud, news_status],
     )
-    news_detail_btn.click(_safe(service.news_detail), inputs=news_detail_id, outputs=news_detail)
+
+    def selected_story(rows, event: gr.SelectData):
+        if not event.selected or not isinstance(event.index, (list, tuple)):
+            return ""
+        index = event.index[0]
+        if "id" not in rows or not 0 <= index < len(rows):
+            return ""
+        return service.news_detail(rows.iloc[index]["id"])
+
+    news_table.select(_safe(selected_story), inputs=news_table, outputs=news_detail, queue=False)
+    news_table.change(lambda: "", outputs=news_detail, queue=False)
 
 
 def _render_resources(service):
@@ -198,7 +232,7 @@ def _render_resources(service):
         resource_pool_refresh = gr.Button("刷新", elem_classes=["page-refresh-btn"])
     resource_pool_table = _table("资源池列表", 260)
     with gr.Row():
-        resource_pool_id = gr.Number(label="资源池 ID（留空默认）", precision=0)
+        resource_pool_id = gr.Dropdown(label="资源池", elem_id="market-resource-pool", choices=[], interactive=True)
         resource_pool_symbols = gr.Textbox(
             label="手工输入标的",
             placeholder="600519, 贵州茅台, 宁德时代, AAPL, 英伟达",
@@ -243,15 +277,26 @@ def _render_resources(service):
         security_lookup_limit = gr.Number(value=20, label="返回数量", precision=0)
         security_lookup_button = gr.Button("搜索证券", variant="primary")
     security_lookup_table = _table("证券主数据匹配", 260)
+
+    def refresh_pools(selected):
+        table = service.resource_pools()
+        return table, _pool_choices(table, selected)
+
+    def create_pool(name, description):
+        status, table, items = service.create_resource_pool(name, description)
+        selected = table.loc[table["name"] == name.strip(), "id"].iloc[0]
+        return status, table, items, _pool_choices(table, selected)
+
     resource_pool_refresh.click(
-        _safe(service.resource_pools),
-        outputs=resource_pool_table,
+        _safe(refresh_pools),
+        inputs=resource_pool_id,
+        outputs=[resource_pool_table, resource_pool_id],
         queue=False,
     )
     resource_pool_create.click(
-        _safe(service.create_resource_pool),
+        _safe(create_pool),
         inputs=[resource_pool_name, resource_pool_desc],
-        outputs=[resource_pool_status, resource_pool_table, resource_pool_items],
+        outputs=[resource_pool_status, resource_pool_table, resource_pool_items, resource_pool_id],
     )
     resource_pool_add.click(
         _safe(service.add_resource_pool_symbols),
@@ -291,6 +336,9 @@ def _render_resources(service):
         outputs=resource_pool_items,
         queue=False,
     )
+    resource_pool_id.input(
+        _safe(service.resource_pool_items), inputs=resource_pool_id, outputs=resource_pool_items, queue=False
+    )
     security_lookup_button.click(
         _safe(service.security_master_search),
         inputs=[security_lookup_query, security_lookup_limit],
@@ -298,6 +346,11 @@ def _render_resources(service):
         queue=False,
     )
     return resource_pool_table, resource_pool_items
+
+
+def _pool_choices(table, selected=None):
+    choices = [(str(row.name), int(row.id)) for row in table.itertuples(index=False)]
+    return gr.update(choices=choices, value=int(selected) if selected in {key for _, key in choices} else None)
 
 
 def _render_recommendations(service, watch_groups, watch_quotes, resource_pool_table, resource_pool_items):
@@ -325,10 +378,10 @@ def _render_recommendations(service, watch_groups, watch_quotes, resource_pool_t
                 recommend_add_watch = gr.Button("批量加入自选", variant="primary")
                 recommend_stock_link = gr.HTML(elem_id="recommend-stock-link")
             with gr.Row():
-                recommend_resource_pool_id = gr.Number(
-                    label="资源池 ID（留空默认）",
-                    precision=0,
+                recommend_resource_pool_id = gr.Dropdown(
+                    label="筛选资源池", choices=[], interactive=True, elem_id="screening-resource-pool"
                 )
+                refresh_pool_choices = gr.Button("刷新资源池选项")
                 recommend_add_resource = gr.Button("批量加入资源池", variant="primary")
                 recommend_load_resource = gr.Button("载入资源池到股票池")
             recommend_status = gr.Markdown(elem_classes=["status-strip"])
@@ -385,9 +438,12 @@ def _render_recommendations(service, watch_groups, watch_quotes, resource_pool_t
             with gr.Row():
                 recommend_group_summary = _table("方案对比摘要", 260)
                 recommend_group_symbols = _table("共识候选", 260)
-        with gr.Tab("回测", id="recommendation-backtest"):
+        with gr.Tab("回测", id="recommendation-backtest") as backtest_section:
             with gr.Row():
-                recommend_backtest_strategy_id = gr.Number(label="策略 ID", precision=0)
+                recommend_backtest_strategy_id = gr.Dropdown(
+                    label="回测策略", choices=[], interactive=True, elem_id="screening-backtest-strategy"
+                )
+                refresh_strategy_choices = gr.Button("刷新策略选项")
                 recommend_backtest_engine = gr.Dropdown(
                     BACKTEST_ENGINE_CHOICES,
                     value="simple",
@@ -405,9 +461,9 @@ def _render_recommendations(service, watch_groups, watch_quotes, resource_pool_t
             recommend_backtest_run = gr.Button("用前 5 只候选创建回测", variant="primary")
             with gr.Row():
                 recommend_backtest_status = gr.Markdown(elem_classes=["status-strip"])
-                recommend_backtest_task_id = gr.Number(
+                recommend_backtest_task_id = gr.Textbox(
+                    value="",
                     label="回测任务 ID",
-                    precision=0,
                     interactive=False,
                 )
             with gr.Tabs():
@@ -447,6 +503,31 @@ def _render_recommendations(service, watch_groups, watch_quotes, resource_pool_t
         outputs=[recommend_status, recommend_universe, resource_pool_items],
         queue=False,
     )
+    refresh_pool_choices.click(
+        _safe(lambda selected: _pool_choices(service.resource_pools(), selected)),
+        inputs=recommend_resource_pool_id,
+        outputs=recommend_resource_pool_id,
+        queue=False,
+    )
+    resource_pool_table.change(
+        _pool_choices,
+        inputs=[resource_pool_table, recommend_resource_pool_id],
+        outputs=recommend_resource_pool_id,
+        queue=False,
+    )
+
+    def backtest_strategy_choices(selected):
+        strategies = StrategyStore().list(page_size=500)["items"]
+        choices = [(f"{row['name']} · {row['version']}", row["id"]) for row in strategies if row["status"] != "停用"]
+        return gr.update(choices=choices, value=selected if selected in {key for _, key in choices} else None)
+
+    for activate in (backtest_section.select, refresh_strategy_choices.click):
+        activate(
+            _safe(backtest_strategy_choices),
+            inputs=recommend_backtest_strategy_id,
+            outputs=recommend_backtest_strategy_id,
+            queue=False,
+        )
 
     def open_candidate(rows, event: gr.SelectData):
         if not event.selected or not isinstance(event.index, (list, tuple)):
@@ -517,7 +598,12 @@ def _render_recommendations(service, watch_groups, watch_quotes, resource_pool_t
         ],
         queue=False,
     )
-    recommend_backtest_run.click(
+    pending = recommend_backtest_run.click(
+        lambda: ("正在提交回测…", ""),
+        outputs=[recommend_backtest_status, recommend_backtest_task_id],
+        queue=False,
+    )
+    pending.then(
         _safe(service.recommend_to_backtest),
         inputs=[
             recommend_backtest_strategy_id,
@@ -554,24 +640,25 @@ def render_market(service: DomainHandler, default_relation_types: list[str]) -> 
             '<nav class="research-standalone-nav" aria-label="市场研究">'
             '<a href="?view=analysis">市场分析</a>'
             '<a href="?view=stock">个股分析</a>'
-            '</nav>',
+            "</nav>",
         )
         with gr.Column(elem_id="market-research-views"):
-            with gr.Group(elem_id="market-analysis-view"):
-                with gr.Tabs(elem_id="market-analysis-tabs", selected="quotes"):
-                    with gr.Tab("行情与板块", id="quotes"):
+            with gr.Column(elem_id="market-analysis-view", elem_classes=["research-page"]):
+                research_tabs("analysis")
+                with research_panels("analysis"):
+                    with research_panel("quotes"):
                         watch_groups, watch_quotes = _render_quotes(service)
-                    with gr.Tab("宏观经济", id="macro"):
+                    with research_panel("macro"):
                         render_economics(service, "macro", show_report=False)
-                    with gr.Tab("市场新闻", id="news"):
+                    with research_panel("news"):
                         _render_news(service)
-                    with gr.Tab("资源池", id="resources"):
+                    with research_panel("resources"):
                         resource_pool_table, resource_pool_items = _render_resources(service)
-                    with gr.Tab("选股与验证", id="recommendations"):
+                    with research_panel("recommendations"):
                         _render_recommendations(
                             service, watch_groups, watch_quotes, resource_pool_table, resource_pool_items
                         )
-            with gr.Group(elem_id="market-stock-view"):
+            with gr.Column(elem_id="market-stock-view", elem_classes=["research-page"]):
                 stock_symbol = gr.Textbox(
                     value=economics_config()["defaults"]["company_symbols"].get(current_market(), ""),
                     label="股票代码/名称",

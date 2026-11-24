@@ -8,10 +8,43 @@
   let currentView = "", currentNonce = "";
   let currentTab = "";
   let preparedMarket = "";
+  let securityValue, securityPending = false, securitySerial = 0;
+  let securityRequest = null;
   const viewKey = () => currentTab ? currentView + "/" + currentTab : currentView;
   const validContext = (name, value) => config.context_values[name] ? config.context_values[name].includes(value)
     : new RegExp(config.context_patterns?.[name] || "^[0-9]+$").test(String(value || ""));
-  const tabButtons = (group) => Array.from(document.querySelectorAll(`#${group.id} > .tab-wrapper [role="tab"]`));
+  const tabButtons = (group) => Array.from(document.querySelectorAll(`#${group.id} [role="tab"][data-tab-id]`));
+  const showResearch = (group) => {
+    const page = document.getElementById(`market-${currentView}-view`);
+    if (!page) return false;
+    document.querySelectorAll("#market-research-views .research-page").forEach((item) => {
+      item.toggleAttribute("data-research-visible", item === page);
+    });
+    const nativeStrip = document.querySelector(`#${group.id}-panels > .tab-wrapper`);
+    const nativeButton = nativeStrip?.querySelector(`[data-tab-id="${currentTab}"]`);
+    if (!nativeButton) return false;
+    nativeStrip.inert = true;
+    if (nativeButton.getAttribute("aria-selected") !== "true") nativeButton.click();
+    const panel = document.getElementById(`research-panel-${currentTab}`);
+    const action = group.tabs[currentTab]?.action;
+    if (!panel || (action && !document.getElementById(action))) return false;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", `research-tab-${currentTab}`);
+    tabButtons(group).forEach((button) => {
+      const selected = button.dataset.tabId === currentTab;
+      button.setAttribute("aria-selected", String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      if (selected && button.offsetParent !== null) {
+        const strip = button.closest(".research-tab-strip");
+        const box = button.getBoundingClientRect(), bounds = strip.getBoundingClientRect();
+        if (box.left < bounds.left) strip.scrollLeft -= bounds.left - box.left;
+        if (box.right > bounds.right) strip.scrollLeft += box.right - bounds.right;
+      }
+    });
+    updateActions();
+    document.dispatchEvent(new Event("aiquant:research-page-shown"));
+    return true;
+  };
   const setTextInput = (input, value) => {
     if (input.value === String(value)) return;
     input.value = String(value);
@@ -45,7 +78,7 @@
       queueMicrotask(() => {
         if (view !== viewKey() || !header.isConnected || window.aiquantPageWork?.active === false) return;
         const group = config.tab_groups[`${module}/${currentView}`];
-        const tabs = group && document.querySelector(`#${group.id} > .tab-wrapper`);
+        const tabs = group && document.querySelector(`#${group.id} .research-tab-strip`);
         if (tabs) {
           const height = Math.max(0, tabs.getBoundingClientRect().bottom);
           header.parentElement.style.setProperty("--research-tab-bottom", `${Math.ceil(height) + 8}px`);
@@ -63,13 +96,81 @@
     if (standalone) standalone.hidden = Boolean(group) || !reportSupported();
     const actions = document.querySelector("#research-workspace-actions .research-actions");
     if (!actions || !group) return;
+    actions.closest("#research-workspace-actions")?.toggleAttribute(
+      "data-security-pending", currentView === "stock" && securityPending,
+    );
     const refresh = actions.querySelector("[data-research-refresh]");
     const ai = actions.querySelector(".page-report-action");
     refresh.dataset.researchRefresh = group.tabs[currentTab]?.action || "";
-    refresh.hidden = !refresh.dataset.researchRefresh;
+    refresh.hidden = !document.getElementById(refresh.dataset.researchRefresh);
     ai.dataset.reportView = currentTab === "relationships" ? "relations" : "";
     ai.hidden = !ai.dataset.reportView && !reportSupported();
     actions.hidden = refresh.hidden && ai.hidden;
+  };
+  const markSecurity = (value) => {
+    const page = document.getElementById("market-stock-view");
+    const actions = document.getElementById("research-workspace-actions");
+    page?.toggleAttribute("data-security-pending", true);
+    actions?.toggleAttribute("data-security-pending", true);
+    const initial = document.getElementById("stock-security-initial");
+    if (initial) initial.textContent = "";
+    const status = document.getElementById("stock-security-pending-message");
+    if (status) status.textContent = [value.trim(), window.aiquantTranslate?.("正在切换标的…") || "正在切换标的…"]
+      .filter(Boolean).join(" · ");
+  };
+  const resetSecurity = () => {
+    if (currentView !== "stock" || !securityPending) return;
+    const scope = window.aiquantPageWork?.state.revision;
+    if (securityRequest?.scope === scope && securityRequest?.value === securityValue) return;
+    const token = String(++securitySerial);
+    const retry = document.getElementById("stock-security-retry");
+    if (retry) retry.hidden = true;
+    if (!setReportField("stock-security-revision", token)) return;
+    const button = document.querySelector("button#stock-security-reset, #stock-security-reset button");
+    if (!button) return;
+    securityRequest = {scope, value: securityValue};
+    const ticket = epoch;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (ticket === epoch && token === String(securitySerial)) button.click();
+    }));
+    setTimeout(() => {
+      if (retry && token === String(securitySerial) && securityPending) {
+        securityRequest = null;
+        retry.hidden = false;
+      }
+    }, config.route_wait_ms);
+    waitFor(() => {
+      if (token !== String(securitySerial)) return true;
+      if (document.querySelector("#stock-security-ack [data-stock-revision]")?.dataset.stockRevision !== token) return false;
+      securityPending = false;
+      securityRequest = null;
+      document.getElementById("market-stock-view")?.removeAttribute("data-security-pending");
+      document.getElementById("research-workspace-actions")?.removeAttribute("data-security-pending");
+      return true;
+    }, epoch);
+  };
+  const commitSecurity = (value, advance = false) => {
+    if (securityValue === undefined && !advance) {
+      securityValue = value;
+      const initial = document.getElementById("stock-security-initial");
+      if (initial) initial.textContent = value;
+      return;
+    }
+    if (value === securityValue && !securityPending) return;
+    if (value !== securityValue) securityRequest = null;
+    securityValue = value;
+    securityPending = true;
+    markSecurity(value);
+    resetContext();
+    if (advance) {
+      if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(currentTab, true);
+      else {
+        const work = window.aiquantPageWork;
+        const scope = work?.state;
+        if (scope) { work.deactivate(); work.activate({...scope, revision: scope.revision + 1}); }
+      }
+    }
+    resetSecurity();
   };
   const resetContext = () => {
     closeReport();
@@ -127,22 +228,12 @@
           (group ? button.dataset.tabId === data.view
             : (window.aiquantUiSource?.(button) || button.textContent.trim()) === views[data.view]));
       if (group) {
-        const research = document.getElementById("market-research-views");
-        if (!research) return false;
-        research.dataset.activeResearch = data.view;
+        if (!showResearch(group)) return false;
       } else {
         if (!tab) return false;
         if (tab.getAttribute("aria-selected") !== "true") tab.click();
       }
-      if (group) {
-        waitFor(() => {
-          const nested = tabButtons(group).find((button) => button.dataset.tabId === section);
-          if (!nested) return false;
-          if (nested.getAttribute("aria-selected") !== "true") nested.click();
-          updateActions();
-          return true;
-        }, ticket);
-      } else if (config.tabs.includes(data.tab)) {
+      if (!group && config.tabs.includes(data.tab)) {
         waitFor(() => {
           const nested = Array.from(document.querySelectorAll('[role="tab"]'))
             .find((item) => item.offsetParent !== null && (window.aiquantUiSource?.(item) || item.textContent.trim()) === data.tab);
@@ -167,7 +258,10 @@
           applied.set(identity, nonce);
           if (name === "graph_mode") {
             if (!input.checked) input.click();
-          } else setTextInput(input, value);
+          } else {
+            setTextInput(input, value);
+            if (name === "symbol") commitSecurity(input.value);
+          }
           if (name === "task_id") requestAnimationFrame(() => requestAnimationFrame(() => {
             if (ticket === epoch) document.getElementById("route-backtest-open")?.click();
           }));
@@ -177,12 +271,15 @@
       if (key === "market/stock") {
         const market = (data.page_scope?.market || new URLSearchParams(location.search).get("market")
           || localStorage.getItem("all-in-one-ui-market") || "cn").toUpperCase();
-        if (market !== preparedMarket) waitFor(() => {
+        waitFor(() => {
           const field = document.querySelector("#fundamentals-symbol textarea, #fundamentals-symbol input");
           if (!field) return false;
           const requestedSymbol = data.context?.symbol;
-          if (!validContext("symbol", requestedSymbol)) setTextInput(field, config.stock_defaults[market] || "");
+          if (market !== preparedMarket && !validContext("symbol", requestedSymbol)) {
+            setTextInput(field, config.stock_defaults[market] || "");
+          }
           preparedMarket = market;
+          if (securityValue === undefined || securityPending) commitSecurity(field.value);
           return true;
         }, ticket);
       }
@@ -218,8 +315,15 @@
     document.documentElement.classList.add("gradio-embedded");
     window.addEventListener("message", (event) => {
       if (event.origin !== location.origin || event.source !== window.parent) return;
-      if (event.data?.type === "aiquant:select-view") apply(event.data);
-      if (event.data?.type === "aiquant:deactivate") { closeReport(); cancel(); }
+      const work = window.aiquantPageWork;
+      const revision = work?.state.revision;
+      if (event.data?.type === "aiquant:select-view" &&
+          (!revision || !event.data.page_scope || event.data.page_scope.revision >= revision)) apply(event.data);
+      if (event.data?.type === "aiquant:deactivate" &&
+          (!revision || !event.data.revision || event.data.revision === revision)) {
+        closeReport();
+        cancel();
+      }
     });
     window.parent.postMessage({type: "aiquant:ready"}, location.origin);
     document.addEventListener("click", (event) => {
@@ -236,6 +340,12 @@
     window.addEventListener("popstate", fromUrl);
   }
   document.addEventListener("click", (event) => {
+    if (currentView === "stock" && securityPending && event.target.closest("#research-workspace-actions")) return;
+    if (event.target.closest("#stock-security-retry")) {
+      const field = document.querySelector("#fundamentals-symbol textarea, #fundamentals-symbol input");
+      if (field) commitSecurity(field.value, true);
+      return;
+    }
     const refresh = event.target.closest("[data-research-refresh]");
     if (refresh) {
       document.querySelector(`#${refresh.dataset.researchRefresh} button, button#${refresh.dataset.researchRefresh}`)?.click();
@@ -253,6 +363,12 @@
   });
   document.addEventListener("input", (event) => {
     if (!event.isTrusted || !event.target.matches("input, textarea")) return;
+    if (currentView === "stock" && event.target.closest("#fundamentals-symbol") && event.target.value !== securityValue) {
+      securityPending = true;
+      securitySerial += 1;
+      markSecurity(event.target.value);
+      resetContext();
+    }
     const key = `${module}/${currentView}`;
     const name = (config.context_targets[key] || []).find((name) => event.target.closest(`#${config.context_fields[name]}`));
     if (!name) return;
@@ -283,8 +399,11 @@
       url.searchParams.set("tab", next);
       history.pushState({}, "", url);
     }
-    updateActions();
-    button.scrollIntoView({block: "nearest", inline: "nearest"});
+    waitFor(() => showResearch(group), epoch);
+    if (securityPending) {
+      const field = document.querySelector("#fundamentals-symbol textarea, #fundamentals-symbol input");
+      if (field) commitSecurity(field.value);
+    }
   };
   document.addEventListener("click", (event) => {
     if (event.isTrusted) selectTab(event.target.closest?.("[role='tab']"));
@@ -301,17 +420,11 @@
     const next = buttons[event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1
       : (index + offset + buttons.length) % buttons.length];
     selectTab(next);
-    next.click();
-    next.focus();
+    next.focus({preventScroll: true});
   }, true);
   document.addEventListener("change", (event) => {
     if (!event.isTrusted || currentView !== "stock" || !event.target.closest?.("#fundamentals-symbol")) return;
-    resetContext();
-    if (isWorkspaceEmbedded) parent.aiquantSelectSubview?.(currentTab, true);
-    else {
-      window.aiquantPageWork?.deactivate();
-      window.aiquantPageWork?.activate();
-    }
+    commitSecurity(event.target.value, true);
   }, true);
   // Keep the shell's independent-window target aligned with genuine in-page tab clicks.
   document.addEventListener("click", (event) => {

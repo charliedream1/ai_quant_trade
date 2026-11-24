@@ -6,6 +6,7 @@ import gradio as gr
 
 from src.core.diagnostics_config import diagnostics_config
 from src.core.page_work import CURRENT_PAGE
+from src.data import SecurityMasterService, current_market
 from src.engine.market.model_graph.config import config as model_graph_config
 from src.frontend.service.rule_graph_view import rule_graph_view
 
@@ -16,16 +17,28 @@ from ..handlers import DomainHandler
 from ..service.foundation import RELATION_TYPE_CHOICES
 from .economics import render_economics
 from .model_relation_graph import render_model_graph_panel
+from .research_layout import research_panel, research_panels, research_tabs
 
 
 def render_stock_analysis(service: DomainHandler, default_relation_types: list[str], stock_symbol: gr.Textbox) -> None:
-    security_title = gr.Markdown(elem_id="stock-analysis-security")
+    with gr.Column(elem_id="stock-analysis-security"):
+        security_title = gr.Markdown(elem_id="stock-security-resolved")
+        gr.HTML(
+            '<p id="stock-security-initial" role="status"></p>'
+            '<div id="stock-security-pending">'
+            '<span role="status" id="stock-security-pending-message"></span> '
+            '<button type="button" id="stock-security-retry" hidden>重试切换标的</button></div>'
+        )
+    revision = gr.Textbox(elem_id="stock-security-revision", elem_classes=["route-control"])
+    reset = gr.Button(elem_id="stock-security-reset", elem_classes=["route-control"])
+    acknowledged = gr.HTML(elem_id="stock-security-ack", elem_classes=["route-control"])
+    model_scope = gr.State("")
 
     def load_profile(symbol):
         values = service.stock_profile(symbol)
         details = dict(zip(values["指标"], values["数值"], strict=True))
         code = details["证券代码"]
-        return values, escape(f"{details['公司名称'] or code} · {code}")
+        return values, escape(f"{details['公司名称'] or code} · {code} · {details['市场']}")
 
     def rule_jobs():
         from src.engine.market.rule_graph_jobs import RuleGraphJobs
@@ -57,12 +70,13 @@ def render_stock_analysis(service: DomainHandler, default_relation_types: list[s
             gr.update(active=row["status"] in {"queued", "running"}),
         )
 
-    with gr.Tabs(elem_id="stock-research-tabs", selected="fundamentals"):
-        with gr.Tab("基本面", id="fundamentals"):
+    research_tabs("stock")
+    with research_panels("stock"):
+        with research_panel("fundamentals"):
             read_profile = gr.Button("读取上市公司概况", variant="primary", elem_id="stock-profile-load")
             profile = _table("上市公司概况", 340)
             read_profile.click(_safe(load_profile), inputs=stock_symbol, outputs=[profile, security_title])
-        with gr.Tab("Technical analysis", id="technical"):
+        with research_panel("technical"):
             stock_period = gr.Dropdown(["daily", "weekly", "monthly"], value="daily", label="K 线周期")
             stock_count = gr.Slider(20, 240, value=80, step=20, label="K 线数量")
             stock_query = gr.Button(
@@ -70,47 +84,46 @@ def render_stock_analysis(service: DomainHandler, default_relation_types: list[s
                 variant="primary",
                 scale=0,
                 min_width=120,
-                elem_classes=["page-refresh-btn"],
+                elem_classes=["page-refresh-btn", "route-control"],
                 elem_id="stock-technical-load",
             )
-            stock_watch_group = gr.Number(label="自选分组 ID", precision=0)
-            stock_add_watch = gr.Button("加入自选")
             stock_summary = gr.Markdown(elem_classes=["status-strip"])
-            stock_watch_status = gr.Markdown(elem_classes=["status-strip"])
-            stock_watchlist = _table("自选行情", 260)
+            stock_kline = _plot(
+                label="K 线",
+                elem_id="stock-kline-chart",
+                elem_classes=["chart-panel", "no-i18n"],
+            )
             with gr.Row():
                 stock_score = _plot(
                     label="综合评分",
                     elem_classes=["chart-panel"],
                 )
                 stock_finance = _table("技术指标解读", 320, elem_id="stock-indicator-readings")
-            stock_kline = _plot(
-                label="K 线",
-                elem_id="stock-kline-chart",
-                elem_classes=["chart-panel", "no-i18n"],
-            )
+            with gr.Accordion("自选管理", open=False):
+                stock_watch_group = gr.Number(label="自选分组 ID", precision=0)
+                stock_add_watch = gr.Button("加入自选")
+                stock_watch_status = gr.Markdown(elem_classes=["status-strip"])
+                stock_watchlist = _table("自选行情", 260)
             stock_add_watch.click(
                 _safe(service.add_stock_to_watchlist),
                 inputs=[stock_symbol, stock_watch_group],
                 outputs=[stock_watch_status, stock_watchlist],
             )
 
-        with gr.Tab("Financial analysis", id="financials"):
-            render_economics(service, "fundamentals", shared_symbol=stock_symbol)
-        with gr.Tab("新闻与公告", id="disclosures"):
-            stock_news_status = gr.Markdown()
+        with research_panel("financials"):
+            financial_reset = render_economics(service, "fundamentals", shared_symbol=stock_symbol)
+        with research_panel("disclosures"):
+            stock_news_status = gr.Markdown("公司新闻与研报按来源展示。发行人公告覆盖见下方说明。")
             stock_news_query = gr.Button("读取公司资讯", variant="primary", elem_id="stock-news-load")
-            stock_news = _table("相关资讯", 300)
-            stock_reports = _table("相关研报", 300)
+            stock_news = _table("公司新闻", 300, compact=True)
+            stock_reports = _table("相关研报", 300, compact=True)
+            gr.Markdown("当前页面提供新闻与研报。已收录财报公告日期可在「事件与风险」查看。")
             stock_news_query.click(
                 _safe(service.stock_disclosures),
                 inputs=stock_symbol,
                 outputs=[stock_news_status, stock_news, stock_reports],
             )
-        with gr.Tab("关系图谱", id="relationships"):
-            saved_relations = gr.Button("查看该标的已保存的关系")
-            saved_relation_rows = _table("最近保存的关系", 300)
-            saved_relations.click(_safe(service.stock_relationships), inputs=stock_symbol, outputs=saved_relation_rows)
+        with research_panel("relationships"):
             relation_mode = gr.Radio(
                 model_graph_config()["ui"]["modes"],
                 value="rules",
@@ -142,7 +155,9 @@ def render_stock_analysis(service: DomainHandler, default_relation_types: list[s
                     relation_export = gr.Button("导出图谱JSON")
                 relation_summary = gr.Markdown(elem_classes=["status-strip"], elem_id="rule-graph-status")
                 relation_export_status = gr.Markdown(elem_classes=["status-strip"])
-                relation_export_file = gr.Textbox(label="图谱导出文件路径", interactive=False)
+                relation_export_file = gr.Textbox(
+                    label="图谱导出文件路径", interactive=False, elem_classes=["route-control"]
+                )
                 rule_run_id = gr.Textbox(label="Rule graph run ID", elem_id="rule-graph-run-id", interactive=False)
                 rule_timer = gr.Timer(value=1, active=False)
                 rule_cancel = gr.Button("Cancel rule graph", elem_id="rule-graph-cancel")
@@ -231,6 +246,10 @@ def render_stock_analysis(service: DomainHandler, default_relation_types: list[s
                     ],
                     queue=False,
                 )
+            with gr.Accordion("图谱历史与证据", open=False):
+                saved_relations = gr.Button("查看该标的已保存的关系")
+                saved_relation_rows = _table("最近保存的关系", 300, compact=True)
+            saved_relations.click(_safe(service.stock_relationships), inputs=stock_symbol, outputs=saved_relation_rows)
             relation_mode.change(
                 lambda mode: gr.update(visible=mode == "rules"),
                 inputs=relation_mode,
@@ -238,21 +257,18 @@ def render_stock_analysis(service: DomainHandler, default_relation_types: list[s
                 queue=False,
             )
 
-            stock_symbol.change(
-                lambda: ("", "", gr.update(active=False)),
-                outputs=[rule_run_id, relation_summary, rule_timer],
-                queue=False,
+            @gr.render(
+                inputs=[relation_mode, model_scope], triggers=[relation_mode.change, model_scope.change], queue=False
             )
-
-            @gr.render(inputs=relation_mode, triggers=[relation_mode.change], queue=False)
-            def _render_selected_relation_mode(mode):
+            def _render_selected_relation_mode(mode, _scope):
                 if mode == "model":
                     render_model_graph_panel(stock_symbol)
 
-        with gr.Tab("事件与风险", id="events-risk"):
+        with research_panel("events-risk"):
             risk_query = gr.Button("计算风险指标", variant="primary", elem_id="stock-risk-load")
-            stock_risk = _table("风险指标", 260)
+            stock_risk = _table("风险指标", 260, compact=True)
             risk_query.click(_safe(service.stock_risk), inputs=stock_symbol, outputs=stock_risk)
+            gr.Markdown("### 历史财报公告")
             event_query = gr.Button("读取历史财报公告日期")
             event_status = gr.Markdown()
             stock_events = _table("历史财报公告日期", 300)
@@ -263,22 +279,51 @@ def render_stock_analysis(service: DomainHandler, default_relation_types: list[s
         outputs=[stock_summary, stock_score, stock_finance, stock_kline, stock_news, stock_reports],
         queue=False,
     )
-    stock_symbol.change(
-        lambda: ("", None, [], None, "", [], [], [], [], [], "", [], ""),
-        outputs=[
-            stock_summary,
-            stock_score,
-            stock_finance,
-            stock_kline,
-            stock_news_status,
-            stock_news,
-            stock_reports,
-            profile,
-            saved_relation_rows,
-            stock_risk,
-            event_status,
-            stock_events,
-            security_title,
-        ],
+    cleared = [
+        (stock_summary, ""),
+        (stock_score, None),
+        (stock_finance, []),
+        (stock_kline, None),
+        (stock_news_status, ""),
+        (stock_news, []),
+        (stock_reports, []),
+        (profile, []),
+        (stock_watch_status, ""),
+        (stock_watchlist, []),
+        (saved_relation_rows, []),
+        (stock_risk, []),
+        (event_status, ""),
+        (stock_events, []),
+        (rule_run_id, ""),
+        (relation_summary, ""),
+        (rule_timer, gr.update(active=False)),
+        (relation_analysis, []),
+        (relation_paths, []),
+        (relation_nodes, []),
+        (relation_edges, []),
+        (relation_plot, None),
+        (relation_export_status, ""),
+        (relation_export_file, ""),
+        (rule_download, None),
+        (relation_evidence_choice, gr.update(choices=[], value=None)),
+        (relation_evidence, ""),
+        *financial_reset,
+    ]
+
+    def reset_security(symbol, serial):
+        market = current_market()
+        row = SecurityMasterService().resolve(symbol, market=market) if symbol else None
+        code = str(row["symbol"]) if row else str(symbol or "").strip()
+        title = f"{row['name']} · {code} · {market}" if row else f"{code} · {market}" if code else ""
+        marker = f'<span data-stock-revision="{escape(serial, quote=True)}"></span>'
+        return (*(value for _, value in cleared), escape(title), marker, serial)
+
+    reset.click(
+        _safe(reset_security, cancel_outputs=len(cleared) + 3),
+        inputs=[stock_symbol, revision],
+        outputs=[*(component for component, _ in cleared), security_title, acknowledged, model_scope],
+        js="""() => [document.querySelector("#fundamentals-symbol textarea").value,
+                     document.querySelector("#stock-security-revision textarea").value]""",
         queue=False,
+        show_progress="hidden",
     )

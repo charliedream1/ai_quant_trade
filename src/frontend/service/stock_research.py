@@ -80,15 +80,21 @@ class StockResearchMixin:
         snapshot = getattr(data, "strategy_snapshot", data.stock_detail)(code)
         bars = sorted(snapshot.get("kline") or [], key=lambda row: row["date"])
         closes = pd.Series([number(row.get("close")) for row in bars], dtype=float).where(lambda values: values > 0)
+        valid_dates = [bar["date"] for bar, valid in zip(bars, closes.notna(), strict=True) if valid]
+        interval = (
+            f"{valid_dates[0]} 至 {valid_dates[-1]} · {len(valid_dates)} 个有效日收盘价"
+            if valid_dates
+            else "暂无有效日收盘价"
+        )
         volatility = closes.pct_change(fill_method=None).std()
         drawdown = (closes / closes.cummax() - 1).min()
         quote = snapshot.get("quote") or {}
         rows = [
-            {"指标": "日收益波动率（%）", "数值": number(volatility * 100), "依据": f"{closes.count()} 个有效日收盘价"},
-            {"指标": "区间最大回撤（%）", "数值": number(drawdown * 100), "依据": "相对区间内历史高点"},
-            {"指标": "最新换手率（%）", "数值": quote.get("turnover_rate"), "依据": quote.get("data_source")},
+            {"指标": "日收益波动率（%）", "数值": number(volatility * 100), "依据": interval},
+            {"指标": "区间最大回撤（%）", "数值": number(drawdown * 100), "依据": interval},
+            {"指标": "最新换手率（%）", "数值": number(quote.get("turnover_rate")), "依据": quote.get("data_source")},
         ]
-        return to_frame(rows)
+        return to_frame(rows).round({"数值": 2})
 
     def stock_events(self, symbol):
         if current_market() != "CN":

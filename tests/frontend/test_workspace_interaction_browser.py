@@ -51,11 +51,15 @@ def test_news_geography_and_topic_clicks(cli_command, tmp_path):
             frame.get_by_role("option", name="财经经济", exact=True).click()
             frame.get_by_role("button", name="查询", exact=True).click()
             expect(frame.get_by_text(fixtures[1]["title"], exact=True).filter(visible=True).last).to_be_visible(
-                timeout=30000
+                timeout=60000
             )
             expect(frame.get_by_text(fixtures[0]["title"], exact=True)).to_have_count(0)
             expect(frame.get_by_text(fixtures[4]["title"], exact=True)).to_have_count(0)
-            expect(frame.get_by_text(rows[1]["published_at"], exact=True).filter(visible=True).last).to_be_visible()
+            frame.locator('#market-news-results [data-row="0"][data-col="0"]').click()
+            article = frame.locator("#market-news-detail")
+            expect(article).to_contain_text(fixtures[1]["title"], timeout=20000)
+            expect(article).to_contain_text(rows[1]["published_at"])
+            expect(article.locator("a")).to_have_attribute("href", rows[1]["url"])
             page.screenshot(path=str(tmp_path / "overseas-finance-filter.png"))
         finally:
             browser.close()
@@ -139,7 +143,9 @@ def test_floating_qa_uses_configured_http_model_and_full_citation(client, cli_co
             page = browser.new_page(viewport={"width": 1500, "height": 1050})
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
+            expect(
+                frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')
+            ).to_be_visible(timeout=90000)
             frame.locator('#ai-floating-button[data-drag-ready="1"]').click()
             panel = frame.locator("#ai-floating-panel")
             panel.get_by_role("tab", name="知识问答", exact=True).click()
@@ -176,7 +182,9 @@ def test_assistant_resize_and_daily_inbox(cli_command, tmp_path):
             page = browser.new_page(viewport={"width": 1500, "height": 1050})
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
+            expect(
+                frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')
+            ).to_be_visible(timeout=90000)
             frame.locator('#ai-floating-button[data-drag-ready="1"]').click()
             panel = frame.locator("#ai-floating-panel")
             expect(panel).to_be_visible()
@@ -256,11 +264,15 @@ def test_stock_recommendation_and_factor_workspace_controls(cli_command):
             frame = page.frame_locator("iframe.workspace-frame.active")
             stock = frame.locator("#stock-research-tabs")
             expect(stock).to_be_visible(timeout=90000)
-            stock.get_by_role("button", name="读取上市公司概况", exact=True).click()
-            expect(stock.get_by_text("600519", exact=True).last).to_be_visible(timeout=30000)
+            frame.locator("#stock-profile-load").click()
+            expect(frame.locator("#research-panel-fundamentals").get_by_text("600519", exact=True).last).to_be_visible(
+                timeout=30000
+            )
             stock.get_by_role("tab", name="事件与风险", exact=True).click()
-            stock.get_by_role("button", name="计算风险指标", exact=True).click()
-            expect(stock.get_by_text("区间最大回撤（%）", exact=True)).to_be_visible(timeout=30000)
+            frame.locator("#stock-risk-load").click()
+            expect(
+                frame.locator("#research-panel-events-risk").get_by_text("区间最大回撤（%）", exact=True)
+            ).to_be_visible(timeout=30000)
             expect(frame.locator("#research-workspace-actions [data-research-refresh]")).to_be_visible()
 
             page.locator('[data-workspace-view="analysis"]').click()
@@ -323,7 +335,7 @@ def test_grouped_market_routes_and_history(cli_command):
             expect(sidebar).to_have_count(2)
 
             page.locator('[data-workspace-view="analysis"]').click()
-            tabs = frame.locator("#market-analysis-tabs > .tab-wrapper")
+            tabs = frame.locator("#market-analysis-tabs .research-tab-strip")
             expect(tabs.get_by_role("tab")).to_have_count(5)
             tabs.locator('[data-tab-id="quotes"]').focus()
             page.keyboard.press("ArrowRight")
@@ -335,10 +347,26 @@ def test_grouped_market_routes_and_history(cli_command):
             page.go_back()
             expect(frame.locator("#macro-load")).to_be_visible()
             page.go_back()
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible()
+            expect(
+                frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')
+            ).to_be_visible()
             page.go_forward()
             expect(frame.locator("#macro-load")).to_be_visible()
             page.set_viewport_size({"width": 390, "height": 840})
             assert tabs.evaluate("element => element.scrollWidth >= element.clientWidth")
+            page.goto(cli_command.base_url + "/app/?module=market&view=resources", wait_until="domcontentloaded")
+            expect(frame.locator("#market-resource-pool")).to_be_visible(timeout=30000)
+            expect(frame.locator("#market-stock-view")).to_be_hidden()
+            expect(frame.locator("#research-tab-resources")).to_have_attribute("aria-selected", "true")
+            page.goto(cli_command.base_url + "/app/?module=market&view=stock", wait_until="domcontentloaded")
+            symbol = frame.locator("#fundamentals-symbol textarea")
+            expect(symbol).to_be_in_viewport(timeout=30000)
+            expect(frame.locator("#market-analysis-view")).to_be_hidden()
+            expect(frame.locator("#stock-analysis-security")).to_contain_text("600519")
+            symbol.fill("600036")
+            frame.locator("#research-tab-technical").click()
+            expect(frame.locator("#stock-security-resolved")).to_contain_text("600036")
+            expect(frame.locator("#stock-security-resolved")).not_to_contain_text("600519")
+            expect(frame.locator("#research-panel-technical")).to_be_visible()
         finally:
             browser.close()

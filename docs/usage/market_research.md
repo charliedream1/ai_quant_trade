@@ -28,6 +28,16 @@ links to quotes, news, macroeconomics, resources, recommendations, company
 financials and the relationship graph open the corresponding tabs.
 Factor research is available under **Strategy Construction**.
 
+On a narrow display, scroll the tab strip horizontally or use the arrow keys
+while a tab is focused. The security field remains above the stock tabs.
+After changing it, wait for the new security heading before requesting data.
+
+Select a news row to open its source, publication time and summary. Select a
+resource pool by name before previewing a CSV or Excel import. Saving a new
+pool selects it automatically. In Screening and Validation, load the named
+pool as the candidate universe and choose a strategy by name before starting
+a backtest. The task identifier appears after submission.
+
 ![市场研究与因子监控入口](assets/screenshots/02-market-research.jpg)
 
 图 2：先确定市场与股票池，再读取监控结果；不要将样本不足的提示理解为因子有效。

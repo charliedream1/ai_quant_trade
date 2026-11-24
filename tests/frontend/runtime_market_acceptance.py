@@ -56,8 +56,8 @@ def inspect_pages(base, output, data_dir=None, log_offsets=None):
             results["blank_symbol_rejected"] = True
             checkpoint()
             frame = navigate(page, base, "quotes")
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=30000)
-            frame.locator("#market-quotes-refresh").click()
+            expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=30000)
+            frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]').click()
             plot = frame.locator("#market-sectors-plot .js-plotly-plot")
             expect(plot).to_be_visible(timeout=90000)
             values = plot.evaluate("element => Array.from(element.data[0].x)")

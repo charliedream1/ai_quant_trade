@@ -85,11 +85,27 @@ html.gradio-embedded #page-skill-standalone-slot, #page-skill-panel:not(:has(> .
 .research-actions button { padding: 8px 14px; border: 1px solid var(--border-color-primary); border-radius: 8px; cursor: pointer; }
 .research-standalone-nav { display: flex; gap: 16px; }
 html.gradio-embedded .research-standalone-nav { display: none; }
-#market-research-views:not([data-active-research="stock"]) #market-stock-view,
-#market-research-views[data-active-research="stock"] #market-analysis-view { display: none !important; }
-#market-analysis-tabs > .tab-wrapper, #stock-research-tabs > .tab-wrapper {
-  flex-wrap: nowrap; overflow-x: auto; white-space: nowrap;
+.research-page:not([data-research-visible]) { display: none !important; }
+.research-native-tabs > .tab-wrapper {
+  position: absolute; visibility: hidden; pointer-events: none;
+  width: max-content; min-width: 48rem; max-width: none;
 }
+.research-tab-strip {
+  display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap;
+  scrollbar-width: thin; padding: 3px;
+}
+.research-tab-strip button {
+  flex: 0 0 auto; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: var(--body-text-color);
+}
+.research-tab-strip button[aria-selected="true"] {
+  color: var(--color-accent); background: var(--background-fill-secondary);
+  box-shadow: inset 0 -2px var(--color-accent);
+}
+#stock-security-pending { display: none; margin: 0; }
+#market-stock-view[data-security-pending] #stock-security-pending { display: block; }
+#market-stock-view[data-security-pending] :is(#stock-security-resolved, #stock-security-initial, .research-native-tabs) { display: none !important; }
+#stock-analysis-security:has(#stock-security-resolved .prose:not(:empty)) #stock-security-initial { display: none; }
+#research-workspace-actions[data-security-pending] button { pointer-events: none; opacity: .55; }
 .block.factor-event-log { max-height: 18rem; overflow-y: auto; overflow-wrap: anywhere; scrollbar-gutter: stable; }
 #main-navigation .home-semantic-table td[style*="--home-cell-color"] {
   background: color-mix(in srgb, var(--home-cell-color) var(--home-cell-strength), var(--surface)) !important;

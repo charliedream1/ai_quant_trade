@@ -162,7 +162,7 @@ def test_legacy_financial_link_resolves_to_shared_company():
     assert resolve_destination("market", "fundamentals") == {
         "module": "market",
         "view": "stock",
-        "tab": "Financial analysis",
+        "tab": "financials",
     }
     assert "fundamentals" not in dict(get_module("market").views)
 

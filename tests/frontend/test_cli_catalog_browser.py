@@ -94,7 +94,7 @@ def test_switch_refresh_billing_and_delayed_provider(cli_command, monkeypatch, t
             page.goto(cli_command.base_url + route, wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
             expect(
-                frame.locator("#ai-console-input textarea" if prefix == "ai-console" else "#market-quotes-refresh")
+                frame.locator("#ai-console-input textarea" if prefix == "ai-console" else '#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')
             ).to_be_visible(timeout=90000)
             if prefix == "ai-chat":
                 frame.locator('#ai-floating-button[data-drag-ready="1"]').click()

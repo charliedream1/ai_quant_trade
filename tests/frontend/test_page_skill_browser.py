@@ -53,7 +53,7 @@ def test_sector_rule_capture_to_skill_report_without_automatic_generation(cli_co
         try:
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
-            expect(frame.locator("#market-quotes-refresh")).to_be_visible(timeout=90000)
+            expect(frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]')).to_be_visible(timeout=90000)
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=15000)
             assert calls == []
             frame.locator("#research-workspace-actions .page-report-action").click()
@@ -144,7 +144,7 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
             page.goto(cli_command.base_url + "/app/?module=market&view=quotes", wait_until="domcontentloaded")
             frame = page.frame_locator("iframe.workspace-frame.active")
             expect(frame.locator("#ai-floating-button")).to_have_attribute("data-drag-ready", "1", timeout=90000)
-            frame.locator("#market-quotes-refresh").click()
+            frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]').click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=60000)
             frame.locator("#research-workspace-actions .page-report-action").click()
             frame.locator("#page-skill-run").click()
@@ -163,7 +163,7 @@ def test_pending_report_stops_without_blocking_rule_view(cli_command, monkeypatc
                 frame.locator("#market-analysis-tabs").get_by_role(
                     "tab", name=re.compile("行情与板块|Quotes and Sectors")
                 ).click()
-            frame.locator("#market-quotes-refresh").click()
+            frame.locator('#research-workspace-actions [data-research-refresh="market-quotes-refresh"]').click()
             expect(frame.locator("#market-sectors-plot .js-plotly-plot")).to_be_visible(timeout=15000)
         except Exception:
             toast = frame.get_by_test_id("toast-text").all_text_contents()
