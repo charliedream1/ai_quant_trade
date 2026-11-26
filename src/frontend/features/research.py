@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gradio as gr
+
 from src.knowledge.config import knowledge_config
 from src.knowledge.files import KnowledgeFiles
 
@@ -10,6 +11,7 @@ from ..common.callbacks import safe as _safe
 from ..common.components import plot as _plot
 from ..common.components import table as _table
 from ..handlers import DomainHandler
+from .research_batch import render_research_batch
 
 
 def render_research(service: DomainHandler) -> None:
@@ -85,6 +87,7 @@ def render_report_search(service: DomainHandler) -> None:
         inputs=report_detail_id,
         outputs=report_status,
     )
+    render_research_batch("report", [report_keyword, report_symbol])
 
 
 def render_model_reports(service: DomainHandler) -> None:
@@ -176,3 +179,4 @@ def render_paper_search(service: DomainHandler) -> None:
         inputs=paper_id,
         outputs=paper_status,
     )
+    render_research_batch("paper", [paper_keyword, paper_source, paper_year_from, paper_year_to])

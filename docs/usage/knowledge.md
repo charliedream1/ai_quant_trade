@@ -39,6 +39,34 @@
 
 图96为2026-10-31隔离服务实测：连续选择不同章节后刷新，当前内容与选择一致，不再丢失章节ID。
 
+## Classified report and paper batches
+
+Open **Research Reports & Papers** and prepare the current search scope in
+**Batch classification and import**. Select one or more results or choose
+**Import all results in this batch**. The preparation step shows the available
+count and source coverage. Increase the source batch number when the prepared
+window reaches the configured page limit. A submitted job keeps its original
+selection. Reopen it from history to see progress and retry unfinished items.
+For Eastmoney reports, the importer follows the publisher's PDF link. It can
+use the system `curl` client when the primary connection returns a web page
+instead of the original PDF.
+
+Choose **Traditional TF-IDF**, **Local zero-shot**, or an enabled model
+profile. To run the optional local model, supply its ONNX and tokenizer files
+through `ALL_IN_ONE_RESEARCH_CLASSIFIER_DIR` or confirm installation in the
+batch panel. The local adapter uses ONNX Runtime and Tokenizers from the
+existing `news-bge` dependency extra. The installer uses the pinned model
+version and checksums. External model profiles process a bounded excerpt.
+
+In **Knowledge Ingestion**, use **Refresh libraries** to load the publication
+years and institutions available in the chosen library. Combine those with
+document type and research topic. Report institutions come from the report
+publisher field and paper institutions from available author affiliations.
+Choose **Needs Review** for uncertain classifications. Open a document row to
+select it, then use **Change research topic** and **Save classification**.
+In Q&A, refresh the library lists and choose a category by name to narrow
+retrieval.
+
 ## SAG2 retrieval
 
 Select SAG2 for local BM25 recall, evidence selection and multi-round term

@@ -109,7 +109,7 @@ class RagChatMixin:
     def rag_retrieval_status(self):
         return readiness()
 
-    def rag_sag2_prepare(self, library, session, qa_mode, document_id):
+    def rag_sag2_prepare(self, library, session, qa_mode, document_id, category=None):
         if qa_mode == "document" and not document_id:
             raise ValueError("Select a document first")
         return prepare_index(
@@ -117,6 +117,7 @@ class RagChatMixin:
                 "library_name": library,
                 "session_id": session or "default",
                 "document_id": int(document_id) if qa_mode == "document" else None,
+                "category_id": int(category) if category else None,
             }
         )
 

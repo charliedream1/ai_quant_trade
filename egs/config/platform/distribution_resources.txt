@@ -304,6 +304,7 @@ egs/config/knowledge/file_preview_profile.xcu
 egs/config/knowledge/file_preview_runtime.yaml
 egs/config/knowledge/knowledge.yaml
 egs/config/knowledge/rag.yaml
+egs/config/knowledge/research_ingestion.yaml
 egs/config/models/image_validation.yaml
 egs/config/models/llm_client.yaml
 egs/config/models/model_strategies.yaml

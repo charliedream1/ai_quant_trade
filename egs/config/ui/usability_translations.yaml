@@ -308,3 +308,29 @@ CPI 与 PPI: CPI and PPI
 高级编辑: Advanced editing
 画布加载失败。请刷新工坊，或在高级编辑中继续。: The canvas failed to load. Refresh the workshop or use advanced editing.
 日内指数动量采用指数平均涨跌幅。板块广度采用完整板块快照中上涨板块的比例，平盘计入分母。板块一致性根据涨跌幅极差计算。覆盖不足时显示未提供。各轴分别解读。: Intraday momentum uses the average index change. Breadth is the rising share of the complete sector snapshot, including flat sectors in the denominator. Consistency uses the range of sector moves. Unavailable indicates insufficient coverage. Read each axis separately.
+批量分类入库: Batch classification and import
+准备检索范围: Prepare search scope
+来源批次（从 1 开始）: Source batch (starts at 1)
+选择待入库资料: Select documents to import
+导入本批全部结果: Import all results in this batch
+分类方式: Classification method
+传统 TF-IDF: Traditional TF-IDF
+本地零样本: Local zero-shot
+大模型分类配置: Classification model profile
+本地模型安装: Local model installation
+本地模型目录: Local model directory
+确认下载固定版本的本地分类模型: Confirm the pinned local model download
+下载分类模型: Download classification model
+开始批量入库: Start batch import
+取消批次: Cancel batch
+重试未完成项: Retry unfinished items
+历史入库任务: Import history
+刷新任务列表: Refresh jobs
+发表年份: Publication year
+研究主题: Research topic
+筛选文档: Filter documents
+未提供年份: Unknown year
+未提供机构: Unknown institution
+调整研究主题: Change research topic
+保存分类: Save classification
+知识库分类（可选）: Knowledge category (optional)

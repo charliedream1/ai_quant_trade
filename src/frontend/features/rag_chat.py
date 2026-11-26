@@ -5,6 +5,7 @@ from uuid import uuid4
 import gradio as gr
 
 from src.knowledge.config import knowledge_config
+from src.knowledge.research_metadata import facets
 
 from ..common.callbacks import safe
 from ..common.components import chatbot, table
@@ -53,7 +54,7 @@ def render_rag_chat(service) -> None:
                 scope = gr.Dropdown(
                     [("全部资料", "all"), ("本地资料", "local"), ("远程资料", "remote")], value="all", label="知识范围"
                 )
-                category = gr.Number(label="分类 ID（可选）", precision=0)
+                category = gr.Dropdown([], label="知识库分类（可选）", interactive=True, elem_id="rag-category")
                 top_k = gr.Slider(1, 20, value=5, step=1, label="引用数量")
                 session = gr.Textbox(value=lambda: uuid4().hex, label="会话 ID")
                 restore = gr.Button("恢复此会话")
@@ -99,6 +100,15 @@ def render_rag_chat(service) -> None:
         safe(service.rag_restore), inputs=[session, library, qa_mode, document_id], outputs=[history, refs], queue=False
     )
     library_refresh.click(safe(service.kb_library_choices), outputs=library, queue=False)
+
+    def categories(name):
+        _, _, rows = facets(name)
+        parents = dict.fromkeys((row["parent"], row["parent_id"]) for row in rows if row["parent_id"])
+        leaves = [(f"{row['parent']} / {row['name']}" if row["parent"] else row["name"], row["id"]) for row in rows]
+        return gr.update(choices=list(dict.fromkeys([*parents, *leaves])), value=None)
+
+    for event in (library_refresh.click, library.change, document_refresh.click):
+        event(safe(categories), inputs=library, outputs=category, queue=False)
     library.change(
         safe(service.rag_restore), inputs=[session, library, qa_mode, document_id], outputs=[history, refs], queue=False
     )
@@ -112,7 +122,9 @@ def render_rag_chat(service) -> None:
             queue=False,
         )
     sag2_prepare.click(
-        safe(service.rag_sag2_prepare), inputs=[library, session, qa_mode, document_id], outputs=retrieval_status
+        safe(service.rag_sag2_prepare),
+        inputs=[library, session, qa_mode, document_id, category],
+        outputs=retrieval_status,
     )
     new.click(
         lambda: (uuid4().hex, [], None, "", "新会话，尚未调用模型"),

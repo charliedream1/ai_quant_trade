@@ -1625,33 +1625,35 @@ class EastmoneyDataSource:
             items = [item for item in items if keyword in f"{item['title']}{item['org']}{item['analyst']}"]
         return items
 
-    def _load_reports(self, symbol: str) -> list[dict[str, Any]]:
+    def research_report_page(self, symbol: str, page: int, size: int) -> list[dict[str, Any]]:
+        code = _normalize_symbol(symbol, stock_only=True) if symbol else ""
+        return self._load_reports(code, page, size)
+
+    def _load_reports(self, symbol: str, page: int = 1, size: int = 50) -> list[dict[str, Any]]:
         today = datetime.now(SHANGHAI_TZ).date()
         payload = self._get_json(
             "https://reportapi.eastmoney.com/report/list",
             {
                 "industryCode": "*",
-                "pageSize": 50,
+                "pageSize": size,
                 "industry": "*",
                 "rating": "*",
                 "ratingChange": "*",
                 "beginTime": (today - timedelta(days=400)).isoformat(),
                 "endTime": (today + timedelta(days=1)).isoformat(),
-                "pageNo": 1,
+                "pageNo": page,
                 "fields": "",
                 "qType": 0,
                 "orgCode": "",
                 "code": symbol,
                 "rcode": "",
-                "p": 1,
-                "pageNum": 1,
-                "pageNumber": 1,
+                "p": page,
+                "pageNum": page,
+                "pageNumber": page,
             },
             referer="https://data.eastmoney.com/report/stock.jshtml",
         )
         values = payload.get("data") or []
-        if not values:
-            raise RuntimeError("研报接口返回空数据")
         items = []
         for value in values:
             info_code = str(value.get("infoCode") or value.get("title"))
@@ -1670,6 +1672,7 @@ class EastmoneyDataSource:
                     "publish_date": str(value.get("publishDate") or "")[:10],
                     "source": "eastmoney-report",
                     "url": f"https://pdf.dfcfw.com/pdf/H3_{info_code}_1.pdf",
+                    "landing_url": f"https://data.eastmoney.com/report/zw_stock.jshtml?infocode={info_code}",
                     "body": "",
                 }
             )
@@ -1701,13 +1704,17 @@ class EastmoneyDataSource:
             items = [item for item in items if int(item["published_at"][:4]) <= year_to]
         return items
 
-    def _load_arxiv(self, query: str) -> list[dict[str, Any]]:
+    def research_paper_page(self, keyword: str, start: int, size: int) -> list[dict[str, Any]]:
+        query = f'all:"{keyword}" AND cat:q-fin.*' if keyword else "cat:q-fin.*"
+        return self._load_arxiv(query, start, size)
+
+    def _load_arxiv(self, query: str, start: int = 0, size: int = 50) -> list[dict[str, Any]]:
         response = _http_get(
             "https://export.arxiv.org/api/query",
             params={
                 "search_query": query,
-                "start": 0,
-                "max_results": 50,
+                "start": start,
+                "max_results": size,
                 "sortBy": "submittedDate",
                 "sortOrder": "descending",
             },
@@ -1720,6 +1727,14 @@ class EastmoneyDataSource:
         items = []
         for entry in root.findall(f"{atom}entry"):
             identifier = (entry.findtext(f"{atom}id") or "").strip()
+            pdf_url = next(
+                (
+                    link.get("href", "")
+                    for link in entry.findall(f"{atom}link")
+                    if link.get("type") == "application/pdf"
+                ),
+                "",
+            )
             title = " ".join((entry.findtext(f"{atom}title") or "").split())
             abstract = " ".join((entry.findtext(f"{atom}summary") or "").split())
             published = (entry.findtext(f"{atom}published") or "")[:10]
@@ -1729,15 +1744,20 @@ class EastmoneyDataSource:
                     "id": _stable_id(identifier),
                     "title": title,
                     "authors": authors,
+                    "institutions": [
+                        str(node.text or "").strip()
+                        for author in entry.findall(f"{atom}author")
+                        for node in author.findall("{http://arxiv.org/schemas/atom}affiliation")
+                        if node.text and node.text.strip()
+                    ],
                     "abstract": abstract,
                     "source": "arXiv",
                     "published_at": published,
                     "url": identifier,
+                    "pdf_url": pdf_url,
                     "is_favorite": False,
                 }
             )
-        if not items:
-            raise RuntimeError("arXiv 返回空数据")
         return items
 
     def heatmap(

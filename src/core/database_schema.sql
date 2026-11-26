@@ -469,6 +469,41 @@
         sag_endpoint_hash TEXT NOT NULL DEFAULT ''
     );
 
+    CREATE TABLE IF NOT EXISTS kb_research_metadata (
+        doc_id INTEGER PRIMARY KEY REFERENCES kb_documents(id) ON DELETE CASCADE,
+        published_year INTEGER,
+        topic TEXT NOT NULL DEFAULT '',
+        metadata TEXT NOT NULL DEFAULT '{}',
+        content_hash TEXT NOT NULL,
+        manual INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE INDEX IF NOT EXISTS idx_kb_research_year_topic ON kb_research_metadata(published_year, topic);
+    CREATE INDEX IF NOT EXISTS idx_kb_research_content ON kb_research_metadata(content_hash);
+    CREATE TABLE IF NOT EXISTS kb_research_institutions (
+        doc_id INTEGER NOT NULL REFERENCES kb_documents(id) ON DELETE CASCADE,
+        normalized TEXT NOT NULL,
+        name TEXT NOT NULL,
+        PRIMARY KEY(doc_id, normalized)
+    );
+    CREATE INDEX IF NOT EXISTS idx_kb_research_institution ON kb_research_institutions(normalized, doc_id);
+    CREATE TABLE IF NOT EXISTS kb_research_batches (
+        id TEXT PRIMARY KEY,
+        status TEXT NOT NULL,
+        scope TEXT NOT NULL,
+        settings TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS kb_research_batch_items (
+        batch_id TEXT NOT NULL REFERENCES kb_research_batches(id) ON DELETE CASCADE,
+        item_key TEXT NOT NULL,
+        manifest TEXT NOT NULL,
+        status TEXT NOT NULL,
+        document_id INTEGER,
+        detail TEXT NOT NULL DEFAULT '',
+        PRIMARY KEY(batch_id, item_key)
+    );
+
     CREATE TABLE IF NOT EXISTS kb_document_chunks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         doc_id INTEGER NOT NULL REFERENCES kb_documents(id) ON DELETE CASCADE,

@@ -27,7 +27,9 @@ class KnowledgeFiles:
         settings = get_settings()
         self.root = (settings.data_dir / knowledge_config()["storage_directory"]).resolve()
         if not self.root.is_relative_to(Path(settings.data_dir).resolve()):
-            raise BusinessError(ErrorCode.STORAGE_ERROR, "Knowledge files must stay inside the configured data directory")
+            raise BusinessError(
+                ErrorCode.STORAGE_ERROR, "Knowledge files must stay inside the configured data directory"
+            )
 
     def directory(self, name: str) -> Path:
         key = hashlib.sha256(library_name(name).encode("utf-8")).hexdigest()[: knowledge_config()["library_hash_chars"]]
@@ -92,15 +94,16 @@ class KnowledgeFiles:
         document_id: int | None = None,
     ) -> list[dict[str, Any]]:
         rows = self.repo.db.query(
-            "SELECT * FROM kb_documents WHERE library_name = ? AND status = 'ready'", (library_name(name),)
+            """SELECT * FROM kb_documents WHERE library_name = ? AND status = 'ready'
+               AND (? IS NULL OR category_id=? OR category_id IN
+                   (SELECT id FROM kb_categories WHERE parent_id=?))""",
+            (library_name(name), category_id or None, category_id, category_id),
         )
         result = []
         for row in rows:
             if document_id is not None and row["id"] != document_id:
                 continue
             if row.get("attachment_session") and row["attachment_session"] != session_id:
-                continue
-            if category_id and row["category_id"] != category_id:
                 continue
             remote = str(row.get("source") or "").startswith("remote:")
             if (scope == "local" and remote) or (scope == "remote" and not remote):

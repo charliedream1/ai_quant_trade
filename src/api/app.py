@@ -329,6 +329,9 @@ def create_app() -> FastAPI:
             shutdown_monitor_jobs()
             shutdown_graph_jobs()
             shutdown_rule_graph_jobs()
+            from src.knowledge.research_batches import shutdown as shutdown_research_batches
+
+            shutdown_research_batches()
             shutdown_backtest_jobs()
             shutdown_document_jobs()
             shutdown_alpha_jobs()

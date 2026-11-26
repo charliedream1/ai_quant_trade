@@ -35,7 +35,10 @@ def prepare_index(payload, repo=None):
     if identifier is not None and (type(identifier) is not int or identifier <= 0):
         raise ValueError("Document ID must be a positive integer")
     rows = files.documents(
-        payload.get("library_name"), session_id=str(payload.get("session_id") or ""), document_id=identifier
+        payload.get("library_name"),
+        session_id=str(payload.get("session_id") or ""),
+        document_id=identifier,
+        category_id=payload.get("category_id"),
     )
     if identifier is not None and not rows:
         raise ValueError("Document is outside the selected library/session")

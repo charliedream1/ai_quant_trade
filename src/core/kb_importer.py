@@ -53,12 +53,13 @@ def import_uploaded_document(
     attachment_session: str = "",
     source: str = UPLOAD_SOURCE,
     doc_type: str = "文档",
+    parsed_document: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Import a supported file into local knowledge base."""
     repo = repo or Repository()
     storage = storage or FileStorage()
     name, size = library_name(library), chunk_length(chunk_chars)
-    parsed = parse_document_bytes(filename, content_bytes)
+    parsed = parsed_document if parsed_document is not None else parse_document_bytes(filename, content_bytes)
     original = PreviewStore().upload(filename, content_bytes, source="knowledge")
     document_title = _document_title(title, filename)
     now = utc_now_iso()

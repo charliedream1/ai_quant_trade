@@ -3,6 +3,7 @@
 import ipaddress
 import socket
 from pathlib import Path
+from time import monotonic
 from typing import Any
 from urllib.parse import unquote, urljoin, urlsplit
 
@@ -25,11 +26,15 @@ def public_url(url: str) -> None:
         raise BusinessError(ErrorCode.INVALID_PARAM, "网页下载仅允许公共网络地址")
 
 
-def download_document(url: str) -> tuple[str, bytes, str]:
+def download_document(url: str, *, check=None, deadline: float | None = None) -> tuple[str, bytes, str]:
     policy = knowledge_config()
     current = str(url).strip()
     with network_session(public_only=True) as session:
         for _ in range(policy["download"]["max_redirects"] + 1):
+            if check:
+                check()
+            if deadline is not None and monotonic() >= deadline:
+                raise TimeoutError("Document download deadline exceeded")
             public_url(current)
             with session.get(
                 current, stream=True, allow_redirects=False, timeout=policy["download"]["timeout_seconds"]
@@ -40,6 +45,10 @@ def download_document(url: str) -> tuple[str, bytes, str]:
                 response.raise_for_status()
                 content = bytearray()
                 for block in response.iter_content(policy["download"]["block_bytes"]):
+                    if check:
+                        check()
+                    if deadline is not None and monotonic() >= deadline:
+                        raise TimeoutError("Document download deadline exceeded")
                     content.extend(block)
                     if len(content) > policy["max_upload_bytes"]:
                         raise BusinessError(ErrorCode.INVALID_PARAM, "下载文档超过大小上限")
