@@ -16,7 +16,7 @@ tushare==1.4.29
 # (akshare / efinance 已在上方列出)
 
 # 电子币类
-ccxt==4.5.85
+ccxt==4.5.88
 
 # 新闻类
 newsapi-python==0.2.7
