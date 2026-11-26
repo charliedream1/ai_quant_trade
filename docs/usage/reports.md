@@ -13,3 +13,9 @@
 5. 下载或解析失败会显示具体原因；没有全文链接时不把摘要页当成全文。原有“保存研报 / 导入知识库”用于保存现有正文或摘要，功能与全文下载区分。
 
 论文收藏、知识入库和模型输出不等于内容经过事实验证。遇到下载失败或模型错误时保留具体错误，避免反复提交同一生成请求。文档处理与引用见[知识库指南](knowledge.md)。
+
+## Standalone broker research skill
+
+Install `egs_skill/broker-research-analyst/requirements.txt` in a separate
+Python 3.11+ environment. The skill pins pypdf 6.21.4 for PDF text extraction
+and Pillow 13.0.0 for image extraction.

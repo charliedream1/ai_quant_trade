@@ -18,9 +18,14 @@
 
 ### 安装依赖
 
+Use Python 3.11 or later in a separate environment for this skill.
+The PDF fallback uses pypdf 6.21.4 and image extraction uses Pillow 13.0.0.
+
 ```bash
 cd broker-research-analyst
-pip install -r requirements.txt
+python -m venv .venv
+# Activate .venv for your shell with Python 3.11 or later.
+python -m pip install -r requirements.txt
 ```
 
 ### 个股研报汇总

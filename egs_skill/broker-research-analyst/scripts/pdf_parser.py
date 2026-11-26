@@ -135,7 +135,10 @@ def _try_markitdown(file_path: Path) -> tuple[str, int]:
     - 中文支持良好（基于 pdfminer.six）
     """
     from markitdown import MarkItDown
-    md = MarkItDown()
+    from markitdown.converters import PdfConverter
+
+    md = MarkItDown(enable_builtins=False)
+    md.register_converter(PdfConverter())
     result = md.convert(str(file_path))
     text = result.text_content or ""
     # MarkItDown 不直接返回页数，用 attachPages 元信息或文本规模估算
@@ -293,10 +296,11 @@ def _extract_images_pdfplumber(
     优势：已是项目依赖、提供 bbox 坐标
     劣势：需手动去重、强制转 PNG（体积膨胀）、慢 20 倍
     """
-    import pdfplumber
-    import io
-    from PIL import Image
     import hashlib
+    import io
+
+    import pdfplumber
+    from PIL import Image
 
     pdf_stem = file_path.stem
     img_subdir = output_dir / f"{pdf_stem}_images"
